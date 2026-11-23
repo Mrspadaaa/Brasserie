@@ -123,6 +123,18 @@ export function minimumSuffixe(valeurs: readonly number[]): number[] {
  * « À dépenser sans passer sous 0 » (E01) : le minimum de la courbe libre de la semaine `depuis` à la fin, avec sa semaine. Dépenser plus
  * ferait passer la courbe sous 0 à cette semaine. Au creux égal, la plus proche. Négatif : on passe déjà sous 0.
  */
+/**
+ * D433 (23.11, « Creux du cadre ») : le creux de ce que montre le cadre, les semaines d'index `[de, a)` de la courbe, le passé exclu (comme
+ * `creuxDepuis`). `null` : aucune semaine à venir dans le cadre (la pastille dit alors 0, « dans le cadre »).
+ */
+export function creuxEntre(courbe: CourbeCaisse, de: number, a: number, depuis = courbe.passe ?? 0): Creux | null {
+  let creux: Creux | null = null;
+  for (const s of courbe.semaines.slice(Math.max(0, depuis, de), Math.max(0, a))) {
+    if (!creux || s.libre < creux.centimes) creux = { index: s.index, lundi: s.lundi, numero: s.numero, centimes: s.libre };
+  }
+  return creux;
+}
+
 export function creuxDepuis(courbe: CourbeCaisse, depuis = courbe.passe ?? 0): Creux | null {
   let creux: Creux | null = null;
   for (const s of courbe.semaines.slice(Math.max(0, depuis))) {

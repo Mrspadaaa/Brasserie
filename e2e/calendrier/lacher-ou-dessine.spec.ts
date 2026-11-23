@@ -4,7 +4,7 @@
 // annoncée, et la barre reste où elle était dessinée (± 1 colonne). Le glisser d'une barre et son bord tiré. Données : la fixture simulée.
 import { expect, test, type Page } from '@playwright/test';
 import { Doigt } from '../outils/doigt';
-import { CLE_CACHE, CLE_FIXTURE, ajouter, aujourdhuiZurich, choisirPeriode, fixtureFrise, ouvrirCalendrier } from '../outils/calendrier';
+import { CLE_CACHE, CLE_FIXTURE, ajouter, aujourdhuiZurich, fenetreDe, fixtureFrise, ouvrirCalendrier, semainesDuLibelle } from '../outils/calendrier';
 
 const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 const DUREES = [1, 3, 6, 14, 51];
@@ -64,26 +64,6 @@ const ecrite = (page: Page, id: string, mode: 'glisse' | 'bord') => page.evaluat
 type Boite = { l: number; r: number; y: number; w: number };
 const boite = (page: Page, id: string): Promise<Boite> => page.locator(`[data-frise] [data-chose$="${id}"]`).first().evaluate((e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, y: r.top + r.height * 0.3, w: r.width }; });
 
-const duree = (page: Page) => page.getByRole('button', { name: /période, liste, tri et filtre$/ }).innerText().then((t) => t.trim());
-const semaines = (t: string) => (t === 'An' ? 52 : t === '6 mois' ? 26 : t === '3 mois' ? 13 : Number(/^(\d+) sem/.exec(t)?.[1] ?? NaN));
-
-/** La fenêtre locale de `n` semaines, tirée depuis l'An par la poignée de fin (en plusieurs fois au besoin), puis déplacée par le corps du cadre. */
-async function fenetre(page: Page, doigt: Doigt, n: number) {
-  await choisirPeriode(page, 'An');
-  const c = await page.locator('.ent-cadre').boundingBox(), pas = c!.width / 52;
-  for (let essai = 0, ecart = 52 - n; essai < 5 && ecart !== 0; essai++) {
-    const h = await page.locator('[data-poignee="fin"]').first().boundingBox(), x = h!.x + h!.width / 2, y = h!.y + h!.height / 2;
-    const d = ecart * pas, plus = Math.abs(d) < 7 ? Math.sign(d) * 1.5 : 0; // sous 6 px, la poignée ne part pas
-    await doigt.glisser({ x, y }, { x: x - d - plus, y }, { dureeMs: 500 });
-    await page.waitForTimeout(400);
-    ecart = semaines(await duree(page)) - n;
-  }
-  const c2 = await page.locator('.ent-cadre').boundingBox(), y = c2!.y + c2!.height / 2;
-  await doigt.glisser({ x: c2!.x + c2!.width / 2, y }, { x: c2!.x + c2!.width / 2 + Math.max(10, 2 * (c2!.width / Math.max(1, n))), y }, { dureeMs: 500 });
-  await page.waitForTimeout(400);
-  return duree(page);
-}
-
 test('CAL-LACHER-OU-DESSINE : date écrite = date annoncée = date sous le doigt, à chaque échelle, fenêtre déplacée', async ({ page }, info) => {
   test.skip((page.viewportSize()?.width ?? 0) > 500, 'sa plainte : téléphone en portrait (390)');
   await poser(page);
@@ -91,8 +71,8 @@ test('CAL-LACHER-OU-DESSINE : date écrite = date annoncée = date sous le doigt
   const doigt = await Doigt.sur(page);
   const fautes: string[] = [], joues: string[] = [];
   for (const n of DUREES) {
-    const vue = await fenetre(page, doigt, n);
-    if (semaines(vue) !== n) fautes.push(`fenêtre de ${n} semaines voulue, « ${vue} » obtenue`);
+    const vue = await fenetreDe(page, doigt, n);
+    if (semainesDuLibelle(vue) !== n) fautes.push(`fenêtre de ${n} semaines voulue, « ${vue} » obtenue`);
     for (const mode of ['glisse', 'bord'] as const) {
       const a0 = await axe(page);
       /* une barre entière dans la frise, assez large pour être prise (au corps ou au bord), avec de la place à droite */
