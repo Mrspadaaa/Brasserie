@@ -21,7 +21,7 @@
   libellés allemands et volume non repris) ; page bloquée brouwland lue par Google (159,99 € TTC ≈ 147 CHF, nom juste, sans photo) ;
   défauts neufs T26-1 à T26-4, tous D (libellés Galaxus, « Non publié : Volume » hors sujet, pas de photo brouwland, ligne gardée pour le
   lien mort) ; ≈ 0,06 CHF ; carnet ZZ retiré (Carnets revenu à 15).
-- Page de choix publiée : étapes visibles pendant la lecture d'un lien, v01 à v06 (règle IA-ETAPES-VISIBLES) :
+- SON CHOIX EST FAIT (D448) : work/missions/maquettes-carnet/CHOIX.md dit tout, sans l'artefact (écran par écran, images locales, ses remarques : plus dense, pas le TTC de v06, bouton « Escalader » sur l'échec). À porter par la prochaine session.
   https://claude.ai/artifact/M7FU5ad6NVhXD12Pjc9fBH (source work/missions/maquettes-carnet/page, commit 85f9592b6). En attente de son choix ;
   puis porter la version choisie (libellé « page bloquée, lue par Google » compris ; côté app, le type lit déjà etapes, TODO du flux).
 - Dépense IA réelle (journal ia-journal.jsonl) : copie lecture-liens 1,647 CHF (278 lignes) ; copie Brasserie 0,425 CHF (129 lignes) ;
