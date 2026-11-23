@@ -2795,3 +2795,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (capture 9:02, brasseur-23-11/2sem-0902.jpg : période « 30.11.26–21.11.27 », 2 sem., cadre « S48 – S46 2027 », pastille « −5 063 S26 '27 », courbe sans repère d'aujourd'hui) « Ça semble être mieux, mais on peut maintenant que afficher 1 ans Max ??? Et on voit plus quel moment on est sur le graph, on voit toujours en bleu notre semaine sur le calendrier, mais sur le graph, plus d'indications »
 - (même capture 9:02, tour 15 : pastille « S26 '27 » suit, mais bande S48 S49 pleine largeur sous un cadre plus étroit, étiquette « S48 – S46 2027 ») « Et échelle toujours pas dynamique... »
 - « En théorie, si je mets 1 ou 2 ou peut être 3 je devrais voir les jours plutôt que les semaines.. comme les mois pour une année »
+- (tour 16) « Ah oui mais je peux toujours avoir que 1 ans ??? » (CAL-PLUS-QU-UN-AN, pas encore fait)
