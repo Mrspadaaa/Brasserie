@@ -172,8 +172,12 @@ function ordonnable(v: Valeur | undefined, sens: Colonne['sens']): number | null
 }
 
 /** Un nombre, ou la chaîne qui n'est qu'un nombre (« 2000 » lu sur une page) ; jamais 0 par défaut. */
+/* Lot 11 (hors lot du lot 4) : sur une page de vendeur, « 1.845 mm » groupe les milliers (écriture suisse et allemande) ; un point suivi
+   d'exactement trois chiffres, partie entière sans zéro de tête, se lit 1845. « 0.125 », « 1.85 », « 1,845 » (virgule décimale) restent. */
+const MILLIERS_POINT = /^[1-9]\d{0,2}(?:\.\d{3})+$/;
 export function nombreDe(valeur: Valeur['valeur']): number | null {
   if (typeof valeur === 'number') return Number.isFinite(valeur) ? valeur : null;
+  if (typeof valeur === 'string' && MILLIERS_POINT.test(valeur.trim())) return Number(valeur.trim().replace(/\./g, ''));
   if (typeof valeur === 'string') return parseDecimal(valeur.trim());
   return null;
 }
