@@ -2829,3 +2829,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Non même les deux, les étapes, et ai lente une barre qui de replis »
 - « Ça oblige aussi à bien travailler pour découper les tâches en sous tâches. Et voir si tu es correcte »
 - « Bah il faut parallelisé ??? » (banc des liens passé lien par lien, 46 min)
+- « Par outils et par méthodes. Je veux dire tout pars à la fois quasiment ? »
