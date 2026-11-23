@@ -249,7 +249,7 @@ Lire :
 | work/missions/2026-11-23-carnet-en-ligne/tour13/RAPPORT.md | CA13 | 13 | 0 | 9aafd8bcdcad |
 | work/missions/2026-11-23-carnet-en-ligne/fix13/RAPPORT.md | FIX13 | 2 | 0 | 23fb032b6a83 |
 | work/missions/2026-11-23-calendrier-en-ligne/zz-ventes/RAPPORT.md | ZZV | 1 | 0 | 4348a2cf528c |
-| work/missions/2026-11-23-carnet-en-ligne/gastro-held/RAPPORT.md | GH | 3 | 0 | en cours |
+| work/missions/2026-11-23-carnet-en-ligne/gastro-held/RAPPORT.md | GH | 4 | 0 | e7d00e7b9042 |
 | work/missions/2026-11-23-calendrier-en-ligne/contre-epreuve/RAPPORT.md | T11 | 24 | 0 | 22535391fb6e |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
@@ -2855,3 +2855,4 @@ Règle (brasseur 23.11) : une seule contre-épreuve ; graves corrigés tout de s
 | GH-1 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › lien collé (gastro-held) | coller le lien produit gastro-held depuis Chambre froide ouvert → observé : rangerCarnet boucle dans « vendeur » (MAX_TOKENS 3985, 34 s, schéma sans ordre des champs) → repli local : frigo rangé dans Chambre froide ; attendu : article lu et rangé dans le bon carnet (Frigo + congel) | B | corrigé (aiTask en ligne 23.11, prouvé en direct) | 24099a754 | gastro-held/RAPPORT.md ; L-1/L-2 du Carnet ; capture gastro-held/01-ses-donnees-chambre-froide.png |
 | GH-2 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › article gastro-held | lien Shopify → observé : photo non lue (liste ImageObject, og:image en http) ; attendu : photo de l'article | m | corrigé (aiTask en ligne 23.11) | 24099a754 | gastro-held/RAPPORT.md ; CSP photos ; capture gastro-held/02-ses-donnees-fiche.png |
 | GH-3 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › article gastro-held | rejeu en ligne après 24099a754 → observé : article sans photo ni stock, nom coupé « … Robuste Bauw » : assainirRangerCarnet coupait l URL (331 car.) à 300, la page lue ne s attachait plus ; attendu : article complet | m | corrigé (aiTask en ligne 23.11) | 4edd21a15 | functions/src/carnetIA.ts ; capture gastro-held/ |
+| GH-4 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › bandeau d arrivée | rejeu en ligne après 4edd21a15 → observé : « ✓ Lien rangé ici · page non lue » avec l adresse brute, alors que l article est marqué lu ; attendu : le bandeau dit l état réel après la réponse de l IA | m | ouvert — présent |   | src/ui/carnets/retourCarnet.ts:34 (état d avant la réponse) |
