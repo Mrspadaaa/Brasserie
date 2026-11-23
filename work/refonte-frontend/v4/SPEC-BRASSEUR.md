@@ -2821,3 +2821,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant « On a déjà un banc permanent : les 25 vrais liens ») « Tu peux même en ajouter et être un peu plus difficile »
 - (citant « 3. Puis l'IA légère (Flash-Lite) … 4. Escalade vers l'IA plus forte (3.8 Flash) ») « C'est vraiment les bon outil Ia, tu es sûr ? Pour notre cas de figure ??? »
 - « Regarde les autres IA, outils Google... »
+- (citant la liste « Autres IA : Claude, Mistral… ; outils d'extraction : Jina, Firecrawl, Zyte, Diffbot ; navigateur sans écran ») « Non autre IA , type Google carbone, oxygène ou autre outil d'ia adapté au grounding »
