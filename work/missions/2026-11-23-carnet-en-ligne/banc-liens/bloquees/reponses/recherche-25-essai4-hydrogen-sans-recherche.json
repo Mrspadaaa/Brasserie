@@ -1,0 +1,47 @@
+{
+ "n": 25,
+ "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+ "phase": "recherche",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 8876,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"fiche\",\n  \"caracteristiques\": [\n    {\n      \"nom\": \"Material\",\n      \"valeur\": \"Kunststoff\"\n    },\n    {\n      \"nom\": \"Einbautiefe\",\n      \"valeur\": \"170 mm\"\n    },\n    {\n      \"nom\": \"Gewicht (Netto)\",\n      \"valeur\": \"580 g\"\n    },\n    {\n      \"nom\": \"Durchmesser Rohranschluss\",\n      \"valeur\": \"110 mm\"\n    },\n    {\n      \"nom\": \"Rahmenmass\",\n      \"valeur\": \"150 x 150 mm\"\n    }\n  ],\n  \"devise\": \"EUR\",\n  \"nom\": \"Kellerablauf\",\n  \"origine\": \"ailleurs\",\n  \"photo\": \"https://media.cdn.bauhaus/m/490281/prod_large_square.webp\",\n  \"prix\": 29.95,\n  \"source\": \"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFgYSvNzn2TepJ0ut_WnHMoLaWzsA_kuFkU5VudNMXb_eRGFBWbIwjFf92qZx7TiV1JqZ8H5SrgdBImDZHtNUIc2AINURg6-xHs0jfTK20GOmp4sbV2euSJ8uEJNDQNdBSUcloqkvPKkbI0OCUfUmKv_ks=\",\n  \"taxe\": \"ttc\"\n} ",
+       "thoughtSignature": "Ep0LCpoLAWkUfRMWcy4OmNjEP2FT8IsYtveqYx/gfnrf8oxxxd4KQi44SQfa3s5YZBm1KciHa563AHY+a+c4Qh3EBLVNGqbyCdf7l6fWxeh7QRkoYmhZt9prRCQ0gaBqOEqcT4/QfpG1IEB3ZA3k+pgjzeEpsp7Gd2RZrWWM3XkAhmBcHstgJY5erLdSQplGNxPOMZerSeVn6gzQF0TDyYMKguGypnWUaluzHxiEjStef/zI4Mlw9TQbwdwzz8Pg4CytNGu3Iwtg+8sgWMBX5BFoA9weNUw1dfKTtpLBWrZPVVZVFEuPnE8tzdAfPfdYc5ACpdTCdy12Sm5UUtACcGMNTzwjRQPad7KmlZ232eAKxmTfx9sAU68hlia9GEzQk8FaImOiLTR7pSXkSEEXeCfV2kSEf3Eq2wSQrkO7SpGK7gqZ6KRtdoRlMZM1+n6GhyiXsIfB2g0gjCcQyaZDXC5/n5X2lrImo6Pplp6OSEG3h0PSjUj5Jycn7XGPiUvIFLcxaDJZrHjR7fOoF0JyL6iP0tGXPNaWWj+xb/tmiYvKFgIdFH4tMPgEbjwpWw4mC8YGhrhOu2Uzz+aZYglW9j1Vd97lVCKRASEsRurw8dZ5lYNhgRyxw4k6rw126X4Ermcaw3rshMfkP0Bhpdyi7j/epAELSgbLzet+53wbYWWzpDy+oWgUDIhwBOtUAS/KyVLx3DQDPHn6ZM8DKSVgFtYBBUJHR2bd13EFJHjvp1i+pK3CeswT8deBz+1WNIzuK/z6CwcsmxGFPpxWzxvRvOFQqtedwrWvm0W4ECP3jKIhf+AbVHoFahvUktpeSW9D/6tnuwHFNdDxUUz9kIT6CR4ExjfTm1l70W5fmSVyuknIKulOEQv3aR3gUnJxdiNu9mn+5GzpQoT633taCLQ8FwTCdwfnCLSxWhYKVVkb2ohMB6JxU5sq7/lDcW3wMKL5sMHrylxTS9e3J0i43UXifNyWYrlFvR/hTVhUTf7sJDtQ4pTPwFyNASDWFdxJWt3RYcXmpKenU40nvAbYshS7mfdJZAa5YMGJISldnuvqrrigCOs53g3uSZ7TA2T5zdt8akAoTriKdGSFwb6ua7c+deQQQSfOl8XGw01Ce1nrsihGnGdf4+Pgp9oPGLgirebOam7Rw5aQ9buXKV5TBZSHVkCkCXPMZG6n4p8t6ArGFPJAeVUBBEY1h6a8y8Mm/FvRZEP16cmLzpL2eHK3DBwsM0b5qqDQ2pRFU0kaoK2inau9oEXYVKUrX3v+C7yEeLU6avRmHkb/1t0EJblITqUYODPeuzerZXDT6hRrcwbyDFSHXedPyctWN9QfgsjiPNj22VTd139aq8tEnbYUnOuto6x3uZGNOpUnw6KNDWgNBToE/6tXnUWbY02r1iNtvvfcG1ibbGeaFRrzZtOBTcK+UA20gioqtjuODvAEJbh3sdfwYDoxL5IhEufYpyZYJmCYj8qRHzx1erixbOOPgONDgyPbP0yFESJW1kjGf/UL17l1SXC5mkabOKPoTIamo74o4W2WakA79pwLOeFigsTe4z64NLTxhKqUXvbu1H4sjrZYcM+yCenuPWPLWYyOjh+ovsUHFo2rQjttuNKcbcmv42+vxlhBeyPOA4ng2OZdma8d3jx5pAb8nNgZHktvRF+haBCxS2OPT6eXoC+EswVW5vqcKahiIzox/4aAP3bpGYhmM/KqCZ0balAls0s7MiMFVCre2zzkC6OxPvRfht4vs+osEjpOwkUM+49d7NpkZc2Ne1sCkHMCumYW9J2ssnWdjYFj5B7Sr0DocIkKqB2zx/lZvA51XDE/fKegxV/7nomLL1acl0siHA5C6YDoG1FczEx4672fgf+m4FGZ58+/e2NQiA6jLSncQaI2+BdbcMsQ1Pw2w3zhm+G2rLksoXzK"
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 1036,
+   "candidatesTokenCount": 430,
+   "totalTokenCount": 2079,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 1036
+    }
+   ],
+   "candidatesTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 430
+    }
+   ],
+   "thoughtsTokenCount": 613,
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-4-hydrogen",
+  "responseId": "flAEa8CAKe__vdIPsYf48AI"
+ }
+}

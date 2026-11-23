@@ -1,0 +1,31 @@
+[
+ {
+  "n": 14,
+  "phase": "hydrogen",
+  "http": 200,
+  "ms": 6424,
+  "chf": 0.0069,
+  "entree": 2068,
+  "sortie": 322,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": "meme-page",
+   "photo": null,
+   "prix": null,
+   "source": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+   "taxe": null
+  },
+  "texte": ""
+ }
+]

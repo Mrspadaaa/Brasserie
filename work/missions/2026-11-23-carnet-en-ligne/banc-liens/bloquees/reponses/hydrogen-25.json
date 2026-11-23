@@ -1,0 +1,62 @@
+{
+ "n": 25,
+ "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+ "phase": "hydrogen",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 8644,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\"type\": \"illisible\", \"caracteristiques\": [], \"devise\": null, \"nom\": null, \"origine\": \"meme-page\", \"photo\": null, \"prix\": null, \"source\": \"https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267\", \"taxe\": null}",
+       "thoughtSignature": "EooECocEAWkUfRNCs/498lUKJhCa/0jtmXrhw2H4+ltKS+r5VEXdACWuTdq3+iVYUz73gF+6h1oj8+Srg3nKI/F5ChOEihbUHUF6nPRRbjwbFk9gI3O3JdeeuVYqe5RqNgdbKZUsPVP5uAv1xKk3pzXUnbEk/XAuJmsnLghg38j7LTtCHxkOYanMIzFZaDx1dCiOLw4PE838nQ/64vdgFNrOBnN3o3SFDLBF1UiHVfbJpfHHeUuni8GbCQjSs2Q3OlqJFmbw6UvGFgc0Pndgaf9CTGeJbgg38tz9ZOfBPYHJvAUJlEQlswNw/FEHEkRv+Iz/ivavS6D37c8MByJG/JdlGjCpCWp4J4aK4oayAIoKDJ2aw8WRGNZ72vvW+EYB4xDZgrydshBL4/b2LcfBmEMKWKaDiPYVL7etSAzzMvSwrBAUJvWe9dmbJZ3OMbFMWHFAvgfrUOeJ2Rb0fDEkDul4/XGMjivwuiTNHFgskplN2UuB62mj+JlFd2vCYrRawuvc/Ni8rmDTITDkCBC6Vfo3MxbMt2fnrIC7+i0bCU1FLqwd7lq2nIHj8rW4k7SfmRDfgulmCiqxi2UclWWUwcWQL4FYA/LyxOlj0QS42NWIAggOeDWpvWht6chT4LmTElgqQvb1se+AxFD3EFF+aFGGPeyqvb96JVZHdCGESe3NsSFxNUSWIlGxaHCP"
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_ERROR"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 913,
+   "candidatesTokenCount": 133,
+   "totalTokenCount": 2392,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 913
+    }
+   ],
+   "candidatesTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 133
+    }
+   ],
+   "toolUsePromptTokenCount": 1172,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 1172
+    }
+   ],
+   "thoughtsTokenCount": 174,
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-4-hydrogen",
+  "responseId": "M1AEa6KNJMHPvdIPufm-0Ao"
+ }
+}

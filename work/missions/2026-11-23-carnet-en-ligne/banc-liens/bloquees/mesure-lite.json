@@ -1,0 +1,219 @@
+[
+ {
+  "n": 6,
+  "phase": "lite",
+  "http": 200,
+  "ms": 1952,
+  "chf": 0.00421,
+  "entree": 7831,
+  "sortie": 407,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html → URL_RETRIEVAL_STATUS_SUCCESS"
+  ],
+  "lueParOutil": true,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "fiche",
+   "caracteristiques": [
+    {
+     "nom": "volume",
+     "valeur": "30-32 l"
+    },
+    {
+     "nom": "weight",
+     "valeur": "7.9 kg"
+    },
+    {
+     "nom": "diameter at the top",
+     "valeur": "35 cm"
+    },
+    {
+     "nom": "height without extension legs",
+     "valeur": "58.5 cm"
+    },
+    {
+     "nom": "height with extension legs",
+     "valeur": "68.5 cm"
+    },
+    {
+     "nom": "Full volume",
+     "valeur": "32 l"
+    },
+    {
+     "nom": "Fermentable volume",
+     "valeur": "25 l"
+    },
+    {
+     "nom": "Top opening",
+     "valeur": "35 cm"
+    }
+   ],
+   "devise": "EUR",
+   "nom": "Brew Monk® stainless steel fermenter 30 l",
+   "origine": "meme-page",
+   "photo": null,
+   "prix": 159.99,
+   "source": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+   "taxe": "ttc"
+  },
+  "texte": ""
+ },
+ {
+  "n": 7,
+  "phase": "lite",
+  "http": 200,
+  "ms": 2330,
+  "chf": 0.01204,
+  "entree": 30139,
+  "sortie": 237,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://brouwland.com/fr/1239-cuves-de-fermentation → URL_RETRIEVAL_STATUS_SUCCESS",
+   "https://brouwland.com/fr/1239-cuves-de-fermentation → URL_RETRIEVAL_STATUS_SUCCESS"
+  ],
+  "lueParOutil": true,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "introuvable",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": "meme-page",
+   "photo": null,
+   "prix": null,
+   "source": "https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html",
+   "taxe": null
+  },
+  "texte": ""
+ },
+ {
+  "n": 9,
+  "phase": "lite",
+  "http": 200,
+  "ms": 2645,
+  "chf": 0.00095,
+  "entree": 1113,
+  "sortie": 170,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://www.brewtools.com/search?q=brewing+system+accessories → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": "meme-page",
+   "photo": null,
+   "prix": null,
+   "source": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+   "taxe": null
+  },
+  "texte": ""
+ },
+ {
+  "n": 14,
+  "phase": "lite",
+  "http": 200,
+  "ms": 1546,
+  "chf": 0.00083,
+  "entree": 1092,
+  "sortie": 135,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": null,
+   "photo": null,
+   "prix": null,
+   "source": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+   "taxe": null
+  },
+  "texte": ""
+ },
+ {
+  "n": 24,
+  "phase": "lite",
+  "http": 200,
+  "ms": 1697,
+  "chf": 0.00264,
+  "entree": 4480,
+  "sortie": 308,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824 → URL_RETRIEVAL_STATUS_SUCCESS"
+  ],
+  "lueParOutil": true,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "fiche",
+   "caracteristiques": [
+    {
+     "nom": "Ausladung",
+     "valeur": "230 mm"
+    },
+    {
+     "nom": "Höhe",
+     "valeur": "238 mm"
+    }
+   ],
+   "devise": "CHF",
+   "nom": "KWC Spültischmischer Domo mit ausziehbarer Brause",
+   "origine": "meme-page",
+   "photo": null,
+   "prix": 429,
+   "source": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+   "taxe": null
+  },
+  "texte": ""
+ },
+ {
+  "n": 25,
+  "phase": "lite",
+  "http": 200,
+  "ms": 1543,
+  "chf": 0.00085,
+  "entree": 1100,
+  "sortie": 139,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267 → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": null,
+   "photo": null,
+   "prix": null,
+   "source": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+   "taxe": null
+  },
+  "texte": ""
+ }
+]

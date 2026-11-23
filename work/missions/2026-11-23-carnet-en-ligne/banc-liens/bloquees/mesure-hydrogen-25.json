@@ -1,0 +1,39 @@
+[
+ {
+  "n": 25,
+  "phase": "hydrogen",
+  "http": 200,
+  "ms": 8644,
+  "chf": 0.00679,
+  "entree": 2085,
+  "sortie": 307,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267 → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": "meme-page",
+   "photo": null,
+   "prix": null,
+   "source": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+   "taxe": null
+  },
+  "texte": ""
+ },
+ {
+  "n": 14,
+  "refuse": "budget : 0.0215 CHF dépensés, réserve 0.045"
+ },
+ {
+  "n": 9,
+  "refuse": "budget : 0.0215 CHF dépensés, réserve 0.045"
+ }
+]

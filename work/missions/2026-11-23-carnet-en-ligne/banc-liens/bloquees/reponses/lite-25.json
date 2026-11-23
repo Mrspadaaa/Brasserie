@@ -1,0 +1,55 @@
+{
+ "n": 25,
+ "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+ "phase": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1543,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"illisible\",\n  \"caracteristiques\": [],\n  \"devise\": null,\n  \"nom\": null,\n  \"origine\": null,\n  \"photo\": null,\n  \"prix\": null,\n  \"source\": \"https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267\",\n  \"taxe\": null\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfRNLTu69K8ti5DbDq6psbyPwBMFOpeFHrK5NoSKn+Sf6tsX1nVpy/Z+voKhMwE2B6xhQGcyTh/612KIgTThXWkGquJgewlL8bAM8WMleu7riiBNNBCRkiEnZGn2rVBQgIOH2ujgTLA2hhodRZj3ZM+95KaAC5nFH102FrYXuoLdzIXSdl+61cQ=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_ERROR"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 279,
+   "candidatesTokenCount": 139,
+   "totalTokenCount": 1239,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 279
+    }
+   ],
+   "toolUsePromptTokenCount": 821,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 821
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "J1AEa-ruJ6-8vdIPrfKEoQk"
+ }
+}

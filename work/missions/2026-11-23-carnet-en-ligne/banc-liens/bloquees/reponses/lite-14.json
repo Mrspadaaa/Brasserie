@@ -1,0 +1,55 @@
+{
+ "n": 14,
+ "url": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+ "phase": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1546,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"illisible\",\n  \"caracteristiques\": [],\n  \"devise\": null,\n  \"nom\": null,\n  \"origine\": null,\n  \"photo\": null,\n  \"prix\": null,\n  \"source\": \"https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter\",\n  \"taxe\": null\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfROLCbGc22a4jhwwV3j0kP5i5KJ8Xx8tBozNwYxvJLbyLanLzMYjgBmm4q05uUCjPo47I18FiPK7NcizhF2fjGcHIX0hwk14Yw8Cdxc2lXZKLcNeCHEXJfS3Q8EPuCEJ9VQt/ZoQ9ys+gQ++znOyQmNRPOcjdK0Ny9OlqRjimwHw+XjLfXCCiQ=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_ERROR"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 277,
+   "candidatesTokenCount": 135,
+   "totalTokenCount": 1227,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 277
+    }
+   ],
+   "toolUsePromptTokenCount": 815,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 815
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "J1AEa-_wJ7v1vdIP1o-2aA"
+ }
+}

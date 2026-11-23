@@ -1,0 +1,40 @@
+{
+ "n": 25,
+ "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+ "phase": "recherche",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1742,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"fiche\",\n  \"caracteristiques\": [\n    {\n      \"nom\": \"Einbautiefe\",\n      \"valeur\": \"170 mm\"\n    },\n    {\n      \"nom\": \"Gewicht (Netto)\",\n      \"valeur\": \"580 g\"\n    },\n    {\n      \"nom\": \"Durchmesser_Rohranschluss\",\n      \"valeur\": \"110 Millimeter (mm)\"\n    }\n  ],\n  \"devise\": \"CHF\",\n  \"nom\": \"Kellerablauf - 170 mm, Kunststoff, Durchmesser_Rohranschluss: 110 Millimeter (mm)\",\n  \"origine\": \"meme-boutique\",\n  \"photo\": \"https://media.cdn.bauhaus/m/490281/prod_large_square.webp\",\n  \"prix\": 29.95,\n  \"source\": \"https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267\",\n  \"taxe\": \"ttc\"\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfRNcadBwhWjI8pWUrDF9+87nXrXTT5cyecdbHKk3pYHMLcgpmBSKxX3PkF5LMkRYMOFgGJBdpZedtx9FF1FkBFUyWkHvhenoeBjHyfYPX7Lhg9DP4q1JkFpBIlqr886E0wf0tYxrfHwryOJeB219WIbbdsq1tj4cRSaJUDiWIYvxBD7Pccyz7Q=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 281,
+   "candidatesTokenCount": 259,
+   "totalTokenCount": 540,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 281
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "X1AEa73YMv3PvdIPhvOu6QI"
+ }
+}

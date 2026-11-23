@@ -1,0 +1,100 @@
+[
+ {
+  "n": 6,
+  "ok": false,
+  "echec": "bloquee",
+  "detail": "défi ou refus (http 403)",
+  "ms": 4684,
+  "lancementMs": 386,
+  "picMo": 616,
+  "page": null
+ },
+ {
+  "n": 7,
+  "ok": false,
+  "echec": "bloquee",
+  "detail": "défi ou refus (http 403)",
+  "ms": 8320,
+  "lancementMs": 176,
+  "picMo": 575,
+  "page": null
+ },
+ {
+  "n": 9,
+  "ok": true,
+  "echec": null,
+  "detail": null,
+  "ms": 8936,
+  "lancementMs": 193,
+  "picMo": 466,
+  "page": {
+   "statut": "illisible",
+   "valeurs": 0,
+   "octets": 188860,
+   "urlFinale": "https://www.brewtools.com/search?q=brewing+system+accessories",
+   "enteteDefi": false
+  }
+ },
+ {
+  "n": 14,
+  "ok": false,
+  "echec": "bloquee",
+  "detail": "défi ou refus (http 403)",
+  "ms": 4693,
+  "lancementMs": 184,
+  "picMo": 593,
+  "page": null
+ },
+ {
+  "n": 24,
+  "ok": false,
+  "echec": "introuvable",
+  "detail": "http 404",
+  "ms": 5768,
+  "lancementMs": 201,
+  "picMo": 297,
+  "page": null
+ },
+ {
+  "n": 25,
+  "ok": true,
+  "echec": null,
+  "detail": null,
+  "ms": 8451,
+  "lancementMs": 204,
+  "picMo": 523,
+  "page": {
+   "statut": "lue",
+   "nom": "Kellerablauf",
+   "prix": 31.95,
+   "devise": "CHF",
+   "taxe": "ttc",
+   "photo": "https://media.cdn.bauhaus/m/490281/prod_large_square.webp",
+   "valeurs": 0,
+   "octets": 465743,
+   "urlFinale": "https://www.bauhaus.ch/de/bodenablaeufe/kellerablauf/p/13503267",
+   "enteteDefi": false
+  }
+ },
+ {
+  "n": 1,
+  "ok": true,
+  "echec": null,
+  "detail": null,
+  "ms": 9837,
+  "lancementMs": 202,
+  "picMo": 694,
+  "page": {
+   "statut": "lue",
+   "nom": "Mastro Armoire réfrigérée positive inox - 600 l - froid ventilé",
+   "prix": 1820.9,
+   "devise": "CHF",
+   "taxe": "ht",
+   "photo": "https://www.gastro-held.ch/cdn/shop/files/218105-BMA0060_e2a007b1-1a8e-4c1b-91f8-1dc4ab7a58c8.webp?v=1784032984&width=550",
+   "valeurs": 18,
+   "octets": 1606810,
+   "urlFinale": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-positive-inox-600-l-froid-ventile-bma0060",
+   "enteteDefi": false
+  }
+ }
+]

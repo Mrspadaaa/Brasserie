@@ -1,0 +1,142 @@
+{
+ "avant": {
+  "liens": 63,
+  "prixSansJsonLd": "19/22 (86 %)",
+  "caracteristiquesSansJsonLd": "13/16 (81 %)",
+  "photoSansJsonLd": "21/24 (88 %)",
+  "nom": "56/63 (89 %)",
+  "prixAffiche": "54/57 (95 %)",
+  "photoAffichee": "56/59 (95 %)",
+  "caracteristiques": "44/48 (92 %)",
+  "htDit": "9/9 (100 %)",
+  "livraisonCH": "15/23 (65 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "apres": {
+  "liens": 63,
+  "prixSansJsonLd": "22/22 (100 %)",
+  "caracteristiquesSansJsonLd": "13/16 (81 %)",
+  "photoSansJsonLd": "22/24 (92 %)",
+  "nom": "61/63 (97 %)",
+  "prixAffiche": "57/57 (100 %)",
+  "photoAffichee": "57/59 (97 %)",
+  "caracteristiques": "44/48 (92 %)",
+  "htDit": "9/9 (100 %)",
+  "livraisonCH": "15/23 (65 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "justeAvant": "53/63 (84 %)",
+ "justeApres": "55/63 (87 %)",
+ "lignes": [
+  {
+   "n": 6,
+   "voie": "url_context (Flash-Lite)",
+   "avant": {
+    "statut": "bloquee",
+    "nom": "?",
+    "prix": "?",
+    "photo": "?",
+    "caract": ""
+   },
+   "apres": {
+    "statut": "lue",
+    "nom": "=",
+    "prix": "=",
+    "photo": "?",
+    "caract": "·"
+   }
+  },
+  {
+   "n": 7,
+   "voie": "fermée : nom de l'adresse seulement",
+   "avant": {
+    "statut": "bloquee",
+    "nom": "?",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   },
+   "apres": {
+    "statut": "bloquee",
+    "nom": "=",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   }
+  },
+  {
+   "n": 9,
+   "voie": "Chrome : redirigé vers la recherche",
+   "avant": {
+    "statut": "introuvable",
+    "nom": "·",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   },
+   "apres": {
+    "statut": "introuvable",
+    "nom": "·",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   }
+  },
+  {
+   "n": 14,
+   "voie": "fermée : nom de l'adresse seulement",
+   "avant": {
+    "statut": "bloquee",
+    "nom": "?",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   },
+   "apres": {
+    "statut": "bloquee",
+    "nom": "=",
+    "prix": "·",
+    "photo": "·",
+    "caract": ""
+   }
+  },
+  {
+   "n": 24,
+   "voie": "url_context (Flash-Lite)",
+   "avant": {
+    "statut": "bloquee",
+    "nom": "?",
+    "prix": "?",
+    "photo": "?",
+    "caract": ""
+   },
+   "apres": {
+    "statut": "lue",
+    "nom": "=",
+    "prix": "=",
+    "photo": "?",
+    "caract": "·"
+   }
+  },
+  {
+   "n": 25,
+   "voie": "Chrome sans écran + IA sur le texte",
+   "avant": {
+    "statut": "bloquee",
+    "nom": "?",
+    "prix": "?",
+    "photo": "?",
+    "caract": "?"
+   },
+   "apres": {
+    "statut": "lue",
+    "nom": "=",
+    "prix": "=",
+    "photo": "=",
+    "caract": "?"
+   }
+  }
+ ]
+}

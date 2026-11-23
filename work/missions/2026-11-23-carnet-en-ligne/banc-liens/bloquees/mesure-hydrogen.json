@@ -1,0 +1,31 @@
+[
+ {
+  "n": 9,
+  "phase": "hydrogen",
+  "http": 200,
+  "ms": 8734,
+  "chf": 0.00725,
+  "entree": 2117,
+  "sortie": 350,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [
+   "https://www.brewtools.com/search?q=brewing+system+accessories → URL_RETRIEVAL_STATUS_ERROR"
+  ],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "illisible",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": "meme-page",
+   "photo": null,
+   "prix": null,
+   "source": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+   "taxe": null
+  },
+  "texte": ""
+ }
+]
