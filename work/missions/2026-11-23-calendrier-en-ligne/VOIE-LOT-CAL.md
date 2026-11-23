@@ -1,6 +1,7 @@
 # Lot Calendrier — à faire maintenant (court ; historique : VOIE-LOT-CAL-historique.md, ne pas le lire)
 
 En ligne : TOUR 22 (1b9b12529, index-DKzUIh2w.js). Copie : lot-cal (claude/lot-cal).
+Fichier réservé à un autre agent pour l instant : `entete/BandeSemaines.tsx` (bande vide à 20 mois) — ne pas y écrire. Cette nuit : reconstruction du cœur sur une échelle standard (D444) ; tes invariants et ton test par modèle (point 0) en seront la base : garde-les propres et réutilisables.
 Cycle : test rouge → correction → test vert → commit → « PRÊT À METTRE EN LIGNE <hash> » (to: main) → « EN LIGNE » → preuve en
 ligne (Chrome 9222, ta page, 390, ZZ TEST, captures entières regardées). Jamais fermer Chrome.
 
