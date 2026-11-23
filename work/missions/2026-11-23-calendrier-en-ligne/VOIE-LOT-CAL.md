@@ -69,3 +69,9 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 ## Ajout 23.11 10:05 — D442 (son choix) : repère d'aujourd'hui = B « La colonne bleue monte »
 - Remplace le trait du tour 18 : la colonne bleue d'aujourd'hui des rangées traverse bande et courbe ; hors vue : dégradé bleu
   au bord + « ‹ auj. ». Maquette : repere-aujourdhui/img/b-*.png (règle n° 1 : telle quelle). Avec D441, même cycle.
+
+## Ajout 23.11 10:40 — après le tour 20 (« Vraiment beaucoup mieux ! »)
+- PRIORITÉ : CAL-JOUR-EXACT : « le choix d'un jour tombe pas exactement sur le jour » (1036-3sem-jour.jpg) : au grain jour, jour
+  annoncé = écrit = colonne SOUS le doigt, sans tolérance (plancher, pas arrondi ; cf. ajout « arrondi du lâcher »).
+- 1038-ttt-tirage.jpg : pendant le tirage du bord à 10 sem., la barre se vide de son nom et le fantôme part loin : à regarder.
+- Bandeau « Enregistrement sur le serveur… » encore là à 10:38, sur la période, ± et la durée : remonte en priorité 2.
