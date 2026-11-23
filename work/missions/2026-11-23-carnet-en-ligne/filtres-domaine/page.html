@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet : filtres par domaine · 23.11</title>
+<style>
+  :root { --fond: #f6f4ef; --carte: #fff; --encre: #1d1d1d; --doux: #5c5c5c; --rose: #e0287d; --vert: #2f7a3a;
+    --local: #b5532d; --brasserie: #2e6fa3; --meuble: #8b5e34; --outils: #555; --papiers: #6b4fa0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--encre); font: 16px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1220px; margin: 0 auto; padding: 14px 12px 40px; }
+  h1 { font-size: 24px; margin: 4px 0 6px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 6px 0; }
+  .doux { color: var(--doux); font-size: 15px; }
+  .rose { color: var(--rose); font-weight: 700; }
+  blockquote { margin: 4px 0 8px; padding: 2px 0 2px 10px; border-left: 3px solid var(--encre); font-style: italic; font-size: 15px; }
+  #a-choisir { background: var(--carte); border: 2px solid var(--encre); border-radius: 14px; padding: 12px 14px; margin: 10px 0 22px; }
+  #a-choisir ol { margin: 6px 0; padding-left: 0; list-style: none; }
+  #a-choisir li { padding: 7px 0; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  #a-choisir li:first-child { border-top: 0; }
+  #a-choisir a { color: var(--encre); font-weight: 700; }
+  .reco { display: inline-block; background: var(--vert); color: #fff; font-weight: 700; font-size: 14px; border-radius: 999px; padding: 1px 10px; }
+  section.q { margin: 0 0 30px; }
+  .domaines { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 10px 0 14px; }
+  .dom { background: var(--carte); border: 1px solid #ddd8cc; border-radius: 12px; padding: 10px 12px; }
+  .dom .nom { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+  .dom .nom i { font-style: normal; font-size: 14px; background: #eeece6; color: #555; border-radius: 999px; padding: 0 8px; margin-left: auto; }
+  .dom p { font-size: 15px; margin: 4px 0 0; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; background: var(--carte); border-radius: 12px; overflow: hidden; font-size: 15px; }
+  th, td { text-align: left; padding: 7px 8px; border-top: 1px solid #eee; vertical-align: top; overflow-wrap: anywhere; }
+  th { background: #efece5; font-size: 14px; }
+  td .etat { display: block; color: var(--doux); font-size: 14px; }
+  .col-t { width: 52%; } .col-p { width: 22%; } .col-d { width: 26%; }
+  .tag { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+  .doute { background: #fff4d6; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 10px; align-items: start; }
+  figure { margin: 0; background: var(--carte); border: 1px solid #ddd8cc; border-radius: 12px; overflow: hidden; }
+  figure.recommande { border: 3px solid var(--vert); }
+  figure img { display: block; width: 100%; height: auto; border-bottom: 1px solid #eee; }
+  figure img + img { border-top: 6px solid var(--fond); }
+  .tete { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 700; font-size: 17px; }
+  .tete .lettre { display: inline-grid; place-items: center; min-width: 28px; height: 28px; border-radius: 8px; background: var(--encre); color: #fff; padding: 0 4px; }
+  .tete.actuel .lettre { background: #999; }
+  .txt { padding: 8px 12px 12px; font-size: 15px; }
+  .txt p { margin: 4px 0; }
+  svg.pi { flex: none; }
+</style>
+</head>
+<body>
+<main>
+<h1>Carnet : filtres par domaine · 23.11</h1>
+<p class="doux">Ta liste des carnets, en ligne (tour 12). Les domaines sont tirés de tes 20 carnets : les 19 du Planning et Chambre froide. Mini maquettes statiques à 390 px ; <span class="rose">pointillé rose</span> : ce qui change.</p>
+<blockquote>« J'ai l'impression qu'il sont pas terribles ceux suggéré de base. Ça serait plus complexe mais plutôt filtre: brasserie, local, meuble, outils ... Ce genre de filtre » (23.11)</blockquote>
+
+<section id="a-choisir">
+  <h2>À choisir</h2>
+  <ol>
+    <li><a href="#va">A · Une rangée de puces de domaines, avec leur nombre</a> <span class="reco">recommandé</span></li>
+    <li><a href="#vb">B · Les domaines en sections repliables, sans filtre</a></li>
+    <li><a href="#vc">C · Un seul bouton « Domaine ▾ » qui ouvre une feuille</a></li>
+    <li><a href="#vd">D · Puces de domaines, et l'état en second rang discret</a></li>
+    <li><a href="#domaines">Les domaines eux-mêmes : Local, Brasserie, Meuble, Outils, Papiers</a> <span>à garder, renommer ou compléter</span></li>
+  </ol>
+  <p class="doux">Pour toutes les variantes : l'IA pose le domaine quand elle range un carnet, et tu le changes d'un toucher dans le carnet (dernière image). La recherche C reste.</p>
+  <p class="doux">Réponds en une ligne, par exemple « A » ou « A, et Hotte en Brasserie ».</p>
+</section>
+
+<section class="q" id="domaines">
+  <h2>Les domaines, tirés de tes carnets</h2>
+  <p class="doux">Cinq domaines, tes quatre mots plus Papiers. Un domaine sans carnet ne s'affiche pas : Outils apparaît au premier carnet d'outil.</p>
+  <div class="domaines">
+    <div class="dom"><div class="nom"><svg class="pi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b5532d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg>Local<i>10</i></div><p>Le bâtiment : sol, murs, eau et éviers, électricité, hotte, sécurité.</p></div>
+    <div class="dom"><div class="nom"><svg class="pi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e6fa3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a6 2 0 0 1 12 0v7l-6 5.5L6 12z"/><path d="M6 12v10M18 12v10"/><path d="M12 17.5V21"/></svg>Brasserie<i>4</i></div><p>Le matériel qui fait la bière : moulin, froid, cuves, pompes, embouteillage.</p></div>
+    <div class="dom"><div class="nom"><svg class="pi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5e34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="17" rx="1.5"/><path d="M12 2.5v17"/><path d="M10 10v2.5M14 10v2.5"/><path d="M6.5 19.5V22M17.5 19.5V22"/></svg>Meuble<i>4</i></div><p>Le rangement : étagères, armoires.</p></div>
+    <div class="dom"><div class="nom"><svg class="pi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b4fa0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>Papiers<i>2</i></div><p>Dossiers, autorisations, assurances.</p></div>
+    <div class="dom"><div class="nom"><svg class="pi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>Outils<i>0</i></div><p>Ce qui se tient en main : perceuse, clés, matériel de pose. Aucun carnet aujourd'hui.</p></div>
+  </div>
+  <p class="doux">Chaque carnet et son domaine. La catégorie du Planning donne le domaine, sauf « Équipements », départagé par le titre. Surligné : un rangement discutable.</p>
+  <table>
+    <colgroup><col class="col-t"><col class="col-p"><col class="col-d"></colgroup>
+    <thead><tr><th>Carnet (état)</th><th>Planning</th><th>Domaine</th></tr></thead>
+    <tbody>
+      <tr><td>Chambre froide<span class="etat">À comparer · ton carnet</span></td><td>—</td><td class="tag" style="color:var(--brasserie)">Brasserie</td></tr>
+      <tr><td>Achat brasserie : moulin à malt + bac etc.<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--brasserie)">Brasserie</td></tr>
+      <tr><td>Frigo + congel<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--brasserie)">Brasserie</td></tr>
+      <tr><td>Embouteillage — station complète (2027)<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--brasserie)">Brasserie</td></tr>
+      <tr><td>Sol, murs &amp; évacuation (béton, revêtement, peinture food-safe)<span class="etat">Fait</span></td><td>Structure</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Robinetterie &amp; tuyaux raccords (fait par soi-même)<span class="etat">Fait</span></td><td>Plomberie</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Achat &amp; installation évier principal + douchette<span class="etat">Fait</span></td><td>Plomberie</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Refaire évier — bloqué (attendre vis pieds)<span class="etat">Fait</span></td><td>Structure</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr class="doute"><td>Sol — matières premières + outils (peut faire en 2x)<span class="etat">Idée · pas Outils : c'est le sol</span></td><td>Structure</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr class="doute"><td>Hotte recyclage<span class="etat">Idée · bâtiment, ou Brasserie ?</span></td><td>Équipements</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Extincteur<span class="etat">Idée</span></td><td>Sécurité</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Installation électrique 27A (2027)<span class="etat">Idée</span></td><td>Électricité</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>2ème évier (2027)<span class="etat">Idée</span></td><td>Plomberie</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr><td>Jalon — Peut brasser au local (sans autorisation vente)<span class="etat">Idée</span></td><td>Jalon</td><td class="tag" style="color:var(--local)">Local</td></tr>
+      <tr class="doute"><td>Rangement / étagères inox &amp; déménagement<span class="etat">Fait · le Planning dit Structure</span></td><td>Structure</td><td class="tag" style="color:var(--meuble)">Meuble</td></tr>
+      <tr><td>Armoire de rangement malte<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--meuble)">Meuble</td></tr>
+      <tr><td>Armoire de rangement extérieur<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--meuble)">Meuble</td></tr>
+      <tr><td>Armoire de rangement toxique<span class="etat">Idée</span></td><td>Équipements</td><td class="tag" style="color:var(--meuble)">Meuble</td></tr>
+      <tr><td>Conformité — dossiers SAAV + SEn + assurances<span class="etat">Idée</span></td><td>Administratif</td><td class="tag" style="color:var(--papiers)">Papiers</td></tr>
+      <tr><td>Jalon — Conformité complète — Peut vendre officiellement<span class="etat">Idée</span></td><td>Jalon</td><td class="tag" style="color:var(--papiers)">Papiers</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="q" id="variantes">
+  <h2>Les variantes, sur ta liste</h2>
+  <p class="doux">Vignettes : celles vues en ligne ; une lettre quand les captures ne montrent pas la vignette du carnet.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/actuel-liste.png" alt="Liste des carnets en ligne, puces À comparer, Idée, Choisi" width="390" height="844">
+      <div class="txt"><p>Recherche, puis trois puces d'état : À comparer, Idée, Choisi. La liste est déjà rangée par état en sections.</p></div>
+    </figure>
+    <figure class="recommande" id="va">
+      <div class="tete"><span class="lettre">A</span>Puces de domaines <span class="reco">recommandé</span></div>
+      <img src="img/a-puces.png" alt="Variante A : Local touché" width="780" height="1688">
+      <div class="txt">
+        <p><b>Ce qui change :</b> les puces d'état laissent la place aux domaines, avec leur nombre. Un toucher sur Local : ses 10 carnets, rangés par état comme aujourd'hui.</p>
+        <p><b>Puces d'état :</b> retirées ; l'état reste l'ordre de la liste (À comparer, Idée, Faits).</p>
+        <p><b>Pourquoi :</b> tes mots tels quels, un toucher, et le nombre se lit avant de toucher.</p>
+      </div>
+    </figure>
+    <figure id="vb">
+      <div class="tete"><span class="lettre">B</span>Sections repliables</div>
+      <img src="img/b-sections.png" alt="Variante B : Brasserie ouvert, les autres repliés" width="780" height="1688">
+      <div class="txt">
+        <p><b>Ce qui change :</b> plus de filtre ; la liste est rangée par domaine. Un domaine replié dit « 6 idées · 4 faits » ; un toucher l'ouvre.</p>
+        <p><b>Puces d'état :</b> retirées ; l'état devient une marque sur la ligne (à comparer, fait grisé en bas).</p>
+      </div>
+    </figure>
+    <figure id="vc">
+      <div class="tete"><span class="lettre">C</span>Un bouton « Domaine ▾ »</div>
+      <img src="img/c-bouton.png" alt="Variante C : Meuble posé" width="780" height="1688">
+      <img src="img/c-feuille.png" alt="Variante C : la feuille Domaine ouverte" width="780" height="1688">
+      <div class="txt">
+        <p><b>Ce qui change :</b> la recherche prend la largeur ; un bouton ouvre une feuille avec les domaines et leur nombre. Le domaine posé reste écrit sur le bouton.</p>
+        <p><b>Puces d'état :</b> rangées dans la même feuille, sous les domaines.</p>
+      </div>
+    </figure>
+    <figure id="vd">
+      <div class="tete"><span class="lettre">D</span>Domaines, et l'état dessous</div>
+      <img src="img/d-deux-rangs.png" alt="Variante D : Brasserie et Idée posés" width="780" height="1688">
+      <div class="txt">
+        <p><b>Ce qui change :</b> les puces de domaines de A, plus un second rang en texte : l'état, compté dans le domaine. Ici Brasserie, puis Idée : 3 carnets.</p>
+        <p><b>Puces d'état :</b> gardées, mais en texte discret ; un état à 0 est grisé.</p>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="poser">
+  <h2>Qui pose le domaine</h2>
+  <div class="grille">
+    <figure>
+      <div class="tete"><span class="lettre">·</span>Dans le carnet, pour toutes les variantes</div>
+      <img src="img/carnet-domaine.png" alt="Chambre froide : le domaine Brasserie, menu ouvert" width="780" height="1688">
+      <div class="txt">
+        <p>L'IA pose le domaine quand elle range un carnet, comme le titre et la vignette. Les 19 du Planning le prennent de leur catégorie.</p>
+        <p>Un toucher sur la pastille ouvre les cinq domaines ; ton choix passe avant celui de l'IA.</p>
+      </div>
+    </figure>
+  </div>
+</section>
+</main>
+</body>
+</html>
