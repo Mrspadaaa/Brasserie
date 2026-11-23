@@ -16,7 +16,7 @@ import { magasinFirestore, type MagasinCarnets } from '../../services/carnetsSto
 import { estLienSeul, lireCarnets, lireMessages, nomArticle, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
 import {
   accepterProposition, archiverCarnet, basculerVeille, changerGenre, changerSorte, choisir, creerCarnet, deplacer, deplacerArticles, detacherPlan, fusionnerNotes, garderAPart,
-  etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, planAuCalendrier, avecPrixEstime, idPlanDuCarnet, poserSortie, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
+  etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, planAuCalendrier, avecPrixEstime, idPlanDuCarnet, poserSortie, planOuvertDuCarnet, planSuitCarnet, planSuitChoix, poserPrixArticle, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
 import { avecArticleTypo, consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
@@ -282,6 +282,13 @@ const lireFinances = (): FinancesCarnet => ({
 /** h1, tour 2 (D2) : l'ancien carnet de l'Atelier, lu en entier (lecture seule). */
 const lireCreatifs = (): CreativeItem[] => StorageService.getCreativeItems();
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
+/** L-13 : l'entrée d'historique du carnet (même profondeur que l'écran, comme Plus). */
+const MARQUE_HISTOIRE = 'laffinee-carnet';
+/** L-13 : l'écran d'où l'on vient : la fiche, Comparer, Choisir, Renommer et Supprimer remontent au carnet ; le carnet, à la liste. */
+function vueParente(v: Vue): Vue {
+  if (v.sorte === 'liste' || v.sorte === 'carnet') return { sorte: 'liste' };
+  return { sorte: 'carnet', id: v.id };
+}
 /** G14 : le lien que tient le presse-papier, seulement si c'est un lien seul ; sans permission ou sans API, rien (refus silencieux). */
 async function lirePresse(): Promise<string | undefined> {
   try {
@@ -518,7 +525,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const jetonJointe = useRef(0);
   const [enTete, setEnTete] = useState<string | undefined>();
   const [vientDEtreCree, setVientDEtreCree] = useState<string | null>(null);
-  const [supprime, setSupprime] = useState<{ titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[] } | null>(null);
+  const [supprime, setSupprime] = useState<{ titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[]; plan?: FinancialPlan } | null>(null);
   const [noteSupprimee, setNoteSupprimee] = useState<{ id: string; inverse: EcritureCarnet[] } | null>(null);
   const [feuille, setFeuille] = useState<string | null>(null);
   const [edition, setEdition] = useState<string | null>(null);
@@ -579,6 +586,27 @@ export function CarnetsVue(p: CarnetsVueProps) {
   useEffect(() => { setNoteSupprimee(null); }, [idOuvert]);
   // Le carnet ouvert a disparu (supprimé ailleurs) : retour à la liste.
   useEffect(() => { if (idOuvert && !ouvert) setVue({ sorte: 'liste' }); }, [idOuvert, ouvert]);
+  /* L-13 (CA12-M1-4, M2-7) : le retour du téléphone remonte d'un écran (article, Comparer, Choisir, Renommer, Supprimer → carnet ; carnet →
+     liste) au lieu de quitter l'app. Comme Plus (App.tsx) : une entrée d'historique à la même profondeur, marquée ; la pile des pages
+     (useFullScreenRoute) n'en voit rien. Quitter le carnet par son bouton retire l'entrée (`back`), sans rien dépiler d'autre. */
+  const histoire = useRef({ pousse: false, retourInterne: false });
+  useEffect(() => {
+    const h = histoire.current;
+    if (vue.sorte !== 'liste' && !h.pousse) { window.history.pushState({ ...(window.history.state ?? {}), [MARQUE_HISTOIRE]: true }, ''); h.pousse = true; }
+    else if (vue.sorte === 'liste' && h.pousse) { h.pousse = false; h.retourInterne = true; window.history.back(); }
+  }, [vue.sorte]);
+  useEffect(() => {
+    const surRetour = () => {
+      const h = histoire.current;
+      if (h.retourInterne) { h.retourInterne = false; return; }
+      /* une page posée sur le carnet (Plus) se ferme : l'entrée du carnet est retrouvée, rien à remonter */
+      if (!h.pousse || (window.history.state as Record<string, unknown> | null)?.[MARQUE_HISTOIRE]) return;
+      h.pousse = false;
+      setVue(v => vueParente(v));
+    };
+    window.addEventListener('popstate', surRetour);
+    return () => window.removeEventListener('popstate', surRetour);
+  }, []);
   // Un retour « ✓ … · Annuler » reste au moins 8 s (Q18 : 5 s au moins), puis s'efface.
   useEffect(() => { if (!retour) return; const t = setTimeout(() => setRetour(null), 8000); return () => clearTimeout(t); }, [retour]);
 
@@ -1089,9 +1117,27 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* Critique 7, n° 5 : `estRealise` gouverne la liste, la fiche et Choisir ; un plan payé se dit réalisé et « Voir » ouvre Réalisés. */
   const sortieV = (c: CarnetDoc) => {
     const e = etatSortie(c, finances.plans, finances.transactions, finances.payments);
-    return e && c.carnet.sortie ? { ...c.carnet.sortie, etat: e.sorte, realiseLe: e.sorte === 'realise' ? e.le : undefined } : null;
+    return e && c.carnet.sortie ? { ...c.carnet.sortie, etat: e.sorte, realiseLe: e.sorte === 'realise' ? e.le : undefined, ...(e.sansAchat ? { sansAchat: true as const } : {}) } : null;
   };
-  const enV = (c: CarnetDoc): CarnetV => { const s = sortieV(c); return s ? versV({ ...c, carnet: { ...c.carnet, sortie: s } } as CarnetDoc) : versV(c); };
+  /** L-11 : le plan d'À venir que le carnet suit (brouillon ou actif) ; sa date et son prix sont ceux que le carnet dit. */
+  const planOuvert = (c: CarnetDoc) => planOuvertDuCarnet(c, finances.plans, finances.transactions, finances.payments);
+  /** L-12 : réalisé ou archivé, le projet ne se pose plus au calendrier ni ne se place. */
+  const sortieFinie = (c: CarnetDoc) => { const e = sortieV(c)?.etat; return e === 'realise' || e === 'archive'; };
+  /** L-11 : la date dite par le carnet est celle de son plan (déplacé au Calendrier ou dans À venir), avec sa précision. */
+  const avecDateDuPlan = (c: CarnetDoc): CarnetDoc => {
+    const pl = planOuvert(c);
+    return pl && /^\d{4}-\d{2}-\d{2}/.test(pl.date ?? '') ? { ...c, date: pl.date.slice(0, 10), precision: pl.upgrade?.datePrecision === 'day' ? 'semaine' : 'mois' } : c;
+  };
+  const enV = (c: CarnetDoc): CarnetV => { const s = sortieV(c); const d = avecDateDuPlan(c); return s ? versV({ ...d, carnet: { ...c.carnet, sortie: s } } as CarnetDoc) : versV(d); };
+  /** L-11 : le prix estimé que dit le carnet : le montant de son plan s'il en suit un, sinon le sien. */
+  const prixDuCarnet = (c: CarnetDoc): number | undefined => {
+    const pl = planOuvert(c);
+    if (pl) return pl.amountCents > 0 ? pl.amountCents : undefined;
+    return typeof c.estimatedCost === 'number' && c.estimatedCost > 0 ? Math.round(c.estimatedCost * 100) : undefined;
+  };
+  const ecrirePlanLie = (pl: FinancialPlan) => (p.ecrirePlan ?? ((x: FinancialPlan) => FinanceService.saveUpgrade(x)))(pl);
+  /** L-10 : après un choix ou un prix d'article, le plan suivi passe « prix trouvé » et se chiffre s'il n'avait aucun montant (Q-1 attend pour le reste). */
+  const planSuitLeChoix = async (c: CarnetDoc) => { const pl = planOuvert(c); if (!pl) return; const n = planSuitChoix(pl, c); if (n !== pl) await ecrirePlanLie(n); };
   const voirSortie = (c: CarnetDoc | undefined) => (c && sortieV(c)?.etat === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.());
   /* R26 : le tableau vient de `comparer.ts`, passé tel quel aux vues ; `null` à 0 ou 1 article. */
   const tableauV = ouvert ? tableauDe(ouvert) : null;
@@ -1301,7 +1347,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
     ecran = <ListeCarnets rangeEnCours={rangeEnCours} carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
-      supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); setSupprime(null); } } : null}
+      supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
       enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>}
       onOuvrir={id => { setVue({ sorte: 'carnet', id }); setRetour(null); }}
       onCollerLien={id => { setVue({ sorte: 'carnet', id }); setTimeout(() => champRef.current?.focus(), 0); }}
@@ -1310,7 +1356,18 @@ export function CarnetsVue(p: CarnetsVueProps) {
   } else if (vue.sorte === 'article') {
     const a = ouvert.carnet.articles.find(x => x.id === vue.articleId);
     const ligne = tableauV?.lignes.find(l => l.articleId === vue.articleId);
-    ecran = a ? <FicheArticle article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
+    /* L-16 : l'ordre du tableau (articles en lice), sinon celui du carnet ; balayer ou ‹ › passe à l'article voisin */
+    const ordre = (() => { const t = (tableauV?.lignes ?? []).filter(l => !l.ecarte).map(l => l.articleId); return t.includes(vue.articleId) ? t : ouvert.carnet.articles.map(x => x.id); })();
+    const ici = ordre.indexOf(vue.articleId);
+    const voisin = (d: number) => { const id = ordre[ici + d]; return id ? () => setVue({ sorte: 'article', id: ouvert.id, articleId: id }) : undefined; };
+    const suivant = voisin(1), precedent = voisin(-1);
+    ecran = a ? <FicheArticle key={a.id} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
+      {...(suivant ? { onSuivant: suivant } : {})} {...(precedent ? { onPrecedent: precedent } : {})}
+      onPrix={centimes => {
+        const r = appliquer(poserPrixArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, centimes }));
+        const doc = r?.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined;
+        if (doc && ouvert.carnet.choix?.articleId === a.id) void planSuitLeChoix(doc.doc);
+      }}
       facon={ouvert.carnet.facons.find(f => f.id === a.faconId)} {...(ligne?.rang ? { rang: ligne.rang, sur: tableauV!.lignes.filter(l => !l.ecarte).length } : {})}
       choisi={ouvert.carnet.choix?.articleId === a.id}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
@@ -1330,7 +1387,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       ecran = <Choisir etape="choisi" titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
         facon={ouvert.carnet.facons.find(f => f.id === (choix.faconId ?? a?.faconId))} ecartes={choix.ecartes.map(e => ({ nom: nom(e.articleId), raison: e.raison }))}
         remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={sortieV(ouvert)}
-        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} onPlacer={() => placer(ouvert)} />;
+        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} {...(sortieFinie(ouvert) ? {} : { onPlacer: () => void placer(ouvert) })} />;
     } else {
       const rangees = (tableauV?.lignes ?? []).filter(l => !l.ecarte);
       /* critique 6, n° 4 : « Retenir la hotte » : le premier de cette façon (g05-11), sinon le premier du tableau */
@@ -1357,6 +1414,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       liens={liensQuiRetiennent(c, finance.plans, finance.transactions, finance.payments)}
       proche={proche ? { titre: proche.titre, onDeplacer: () => { appliquer(deplacerArticles(magasin.lire(), { depuis: c.id, vers: proche.carnetId, articleIds: enVeille })); } } : null}
       onDetacher={() => { appliquer(detacherPlan(magasin.lire(), { carnetId: c.id, ...finance })); }}
+      {...(/* L-14 : un plan sans facture liée part avec le carnet, d'un toucher ; Annuler rend les deux */
+        liensQuiRetiennent(c, finance.plans, finance.transactions, finance.payments).every(l => !(finance.transactions ?? []).some(t => t.finance?.planId === l.planId))
+          ? { onSupprimerAvecPlan: (planId: string) => void supprimerAvecPlan(c, planId) } : {})}
       onArchiver={() => { const r = appliquer(archiverCarnet(magasin.lire(), { carnetId: c.id, le: maintenant().toISOString(), raison: 'plan réalisé' })); if (r) { setVue({ sorte: 'liste' }); setRetour({ bandeau: { sorte: 'archive', titre: c.title }, inverse: r.inverse }); } }}
       onSupprimer={() => { const r = appliquer(supprimerCarnet(magasin.lire(), { carnetId: c.id, ...finance })); if (r) { setSupprime({ titre: c.title, statut: c.status, inverse: r.inverse }); setVue({ sorte: 'liste' }); } }}
       onGarder={() => setVue({ sorte: 'carnet', id: c.id })} />;
@@ -1398,9 +1458,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
         aujourdhui={jourIso(maintenant())}
         onDater={lundi => dater(c, lundi)}
-        onAuCalendrier={() => auCalendrier(c)}
-        prix={{ centimes: typeof c.estimatedCost === 'number' && c.estimatedCost > 0 ? Math.round(c.estimatedCost * 100) : undefined, semblable: prixSemblable({ nom: c.title }, achatsPasses) }}
-        onPrix={x => { appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' }); }}
+        {...(sortieFinie(c) ? {} : { onAuCalendrier: () => void auCalendrier(c) })}
+        prix={{ centimes: prixDuCarnet(c), semblable: prixSemblable({ nom: c.title }, achatsPasses) }}
+        onPrix={x => {
+          const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' });
+          /* L-11 : le prix posé au carnet est celui de son plan (À venir, Calendrier) */
+          const pl = planOuvert(c);
+          if (r && pl) { const n = planSuitCarnet(pl, { centimes: x }); if (n !== pl) void ecrirePlanLie(n); }
+        }}
         onOuvrirLien={l => (l.sorte === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.())} />
     </>;
   }
@@ -1410,7 +1475,11 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const { date: _d, precision: _p, ...reste } = c; void _d; void _p;
     /* un horizon pose un mois (« vers févr. ») ; « Au calendrier › » pose sa semaine (« cette semaine », puis « S48 ») */
     const doc = (lundi ? { ...reste, date: lundi, precision } : reste) as CarnetDoc;
-    return appliquer({ ok: true, ecritures: [{ op: 'put', doc }], inverse: [{ op: 'put', doc: c }], avis: lundi ? 'Daté' : 'Sans date' });
+    const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc }], inverse: [{ op: 'put', doc: c }], avis: lundi ? 'Daté' : 'Sans date' });
+    /* L-11 : la date posée au carnet est celle de son plan (« Posé sur » d'À venir, la barre du Calendrier) ; « Plus tard » ne le déplace pas */
+    const pl = planOuvert(c);
+    if (r && pl && lundi) { const n = planSuitCarnet(pl, { date: lundi, precision }); if (n !== pl) void ecrirePlanLie(n); }
+    return r;
   }
   /** K2 (« ça l'ajout à la date du jour, ça nous transférer sur le calendrier ») : daté à aujourd'hui s'il ne l'est pas, puis le Calendrier centré sur sa semaine. */
   /*  L-26 (T10-26, « en 1 bouton on a 3 action ») : il pose aussi l'achat prévu du projet (prix connu ou à estimer), et le Calendrier s'ouvre sur lui,
@@ -1421,8 +1490,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const jour = jourIso(maintenant()), le = maintenant().toISOString();
     const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
     const ecrirePlan = p.ecrirePlan ?? ((pl: FinancialPlan) => FinanceService.saveUpgrade(pl));
-    if (!c.date) dater(c, lundiIso(jour), 'semaine');
     const deja = finances.plans.find(x => x.id === idPlanDuCarnet(c.id));
+    if (!c.date && !deja) dater(c, lundiIso(jour), 'semaine');
     const chiffre = deja && deja.status === 'draft' && deja.upgrade?.sourceCarnetId === c.id ? avecPrixEstime(deja, c) : deja;
     const plan = chiffre ?? planAuCalendrier(c, { le, date });
     if (plan !== deja) await ecrirePlan(plan);
@@ -1438,11 +1507,27 @@ export function CarnetsVue(p: CarnetsVueProps) {
   }
 
   /** D419 « Placer » : le Calendrier s'ouvre sur l'achat prévu du choix (clé `PLAN-CARNET-<id>`), qu'on y déplace ; aucune caisse ici (C4). */
-  function placer(c: CarnetDoc) {
-    const plan = planDepuisChoix(c, { le: maintenant().toISOString() });
+  async function placer(c: CarnetDoc) {
+    const le = maintenant().toISOString();
+    const plan = planDepuisChoix(c, { le });
     if (!plan) return;
-    const date = finances.plans.find(x => x.id === plan.id)?.date || plan.date;
+    const existant = finances.plans.find(x => x.id === plan.id);
+    /* L-10, L-12 : un plan supprimé d'À venir est reposé ; un plan suivi prend l'étape et le prix du choix (sans montant seulement, Q-1) */
+    if (!existant) { await ecrirePlanLie(plan); appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le })); }
+    else await planSuitLeChoix(c);
+    const date = existant?.date || plan.date;
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: plan.id } }));
+  }
+
+  /** L-14 (CA12-M1-19, M4-21) : supprimer le carnet ET son plan à venir, sans détour par À venir ; Annuler rend les deux. */
+  async function supprimerAvecPlan(c: CarnetDoc, planId: string) {
+    const pl = finances.plans.find(x => x.id === planId);
+    if (!pl) return;
+    const r = appliquer(supprimerCarnet(magasin.lire(), { carnetId: c.id, plans: finances.plans.filter(x => x.id !== planId), transactions: finances.transactions, payments: finances.payments }));
+    if (!r) return;
+    await (p.retirerPlan ?? ((x: FinancialPlan) => StorageService.deleteUpgradePlan(x)))(pl);
+    setSupprime({ titre: c.title, statut: c.status, inverse: r.inverse, plan: pl });
+    setVue({ sorte: 'liste' });
   }
 
   /** « Envoyer dans À venir » (R32) : un seul plan (clé `PLAN-CARNET-<id>`), puis le carnet le retient ; aucun montant ici. */
@@ -1450,7 +1535,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const le = maintenant().toISOString();
     const plan = planDepuisChoix(c, { le });
     if (!plan) { p.onMessage?.('Choisissez d’abord un article.'); return; }
-    if (!finances.plans.some(x => x.id === plan.id)) await (p.ecrirePlan ?? ((pl: FinancialPlan) => FinanceService.saveUpgrade(pl)))(plan);
+    /* L-10 : un plan déjà posé (Au calendrier) n'était jamais réécrit : il reste « à chercher » au prix d'avant ; il suit le choix */
+    if (!finances.plans.some(x => x.id === plan.id)) await ecrirePlanLie(plan);
+    else await planSuitLeChoix(c);
     const r = appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le }));
     if (r) p.onMessage?.('Dans À venir.');
   }

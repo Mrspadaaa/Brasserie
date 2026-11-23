@@ -35,10 +35,17 @@ export interface ContenuCarnetV {
   choix?: ChoixV; sortie?: SortieV; archive?: { le: string; raison: string };
 }
 /** La sortie vers À venir ; `etat` et `realiseLe` posés par la vue d'après `etatSortie` (critique 7, n° 5). */
-export interface SortieV { planId?: string; le: string; etat?: 'a-venir' | 'realise'; realiseLe?: string }
-/** « Dans À venir depuis le 15 nov. », ou, plan payé, « Réalisé, payé le 16 nov. » : une seule règle pour la liste, la fiche et Choisir. */
+export interface SortieV { planId?: string; le: string; etat?: 'a-venir' | 'realise' | 'archive' | 'supprime'; realiseLe?: string; sansAchat?: true }
+/**
+ * « Dans À venir depuis le 15 nov. », ou, plan payé, « Réalisé, payé le 16 nov. » : une seule règle pour la liste, la fiche et Choisir.
+ * L-12 : marqué réalisé sans achat, « Réalisé, sans achat » ; archivé dans À venir, « Plan archivé dans À venir » ; supprimé, « Plan
+ * supprimé d'À venir » : jamais « Dans À venir » pour un plan qui n'y est plus.
+ */
 export function texteSortie(s: SortieV): string {
+  if (s.etat === 'realise' && s.sansAchat) return 'Réalisé, sans achat';
   if (s.etat === 'realise') { const d = dateCourte(s.realiseLe); return `Réalisé, payé${d ? ` le ${d}` : ''}`; }
+  if (s.etat === 'archive') return 'Plan archivé dans À venir';
+  if (s.etat === 'supprime') return 'Plan supprimé d’À venir';
   const d = dateCourte(s.le);
   return `Dans À venir${d ? ` depuis le ${d}` : ''}`;
 }
@@ -62,14 +69,20 @@ export function dateCourte(iso?: string): string | null {
   const mois = MOIS[Number(m[2]) - 1];
   return mois ? `${Number(m[3])} ${mois}` : null;
 }
-/** « 11 700 » (espace fine insécable), sans centimes s'ils sont nuls. Prix inconnu : null, jamais 0. */
+/** « 11 700 » (espace fine insécable), virgule décimale (DESIGN.md, L-15 : un seul format pour un prix), sans centimes s'ils sont nuls. Prix inconnu : null, jamais 0. */
 export function montant(centimes?: number): string | null {
   if (centimes === undefined || centimes === null || !Number.isFinite(centimes)) return null;
   const francs = centimes / 100;
   const entier = Math.trunc(francs);
   const txt = String(Math.abs(entier)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   const reste = Math.round(Math.abs(francs - entier) * 100);
-  return `${entier < 0 ? '−' : ''}${txt}${reste ? `.${String(reste).padStart(2, '0')}` : ''}`;
+  return `${entier < 0 ? '−' : ''}${txt}${reste ? `,${String(reste).padStart(2, '0')}` : ''}`;
+}
+/** L-15 : « 1 845 » pour « 1.845 » (point des milliers d'une page allemande), « 0,50 » pour « 0.50 » ; un autre texte reste tel quel. */
+function nombreLu(t: string): string {
+  if (/^\d{1,3}(\.\d{3})+$/.test(t)) return t.replace(/\./g, ' ');
+  if (/^\d+\.\d+$/.test(t)) return t.replace('.', ',');
+  return t;
 }
 /** Une valeur lue : nombre en chiffres, oui-non en mots ; absente : null. */
 export function valeurTexte(v?: ValeurV): string | null {
@@ -81,7 +94,7 @@ export function valeurTexte(v?: ValeurV): string | null {
     const groupe = e.length > 3 ? e.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : e;
     return `${v.valeur < 0 ? '−' : ''}${groupe}${d ? `,${d}` : ''}`;
   }
-  return v.valeur.trim() || null;
+  return nombreLu(v.valeur.trim()) || null;
 }
 export function rangTexte(n: number): string { return n === 1 ? '1re' : `${n}e`; }
 export function pluriel(n: number, un: string, plusieurs: string): string { return `${n} ${n > 1 ? plusieurs : un}`; }

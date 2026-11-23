@@ -10,6 +10,7 @@
 import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
 import { dateFacture, estRealise } from '../finance/upgradeRing';
+import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { jetons, normaliser, quantitesDe } from './analyseLocale';
@@ -546,6 +547,24 @@ export function basculerVeille(etat: Etat, args: { carnetId: string; articleId: 
   return b.resultat(allumer ? 'Veille demandée' : 'Veille arrêtée');
 }
 
+/**
+ * L-9 (ses mots du 21.11 : « il y a même pas le prix de la chambre froide ?? ») : poser ou corriger le prix d'un article, en CHF, à la main.
+ * Le prix lu d'avant (autre devise comprise) est remplacé ; « dès » tombe (le prix posé est celui de l'article).
+ */
+export function poserPrixArticle(etat: Etat, args: { carnetId: string; articleId: string; centimes: number }): Resultat {
+  if (!Number.isSafeInteger(args.centimes) || args.centimes <= 0) return refus('Prix illisible.');
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  const a = c?.carnet.articles.find(x => x.id === args.articleId);
+  if (!c || !a) return refus('Article introuvable.');
+  if (a.prixCentimes === args.centimes && (a.devise ?? 'CHF') === 'CHF' && !a.prixDes) return refus('Même prix.');
+  a.prixCentimes = args.centimes;
+  a.devise = 'CHF';
+  delete a.prixDes;
+  poser(b, c);
+  return b.resultat('✓ Prix posé');
+}
+
 /* ---------- choisir (R07, R34) ---------- */
 
 /**
@@ -667,20 +686,80 @@ export function liensDe(c: CarnetDoc, plans: readonly FinancialPlan[], transacti
   const plan = plans.find(p => p.id === s.planId);
   /* le plan a été supprimé côté À venir : son titre n'est plus connu ; aucun nom inventé */
   if (!plan) return [{ sorte: 'a-venir', id: s.planId, libelle: 'plan d’À venir', etat: 'supprime' }];
-  return [{ sorte: estRealise(plan, [...transactions], [...payments]) ? 'realise' : 'a-venir', id: plan.id, libelle: plan.title, etat: 'present' }];
+  /* L-12 : un plan archivé ne se dit pas « Dans À venir » ; la ligne de sortie (`texteSortie`) le dit */
+  if (plan.status === 'cancelled') return [];
+  return [{ sorte: estRealise(plan, [...transactions], [...payments]) || plan.status === 'completed' ? 'realise' : 'a-venir', id: plan.id, libelle: plan.title, etat: 'present' }];
 }
 
 /**
- * Critique 7, n° 5 : l'état de la sortie d'un carnet, par la règle même d'À venir et de Réalisés (`estRealise`). Plan payé : « réalisé »,
- * daté de sa dernière facture (aucune date inventée : `le` vide sans facture datée) ; sinon « à venir », daté de l'envoi. Plan disparu :
- * « à venir » (la sortie seule le dit encore). Sans sortie : null.
+ * Critique 7, n° 5 ; L-12 (CA12-M2-3, M3-6, M3-17) : l'état de la sortie d'un carnet, par la règle même d'À venir et de Réalisés. Plan payé
+ * (`estRealise`) : « réalisé », daté de sa dernière facture (aucune date inventée : `le` vide sans facture datée) ; plan marqué réalisé sans
+ * achat (`completed`, la vue Réalisés d'À venir le range ainsi) : « réalisé », `sansAchat` ; plan archivé (`cancelled`) : « archivé » ; plan
+ * disparu : « supprimé » ; sinon « à venir », daté de l'envoi. Sans sortie : null.
  */
-export function etatSortie(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): { sorte: 'a-venir' | 'realise'; le: string } | null {
+export type SorteSortie = 'a-venir' | 'realise' | 'archive' | 'supprime';
+export function etatSortie(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): { sorte: SorteSortie; le: string; sansAchat?: true } | null {
   const s = c.carnet.sortie;
   if (!s) return null;
   const plan = plans.find(p => p.id === s.planId);
-  if (plan && estRealise(plan, [...transactions], [...payments])) return { sorte: 'realise', le: dateFacture(plan, [...transactions]) ?? '' };
+  if (!plan) return { sorte: 'supprime', le: s.le };
+  if (estRealise(plan, [...transactions], [...payments])) return { sorte: 'realise', le: dateFacture(plan, [...transactions]) ?? '' };
+  if (plan.status === 'completed') return { sorte: 'realise', le: dateFacture(plan, [...transactions]) ?? '', sansAchat: true };
+  if (plan.status === 'cancelled') return { sorte: 'archive', le: s.le };
   return { sorte: 'a-venir', le: s.le };
+}
+
+/**
+ * L-11 : le plan d'À venir que le carnet suit encore (sa sortie, brouillon ou actif, ni réalisé ni archivé, venu de ce carnet). Le carnet,
+ * À venir et le Calendrier disent alors la même date et le même prix : ceux de ce plan. `undefined` sinon.
+ */
+export function planOuvertDuCarnet(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): FinancialPlan | undefined {
+  const e = etatSortie(c, plans, transactions, payments);
+  if (e?.sorte !== 'a-venir') return undefined;
+  const plan = plans.find(p => p.id === c.carnet.sortie!.planId);
+  return plan && (plan.status === 'draft' || plan.status === 'active') && (!plan.upgrade?.sourceCarnetId || plan.upgrade.sourceCarnetId === c.id) ? plan : undefined;
+}
+
+/**
+ * L-11 : un geste du carnet suit sur son plan. Date (un lundi, « mois » ou « semaine ») : la date du plan et sa précision ; sans date
+ * (« Plus tard ») le plan garde la sienne. Prix estimé (centimes) : le prix d'achat du plan, livraison et installation gardées, budget connu,
+ * « estimé ». Rien ne change : le même objet.
+ */
+export function planSuitCarnet(plan: FinancialPlan, geste: { date?: string | null; precision?: 'semaine' | 'mois'; centimes?: number }): FinancialPlan {
+  let p = plan;
+  if (geste.date && p.upgrade) {
+    const precision = geste.precision === 'semaine' ? 'day' as const : 'month' as const;
+    if (p.date !== geste.date || p.upgrade.datePrecision !== precision) p = { ...p, date: geste.date, upgrade: { ...p.upgrade, datePrecision: precision } };
+  }
+  if (geste.centimes !== undefined && geste.centimes > 0 && p.upgrade) {
+    const d = upgradeDetails(p);
+    const parts = { purchaseCents: geste.centimes, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
+    const total = upgradeBudget(parts) ?? geste.centimes;
+    if (p.amountCents !== total || d.purchaseCents !== geste.centimes || d.budgetKnown !== true)
+      p = { ...p, amountCents: total, upgrade: { ...p.upgrade, ...parts, budgetKnown: true, estimateSource: 'estimate' } };
+  }
+  return p;
+}
+
+/**
+ * L-10 : le choix d'un article au prix connu (CHF) fait passer le plan à « Prêt à acheter » (le prix est trouvé : plus « à chercher ») et
+ * chiffre un plan qui n'avait aucun montant. Un montant déjà posé n'est pas remplacé : le prix du projet, estimé ou choisi, attend son choix
+ * (Q-1). Le vendeur manquant est repris. Rien ne change : le même objet.
+ */
+export function planSuitChoix(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
+  const choix = c.carnet.choix;
+  const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
+  if (!a || !plan.upgrade || a.prixCentimes === undefined || !(a.prixCentimes > 0) || (a.devise ?? 'CHF') !== 'CHF') return plan;
+  const d = upgradeDetails(plan);
+  const sansMontant = !(plan.amountCents > 0) || d.budgetKnown !== true;
+  const etape = d.stage === 'idea' || d.stage === 'research' ? 'ready' as const : d.stage;
+  if (!sansMontant && etape === d.stage && (plan.vendor || !a.vendeur)) return plan;
+  let p: FinancialPlan = { ...plan, ...(!plan.vendor && a.vendeur ? { vendor: a.vendeur } : {}), upgrade: { ...plan.upgrade, stage: etape } };
+  if (sansMontant) {
+    const parts = { purchaseCents: a.prixCentimes, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
+    p = { ...p, amountCents: upgradeBudget(parts) ?? a.prixCentimes, upgrade: { ...p.upgrade!, ...parts, budgetKnown: true } };
+  }
+  return p;
 }
 
 export interface LienQuiRetient { sorte: 'plan-a-venir' | 'plan-realise'; planId: string; libelle: string; reglage: 'detacher' | 'archiver' }
@@ -693,8 +772,9 @@ export interface LienQuiRetient { sorte: 'plan-a-venir' | 'plan-realise'; planId
 export function liensQuiRetiennent(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): LienQuiRetient[] {
   const s = c.carnet.sortie;
   const plan = s ? plans.find(p => p.id === s.planId) : undefined;
-  if (!plan) return [];
-  return estRealise(plan, [...transactions], [...payments])
+  /* L-12, L-14 : un plan archivé ne retient plus l'idée ; marqué réalisé (avec ou sans achat), il s'archive avec elle */
+  if (!plan || plan.status === 'cancelled') return [];
+  return estRealise(plan, [...transactions], [...payments]) || plan.status === 'completed'
     ? [{ sorte: 'plan-realise', planId: plan.id, libelle: plan.title, reglage: 'archiver' }]
     : [{ sorte: 'plan-a-venir', planId: plan.id, libelle: plan.title, reglage: 'detacher' }];
 }

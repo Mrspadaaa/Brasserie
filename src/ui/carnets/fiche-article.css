@@ -1,0 +1,12 @@
+/* Lot 2 du Carnet (23.11) : la fiche d'un article. Fichier à lui (règle des lots : carnets.css appartient au Lot 3). */
+
+/* L-16 (CA12-M4-18) : le retour « ‹ Articles · … » et ‹ › restent atteignables en défilant */
+.cn-fiche > .cn-tete { position: sticky; top: 0; z-index: 3; background: var(--c-bg); margin: -8px -12px 0; padding: 8px 12px 4px; }
+.cn-fiche-nav { flex: none; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+/* L-9 : poser le prix de l'article */
+.cn-poser-prix-ouvrir { min-height: 44px; display: inline-flex; align-items: center; }
+.cn-poser-prix { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cn-poser-prix-champ { flex: 1 1 120px; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums; }
+.cn-poser-prix-champ[aria-invalid=true] { border-color: var(--c-rouge); }
+.cn-poser-prix-refus { flex-basis: 100%; color: var(--c-rouge); }
