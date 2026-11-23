@@ -2798,3 +2798,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (tour 16) « Ah oui mais je peux toujours avoir que 1 ans ??? » (CAL-PLUS-QU-UN-AN, pas encore fait)
 - (capture 9:37, brasseur-23-11/40sem-0937.jpg : 40 sem., cadre « 2 nov. 2026 – 8 août 2027 », point bleu entouré sur la courbe sous « J », pastille « −4 563 S26 '27 ») « On voit toujours pas sur le graph où est le moment présent, et la pastille bleu, on comprend pas à quoi ça sert »
 - (captures 9:47, brasseur-23-11/10sem-0947.jpg et 3sem-0947.jpg : la bande sous la courbe montre la fenêtre de la courbe (S44…S3 ; 19…17), les barres du calendrier dessous la fenêtre du cadre étirée sur toute la largeur : « prête 29 déc. » sous S1, « prête 2 déc. » sous 7–9) « Toujours un gros problème entrer l'axe du graph et l'axe du calendrier, 3 ème fois que je le dis... »
+- (tour 18, trait d'aujourd'hui sur la courbe) « Le repère d'aujourd'hui est en ligne pas très élégant le repère... »
