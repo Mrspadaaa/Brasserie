@@ -1,6 +1,37 @@
-# État des tâches — 23.11, après le tour 24 (21bd69fd0, index-7UIfuot2.js)
+# État des tâches — 23.11 soir, après le tour 26 (b44b191d3, index-Bl2OF9G2.js)
 
-## Reprise (23.11, ~14:30, contexte du pilote à 700 k)
+## Reprise (23.11 soir, session pilote close à la demande du brasseur ; vérifié par git et fichiers, pas de mémoire)
+- En ligne : hosting tour 26 = b44b191d3 (tag en-ligne/2026-11-23-tour26, index-Bl2OF9G2.js) ; aiTask déployée depuis b44b191d3. origin/main = b44b191d3.
+  Copies : port-carnet = b44b191d3 (fusion + mise en ligne ici ; modifs NON commitées d'une autre session dans src/domain/stock/murDonnees.ts,
+  src/ui/stock/EnteteRayon.tsx, MurStock.tsx, work/missions/2026-11-20-frise/REPRISE*.md : à préserver, jamais déployées car deploy-leger
+  construit depuis un worktree propre). lecture-liens = 75b6393e3 (fusionné). fix-t25 = b44b191d3 (fusionné). Pilote Brasserie = 85f9592b6.
+- deploy-leger.sh : ligne T réglée sur tour26 → passer à tour27 au prochain envoi. REGLES (vitest tests/unit/proprietes) a échoué une fois
+  puis passé au 2e essai sans changement : test de propriété instable, à trouver (graine à fixer).
+- Lecture des liens (D446, D447, ses mots du 23.11 dans SPEC) : cascade plateforme → schema.org (htmlmetaparser) → HTML (htmlparser2)
+  → markdown + Flash-Lite, Hydrogen en escalade ; page bloquée par défi : url_context Flash-Lite (lit la copie de Google ; google_search exclu,
+  il invente ; Chrome sans écran non branché, lienNavigateur.ts présent, aiTask reste à 512 MiB). Étapes au fil de l'eau : champ etapes
+  [{nom, statut trouve|absent|douteux, detail}], flux sendChunk + document lecturesLiens/{jeton}, reprise par {jeton, reprise:true}.
+  Banc permanent 63 liens : npx tsx scripts/banc-liens.ts (lecture-liens, banc-liens/) ; avec IA : prix 96 %, sans JSON-LD 90,5 %,
+  photo 95 %, caractéristiques 92 %, 0 invention (pages bloquées hors calcul ; avec url_context : prix 57/57, nom 61/63).
+  Rapports : banc-liens/REPRISE-SERVEUR.md, bloquees/RESULTATS.md, outils/gemini/RESULTATS.md, lecture-liens-outils/RECHERCHE.md.
+- Test en ligne tour 25 : 5/7 liens justes, défauts T25-1..9 (tour25/RAPPORT.md) ; corrigés 8,5/9 dans fix-t25 (REPRISE-FIX.md :
+  T25-8 libellés Galaxus gardés en allemand ; T25-7 « non publié » ×3 devenu une phrase sous la grille = petit écart à la maquette h01-6 ;
+  second collage relit encore la page, coûte un appel).
+- EN COURS à la fermeture : contre-épreuve en ligne du tour 26 (agent, rapport attendu dans
+  work/missions/2026-11-23-carnet-en-ligne/tour26/, déjà des captures B6-*). À vérifier : RAPPORT.md présent et versé à BUGS (T26), sinon
+  le refaire ; et chercher un carnet « ZZ TEST — tour 26 » resté dans ses carnets (le retirer, articles puis carnet).
+- Page de choix publiée : étapes visibles pendant la lecture d'un lien, v01 à v06 (règle IA-ETAPES-VISIBLES) :
+  https://claude.ai/artifact/M7FU5ad6NVhXD12Pjc9fBH (source work/missions/maquettes-carnet/page, commit 85f9592b6). En attente de son choix ;
+  puis porter la version choisie (libellé « page bloquée, lue par Google » compris ; côté app, le type lit déjà etapes, TODO du flux).
+- Dépense IA réelle (journal ia-journal.jsonl) : copie lecture-liens 1,647 CHF (278 lignes) ; copie Brasserie 0,425 CHF (129 lignes) ;
+  les deux journaux se recoupent en partie : total réel ≈ 1,7 CHF sur les 5 CHF accordés (à réconcilier en fusionnant les journaux).
+  Budget de comparaison des outils (1,5 CHF) épuisé et dépassé une fois (Gemini 0,99 pour 0,8) ; leçon L18 : coût réservé avant envoi.
+- Accords en vigueur : mise à jour d'aiTask seule (23.11). Refusés : Diffbot (aucun compte), Claude/Anthropic pour lire les liens, Carbon
+  (trop lent), Argon ; Neon coupé (10,7 s). Jamais de contournement de défi anti-robot (CAPTCHA, proxys).
+- Ensuite, dans l'ordre : (1) résultat de la contre-épreuve tour 26 ; (2) son choix des étapes → port ; (3) Calendrier, reconstruction
+  du cœur de la frise (D444, VOIE-LOT-CAL.md) ; (4) restes listés plus bas.
+
+## Reprise précédente (23.11, ~14:30)
 - Agent en cours : lecture des liens par méthode standard (copie `lecture-liens`, D446 : cascade schema.org → HTML → Flash-Lite → 3.8 Flash + url_context, banc permanent des 25 liens, rejeu en ligne, objectif prix et photo ≥ 90 %). À son « PRÊT À METTRE EN LIGNE <hash> » : fusionner dans port-carnet, deploy-leger.sh (T → tour25), aiTask seule si changée, puis lui envoyer « EN LIGNE ».
 - Fait depuis le tour 22 : tour 23 (bande jamais vide, rangées compactes), tour 24 (lien reste dans le carnet ouvert, bandeau juste, ⋯ Retirer/Déplacer) ; aiTask 4edd21a15 (ordre des champs, URL entière) ; nettoyage de ses carnets fait (D445).
 - Cette nuit : reconstruction du cœur de la frise (D444) ; contrat court : work/missions/2026-11-23-calendrier-en-ligne/VOIE-LOT-CAL.md.
