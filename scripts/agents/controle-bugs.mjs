@@ -67,7 +67,8 @@ export function lireRegistre(texte) {
         empreinte: (c[4] ?? '').replace(/`/g, '').trim() });
       continue;
     }
-    const m = /^([A-Z][A-Z0-9]*)(-NOTE)?-(\d+)$/.exec(c[0] ?? '');
+    // Préfixe à segments permis (23.11 : CA12-M4-n, une méthode par préfixe).
+    const m = /^([A-Z][A-Z0-9]*(?:-(?!NOTE-)[A-Z][A-Z0-9]*)*)(-NOTE)?-(\d+)$/.exec(c[0] ?? '');
     if (m) bugs.push({ id: c[0], prefixe: m[1], etat: (c[5] ?? '').toLowerCase(), commit: (c[6] ?? '').replace(/`/g, '') });
   }
   return { sources, bugs };
