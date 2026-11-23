@@ -20,7 +20,7 @@ const page = () => lirePage(readFileSync(new URL('../fixtures/carnets/gastro-hel
 describe('gastro-held.ch (lien du 23.11)', () => {
   it('lit nom, prix CHF, stock, vendeur et la photo (ImageObject du JSON-LD, og:image en http refusé)', () => {
     const p = page();
-    expect(p).toMatchObject({ statut: 'lue', nom: NOM, prix: 1228.9, devise: 'CHF', dispo: 'en-stock', vendeur: 'GastroHeld', domaine: 'gastro-held.ch' });
+    expect(p).toMatchObject({ statut: 'lue', nom: `GastroHero ${NOM}`, prix: 1228.9, devise: 'CHF', dispo: 'en-stock', vendeur: 'GastroHeld', domaine: 'gastro-held.ch' });
     expect(p.photo).toBe('https://www.gastro-held.ch/cdn/shop/files/224809-gnh1410tnm_2.webp?v=1769340166&width=1200');
   });
 
