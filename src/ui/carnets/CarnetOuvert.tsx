@@ -106,7 +106,8 @@ export interface CarnetOuvertProps {
    * L-20 (23.11, M3-1) : retirer un critère (`supprimerLigne`, cible `critere`), par ⋯ de la ligne Critère. Absent : pas de ⋯ (rien
    * qui ne fasse rien). Branché par la vue des carnets.
    */
-  onRetirerCritere?: (critereId: string) => void;
+  /** Un critère affiché peut regrouper plusieurs doublons : tous ses ids, d'un seul geste (un seul Annuler). */
+  onRetirerCritere?: (...critereIds: string[]) => void;
   /** Le jour (ISO) ; défaut : aujourd'hui (local). Injecté par le banc et les tests. */
   aujourdhui?: string;
 }
@@ -347,7 +348,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {criteres.map(u => (
         <p key={u.ids[0]} className="cn-critere cn-critere-court cn-critere-retirable" role="listitem">
           <span className="cn-sp"><b>{u.el.texte}</b><span className="cn-mut">{avecProv(u.el)}</span></span>
-          <button type="button" className="cn-lien" aria-label={`Retirer le critère « ${u.el.texte} »`} onClick={() => { for (const id of u.ids) p.onRetirerCritere!(id); }}>Retirer</button>
+          <button type="button" className="cn-lien" aria-label={`Retirer le critère « ${u.el.texte} »`} onClick={() => p.onRetirerCritere!(...u.ids)}>Retirer</button>
         </p>
       ))}
     </div>

@@ -166,9 +166,8 @@ test.describe('Lot 8 : l’app autour du Carnet', () => {
   });
 
   // L-50 (M1-24, M2-9) : au rechargement, le carnet ouvert est perdu (la liste revient). La vue du carnet vit dans CarnetsVue.tsx (Lot 2) :
-  // hors lot, épreuve gardée en échec attendu jusqu'à ce que CarnetsVue garde son carnet ouvert.
+  // levé au lot 11 : CarnetsVue garde son carnet ouvert (session du navigateur).
   test('L-50 : le rechargement rouvre le carnet ouvert', async ({ page }) => {
-    test.fail(true, 'hors lot : CarnetsVue.tsx (Lot 2) ne garde pas sa vue ; l’onglet, lui, est gardé');
     await ouvrirUnCarnet(page, /ZZ TEST — Chambre froide/);
     await page.reload();
     await expect(page.locator('nav button').first()).toBeVisible({ timeout: 90_000 });

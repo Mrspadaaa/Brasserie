@@ -16,8 +16,8 @@ import { magasinFirestore, type MagasinCarnets } from '../../services/carnetsSto
 import { estLienSeul, lireCarnets, lireMessages, nomArticle, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
 import {
   accepterProposition, archiverCarnet, basculerVeille, changerGenre, changerSorte, choisir, creerCarnet, deplacer, deplacerArticles, detacherPlan, fusionnerNotes, garderAPart,
-  etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, planAuCalendrier, avecPrixEstime, idPlanDuCarnet, poserSortie, planOuvertDuCarnet, planSuitCarnet, planSuitChoix, poserPrixArticle, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
-  type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
+  etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, planAuCalendrier, avecPrixEstime, idPlanDuCarnet, poserSortie, planOuvertDuCarnet, planSuitCarnet, planSuitChoix, poserPrixArticle, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerLigne, supprimerNote,
+  type CibleLigne, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
 import { avecArticleTypo, consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, analyserTexte, decouper, genreDEtiquette, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
@@ -103,6 +103,8 @@ interface Retour {
   avis?: AvisIA;
   /** Ce qui a été rangé, et où (« Notes : « … » · dans Frigo ») : dit avec l'avis, puisque l'IA n'a pas mis en forme. */
   detail?: string;
+  /** Lot 11 (L-2) : le carnet existant que l'IA proposait pour une phrase tapée sur la liste (`carnetSuggere`) ; « Y ajouter ? ». */
+  suggestion?: { carnetId: string; titre: string };
 }
 type AvisIA = { sorte: 'eteint' | 'hors-ligne' | 'echec'; texte: string };
 /**
@@ -284,6 +286,10 @@ const lireCreatifs = (): CreativeItem[] => StorageService.getCreativeItems();
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
 /** L-13 : l'entrée d'historique du carnet (même profondeur que l'écran, comme Plus). */
 const MARQUE_HISTOIRE = 'laffinee-carnet';
+/** L-50 : le carnet ouvert, gardé le temps de la session du navigateur (rechargement compris). */
+const CLE_OUVERT = 'laffinee.carnet.ouvert';
+const lireSession = (k: string): string | null => { try { return sessionStorage.getItem(k); } catch { return null; } };
+const ecrireSession = (k: string, v: string | null) => { try { if (v) sessionStorage.setItem(k, v); else sessionStorage.removeItem(k); } catch { /* sans stockage : rien n'est gardé */ } };
 /** L-13 : l'écran d'où l'on vient : la fiche, Comparer, Choisir, Renommer et Supprimer remontent au carnet ; le carnet, à la liste. */
 function vueParente(v: Vue): Vue {
   if (v.sorte === 'liste' || v.sorte === 'carnet') return { sorte: 'liste' };
@@ -562,7 +568,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** Critique 5, n° 24 : les carnets dont le dernier envoi n'a pas eu l'IA (échec, hors ligne, éteinte) : passés à CarnetOuvert. */
   const [iaManquee, setIaManquee] = useState<Readonly<Record<string, AvisIA['sorte']>>>({});
   /** Critique 6, n° 24 : les messages rangés hors ligne, tels quels ; au retour du réseau, « Ranger maintenant » les passe à l'IA. */
-  const [aReprendre, setAReprendre] = useState<{ messageId: string; texte: string }[]>([]);
+  const [aReprendre, setAReprendre] = useState<{ messageId: string; texte: string; echec?: true }[]>([]);
   /** Critique 5, n° 26 : le titre tapé dans le champ du bas pendant « Se renomme ici ». */
   const [titreEdite, setTitreEdite] = useState('');
   /** G14 (R15) : le lien que le presse-papier tient, lu au focus du champ ; refus silencieux. */
@@ -575,9 +581,19 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** L'envoi en cours : ✕ le coupe même si la vue a changé entre-temps (le carnet neuf ouvert recrée le déroulé). */
   const envoiActif = useRef<{ envoi: Envoi<LigneLocale>; depuis: string | null } | null>(null);
 
-  useEffect(() => { if (p.ouvrir) { setVue({ sorte: 'carnet', id: p.ouvrir.id }); setRetour(null); } }, [p.ouvrir?.at]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* L-50 (M1-24, M2-9) : au rechargement, le carnet ouvert se rouvre (l'onglet est gardé par l'app) ; la session du navigateur le tient, le
+     temps que le magasin ait lu ses carnets. Une ouverture demandée (À venir, Calendrier) ou l'onglet touché l'emportent. */
+  const aRouvrir = useRef<string | null>(lireSession(CLE_OUVERT));
+  useEffect(() => { if (p.ouvrir) { aRouvrir.current = null; setVue({ sorte: 'carnet', id: p.ouvrir.id }); setRetour(null); } }, [p.ouvrir?.at]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (p.focusChamp) champRef.current?.focus(); }, [p.focusChamp]);
-  useEffect(() => { if (p.racine && !edition) setVue({ sorte: 'liste' }); }, [p.racine]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (p.racine && !edition) { aRouvrir.current = null; setVue({ sorte: 'liste' }); } }, [p.racine]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const id = aRouvrir.current;
+    if (!id || !lireCarnets(items, { archives: true }).some(x => x.id === id)) return;
+    aRouvrir.current = null;
+    setVue(v => (v.sorte === 'liste' ? { sorte: 'carnet', id } : v));
+  }, [items]);
+  useEffect(() => { if (!aRouvrir.current) ecrireSession(CLE_OUVERT, vue.sorte === 'liste' ? null : vue.id); }, [vue]);
   // P12 : la note en modification a disparu (supprimée, ou autre vue) : le mode se referme et le texte qu'il avait mis dans le champ part.
   useEffect(() => {
     if (edition && !(ouvert && vue.sorte === 'carnet' && ouvert.carnet.notes.some(n => n.id === edition))) { setEdition(null); setTexte(''); }
@@ -639,7 +655,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const propres = effets.filter(e => e.carnetId === rr.carnetId && e.cible !== 'carnet');
     const art = propres.length === 1 && propres[0].cible === 'article' ? c?.carnet.articles.find(x => x.id === propres[0].id) : undefined;
     if (rr.sorte === 'range') {
-      if (art?.url && art.lecture !== 'lue') return { bandeau: { sorte: 'lien', url: art.url, lu: false, ici: true }, inverse, messageId, carnetId: rr.carnetId, detail };
+      /* lot 11 (L-4, hors lot du lot 1) : la raison de la page non lue (site qui bloque, adresse introuvable…) se dit dans le bandeau */
+      const statut = lignesIA?.find(l => l.page && (l.url === art?.url || l.page.url === art?.url))?.page?.statut ?? lignesIA?.find(l => l.page)?.page?.statut;
+      if (art?.url && art.lecture !== 'lue') return { bandeau: { sorte: 'lien', url: art.url, lu: false, ici: true, ...(statut ? { statut } : {}) }, inverse, messageId, carnetId: rr.carnetId, detail };
       if (propres.length && propres.every(e => e.cible === 'photo')) return { bandeau: { sorte: 'photo', ici: true }, inverse, messageId, carnetId: rr.carnetId, detail };
       return { bandeau: { sorte: 'range' }, inverse, messageId, carnetId: rr.carnetId, detail };
     }
@@ -651,7 +669,10 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const nomLu = c?.carnet.articles.some(a => a.nom && a.nom === titre);
       /* « Embouteillage » pour « embouteillage » reste sa phrase en titre (g5:v04-4). `ia` seulement si l'IA a fourni ce titre ; sinon la règle locale */
       const titreDe: TitreDe = origineDuTitre({ titre, titreDePhrase: titreDePhrase(txt), lienSeul: estLienSeul(txt), nomLu: !!nomLu, titresIA });
-      return { bandeau: { sorte: 'cree', phrase: txt, titreDe }, inverse, messageId, carnetId: rr.carnetId, detail };
+      /* lot 11 (L-2, hors lot du lot 1) : l'IA voyait un carnet existant ; la phrase a créé le sien (son annonce), le carnet de l'IA est proposé */
+      const sugId = lignesIA?.find(l => l.carnetSuggere && l.carnetSuggere !== rr.carnetId)?.carnetSuggere;
+      const sug = sugId ? lireCarnets(etat).find(x => x.id === sugId) : undefined;
+      return { bandeau: { sorte: 'cree', phrase: txt, titreDe }, inverse, messageId, carnetId: rr.carnetId, detail, ...(sug ? { suggestion: { carnetId: sug.id, titre: sug.title } } : {}) };
     }
     const effet = effets.find(e => e.cible === 'article' && e.carnetId === rr.carnetId);
     const a = effet ? c?.carnet.articles.find(x => x.id === effet.id) : undefined;
@@ -702,6 +723,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
         if (e.etape === 'echec') poserAvis(e.messageId, 'echec', montre ? null : local);
         else if (!montre) setRetour(local);
       } else if (e.etape === 'echec') poserAvis(e.messageId, 'echec');
+      /* lot 11 (L-1, hors lot) : un échec garde le message à relire, d'un toucher (« Relire »), comme un message gardé hors ligne */
+      if (e.etape === 'echec' && e.texte?.trim()) setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte, echec: true }]);
       /* P22 : IA éteinte ou hors ligne : le retour local est déjà affiché ; l'avis s'y ajoute, avec ce qui a été rangé et où */
       if (e.etape === 'hors-ligne') { poserAvis(e.messageId, 'hors-ligne'); setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte }]); }
       if (e.etape === 'range' && e.rangement === 'locale') poserAvis(e.messageId, 'eteint');
@@ -994,9 +1017,10 @@ export function CarnetsVue(p: CarnetsVueProps) {
    * Critique 6, n° 24 (D-113, D-142) : de retour en ligne, « Ranger maintenant » : chaque message gardé hors ligne passe à l'IA, dans le
    * carnet où il est (le carnet ouvert d'alors, ou celui qu'il a créé) ; rien ne bouge sans ce toucher.
    */
-  const rangerMaintenant = async () => {
-    const liste = aReprendre;
-    setAReprendre([]);
+  const rangerMaintenant = async (seul?: string) => {
+    const liste = seul ? aReprendre.filter(x => x.messageId === seul) : aReprendre;
+    setAReprendre(l => l.filter(x => !liste.includes(x)));
+    setIaManquee(m => Object.fromEntries(Object.entries(m).filter(([, s]) => s !== 'echec' || !liste.some(x => x.echec))));
     setIaManquee(m => Object.fromEntries(Object.entries(m).filter(([, s]) => s !== 'hors-ligne')));
     for (const m of liste) {
       const msg = lireMessages(magasin.lire()).find(x => x.id === m.messageId);
@@ -1012,11 +1036,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
       await rangement.reprendre(m.messageId, m.texte);
     }
   };
-  const repriseNode = enLigne && aReprendre.length > 0 && etatR.etape !== 'en-cours' ? (
+  /* le message dont le bandeau « L'IA n'a pas répondu » est affiché porte son « Relire » dans ce bandeau ; la ligne durable prend le relais */
+  const aReprendreVus = aReprendre.filter(x => !(x.echec && retour?.messageId === x.messageId));
+  const toutEchec = aReprendreVus.every(x => x.echec);
+  const repriseNode = enLigne && aReprendreVus.length > 0 && etatR.etape !== 'en-cours' ? (
     <div className="cn-bandeau cnf-reprise" role="status" data-sorte="reprise">
       <div className="cn-bandeau-tete">
-        <span className="cn-sp">De retour en ligne : {aReprendre.length} message{aReprendre.length > 1 ? 's' : ''} rangé{aReprendre.length > 1 ? 's' : ''} tel quel</span>
-        <button type="button" className="cn-puce" onClick={() => void rangerMaintenant()}>Ranger maintenant</button>
+        <span className="cn-sp">{toutEchec ? 'L’IA n’a pas répondu' : 'De retour en ligne'} : {aReprendreVus.length} message{aReprendreVus.length > 1 ? 's' : ''} rangé{aReprendreVus.length > 1 ? 's' : ''} tel quel</span>
+        <button type="button" className="cn-puce" data-relire onClick={() => void rangerMaintenant()}>{toutEchec ? 'Relire' : 'Ranger maintenant'}</button>
       </div>
     </div>
   ) : null;
@@ -1193,7 +1220,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       /* tour 3, f5b n° 3 : la phrase nomme le carnet proche lui-même (« Ventilation de la salle ») : « Ouvrir ce carnet », le champ se vide */
       const ouvrir = !!pr && nommeLeCarnet(texte, pr.titre);
       const c: CadreV = { sorte: 'creer', titre: titreDePhrase(texte),
-        proche: pr ? { titre: pr.titre, ...(ouvrir ? { ouvrir } : {}), onAjouter: () => { if (ouvrir) setTexte(''); setVue({ sorte: 'carnet', id: pr.carnetId }); } } : null,
+        /* lot 11 (L-30, hors lot du lot 2) : « Y ajouter en façon » ajoute vraiment la phrase en façon du carnet proche, puis l'ouvre */
+        proche: pr ? { titre: pr.titre, ...(ouvrir ? { ouvrir } : {}), onAjouter: () => { if (ouvrir) { setTexte(''); setVue({ sorte: 'carnet', id: pr.carnetId }); } else ajouterEnFacon(texte, pr.carnetId); } } : null,
         ...(pr ? {} : { raisonNeuf: !estLienSeul(texte)
           ? `${aucunCarnetNEnParle(carnets.length)} : nouveau carnet, votre phrase en titre`
           : mode !== 'eteint' && enLigne
@@ -1291,6 +1319,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     ? retour.bandeau.sorte === 'vrac' && retour.messageId && vue.sorte === 'liste'
       ? <React.Fragment key={retour.id}>{vracApres(retour)}</React.Fragment>
       : <Bandeau key={retour.id} bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence}
+        suggestion={retour.suggestion && retour.carnetId ? { titre: retour.suggestion.titre, onAjouter: () => ajouterAuSuggere(retour, retour.suggestion!.carnetId) } : null}
+        onRelire={retour.avis?.sorte === 'echec' && enLigne && retour.messageId && aReprendre.some(x => x.messageId === retour.messageId) ? () => { const id = retour.messageId!; setRetour(null); void rangerMaintenant(id); } : null}
         {...(retour.avis ? { avis: retour.avis, ...(retour.detail ? { detail: retour.detail } : {}) } : {})} />
     : null;
   /* D417 / P8 : le retour d'un envoi parti de la liste tient un emplacement stable (index 0 du défilement), que la liste ou la fiche de destination soit dessous : le bouton Annuler reste le même nœud */
@@ -1455,6 +1485,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         onRetenirFacon={faconId => setVue({ sorte: 'choisir', id: c.id, faconId })}
         onVeille={articleId => { appliquer(basculerVeille(magasin.lire(), { carnetId: c.id, articleId, le: maintenant().toISOString() })); }}
         onVoirChoix={() => setVue({ sorte: 'choisir', id: c.id })}
+        onRetirerCritere={(...ids) => retirerCriteres(c, ids)}
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
         aujourdhui={jourIso(maintenant())}
         onDater={lundi => dater(c, lundi)}
@@ -1468,6 +1499,49 @@ export function CarnetsVue(p: CarnetsVueProps) {
         }}
         onOuvrirLien={l => (l.sorte === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.())} />
     </>;
+  }
+
+  /** Lot 11 (L-30) : la phrase tapée sur la liste devient une façon du carnet proche (choix du brasseur : aucune IA ne la déplace). */
+  function ajouterEnFacon(brut: string, carnetId: string) {
+    const txt = brut.trim();
+    if (!txt) return;
+    const message = { id: nouvelIdCarnet('MSG'), texte: txt, le: maintenant().toISOString(), depuis: 'liste' as const, rangement: 'locale' as const };
+    const r = appliquer(ranger(magasin.lire(), { message, lignes: [{ carnetId, sorte: 'facon', nom: majusculeFr(txt), origine: 'vous' }] }));
+    if (!r) return;
+    setTexte('');
+    setVue({ sorte: 'carnet', id: carnetId });
+    setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, messageId: message.id, carnetId });
+  }
+  /**
+   * Lot 11 (L-2) : « Y ajouter ? » : ce que la phrase a mis dans son carnet neuf passe dans le carnet que l'IA proposait (la phrase en note si
+   * rien d'autre), le carnet neuf vide part ; un seul Annuler rend tout (le carnet neuf et son contenu).
+   */
+  function ajouterAuSuggere(rt: Retour, versId: string) {
+    const neufId = rt.carnetId;
+    const c = neufId ? lireCarnets(magasin.lire()).find(x => x.id === neufId) : undefined;
+    const vers = lireCarnets(magasin.lire()).find(x => x.id === versId);
+    if (!c || !vers) return;
+    const inverse: EcritureCarnet[] = [...rt.inverse];
+    const pousser = (r: (Resultat & { ok: true }) | null) => { if (r) inverse.unshift(...r.inverse); };
+    const elements: [CibleLigne, string][] = [
+      ...c.carnet.criteres.map(x => ['critere', x.id] as [CibleLigne, string]), ...c.carnet.facons.map(x => ['facon', x.id] as [CibleLigne, string]),
+      ...c.carnet.articles.map(x => ['article', x.id] as [CibleLigne, string]), ...c.carnet.notes.map(x => ['note', x.id] as [CibleLigne, string]),
+      ...c.carnet.photos.map(x => ['photo', x.id] as [CibleLigne, string])];
+    for (const [cible, id] of elements) pousser(appliquer(deplacer(magasin.lire(), { cible, id, depuis: c.id, vers: versId })));
+    const phrase = rt.bandeau.sorte === 'cree' ? rt.bandeau.phrase : c.title;
+    if (!elements.length) pousser(appliquer(ranger(magasin.lire(), { message: { id: nouvelIdCarnet('MSG'), texte: phrase, le: maintenant().toISOString(), depuis: 'liste', rangement: 'locale' }, lignes: [{ carnetId: versId, sorte: 'note', texte: phrase }] })));
+    pousser(appliquer(supprimerCarnet(magasin.lire(), { carnetId: c.id, plans: finances.plans, transactions: finances.transactions, payments: finances.payments })));
+    setEnTete(undefined); setVientDEtreCree(null);
+    setVue({ sorte: 'carnet', id: versId });
+    setRetour({ bandeau: { sorte: 'ailleurs', carnet: vers.title }, inverse, carnetId: versId });
+  }
+
+  /** Lot 11 (L-20, hors lot du lot 3) : « Retirer » un critère (ses doublons compris) ; un seul bandeau « Critère retiré · Annuler » rend tout. */
+  function retirerCriteres(c: CarnetDoc, ids: readonly string[]) {
+    const texteC = c.carnet.criteres.find(k => k.id === ids[0])?.texte ?? '';
+    const inverse: EcritureCarnet[] = [];
+    for (const id of ids) { const r = appliquer(supprimerLigne(magasin.lire(), { carnetId: c.id, cible: 'critere', id })); if (r) inverse.unshift(...r.inverse); }
+    if (inverse.length) setRetour({ bandeau: { sorte: 'critere-retire', texte: texteC }, inverse, carnetId: c.id });
   }
 
   /** C1 (D393) : la date d'intention du carnet, un lundi (`null` = plus tard, sans date) ; son icône suit au Calendrier (`iconesIdees`). */

@@ -390,7 +390,7 @@ export function accepterProposition(etat: Etat, args: { messageId: string; index
 
 /* ---------- déplacer, changer de genre ou de sorte ---------- */
 
-type CibleLigne = 'critere' | 'facon' | 'article' | 'note' | 'photo';
+export type CibleLigne = 'critere' | 'facon' | 'article' | 'note' | 'photo';
 
 /** Déplacer un élément d'un carnet vers un autre (G12 « Déplacer », G21). Un article perd sa façon (elle reste dans l'autre carnet). */
 export function deplacer(etat: Etat, args: { cible: CibleLigne; id: string; depuis: string; vers: string }): Resultat {
