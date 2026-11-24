@@ -1,0 +1,73 @@
+{
+  "_note": "Voie c64-tests (24.11). Valeurs relevées sur les captures du tour 64 (voies/critique-64/RESULTAT.md) ; noms de vendeurs fictifs ou publics, aucune donnée personnelle. M1 = « CITRA® (US) » MotlerHops, 3,72 EUR les 50 g (cours 0,918 : 68,32 CHF/kg) ; X1 = un article sans prix (pour que chaque surface ne dise que le prix de M1) ; B1 = Brau- und Rauchshop, prix AU GRAMME 0,1044 CHF, 0,08 dès 1 000 g ; HM = hopfenmarkt, 50 g 3,60 · 100 g 6,70 · 250 g 15,95 · 500 g 31,35 · 1 kg 62,20 CHF.",
+  "solo": {
+    "titre": "ZZ TEST — pellets (c64)",
+    "articles": [
+      {
+        "id": "M1", "nom": "CITRA® (US)", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock",
+        "prixCentimes": 372, "devise": "EUR", "taxe": "ttc",
+        "change": { "taux": 0.918, "date": "2026-11-24", "source": "BCE" },
+        "conditionnement": { "valeur": 50, "unite": "g" },
+        "lignes": [
+          { "nom": "Taux d'acides alpha", "valeur": "13", "unite": "%" },
+          { "nom": "Arômes et saveurs", "valeur": "agrumes, pamplemousse, fruits tropicaux" },
+          { "nom": "Pays de récolte", "valeur": "USA" },
+          { "nom": "Poids", "valeur": "50 g" }
+        ]
+      }
+    ]
+  },
+  "duo": {
+    "titre": "ZZ TEST — pellets deux (c64)",
+    "articles": [
+      {
+        "id": "M1", "nom": "CITRA® (US)", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock",
+        "prixCentimes": 372, "devise": "EUR", "taxe": "ttc",
+        "change": { "taux": 0.918, "date": "2026-11-24", "source": "BCE" },
+        "conditionnement": { "valeur": 50, "unite": "g" },
+        "lignes": [
+          { "nom": "Taux d'acides alpha", "valeur": "13", "unite": "%" },
+          { "nom": "Arômes et saveurs", "valeur": "agrumes, pamplemousse, fruits tropicaux" },
+          { "nom": "Pays de récolte", "valeur": "USA" }
+        ]
+      },
+      {
+        "id": "X1", "nom": "Citra 13.6% bio", "vendeur": "Houblons Exemple", "pays": "CH", "dispo": "en stock",
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,6", "unite": "%" },
+          { "nom": "Arômes", "valeur": "citron vert, mangue" },
+          { "nom": "Origine", "valeur": "États-Unis" }
+        ]
+      }
+    ]
+  },
+  "hopfenmarkt": {
+    "titre": "ZZ TEST — hopfenmarkt (c64)",
+    "articles": [
+      {
+        "id": "HM", "nom": "Citra Hopfenpellets", "vendeur": "Hopfenmarkt", "pays": "CH", "dispo": "en stock",
+        "prixCentimes": 670, "devise": "CHF", "taxe": "ttc",
+        "conditionnement": { "valeur": 50, "unite": "g" },
+        "offres": [
+          { "valeur": 50, "unite": "g", "prixCentimes": 360 },
+          { "valeur": 100, "unite": "g", "prixCentimes": 670 },
+          { "valeur": 250, "unite": "g", "prixCentimes": 1595 },
+          { "valeur": 500, "unite": "g", "prixCentimes": 3135 },
+          { "valeur": 1, "unite": "kg", "prixCentimes": 6220 }
+        ],
+        "lignes": [
+          { "nom": "Conditionnement", "valeur": "100", "unite": "g" },
+          { "nom": "Alpha", "valeur": "11,4", "unite": "%" }
+        ]
+      },
+      {
+        "id": "X1", "nom": "Citra 13.6% bio", "vendeur": "Houblons Exemple", "pays": "CH", "dispo": "en stock",
+        "prixCentimes": 3600, "devise": "CHF", "taxe": "ttc",
+        "conditionnement": { "valeur": 500, "unite": "g" },
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,6", "unite": "%" }
+        ]
+      }
+    ]
+  }
+}
