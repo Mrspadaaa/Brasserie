@@ -535,3 +535,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## NOTE-EXPLOITEE (24.11)
 - Ses mots : « J'ai ajouté une notre, l'ia devrait en faire qqch » (note « Semble difficile à obtenir sur le site français » dans Houblons citra).
 - Contrôle : une note qui parle d'un article (vendeur, dispo, délai, doute, prix) est rattachée par l'IA à cet article et en devient un fait visible (fiche, ligne du tableau, Comparer, et le classement en tient compte) ; échoue sur index-CHXDhK_A.js (la note reste à part, rien ne change).
+
+## LIEN-PAS-PRODUIT (24.11)
+- Ses mots : « un lien peut être ajouté sans que ce soit un produit à comparer, comme par exemple un lien sur les frais d'envoi ».
+- Contrôle : un lien collé qui n'est pas une fiche produit (frais d'envoi, conditions, guide, fiche technique) n'entre jamais dans Articles ni Comparer ; l'IA le range comme information, la rattache au vendeur ou aux articles concernés (ex. frais d'envoi du vendeur appliqués au prix rendu de ses articles) ; échoue sur index-CHXDhK_A.js (tout lien devient un article).

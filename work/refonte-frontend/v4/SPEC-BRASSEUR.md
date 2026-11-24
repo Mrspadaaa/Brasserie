@@ -2892,3 +2892,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 19:30 (Carnet Houblons citra, capture plaintes/2026-11-24-visibilite.jpg : « Enregistrement sur le serveur… » posé sur les onglets, « votre lien : « https://… » » en clair) : « Toujours beaucoup de problèmes de visibilité... »
 
 - 24.11 (Carnet, sa note) : « Et aussi elle a plus d action sur ma note, catégorisé, classifie, ectt.. lance un critique, besoin et autres Persona là dessus pour voir ce que l on peut faire de cette note »
+
+- 24.11 (Carnet, liens) : « Aussi un lien peut être ajouté dans que ce soit un produit à comparer, comme l a pas l exemple un lien sur les frais d envoi »
