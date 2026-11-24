@@ -1,0 +1,51 @@
+/*
+ * D451, voie « afaire » : l'écran « À faire » et la carte « À ranger » (maquettes3/v01, écrans `afaire` et `epreuve`). Préfixe `af-` ;
+ * variables de thème de l'app (--c-*, posées par carnets.css sur .cn-page), donc clair et sombre. Aucun rouge : une tâche en retard
+ * reste dans « Cette semaine », sans reproche.
+ */
+.cn-page.af-vue { gap: 0; padding: 0 0 16px; }
+/* la carte porte ses variables de thème (cn-page) mais ne prend ni marge ni fond : elle se pose dans la page de la liste */
+.cn-page.af-hote { gap: 0; padding: 0; background: transparent; }
+.af-exemple { display: flex; justify-content: flex-end; padding: 6px 12px 0; }
+
+.af-tete { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px 4px; font-size: 15px; font-weight: 700; color: var(--c-ink); }
+.af-n { font-weight: 400; color: var(--c-mut); }
+.af-liste { margin: 0; padding: 0; }
+
+.af-ligne { display: flex; align-items: center; gap: 2px; min-height: 52px; padding: 0 12px 0 0; border-top: 1px solid var(--c-line); }
+/* la case : 22 px dessinés, 44 px touchables ; elle ne chevauche ni la ligne ni le jeton */
+.af-case { display: grid; place-items: center; flex: none; width: 44px; height: 44px; margin-left: 0; }
+.af-case:disabled { cursor: default; opacity: .5; }
+.af-rond { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--c-mut); color: var(--c-onact); }
+.af-ligne[data-faite] .af-rond { background: var(--c-zone); border-color: var(--c-zone); color: rgb(var(--cave-950)); }
+.af-ligne[data-faite] .af-texte { text-decoration: line-through; color: var(--c-mut); }
+
+.af-corps { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 1px; min-height: 44px; padding: 5px 4px 5px 4px; touch-action: manipulation; -webkit-touch-callout: none; user-select: none; }
+.af-texte { font-size: 16px; line-height: 1.25; color: var(--c-ink); overflow-wrap: anywhere; }
+.af-sous { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 14px; line-height: 1.25; color: var(--c-mut); }
+.af-picto { display: inline-grid; place-items: center; flex: none; width: 16px; height: 16px; }
+.af-picto > svg { width: 16px; height: 16px; }
+.af-nom { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.af-plus { flex: none; white-space: nowrap; }
+
+/* le jeton de coût : la pastille verte de la maquette (tg « achat ») */
+.af-jeton { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 8px; margin-left: 6px; border-radius: 6px; background: var(--c-zonebg); color: var(--c-zonet); font-size: 14px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums lining-nums; }
+
+.af-vide { margin: 12px; }
+
+/* « Quand ? » */
+.af-feuille { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 10px; padding: 8px 16px 20px; border-radius: 20px 20px 0 0; background: var(--c-bg); color: var(--c-ink); box-shadow: 0 -6px 24px rgb(0 0 0 / .2); }
+.af-feuille-tete { display: flex; align-items: center; gap: 8px; }
+.af-feuille-tete h3 { flex: 1 1 auto; min-width: 0; margin: 0; display: flex; align-items: baseline; gap: 8px; font-size: 17px; }
+.af-ell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; font-size: 15px; }
+.af-quand { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* la carte « À ranger » (v01 · epreuve) : fond et filet de l'IA, photo 56 × 44, trois boutons */
+.af-carte { margin: 8px 10px 0; padding: 8px 10px 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c-ia) 28%, transparent); background: var(--c-iabg); font-size: 15px; color: var(--c-ink); }
+.af-carte-tete { display: flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 600; color: var(--c-ia); }
+.af-carte-corps { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.af-photo { flex: none; width: 56px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--c-s2); }
+.af-photo-vide { display: grid; place-items: center; color: var(--c-mut); }
+.af-carte-texte { margin: 0; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.af-boutons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.af-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--c-line2) !important; background: var(--c-bg) !important; color: var(--c-ink) !important; font-size: 15px; font-weight: 700; white-space: nowrap; }
