@@ -3,6 +3,7 @@ import type { ForecastItem } from '../../../domain/finance/forecast';
 import { graduations, groupesRecurrents, joursEntre, motEtiquette, NOM_PLAN_MAX, nomProjet, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
 import { mesurerTexte, obstaclesDeCourbe, oublierMesures, placerEtiquettes, pointDAccroche, type Demande, type Mesure, type Rect } from './placement';
 import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
+import { formeCourteDeMarche, nomDeMarche } from '../../calendrier/entete/nomMarche';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
 /** Style d'une étiquette, par source (D8) : seule la facture est neutre pleine ; plan, récurrent, tendance, projet non testé = pointillé bleu « Prévu ». */
@@ -45,18 +46,20 @@ export const texteLot = (items: ForecastItem[]) => {
   const mots = [...new Set(items.map(motEtiquette))];
   const m = partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total);
   /* PC-117 : « TEST (2 fois) » disait « la même chose deux fois » de deux écritures différentes (« ZZ TEST — achat », « ZZ TEST — achat rond ») dont seul le mot-clé coïncide :
-     le lot nomme alors la plus grosse, en entier, et « + N autre(s) » (comme l'étiquette de la courbe du Calendrier). « (2 fois) » reste pour la même écriture répétée. */
+     le lot nomme alors la plus grosse, en entier, et « + N autre(s) » (comme l'étiquette de la courbe du Calendrier). « (2 fois) » reste pour la même écriture répétée.
+     R20 (C54-1) : des mots-clés différents ne disent plus « 2 sorties » : la marche porte le nom de l'écriture la plus lourde, par la fonction du Calendrier (nomMarche). */
   const noms = [...new Set(items.map(nomLong))];
-  if (mots.length === 1 && noms.length > 1) {
-    const tete = items.reduce((a, b) => (Math.abs(b.amountCents) > Math.abs(a.amountCents) ? b : a));
-    return `${nomProjet(nomLong(tete), NOM_PLAN_MAX)} + ${noms.length - 1} autre${noms.length > 2 ? 's' : ''} ${m}, ${jourCourt(items[0].date)}`;
-  }
-  return mots.length === 1 ? `${mots[0]} (${items.length} fois) ${m}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
+  if (noms.length > 1) return `${nomDeMarche(nomProjet(nomLong(teteDuLot(items)), NOM_PLAN_MAX), noms.length - 1)} ${m}, ${jourCourt(items[0].date)}`;
+  return `${mots[0]} (${items.length} fois) ${m}, ${jourCourt(items[0].date)}`;
 };
-/** Forme courte d'un lot (repli quand son nom ne tient pas) : le nombre de sorties, la somme, le jour. Le nom se lit dans la liste du lot. */
+/** L'écriture la plus lourde d'un lot : son nom est celui de la marche. */
+const teteDuLot = (items: ForecastItem[]) => items.reduce((a, b) => (Math.abs(b.amountCents) > Math.abs(a.amountCents) ? b : a));
+/** Forme courte d'un lot (repli quand son nom ne tient pas) : le nom de l'écriture la plus lourde, « +N », la somme, le jour (R20 : jamais le seul nombre de sorties). */
 export const texteLotCourt = (items: ForecastItem[]) => {
   const total = items.reduce((s, i) => s + i.amountCents, 0), partiel = items.some(i => i.partial?.length);
-  return `${items.length} sorties ${partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total)}, ${jourCourt(items[0].date)}`;
+  const noms = [...new Set(items.map(nomLong))];
+  const nom = noms.length > 1 ? formeCourteDeMarche(nomLong(teteDuLot(items)), noms.length - 1) : `${motEtiquette(items[0])} (${items.length} fois)`;
+  return `${nom} ${partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total)}, ${jourCourt(items[0].date)}`;
 };
 /** Les sorties d'une marche qui partagent son étiquette : au moins deux, hors projet testé (qui garde sa fiche) et hors récurrence déjà regroupée. */
 export const sortiesDuLot = (items: ForecastItem[], testeId: string | null | undefined, groupes: Map<string, GroupeRecurrent>): ForecastItem[] => {

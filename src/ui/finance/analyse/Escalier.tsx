@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { graduations, placerEtiquettes, type EscalierCaisse, type Marche, type PointCourbe } from '../../../domain/finance/analyse';
 import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
 import { chf, jjmm, moisCourt, signe } from './format';
+import { suiteDeMarche } from '../../calendrier/entete/nomMarche';
 
 const L = 50, R = 8, T = 16, B = 26, W = 370, H = 430;
 const PW = W - L - R, PH = H - T - B;
@@ -39,7 +40,7 @@ export function lotsDuJour(marches: Marche[]): Lot[] {
     const tete = membres.reduce((a, b) => (Math.abs(b.cents) > Math.abs(a.cents) ? b : a));
     const noms = new Set(membres.map(nomDe)), autres = noms.size - 1;
     return { id: membres[0].id, date: membres[0].date, membres, tete, cents: membres.reduce((s, m) => s + m.cents, 0), apres: membres[membres.length - 1].apres, nom: nomDe(tete),
-      suite: membres.length === 1 ? '' : autres > 0 ? `+ ${autres} autre${autres > 1 ? 's' : ''}` : `(${membres.length} fois)` };
+      suite: membres.length === 1 ? '' : autres > 0 ? suiteDeMarche(autres) : `(${membres.length} fois)` };
   });
 }
 

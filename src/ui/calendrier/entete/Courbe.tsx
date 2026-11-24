@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState
 import { ajouterJours, francs, francsExacts, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
 import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
+import { formesDeMarche, nomDeMarche } from './nomMarche';
 
 /**
  * La courbe de l'en-tête (E02, z2s/w3s) : libre et caisse sur 52 semaines, un point par semaine, les mouvements nommés avec leur montant,
@@ -290,7 +291,7 @@ export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: nu
      Les noms nettoyés servent partout ensuite (regroupement du même jour, récurrents, étoiles), donc deux écritures au préfixe doublé se fondent comme au tour 52. */
   const courbe: readonly SoldeSemaine[] = courbeBrute.map(s => ({ ...s, mouvements: s.mouvements.map(m => ({ ...m, nom: sansPrefixeDouble(m.nom) })) }));
   const etoiles: readonly EtoileCourbe[] = etoilesBrutes.map(e => ({ ...e, nom: sansPrefixeDouble(e.nom) }));
-  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number; court?: string };
+  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number; formes?: string[] };
   const parNom = new Map<string, Article>();
   /* K51-1 : des mouvements de noms différents, payés le même jour dans le même sens, font UNE marche. Un seul nom avec son montant ne dirait pas la marche
      (« achat rond −80 » sur −159,95) : leur étiquette dit la somme, le plus gros nom et « + 1 autre ». Un nom qui revient ailleurs sur la courbe (un récurrent)
@@ -304,12 +305,13 @@ export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: nu
     const cle = `${i}|${m.jour}|${m.centimes < 0 ? '-' : '+'}`;
     memeMarche.set(cle, [...(memeMarche.get(cle) ?? []), m]);
   }));
-  const fondus = new Map<SoldeSemaine['mouvements'][number], { tete: SoldeSemaine['mouvements'][number]; nom: string; court: string; centimes: number }>();
+  const fondus = new Map<SoldeSemaine['mouvements'][number], { tete: SoldeSemaine['mouvements'][number]; nom: string; formes: string[]; centimes: number }>();
   for (const liste of memeMarche.values()) {
     if (liste.length < 2) continue;
     const tete = [...liste].sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes))[0];
     const autres = liste.length - 1;
-    const groupe = { tete, nom: `${tete.nom} + ${autres} autre${autres > 1 ? 's' : ''}`, court: `${liste.length} mouvements`, centimes: liste.reduce((t, m) => t + m.centimes, 0) };
+    // R20 (C54-1) : la fonction partagée avec Finances › Prévisions nomme la marche ; toutes ses formes courtes gardent le nom (jamais « 2 mouvements »)
+    const groupe = { tete, nom: nomDeMarche(tete.nom, autres), formes: formesDeMarche(tete.nom, autres), centimes: liste.reduce((t, m) => t + m.centimes, 0) };
     for (const m of liste) fondus.set(m, groupe);
   }
   courbe.forEach((s, i) => s.mouvements.forEach(m0 => {
@@ -326,7 +328,7 @@ export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: nu
       else if (!deja.semaines.includes(s.numero)) deja.semaines.push(s.numero);
       return;
     }
-    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false, fois: 1, ...(fondu ? { court: fondu.court } : {}) });
+    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false, fois: 1, ...(fondu ? { formes: fondu.formes } : {}) });
   }));
   // Des mouvements opposés qui s'annulent (+45 et −45) ne font plus de marche à nommer.
   for (const [nom, a] of parNom) if (a.centimes !== null && Math.round(Math.abs(a.centimes) / 100) === 0) parNom.delete(nom);
@@ -367,13 +369,13 @@ export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: nu
     const loin = m.etoile ? Infinity : mouvement ? LOIN_MARCHE : LOIN_MISE_MAX;
     const montant = mouvement && m.centimes !== null ? sgExact(m.centimes) : '';
     /* CAL-PASSE (21.11, n° 7) : un nom qui ne tient pas se raccourcit (avant « · », puis coupé avec « … »), le montant gardé, avant de se taire */
-    const raccourcis = mouvement ? raccourcir(m.nom) : [];
+    const raccourcis = mouvement && !m.formes ? raccourcir(m.nom) : [];
     // CHD-2 : « Emballage · Jhhh ×2 −90 » : le nombre de mouvements regroupés se lit à côté du nom, jamais coupé avec lui
     const fois = (nom: string) => (m.fois > 1 ? `${nom} ×${m.fois}` : nom);
     const formes = mouvement
       ? [{ nom: fois(m.nom), montant, w: largeurNom(fois(m.nom), montant, m.etoile) },
         ...raccourcis.map(nom => ({ nom: fois(nom), montant, w: largeurNom(fois(nom), montant, m.etoile) })),
-        ...(m.court ? [{ nom: m.court, montant, w: largeurNom(m.court, montant, m.etoile) }] : []),
+        ...(m.formes ?? []).slice(1).map(nom => ({ nom, montant, w: largeurNom(nom, montant, m.etoile) })),
         ...(m.etoile && montant ? [{ nom: fois(m.nom), montant: '', w: largeurNom(fois(m.nom), '', true) }] : [])]
       : textesMise({ i: m.i, centimes: m.centimes ?? 0, titres: mise?.titres ?? [] }).map(t => ({ nom: t, montant: '', w: CARRE_MISE + largeurTexte(t) }));
     // À droite de la marche, à gauche, ou centré au-dessus (ou au-dessous) d'elle : l'abscisse d'ancrage reste celle de sa semaine. La mise de

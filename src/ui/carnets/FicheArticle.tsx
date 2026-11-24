@@ -168,7 +168,7 @@ export function FicheArticle(p: FicheArticleProps) {
   const criteresNoms = (k?.criteres ?? (p.critere ? [p.critere] : [])).flatMap(c => (c.caracteristique ? [c.caracteristique.nom] : []));
   const lues = Object.entries(valeursLuesDe(a as never) as Record<string, ValeurV>);
   /* C53 (R16) : par GROUPES (acides, récolte, huiles par part, puis énergie, dimensions…) : l'ordre est celui de `rangDeDecision`, rien d'autre */
-  const ordonnees = trierParDecision(lues.map(e => ({ nom: e[0], e })), criteresNoms, undefined, x => x.e[1].valeur).map(x => x.e);
+  const ordonnees = trierParDecision(lues.map(e => ({ nom: e[0], e })), criteresNoms, undefined, x => x.e[1].valeur, x => x.e[1].unite).map(x => x.e);
   const cases: Case[] = (ordonnees.filter(([nom]) => !(heros && memeCaracteristique(heros.nom, nom)) && normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
     const huiles = HUILES.test(normaliser(nom)) ? huilesDites(v) : null;
     if (huiles) return { nom, texte: huiles.texte, unite: huiles.unite, rang: rangDe(nom), exemple: v.origine === 'exemple' };
@@ -379,23 +379,27 @@ function PrixMono({ texte }: { texte: string }) {
 }
 
 /**
- * La réglette (h01-6 ; n° 36) : un rond par article en lice, le sien plein ; le meilleur à gauche. Bornée des deux côtés : la meilleure
- * valeur connue à gauche avec « la plus haute des 4 » (ou « la plus basse »), la pire à droite.
+ * La réglette (h01-6 ; n° 36) : un rond par article en lice, le sien plein. C54-3 (R22) : le MÊME SENS que la feuille Articles, partout : le petit à
+ * gauche, le grand à droite (fini « 242 la plus haute » à gauche sur la fiche et à droite sur la feuille). Bornée des deux côtés : la plus basse
+ * valeur connue à gauche, la plus haute à droite ; « la plus haute des 4 » (ou « la plus basse ») dit celle qui est la meilleure pour ce critère.
  */
 function Piste({ valeurs, moi, sens }: { valeurs: number[]; moi: number; sens: string }) {
   const tri = [...valeurs].sort((x, y) => x - y);
   const min = tri[0], max = tri[tri.length - 1];
-  const pos = (v: number) => (max === min ? 0 : sens === 'plus' ? ((max - v) / (max - min)) * 100 : ((v - min) / (max - min)) * 100);
+  const pos = (v: number) => (max === min ? 0 : ((v - min) / (max - min)) * 100);
   const meilleure = sens === 'plus' ? max : min;
   const pire = sens === 'plus' ? min : max;
   const dit = `la plus ${sens === 'moins' ? 'basse' : 'haute'} des ${valeurs.length}`;
+  const borne = (v: number) => (v === meilleure
+    ? <span className="cn-piste-borne"><span className="cn-mono">{nombreTexte(v)}</span> <span className="cn-mut">{dit}</span></span>
+    : <span className="cn-mono cn-mut cn-piste-borne">{nombreTexte(v)}</span>);
   return (
     <div className="cn-piste" role="img" aria-label={`${nombreTexte(meilleure)}, ${dit} ; ${nombreTexte(pire)}, la moins bonne`}>
       <span className="cn-piste-trait" />
       {tri.map((v, i) => <span key={i} className={`cn-piste-rond${v === moi ? ' cn-piste-moi' : ''}`} style={{ left: `${pos(v)}%` }} />)}
       <span className="cn-piste-legende">
-        <span className="cn-piste-borne"><span className="cn-mono">{nombreTexte(meilleure)}</span> <span className="cn-mut">{dit}</span></span>
-        <span className="cn-mono cn-mut cn-piste-borne">{nombreTexte(pire)}</span>
+        {borne(min)}
+        {borne(max)}
       </span>
     </div>
   );

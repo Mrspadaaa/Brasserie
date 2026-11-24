@@ -13,7 +13,7 @@
  */
 
 import { nomEtUnite, nombreSeul, valeurFrancaise } from './lienValeurs.js';
-import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, parPartDHuile, cleDeNom, RANG_INCONNU } from './lienFusion.js';
+import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, parPartDHuile, cleDeNom, texteDeValeur, RANG_INCONNU } from './lienFusion.js';
 
 export { estIdentifiant };
 
@@ -207,6 +207,9 @@ const HUILES = /^\s*(\d+(?:[.,]\d+)?)\s*ml(?:\s*\/\s*100\s*g)?\s*$/i;
 /** Un seul nom, un seul sens : « Poids net » est le poids de l'article quand la page n'en donne pas d'autre (T28-7). */
 const POIDS_NET = 'Poids net';
 
+/** « 1N~/PE », « 3N~ 400 V », « 3~/N/PE », « monophasé », « triphasé » : la valeur d'un branchement électrique. */
+const VALEUR_DE_BRANCHEMENT = /\b[1-3]\s*N?\s*[~∼∽]|\bPE\b|\b(?:mono|tri)ph[aä]s[eé]/i;
+
 /** Une caractéristique en français : nom de la table, unité sortie du nom vers `unite`, valeur à la suisse. */
 function enFrancais<T extends Valeur>(v: T): T {
   const brut = v.nom.replace(/[‎‏]/g, '').trim();
@@ -218,6 +221,9 @@ function enFrancais<T extends Valeur>(v: T): T {
     else if (/\d/.test(v.valeur)) nom = libelleFrancais(porte.base);
   }
   let valeur = valeurFrancaise(v.valeur, unite);
+  /* C54-2 (R21) : « Étape 1N~/PE » est le branchement électrique (monophasé avec neutre et terre) : un brasseur lit « Branchement », jamais « Étape » seul.
+     Seulement quand la valeur dit un branchement (nombre de phases, ~, PE) : une « Étape 2 » d'un autre genre garde son nom. */
+  if (cle(nom) === 'etape' && VALEUR_DE_BRANCHEMENT.test(v.valeur)) nom = 'Branchement';
   /* E47-4 : une référence est un texte, jamais une quantité : « 109971 » ne devient pas « 109 971 » (espaces de milliers retirés s'il y en avait) */
   if (estIdentifiant(nom)) valeur = /^\d[\d\s '’]*$/.test(v.valeur.trim()) ? v.valeur.replace(/[\s '’]/g, '') : v.valeur.trim();
   if (nom === 'Huiles totales') {
@@ -303,7 +309,7 @@ export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) =
      remettent leur ordre : `trierParDecision`). */
   /* C53 (R16) : l'ordre est celui des GROUPES de `rangDeDecision` (acides, huiles, énergie, dimensions…), seul ; le secondaire y est déjà en dernier ;
      les huiles d'un houblon se rangent par part décroissante */
-  return valeurs.map((v, i) => ({ v, i, n: nomDe(v), f: rangDeDecision(nomDe(v)), k: cleDeNom(nomDe(v)) }))
+  return valeurs.map((v, i) => ({ v, i, n: nomDe(v), f: rangDeDecision(nomDe(v), texteDeValeur(v.valeur, v.unite)), k: cleDeNom(nomDe(v)) }))
     .sort((a, b) => a.f - b.f || parPartDHuile(a.n, a.v.valeur, b.n, b.v.valeur) || (parNom ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0)) || a.i - b.i).map((x) => x.v);
 }
 

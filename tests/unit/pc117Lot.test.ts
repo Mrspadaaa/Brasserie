@@ -26,7 +26,7 @@ describe('PC-117 : le lot du même jour nomme les écritures, pas un mot-clé co
     expect(texteLot([sortie('a', 'Achats', 5000), sortie('b', 'Achats', 5000)])).toBe('achats (2 fois) −100, 08.12');
   });
 
-  it('des mots-clés différents restent « N sorties » (acquis de la revue du 10.11)', () => {
-    expect(texteLot([sortie('a', 'Loyer de l’atelier', 40000), sortie('b', 'Assurance', 5000)])).toBe('2 sorties −450, 08.12');
+  it("des mots-clés différents nomment aussi la marche : l'écriture la plus lourde + « 1 autre » (R20, C54-1 : jamais « 2 sorties » sans nom ; remplace l'acquis de la revue du 10.11)", () => {
+    expect(texteLot([sortie('a', 'Loyer de l’atelier', 40000), sortie('b', 'Assurance', 5000)])).toBe('Loyer de l’atelier + 1 autre −450, 08.12');
   });
 });

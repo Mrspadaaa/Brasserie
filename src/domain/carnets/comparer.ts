@@ -125,8 +125,8 @@ export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeu
  */
 const TETE_DE_HOUBLON: readonly RegExp[] = [/^alpha\b/, /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/, /^(?:huiles? totales?|total oils?|gesamtol)\b/];
 export function valeursLuesOrdonnees(a: Pick<Article, 'valeurs'>, premiers: readonly string[] = []): Record<string, Valeur> {
-  const rangees = trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers, undefined, x => x.e[1].valeur).map(x => x.e);
-  const tete = (e: [string, Valeur]) => TETE_DE_HOUBLON.findIndex(r => r.test(cleDeNom(e[0])));
+  const rangees = trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers, undefined, x => x.e[1].valeur, x => x.e[1].unite).map(x => x.e);
+  const tete =(e: [string, Valeur]) => TETE_DE_HOUBLON.findIndex(r => r.test(cleDeNom(e[0])));
   if (!rangees.some(e => tete(e) === 0)) return Object.fromEntries(rangees);
   const dans = (e: [string, Valeur]) => (tete(e) < 0 ? TETE_DE_HOUBLON.length : tete(e));
   return Object.fromEntries(rangees.map((e, i) => ({ e, i })).sort((x, y) => dans(x.e) - dans(y.e) || x.i - y.i).map(x => x.e));

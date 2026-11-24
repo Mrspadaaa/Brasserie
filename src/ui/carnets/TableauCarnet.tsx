@@ -189,7 +189,10 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                       {sous}
                       {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}
                       {veille(a) && <span className="cn-nowrap" title="veille demandée">{sous ? ' ·' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille</span>}
-                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) ? ' · ' : ''}{moinsBien}</span>}
+                      {/* C53-4 / R19 : la quantité et le prix unitaire (« 50 L · 10,40 CHF/L ») se lisent ICI, dans la colonne du nom qui a la place, entiers ; la colonne prix ne dit que le prix.
+                          Chaque morceau ne se coupe pas (le nombre reste avec son unité), la ligne se replie entre eux. */}
+                      {!l.ecarte && l.quantite && l.parUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.quantite}</span> · <span className="cn-nowrap">{l.parUnite}</span></span>}
+                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) || (l.quantite && l.parUnite) ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
                   {cols.map((c, ci) => {
@@ -197,7 +200,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                     const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
                     const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
                     const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
-                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite && l.parUnite ? <small className="cn-mut cn-tab-q">{l.quantite} · {l.parUnite}</small> : null}</span>;
+                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{/* C53-4 / R19 : la colonne dit le prix, rien d'autre ; « 50 L · 10,40 CHF/L » (69 px) débordait sa cellule (44 px) ; le prix unitaire reste entier dans Articles, Comparer et la fiche */}</span>;
                   })}
                 </button>
               );

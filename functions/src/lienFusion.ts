@@ -143,7 +143,7 @@ const ORDRE: readonly RegExp[] = [
   /^(?:matiere|materiau)(?! du produit)/,
   /^(?:induction|compatib)/,
   /^(?:puissance|performance|consommation|classe d.effic|energie|moteur)/,
-  /^(?:tension|branchement|raccordement)/,
+  /^(?:tension|branchement|raccordement|etape\b|phases?\b)/,
   /^(?:type de refroidissement|refroidissement|refrigeration$)/,
   /^(?:fluide|refrigerant|type de refrigerant)/,
   /^mode de fonctionnement/,
@@ -159,12 +159,45 @@ const RANG_DE_PORTE = ORDRE.findIndex(r => r.test('hauteur de la porte'));
 /** Un nom que la liste ne connaît pas vient après la porte (les dimensions restent ensemble), avant la construction et la couleur. */
 export const RANG_INCONNU = RANG_DE_PORTE + 0.5;
 const INCONNU = RANG_INCONNU, DERNIER = 90;
-/** Le rang de décision d'un nom (plus petit = plus tôt) ; le secondaire est rejeté en dernier. */
-export function rangDeDecision(nom: string): number {
+
+/*
+ * C54-2 (R21, 24.11) : les groupes se reconnaissent par MOTS-CLÉS, pas par une liste de noms exacts. Un nom que la liste ci-dessus ne connaît pas
+ * (« Phases d'alimentation », « Charge de réfrigérant », « Régime nominal 400 W ») va dans le groupe de son mot-clé, dans le nom ou, pour
+ * l'énergie, dans l'UNITÉ de sa valeur (W, kW, kWh, V) ; sans mot-clé, il vient après les groupes (RANG_INCONNU). Le rang d'un nom connu ne bouge pas.
+ *  - énergie (rang de « Tension ») : puissance, tension, branchement, étape, phase, consommation, courant, alimentation, kWh, W, V ;
+ *  - froid (rang de « Fluide ») : fluide, frigorigène, réfrigérant, refroidissement, quantité/charge de frigorigène ;
+ *  - dimensions (rang de « Dimensions ») : dimension, hauteur, largeur, profondeur, longueur, porte.
+ */
+const MOT_ENERGIE = /\b(?:puissance|performance|consommation|tension|branchement|raccordement|etapes?|phases?|alimentation|courant|kwh|watts?|volts?)\b/;
+const MOT_FROID = /(?:frigorigene|refrigerant|refroidissement|fluide|frigorifique)/;
+const MOT_DIMENSIONS = /\b(?:dimensions?|hauteur|largeur|profondeur|longueur|porte)\b/;
+const UNITE_ENERGIE = /^[\s\d.,'’·]*(?:k?w(?:att)?s?|kwh(?:\/an|\/a)?|v(?:olts?)?)\b/i;
+const RANG_ENERGIE = ORDRE.findIndex(r => r.test('tension'));
+const RANG_FROID = ORDRE.findIndex(r => r.test('fluide frigorigene'));
+const RANG_DIMENSIONS = ORDRE.findIndex(r => r.test('dimensions du produit'));
+/** Le rang d'un nom que la liste ne connaît pas : celui du groupe de son mot-clé (ou de l'unité de sa valeur), sinon `INCONNU`. */
+function rangParMotCle(k: string, valeur?: string): number {
+  if (MOT_FROID.test(k)) return RANG_FROID;
+  if (MOT_ENERGIE.test(k)) return RANG_ENERGIE;
+  if (MOT_DIMENSIONS.test(k)) return RANG_DIMENSIONS;
+  if (valeur && UNITE_ENERGIE.test(valeur.normalize('NFC'))) return RANG_ENERGIE;
+  return INCONNU;
+}
+/**
+ * Le rang de décision d'un nom (plus petit = plus tôt) ; le secondaire est rejeté en dernier. `valeur` (texte de la valeur, unité comprise) :
+ * pour un nom inconnu, son unité peut dire le groupe (« 400 W » : l'énergie).
+ */
+export function rangDeDecision(nom: string, valeur?: string): number {
   if (estSecondaire(nom)) return DERNIER;
   const k = cleDeNom(nom);
   const i = ORDRE.findIndex(r => r.test(k));
-  return i < 0 ? INCONNU : i;
+  return i < 0 ? rangParMotCle(k, valeur) : i;
+}
+/** Le texte d'une valeur avec son unité (« 400 W »), pour `rangDeDecision` ; vide quand rien n'est lisible. */
+export function texteDeValeur(valeur: unknown, unite?: unknown): string {
+  if (typeof valeur !== 'string' && typeof valeur !== 'number') return '';
+  const v = String(valeur).trim();
+  return typeof unite === 'string' && unite && !v.includes(unite) ? `${v} ${unite}` : v;
 }
 
 /** Une huile essentielle de houblon (myrcène, humulène, caryophyllène, farnésène) : elle se range par sa part, la plus lourde d'abord. */
@@ -188,11 +221,13 @@ export function parPartDHuile(nomX: string, vx: unknown, nomY: string, vy: unkno
  * pages du même vendeur donnent le même ordre, même pour un nom que la liste ne connaît pas : tour 52). `premiers` : les noms que le critère du carnet désigne,
  * toujours en tête (le critère, puis ce qui décide). `valeurDe` : la valeur d'une entrée, pour ranger les huiles d'un houblon par part (C53-1).
  */
-export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string) => number = rangDeDecision, valeurDe?: (c: T) => unknown): T[] {
-  const cle = (c: T) => (premiers.some(p => memeCaracteristique(p, c.nom)) ? -1 : rang(c.nom));
+export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string, valeur?: string) => number = rangDeDecision, valeurDe?: (c: T) => unknown, uniteDe?: (c: T) => unknown): T[] {
+  /* R21 : sans accesseur, la valeur et l'unité se lisent sur l'entrée même quand elle les porte (« valeur », « unite ») */
+  const valeur = valeurDe ?? ((c: T) => (c as { valeur?: unknown }).valeur), unite = uniteDe ?? ((c: T) => (c as { unite?: unknown }).unite);
+  const cle = (c: T) => (premiers.some(p => memeCaracteristique(p, c.nom)) ? -1 : rang(c.nom, texteDeValeur(valeur(c), unite(c))));
   return liste.map((c, i) => ({ c, i, r: cle(c) })).sort((x, y) => {
     if (x.r !== y.r) return x.r - y.r;
-    if (valeurDe) { const p = parPartDHuile(x.c.nom, valeurDe(x.c), y.c.nom, valeurDe(y.c)); if (p) return p; }
+    const p = parPartDHuile(x.c.nom, valeur(x.c), y.c.nom, valeur(y.c)); if (p) return p;
     /* C52 (R12) : à rang égal, connu OU NON, le nom départage ; l'ordre de la page ne sert qu'à deux noms identiques */
     const kx = cleDeNom(x.c.nom), ky = cleDeNom(y.c.nom);
     return kx < ky ? -1 : kx > ky ? 1 : x.i - y.i;
