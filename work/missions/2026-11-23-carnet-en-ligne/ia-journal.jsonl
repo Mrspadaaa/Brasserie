@@ -425,3 +425,9 @@
 {"date":"2026-11-24T09:03:43.282Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
 {"date":"2026-11-24T09:04:09.726Z","tache":"lireLien","url":"brewstore marmite 50 L (R5, E47-5)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
 {"date":"2026-11-24T09:04:42.652Z","tache":"lireLien","url":"galaxus KS240L (R5, E47-5)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
+{"date":"2026-11-24T10:05:43.498Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.002,"voie":"critique-52"}
+{"date":"2026-11-24T10:06:07.483Z","tache":"lireLien","url":"ggmgastro chambre froide 4,06 m3 (C50 rejeu)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
+{"date":"2026-11-24T10:06:34.690Z","tache":"lireLien","url":"ggmgastro chambre froide 2,6 m3 (C50 rejeu)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
+{"date":"2026-11-24T10:08:07.436Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.002,"voie":"critique-52"}
+{"date":"2026-11-24T10:08:34.091Z","tache":"lireLien","url":"brewstore marmite 50 L (C50 rejeu, E47)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
+{"date":"2026-11-24T10:08:58.301Z","tache":"lireLien","url":"galaxus KS240L (C50 rejeu, E47)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
