@@ -9,11 +9,11 @@ import { pourIASuivi, suiviDesLignes, type LigneCarnet } from '../../domain/carn
 import { plier } from '../../domain/carnets/domaines';
 import { poserCategorie } from '../../domain/carnets/arbre';
 import { changerEtat, etatDe, etiqueter, genreDe, poserGenre } from '../../domain/carnets/suivi';
-import { lireCarnet, sansIndefinis, type Etiquette } from '../../domain/carnets/modele';
+import { lireCarnet, sansIndefinis, type Etiquette, type PropositionSuivi } from '../../domain/carnets/modele';
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { AVIS, appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
-import { CARNET_NEUF, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
+import { CARNET_NEUF, destinationDans, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
 import { depuisIA, depuisLocale, pourIA, vuesVrac } from './lignesRegles';
 import type { RetourDe } from './retourCarnet';
 import type { Annonce, Appliquer, AReprendre, Attente, AvisIA, Boite, CarnetsVueProps, Etat, Retour, RetourNeuf, Vue } from './carnetsTypes';
@@ -81,7 +81,7 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
     const b = new Brouillon(courant);
     const msg = b.messages().find(x => x.id === a.messageId);
     if (msg) {
-      const cle = (p: { sorte: string; carnetId: string; optionId?: string; texte?: string; versCarnetId?: string }) => JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.texte ?? null, p.versCarnetId ?? null]);
+      const cle = (p: { sorte: string; carnetId: string; optionId?: string; texte?: string; versCarnetId?: string }) => JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.sorte === 'deplacer' ? null : p.texte ?? null, p.versCarnetId ?? null]);
       const deja = msg.carnetMessage.propositionsSuivi ?? [];
       const neuves = s.propositions.filter(p => !deja.some(d => cle(d) === cle(p)));
       const rattache = !msg.carnetMessage.rattache && s.rattache && msg.carnetMessage.texte.includes(s.rattache.citation) ? s.rattache : undefined;
@@ -169,7 +169,15 @@ export function creerRangementCarnets(x: RangementV) {
       const le = maintenant().toISOString();
       const message: MessageARanger = { id: nouvelIdCarnet('MSG'), texte: txt, le, depuis: depuis ?? 'liste', rangement: 'locale' as const };
       /* D451 : le repli local pose ses jetons (montant écrit, « pas trouvé », « contacté ») sur le message quand il va dans UN carnet ; l'IA les complète */
-      const avecJetons = (carnetId: string): MessageARanger => { const e = etiquettesDuRepli(txt, carnetId); return e.length ? { ...message, etiquettes: e } : message; };
+      /* C65-1, C65-2 (R47) : la phrase tapée dans un carnet ouvert y reste ; l'autre carnet existant qu'elle nomme devient la carte « Rattacher à … ? »,
+         posée tout de suite (avant l'IA, qui peut ne jamais répondre), jamais une écriture chez lui */
+      const ouvertDoc = depuis ? lireCarnets(etat).find(c => c.id === depuis) : undefined;
+      const vise = ouvertDoc && !carnetChoisi.current ? destinationDans(txt, ouvertDoc, lireCarnets(etat)).propose : undefined;
+      const avecJetons = (carnetId: string): MessageARanger => {
+        const e = etiquettesDuRepli(txt, carnetId);
+        const cartes: PropositionSuivi[] = vise && depuis && carnetId === depuis ? [{ sorte: 'deplacer', carnetId: depuis, versCarnetId: vise.carnetId, origine: 'locale' }] : [];
+        return e.length || cartes.length ? { ...message, ...(e.length ? { etiquettes: e } : {}), ...(cartes.length ? { propositionsSuivi: cartes } : {}) } : message;
+      };
       let r: Resultat;
       let neuf: string | null = null;
       const force = aForcer.current; aForcer.current = null;

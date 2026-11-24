@@ -596,7 +596,7 @@ export function suiviDesLignes(lignes: readonly LigneCarnet[], o: EntreeSuivi): 
   let rattache: Rattache | undefined;
   const vues = new Set<string>();
   const proposer = (p: PropositionSuivi) => {
-    const cle = JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.texte ?? null, p.versCarnetId ?? null]);
+    const cle = JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.sorte === 'deplacer' ? null : p.texte ?? null, p.versCarnetId ?? null]);
     if (vues.has(cle) || propositions.length >= PROPOSITIONS_MAX) return;
     vues.add(cle);
     propositions.push(p);

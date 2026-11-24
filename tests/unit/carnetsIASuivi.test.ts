@@ -498,9 +498,10 @@ describe('MESSAGE-RESTE-DANS-SON-CARNET dans destinationDans (envoiRegles)', () 
   it('avec { resterIci }, la phrase reste dans l’ouvert et le carnet qu’elle nomme est proposé ; sans l’option, l’ancien calcul', () => {
     const frigo = nomme('Frigo'), evier = nomme('Évier');
     const t = 'évier 2 bacs pour laver les fûts';
-    const avant = destinationDans(t, frigo, cs);
+    const avant = destinationDans(t, frigo, cs, { resterIci: false });
     const apres = destinationDans(t, frigo, cs, { resterIci: true });
-    expect(avant.carnetId, 'l’ancien calcul annonce l’autre carnet').not.toBe(frigo.id);
+    expect(destinationDans(t, frigo, cs), 'C65-1 : le calcul par défaut, celui du cadre et de l’envoi, ne désigne plus l’autre carnet').toEqual(apres);
+    expect(avant.carnetId, 'le calcul brut annonce l’autre carnet').not.toBe(frigo.id);
     expect(apres).toEqual({ carnetId: frigo.id, titre: frigo.title, propose: { carnetId: evier.id, titre: evier.title } });
   });
 

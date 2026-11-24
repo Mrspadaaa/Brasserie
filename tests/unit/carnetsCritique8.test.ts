@@ -78,8 +78,9 @@ describe('critique 8, n° 1 : une phrase sur un autre objet ne devient jamais un
     const evier = destinationDans('évier 2 bacs pour laver les fûts', f, cs.filter(c => !/Évier/.test(c.title)));
     expect(evier.carnetId).toBe(CARNET_NEUF);
     expect(evier.titre).toMatch(/^Évier/);
-    /* un carnet proche existe : il le prend */
-    expect(destinationDans('évier 2 bacs pour laver les fûts', f, cs).titre).toMatch(/Évier/);
+    /* un carnet proche existe : le calcul brut le prend ; C65-1 (R47) : l'envoi ne l'écrit plus chez lui, il le propose (`propose`), le message reste ici */
+    expect(destinationDans('évier 2 bacs pour laver les fûts', f, cs, { resterIci: false }).titre).toMatch(/Évier/);
+    expect(destinationDans('évier 2 bacs pour laver les fûts', f, cs)).toMatchObject({ carnetId: f.id, propose: { titre: expect.stringMatching(/Évier/) } });
     /* les critères restent ici */
     for (const t of ['doit tenir 80 °C', '1 200 m³/h au moins', 'hotte murale à 1 200 m³/h au moins', 'Appeler le ferblantier'])
       expect(autreObjet(t, v)).toBeNull();

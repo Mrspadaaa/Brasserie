@@ -6,7 +6,7 @@
 import React from 'react';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ID_FRIGO, ID_VENTILATION, fixtureCarnets } from '../../src/domain/carnets/fixture';
+import { ID_EVIER, ID_FRIGO, ID_VENTILATION, fixtureCarnets } from '../../src/domain/carnets/fixture';
 import { lireCarnets, lireMessages } from '../../src/domain/carnets/modele';
 import { aidesCarnet } from '../../src/config/carnetIA';
 import { magasinMemoire } from '../../src/services/carnetsStore';
@@ -62,6 +62,45 @@ describe('D451 : le suivi de l’IA, de la réponse à l’écriture annulable',
     const vent = lireCarnets(magasin.lire()).find(c => c.id === ID_VENTILATION)!;
     expect(vent.carnet.taches ?? [], 'la tâche n’est pas écrite : elle attend son geste').toEqual([]);
     expect(vent.carnet.suivi, 'aucun état écrit').toBeUndefined();
+  }, 30000);
+
+  /* C65-1 (chemin IA) et C65-2 (chemin local, IA sans réponse) : le vrai chemin de l'écran. Le cadre et l'envoi lisaient `destinationDans`, qui désignait le carnet
+     voisin (celui dont la phrase nomme l'objet) : `ici` valait ce carnet, la note (IA) ou le critère (repli) y était écrite. */
+  async function envoyerDansFrigo(texte: string, ranger: AppelsIA['ranger']) {
+    const appels: AppelsIA = { ranger, async lire() { throw new Error('aucun lien ici'); } };
+    const magasin = magasinMemoire(fixtureCarnets() as never[]);
+    const avant = lireCarnets(magasin.lire()).map(c => [c.id, JSON.stringify(c)] as const);
+    render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode={'simule' as never} appels={appels}
+      aides={aidesCarnet('simule' as never, {})} ouvrir={{ id: ID_FRIGO, at: 1 }} />);
+    await attendre(30);
+    const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+    fireEvent.change(champ(), { target: { value: texte } });
+    await attendre(40);
+    fireEvent.keyDown(champ(), { key: 'Enter' });
+    await attendre(1500);
+    const apres = lireCarnets(magasin.lire());
+    const m = lireMessages(magasin.lire()).find(x => x.carnetMessage.texte === texte)!;
+    return { m, apres, intact: (id: string) => JSON.stringify(apres.find(c => c.id === id)) === avant.find(([i]) => i === id)![1] };
+  }
+  const TEXTE_EVIER = 'ZZ TEST — évier 2 bacs pour laver les fûts';
+
+  it('C65-1, chemin IA : l’IA désigne le carnet Évier, le message tapé dans le Frigo y reste, l’Évier est intact, « Rattacher à Évier ? » est proposé', async () => {
+    const { m, intact } = await envoyerDansFrigo(TEXTE_EVIER, async () => ({ ok: true, data: { lignes: [{ sorte: 'note', texte: 'Évier 2 bacs pour laver les fûts', carnetId: ID_EVIER }] } }));
+    expect(m, 'le message est gardé').toBeTruthy();
+    expect(m.carnetMessage.effets.length, 'il a rangé quelque chose').toBeGreaterThan(0);
+    expect(m.carnetMessage.effets.filter(e => e.carnetId !== ID_FRIGO), 'aucun effet hors du Frigo').toEqual([]);
+    expect(intact(ID_EVIER), 'l’Évier n’est pas touché').toBe(true);
+    expect(m.carnetMessage.propositionsSuivi).toEqual([{ sorte: 'deplacer', carnetId: ID_FRIGO, versCarnetId: ID_EVIER, origine: 'locale' }]);
+  }, 30000);
+
+  it('C65-2, chemin local : l’IA est refusée (panne), le message reste dans le Frigo, aucun critère ni note chez l’Évier, la carte est là malgré tout', async () => {
+    const { m, intact } = await envoyerDansFrigo(TEXTE_EVIER, async () => ({ ok: false, error: 'panne simulée' }));
+    expect(m).toBeTruthy();
+    expect(m.carnetMessage.effets.length).toBeGreaterThan(0);
+    expect(m.carnetMessage.effets.filter(e => e.carnetId !== ID_FRIGO), 'aucun effet hors du Frigo').toEqual([]);
+    expect(intact(ID_EVIER), 'l’Évier n’est pas touché').toBe(true);
+    expect(m.carnetMessage.rangement).toBe('locale');
+    expect(m.carnetMessage.propositionsSuivi).toEqual([{ sorte: 'deplacer', carnetId: ID_FRIGO, versCarnetId: ID_EVIER, origine: 'locale' }]);
   }, 30000);
 
   it('une réponse sans les champs du suivi (serveur ancien) : le repli local garde ses jetons, aucune carte, aucune erreur', async () => {
