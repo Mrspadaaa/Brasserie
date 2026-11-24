@@ -10,6 +10,7 @@ import { nomAlpha } from '../../domain/carnets/alpha';
 import type { Article } from '../../domain/carnets/modele';
 import { portCentimes, prixRendu, tauxVersChf, type PrixArticleDonnees } from '../../domain/carnets/prixRendu';
 import { estMatierePesee, quantiteArticle } from '../../domain/carnets/prixUnitaire';
+import { valeursLuesDe } from '../../domain/carnets/comparer';
 
 /* ------------------------------------------------------------------------------------------------ colonnes */
 
@@ -35,7 +36,7 @@ export function choisirMesures(candidats: readonly CandidatMesure[], max = MESUR
 }
 
 type Valeurs = Record<string, { valeur: number | string | boolean; unite?: string }>;
-export type ArticleRegle = Pick<Article, 'nom'> & { valeurs: Valeurs } & Partial<Pick<Article, 'prixCentimes' | 'devise' | 'taxe' | 'change' | 'conditionnement' | 'offres' | 'prixUnite' | 'livraison' | 'prixDes' | 'prixTTCCentimes'>>;
+export type ArticleRegle = Pick<Article, 'nom'> & { valeurs: Valeurs } & Partial<Pick<Article, 'prixCentimes' | 'devise' | 'taxe' | 'change' | 'conditionnement' | 'offres' | 'prixUnite' | 'livraison' | 'prixDes' | 'prixTTCCentimes' | 'doute' | 'vendeur' | 'pays' | 'domaine'>>;
 
 /** Un carnet de matière pesée : tous ses articles se pèsent (houblon : un taux d'alpha ou un nom de matière). Vide : non. */
 export const estCarnetDeMatiere = (articles: readonly ArticleRegle[]): boolean => articles.length > 0 && articles.every(a => estMatierePesee(a as never));
@@ -72,7 +73,7 @@ export function recolteDe(a: ArticleRegle): string | null {
 
 /** Les arômes écrits par la page (« agrumes, citron vert, mangue »), un mot par pastille ; vide : aucun. */
 export function aromesDe(a: ArticleRegle): string[] {
-  for (const [nom, v] of Object.entries(a.valeurs)) {
+  for (const [nom, v] of Object.entries(valeursLuesDe(a as never) as Record<string, { valeur: number | string | boolean; unite?: string }>)) {
     if (!/^(?:ar[oô]mes?|saveurs?|ar[oô]mes? et saveurs?|aroma|aromen|geschmack)\b/.test(sansAccent(nom))) continue;
     const t = texteValeur(v);
     if (t) return t.split(/\s*[,;/]\s*|\s+et\s+/i).map(s => s.trim()).filter(Boolean);
@@ -280,3 +281,92 @@ export function poserQuantitePour(cle: string, kg: number): void {
   ecouteurs.forEach(f => f());
 }
 export function ecouterQuantitePour(f: () => void): () => void { ecouteurs.add(f); return () => { ecouteurs.delete(f); }; }
+
+/* ------------------------------------------------------------------------------------------------ cartes, fiche : « le choix fait le prix » */
+
+/** Le nom court d'un vendeur pour une tête de colonne ou une barre (« Brau- und Rauchshop » → « Brau »). */
+export const vendeurCourt = (a: Pick<ArticleRegle, 'vendeur' | 'nom' | 'domaine'>): string => {
+  const v = (a.vendeur ?? a.domaine ?? a.nom ?? '').trim();
+  return v.length > 14 ? (v.split(/[\s-]+/)[0] || v) : v;
+};
+
+/** Une ligne de « je prends » (fiche) et de « Conditionnement de … » (carte) : ce que vend le vendeur, son prix dans sa devise, le kilo rendu. */
+export interface LigneConditionnement {
+  kg: number;
+  /** « 50 g », « 1 kg », « au gramme » */
+  libelle: string;
+  /** prix de ce conditionnement dans la devise de l'article, en centimes (au gramme : le prix d'un gramme) */
+  centimes: number;
+  devise: string;
+  auGramme: boolean;
+  chfKg: PrixAuKilo | null;
+}
+
+const texteMasse = (kg: number): string => (kg < 1 ? `${Math.round(kg * 1000)} g` : `${String(Math.round(kg * 100) / 100).replace('.', ',')} kg`);
+
+/**
+ * Les conditionnements d'un article, du plus petit au plus gros, chacun avec son prix et le kilo rendu chez le brasseur. Le prix donné au gramme
+ * (« 0,1044 CHF/g ») est une ligne « au gramme ». Aucun conditionnement lisible : liste vide (jamais un prix deviné).
+ */
+export function conditionnementsDe(a: ArticleRegle, taux?: number): LigneConditionnement[] {
+  const devise = (a.devise ?? 'CHF').toUpperCase();
+  return paliersDe(a).map(p => {
+    const auGramme = a.prixUnite?.unite === 'g' && Math.abs(p.kg - 0.001) < 1e-9;
+    return { kg: p.kg, libelle: auGramme ? 'au gramme' : texteMasse(p.kg), centimes: p.centimes, devise, auGramme, chfKg: prixAuKilo(a, p.kg, taux) };
+  });
+}
+
+/** « 3,72 € », « 80,00 », « 0,1044 » : le prix d'une ligne ; la devise ne se dit que si ce n'est pas le franc (la colonne d'à côté est en CHF). */
+export function textePrixConditionnement(l: Pick<LigneConditionnement, 'centimes' | 'devise' | 'auGramme'>): string {
+  const francs = l.centimes / 100;
+  const n = francs.toLocaleString('fr-CH', l.auGramme ? { minimumFractionDigits: 2, maximumFractionDigits: 4 } : { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/[ ’]/g, ' ');
+  const sym = l.devise === 'CHF' ? '' : l.devise === 'EUR' ? ' €' : l.devise === 'USD' ? ' $' : ` ${l.devise}`;
+  return `${n}${sym}`;
+}
+
+/** La ligne de conditionnement que la quantité d'achat `pourKg` utilise (le plus gros qui ne la dépasse pas) ; `null` : aucune. */
+export function ligneDuPour(lignes: readonly LigneConditionnement[], a: ArticleRegle, pourKg: number, taux?: number): LigneConditionnement | null {
+  const p = prixAuKilo(a, pourKg, taux);
+  return p ? lignes.find(l => Math.abs(l.kg - p.palier) < 1e-9) ?? null : null;
+}
+
+/** « TVA d'import 8,1 % comptée · port non lu » sous le tableau « je prends » ; `null` : le prix est en francs (rien à dire de plus), ou inconnu. */
+export function noteImport(a: ArticleRegle, pourKg: number, taux?: number, tva = 0.081): string | null {
+  const p = prixAuKilo(a, pourKg, taux);
+  if (!p || !p.estime) return null;
+  const pc = `${(tva * 100).toLocaleString('fr-CH', { maximumFractionDigits: 1 })} %`;
+  return `TVA d'import ${pc} comptée · ${p.plancher ? 'port non lu' : 'port compté'}`;
+}
+
+/** Un doute D450 qui porte sur la disponibilité (« la page dit en stock, la lecture dit épuisé ») ; sinon « à vérifier » seulement. */
+export const douteSurDispo = (doute: string | undefined): boolean => !!doute?.trim() && /dispo|stock|[ée]puis|rupture|lager|verf[uü]gbar|disponib/i.test(doute);
+
+/** La puce d'un doute D450 : « dispo ? » quand il porte sur la disponibilité, « à vérifier » sinon ; `null` : aucun doute. */
+export const puceDoute = (doute: string | undefined): string | null => (!doute?.trim() ? null : douteSurDispo(doute) ? 'dispo ?' : 'à vérifier');
+
+const nombreAlpha =(a: ArticleRegle): number | null => { const t = alphaDe(a); const n = t === null ? null : Number(t.replace(',', '.')); return n !== null && Number.isFinite(n) ? n : null; };
+
+/**
+ * « MotlerHops, 39 CHF de moins au kilo ; tu perds 0,4 point d'α et la dispo est douteuse. » : le compromis d'un carnet de matière, calculé ici sur
+ * le prix au kilo rendu à la quantité d'achat. Le gagnant (le moins cher) contre le suivant ; ce qu'on perd ne se dit que si on le sait (α lu des
+ * deux côtés, doute sur la dispo). `null` : moins de 2 prix au kilo connus, ou écart nul.
+ */
+export function compromisMatiere(articles: ReadonlyArray<ArticleRegle & { id: string }>, pourKg: number, taux?: number): string | null {
+  const classes = articles.map(a => ({ a, p: prixAuKilo(a, pourKg, taux) })).filter((x): x is { a: (typeof articles)[number]; p: PrixAuKilo } => x.p !== null).sort((x, y) => x.p.chf - y.p.chf);
+  if (classes.length < 2) return null;
+  const [gagnant, suivant] = classes;
+  const ecart = Math.round(suivant.p.chf) - Math.round(gagnant.p.chf);
+  if (ecart <= 0) return null;
+  const pertes: string[] = [];
+  const ag = nombreAlpha(gagnant.a), as = nombreAlpha(suivant.a);
+  if (ag !== null && as !== null && as - ag > 0.049) pertes.push(`tu perds ${(Math.round((as - ag) * 10) / 10).toLocaleString('fr-CH', { maximumFractionDigits: 1 })} point d’α`);
+  if (douteSurDispo(gagnant.a.doute)) pertes.push('la dispo est douteuse');
+  const nom = (gagnant.a.vendeur ?? gagnant.a.domaine ?? gagnant.a.nom ?? 'le moins cher').trim();
+  return `${nom}, ${ecart} CHF de moins au kilo${pertes.length ? ` ; ${pertes.join(' et ')}` : ''}.`;
+}
+
+/** Le texte du bouton Choisir de Comparer : « Choisir · MotlerHops, 1 kg » (matière pesée) ; sinon « Choisir la 4,06 m³ » (la valeur de tête du 1er) ou « Choisir ». */
+export function libelleChoisir(args: { vendeur?: string; pourKg?: number; tete?: string | null }): string {
+  if (args.vendeur && args.pourKg) return `Choisir · ${args.vendeur}, ${texteQuantite(args.pourKg)}`;
+  return args.tete ? `Choisir la ${args.tete}` : 'Choisir';
+}

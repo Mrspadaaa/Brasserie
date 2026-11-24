@@ -256,3 +256,67 @@
 .cn-pour { position: relative; display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px 0 14px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; }
 .cn-pour select { appearance: none; background: transparent; border: 0; color: inherit; font: inherit; padding: 0 18px 0 0; min-height: 34px; }
 .cn-pour svg { position: absolute; right: 8px; pointer-events: none; }
+
+/* ───── D451, greffe-p2 passe 2 : cartes Articles (glisser), fiche d'un houblon, Comparer (maquettes2/v01) ───── */
+/* la carte glisse vers la gauche : Déplacer, Retirer (défilement natif à l'accrochage, boutons toujours atteignables au clavier) */
+.cn-glisse { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 16px; overscroll-behavior-x: contain; }
+.cn-glisse::-webkit-scrollbar { display: none; }
+.cn-glisse-carte { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+.cn-glisse-actions { flex: 0 0 auto; display: flex; scroll-snap-align: end; margin-left: 8px; border-radius: 12px; overflow: hidden; }
+.cn-glisse-actions > button { min-width: 72px; padding: 0 12px; border: 0; color: #fff; font-size: 16px; font-weight: 700; }
+.cn-glisse-deplacer { background: #1f64a3; }
+.cn-glisse-retirer { background: #98501f; }
+.cn-glisse-aide { margin: 8px 0 0; font-size: 14px; }
+.cn-carte-mat { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "corps prix" "pieds pieds"; gap: 6px 10px; padding: 10px 12px; border: 1px solid var(--c-line2); border-radius: 16px; background: var(--c-bg); }
+.cn-carte-mat-1 { border-color: rgb(var(--area-stocks)); border-left-width: 5px; }
+.cn-carte-mat-corps { grid-area: corps; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; font: inherit; }
+.cn-carte-mat-tx { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.cn-carte-mat .cn-carte-mat-tx > b { font-size: 16px; }
+.cn-carte-mat .cn-carte-mat-tx > .cn-mut { font-size: 14px; }
+.cn-carte-mat-prix { grid-area: prix; display: flex; flex-direction: column; align-items: flex-end; padding: 0; border: 0; background: none; color: inherit; font: inherit; line-height: 1.1; }
+.cn-carte-mat .cn-carte-mat-prix b { font-size: 26px; font-weight: 700; }
+.cn-carte-mat .cn-carte-mat-prix .cn-mut { font-size: 14px; }
+.cn-carte-mat-prix:disabled { opacity: 1; }
+.cn-carte-mat-pieds { grid-area: pieds; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.cn-carte-mat-alpha { background: var(--c-bg); border: 1px solid var(--c-line2); }
+.cn-carte-mat-petit { display: inline-flex; gap: 6px; align-items: baseline; font-size: 15px; }
+.cn-carte-mat .cn-carte-mat-petit .cn-mono { font-weight: 700; font-size: 16px; }
+.cn-conditionnement { margin-top: 8px; border-style: dashed; padding: 6px 0 4px; }
+.cn-conditionnement > h4 { margin: 0 0 4px; padding: 0 12px; font-size: 15px; font-weight: 400; }
+.cn-prend-ligne { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: baseline; width: 100%; padding: 6px 12px; border: 0; border-top: 1px solid var(--c-line); background: none; color: inherit; font: inherit; font-size: 16px; text-align: left; }
+.cn-prend-ligne > span:nth-child(2), .cn-prend-ligne > span:nth-child(3) { text-align: right; }
+.cn-prend-tete { border-top: 0; font-size: 14px; padding-top: 0; }
+.cn-prend-on { background: rgb(var(--area-stocks) / .14); font-weight: 700; }
+.cn-prend-on svg { vertical-align: -2px; }
+.cn-prend { padding: 8px 0 6px; overflow: hidden; }
+.cn-prend-note { margin: 0; padding: 6px 12px 2px; font-size: 14px; }
+.cn-prend-prix { margin: 4px 12px 2px; }
+/* la fiche d'un houblon : tuile minuscule, vendeur, α en gros, arômes en couleur */
+.cn-fiche-entete { display: flex; align-items: center; gap: 10px; }
+.cn-fiche-entete .cn-titre { margin: 0; min-width: 0; }
+.cn-fiche-tuile { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; overflow: hidden; background: var(--c-s2); }
+.cn-fiche-tuile img { width: 100%; height: 100%; object-fit: contain; }
+.cn-fiche-tuile .cn-vignette { width: 44px; height: 44px; }
+.cn-fiche-qui { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 0; font-size: 15px; }
+.cn-fiche-alpha { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 4px; }
+.cn-fiche-alpha-val { font-size: 32px; font-weight: 700; line-height: 1; color: rgb(var(--area-stocks)); }
+/* Comparer : « Côte à côte · le meilleur coché », ✓ sur la meilleure valeur, « 5 diffèrent » et « 18 identiques ▸ » */
+.cn-comparer .cn-cote-a-cote { display: flex; align-items: baseline; gap: 8px; margin: 12px 0 4px; font-size: 18px; }
+.cn-comparer .cn-cote-a-cote .cn-mut { font-size: 14px; font-weight: 400; }
+.cn-comparer .cn-tableau-comparer td.cn-meilleur { font-weight: 700; }
+.cn-comparer .cn-tableau-comparer td.cn-meilleur::before { content: "✓ "; color: rgb(var(--area-stocks)); font-weight: 700; }
+.cn-comparer .cn-cmp-differents { font-size: 14px; font-weight: 400; white-space: nowrap; }
+.cn-comparer .cn-cmp-identiques > th { max-width: none; padding: 0; text-align: left; }
+.cn-comparer .cn-cmp-identiques-bouton { display: flex; align-items: baseline; gap: 6px; width: 100%; padding: 8px 6px; border: 0; background: var(--c-s1); color: inherit; font: inherit; text-align: left; }
+.cn-comparer .cn-cmp-identiques-apercu { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 400; }
+.cn-comparer .cn-tableau-comparer tr[hidden] { display: none; }
+.cn-quantite-phrase { margin: 8px 0 0; font-size: 16px; }
+.cn-comparer .cn-bloc.cn-barres { margin-top: 8px; }
+.cn-prend-ligne { grid-template-columns: minmax(64px, .9fr) 1fr 1fr; }
+.cn-prend-ligne > span:first-child { white-space: nowrap; }
+/* la ligne « n identiques » ne pèse pas dans la largeur des colonnes : son aperçu se coupe, il n'élargit pas le tableau */
+.cn-comparer .cn-cmp-identiques > td { max-width: 0; padding: 0; }
+.cn-comparer .cn-cmp-identiques-bouton { box-sizing: border-box; }
+.cn-prend-ligne svg { display: inline; }
+/* le kilo rendu au gros de la carte (maquette v01 : « ≈41 CHF/kg ») : seule exception à « 14 px partout » du carnet ouvert (V4 fiche), un seul chiffre par carte */
+.cn-ouvert .cn-carte-mat .cn-carte-mat-prix b { font-size: 24px !important; }

@@ -357,7 +357,7 @@ export function BlocsMatiere({ articles, titre, taux }: { articles: ArticleV[]; 
  * « moins = mieux » qui s'ajoutent aux valeurs du tableau (B12 : « l'idée des barres mais en complément »). Calculé ici, dit tel (« calculé »,
  * jamais « proposé par l'IA » sans l'IA). Rien si moins de 2 articles ont un prix et la mesure, ou si la mesure ne s'additionne pas (une température).
  */
-export function BlocPrixParMesure({ lignes, cols }: { lignes: Ligne[]; cols: ColonneVue[] }) {
+export function BlocPrixParMesure({ lignes, cols, enBarres }: { lignes: Ligne[]; cols: ColonneVue[]; enBarres?: boolean }) {
   const col = cols.find(c => c.cle !== '__prix' && c.sens !== 'oui-non' && (uniteExtensive(c.unite) || lignes.some(l => /^[\d\s.,]+\s?(?:m³|m²|L)$/i.test(valeurTexteBrut(l.cellules[c.nom])))));
   if (!col) return null;
   const unite = col.unite && uniteExtensive(col.unite) ? col.unite : /(m³|m²|L)\s*$/i.exec(valeurTexteBrut(lignes.map(l => l.cellules[col.nom]).find(Boolean)))?.[1];
@@ -372,7 +372,8 @@ export function BlocPrixParMesure({ lignes, cols }: { lignes: Ligne[]; cols: Col
   const ordre = [...lignes].sort((x, y) => (valeurs.get(x.articleId) ?? Infinity) - (valeurs.get(y.articleId) ?? Infinity));
   return (
     <section className="cn-bloc cn-barres" aria-label={`Prix au ${unite}`}>
-      <h4><b>Prix au {unite}</b> <span className="cn-mut">moins = mieux</span> <Provenance origine="locale" /></h4>
+      {/* Comparer (maquette v01, B12) : « En barres · en plus des valeurs », le prix d'une unité en rang ; dans le carnet, le titre dit la mesure */}
+      <h4>{enBarres ? <><b>En barres</b> <span className="cn-mut">en plus des valeurs · prix au {unite} · moins = mieux</span></> : <><b>Prix au {unite}</b> <span className="cn-mut">moins = mieux</span></>} <Provenance origine="locale" /></h4>
       {ordre.map((l, i) => {
         const v = valeurs.get(l.articleId);
         if (v === null || v === undefined) return null;

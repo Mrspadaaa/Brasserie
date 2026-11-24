@@ -21,6 +21,11 @@ import { Photo } from './pictos';
 import { BoutonRelire } from './BoutonRelire';
 import { BoutonEscalader } from './BoutonEscalader';
 import { Insec, liesParNbsp } from './insecable';
+import { BlocPrixParMesure, usePour } from './TableauCarnet';
+import {
+  aDesPaliers, compromisMatiere, departager, ditDiffèrent, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
+  prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, type ArticleRegle
+} from './tableauRegles';
 import './carnets-decider.css';
 import './comparer-compact.css';
 
@@ -218,6 +223,35 @@ export interface ComparerProps {
   onEscalader?: (articleId: string) => void | Promise<void>;
   /** Tour 3, PCN-164 : d'où viennent les valeurs (`mentionValeurs`) ; absent : les vendeurs. */
   mention?: string;
+  /**
+   * D451 (maquettes2/v01) : les articles du carnet (offres, conditionnements, doutes). Avec eux, un carnet de matière pesée dit « Prix au kilo, rendu »
+   * à la quantité d'achat du carnet, « Selon la quantité » et son compromis ; sans eux, le prix au kilo se lit sur les lignes du tableau.
+   */
+  articles?: ReadonlyArray<ArticleRegle & { id: string }>;
+}
+
+/** Les barres « moins = mieux » (maquette v01) : le meilleur en vert à 100 % de la place divisée par la plus grande valeur, les autres en gris. */
+function BarresPrix({ titre, sous, lignes, calcule }: { titre: string; sous: string; lignes: ReadonlyArray<{ id: string; nom: string; valeur: number; texte: string }>; calcule?: boolean }) {
+  const ordre = [...lignes].sort((x, y) => x.valeur - y.valeur);
+  const valeurs = new Map<string, number | null>(ordre.map(l => [l.id, l.valeur] as const));
+  const meilleurs = plusBasDe(valeurs);
+  const barres = largeursBarres(valeurs);
+  return (
+    <section className="cn-bloc cn-barres" aria-label={titre}>
+      <h4><b>{titre}</b> <span className="cn-mut">{sous}</span>{calcule ? <> <Provenance origine="locale" /></> : null}</h4>
+      {ordre.map((l, i) => {
+        const bon = meilleurs.has(l.id);
+        return (
+          <div key={l.id} className="cn-barre">
+            <span className={`cn-rang${i === 0 ? ' cn-rang-1' : ''}`}>{i + 1}</span>
+            <span className="cn-barre-nom">{l.nom}</span>
+            <span className="cn-barre-piste" aria-hidden><i className={bon ? undefined : 'cn-barre-autre'} style={{ width: `${barres.get(l.id) ?? 0}%` }} /></span>
+            <b className={`cn-mono cn-barre-val${bon ? ' cn-vert' : ''}`}>{l.texte}</b>
+          </div>
+        );
+      })}
+    </section>
+  );
 }
 
 /**
@@ -380,10 +414,12 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 }
 
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
-function CellulePrix({ l, taux, onRelire, onEscalader }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void> }) {
+function CellulePrix({ l, taux, onRelire, onEscalader, prixKg }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void>; prixKg?: string | null }) {
   const escalader = onEscalader && !l.ecarte && l.aEscalader?.length ? <BoutonEscalader onEscalader={() => onEscalader(l.articleId)} raison={l.aEscalader.map(x => (x === 'doute' ? 'les deux lectures ne s\u2019accordent pas' : `${x} manquant`)).join(' ; ')} classe="cn-escalader-cellule" /> : null;
   /* C48-1 : l'article est lu mais son prix ne l'est pas : « Relire » est un geste du brasseur (rien ne part tout seul) */
   if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}{escalader}</>;
+  /* D451 (maquette v01, « CHF/kg ≈ 41 ») : un carnet de matière pesée compare le kilo rendu à la quantité d'achat du carnet ; les gestes de la cellule restent */
+  if (prixKg) return <><span className="cn-mono">{prixKg}</span>{escalader}</>;
   if (estEtranger(l)) {
     const r = renduArticle(l, taux);
     const dev = (l.devise ?? '').toUpperCase();
@@ -409,7 +445,10 @@ export function Comparer(p: ComparerProps) {
   const sourceUnique = cqc.length > 0 && cqc.every(x => x.source === cqc[0].source) ? cqc[0].source : undefined;
   /* A1 : le prix classe s'il est connu sur au moins 2 articles en lice de même devise ; sinon son rang reste pointillé (« Prix ? ») */
   const prixConnus = actifs.filter(l => l.prixCentimes !== undefined);
-  const prixClasse = prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1;
+  /* D451 : un carnet de matière pesée classe au kilo rendu ; ses articles viennent de `articles` */
+  const enLice = p.articles ? actifs.flatMap(l => { const a = p.articles!.find(x => x.id === l.articleId); return a ? [a] : []; }) : [];
+  const matiere = enLice.length > 1 && estCarnetDeMatiere(enLice);
+  const prixClasse = matiere || (prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1);
   const aUnEuro = actifs.some(l => estEtranger(l));
   const aUnTaux = actifs.some(l => estEtranger(l) && tauxVersChf(l, p.taux));
   /* C48-4 (décision (b)) : sans critère qui classe, un compromis (de l'IA ou calculé) qui recopie les valeurs du tableau n'apprend rien : il
@@ -431,6 +470,7 @@ export function Comparer(p: ComparerProps) {
     return perte.nombres.every(n => nu.includes(n.replace(/[s  ]/g, ''))) ? phrase : `${phrase.replace(/[s.;]+$/, '')}, mais ${perte.texte}`;
   };
   const compromisIA = p.compromis && !recite(p.compromis) && !recopieSansEcart(p.compromis) ? completeParPerte(p.compromis) : null;
+  /* D451 : un carnet de matière pesée dit son compromis au kilo rendu (gain, α perdu, dispo douteuse) ; calculé plus bas, où `matiere` est connu */
   const compromisLocal = compromisIA ? null : (() => { const c = compromisDe(t); return c && !recite(c) ? c : null; })();
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6). L-27 : un seul article lu (le choisi, et des liens non
      lus) a sa colonne ; seul un tableau sans aucun article lu reste à naître */
@@ -448,6 +488,35 @@ export function Comparer(p: ComparerProps) {
   /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
   const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
   const colEntete = lignesVues.find(c => c.critere) ?? lignesVues.find(c => /volume/i.test(c.nom));
+  /* D451 (maquettes2/v01) : un carnet de matière pesée se compare au kilo rendu, à la quantité d'achat du carnet ; le reste se compare à ses mesures. */
+  const [pour] = usePour(p.titre);
+  const kilos = new Map(enLice.map(a => [a.id, matiere ? prixAuKilo(a, pour, p.taux) : null] as const));
+  const prixKgDe = new Map([...kilos].flatMap(([id, pk]) => (pk ? [[id, texteChfKg(pk)] as const] : [])));
+  const meilleursKg = meilleursPrixAuKilo(kilos);
+  const barresMatiere = (() => {
+    if (matiere) {
+      const rows = enLice.flatMap(a => { const pk = prixAuKilo(a, pour, p.taux); return pk ? [{ id: a.id, nom: vendeurCourt(a), valeur: pk.chf, texte: texteChfKg(pk) }] : []; });
+      return rows.length > 1 ? { titre: 'Prix au kilo, rendu', sous: `moins = mieux · ${texteQuantite(pour)}`, rows, calcule: true } : null;
+    }
+    return null;
+  })();
+  const quantites = matiere && aDesPaliers(enLice) ? lignesSelonLaQuantite(enLice, p.taux) : [];
+  const phraseQuantite = quantites.length ? phraseSelonLaQuantite(quantites, id => { const a = enLice.find(x => x.id === id); return a ? vendeurCourt(a) : ''; }) : null;
+  /* « 5 diffèrent » d'abord, « 18 identiques ▸ » repliés (B12) : ce qui classe (prix, critère) reste en vue même identique */
+  const [identiquesDepliees, setIdentiquesDepliees] = React.useState(false);
+  const comparables = lignesVues.map(c => ({ c, cle: c.cle, cellules: actifs.map(l => texteCellule(l, c) ?? null) }));
+  /* l'ordre des lignes ne change pas (offre en tête, ordre de la fiche) : les identiques se replient sur place et une ligne dépliante les dit en bas ; un seul égal ne se replie pas */
+  const separes = actifs.length >= 2 ? departager(comparables, new Set([cleEpinglee, ...lignesVues.filter(c => c.critere).map(c => c.cle)])) : null;
+  const identiques = separes && separes.identiques.length >= 2 ? separes.identiques : [];
+  const diffèrent = separes && identiques.length ? separes.diffèrent : comparables;
+  const lignesAffichees = comparables;
+  const premier = actifs.find(l => l.rang === 1);
+  const libelleBouton = libelleChoisir({
+    ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour } : {}; })() : {}),
+    tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null
+  });
+  const compromisMat = !compromisIA && matiere ? compromisMatiere(enLice, pour, p.taux) : null;
+  const compromisAffiche = compromisIA ?? compromisMat ?? compromisLocal;
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
@@ -482,12 +551,14 @@ export function Comparer(p: ComparerProps) {
       ) : (
         <>
           {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
+          {barresMatiere && <BarresPrix titre={barresMatiere.titre} sous={barresMatiere.sous} lignes={barresMatiere.rows} calcule={barresMatiere.calcule} />}
+          {!seul && (cqc.length > 0 || !!barresMatiere) && <h3 className="cn-cote-a-cote"><b>Côte à côte</b> <span className="cn-mut">le meilleur coché</span></h3>}
           <div className="cn-tableau-cadre" data-suite={suite ? true : undefined}>
           <div className="cn-tableau-zone" ref={zone}>
             <table className="cn-tableau cn-tableau-comparer">
               <thead>
                 <tr>
-                  <th scope="col"><span className="cn-cache">Caractéristique</span></th>
+                  <th scope="col">{identiques.length > 0 ? <span className="cn-mut cn-cmp-differents">{ditDiffèrent(diffèrent.length)}</span> : <span className="cn-cache">Caractéristique</span>}</th>
                   {ordre.map(l => {
                     const sa = apercuLigne(l, p.nonLus);
                     return (
@@ -507,8 +578,9 @@ export function Comparer(p: ComparerProps) {
                 </tr>
               </thead>
               <tbody>
-                {lignesVues.map(c => {
-                  const meilleurs = meilleursDe(t, c);
+                {lignesAffichees.map(({ c }) => {
+                  const meilleurs = matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, c);
+                  const replie = identiques.some(x => x.cle === c.cle) && !identiquesDepliees;
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
                   /* C50-6 : l'unité se dit une fois, dans l'en-tête de la ligne (g01-8 « O₂ ppb ») ; une valeur qui la porte déjà (« 0 à 8 °C ») la dit seule, et la cellule qui ne la porte pas la garde pour le lecteur d'écran */
@@ -516,7 +588,8 @@ export function Comparer(p: ComparerProps) {
                   const porteUnite = (txt: string | null) => !!unite && !!txt && txt.includes(unite);
                   const uniteEntete = unite && !ordre.some(l => porteUnite(texteCellule(l, c))) ? unite : undefined;
                   return (
-                    <tr key={c.cle} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
+                    <React.Fragment key={c.cle}>
+                    <tr hidden={replie || undefined} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
                       <th scope="row" title={libelle !== c.nom ? c.nom : undefined} data-mot-long={aMotLong(libelle) ? true : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.cle.startsWith('__') ? (c.unite ? <span className="cn-mut"> {c.unite}</span> : null) : uniteEntete ? <span className="cn-mut"> {uniteEntete}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
@@ -527,7 +600,7 @@ export function Comparer(p: ComparerProps) {
                         const hors = l.horsSeuil?.[c.cle];
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} />
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} prixKg={matiere ? prixKgDe.get(l.articleId) ?? null : null} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">?</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}
@@ -535,9 +608,22 @@ export function Comparer(p: ComparerProps) {
                         );
                       })}
                     </tr>
+                    </React.Fragment>
                   );
                 })}
+                {/* « 18 identiques ▸ » : une ligne pour tout ce qui ne départage pas, dépliable ; les lignes restent dans le tableau, à leur place */}
+
               </tbody>
+              {identiques.length > 0 && <tfoot>
+                  <tr className="cn-cmp-identiques">
+                    <td colSpan={ordre.length + 1}>
+                      <button type="button" className="cn-cmp-identiques-bouton" aria-expanded={identiquesDepliees} onClick={() => setIdentiquesDepliees(o => !o)}>
+                        <b>{ditIdentiques(identiques.length)}</b> <span aria-hidden>{identiquesDepliees ? '▾' : '▸'}</span>
+                        {!identiquesDepliees && <span className="cn-mut cn-cmp-identiques-apercu">{identiques.map(x => x.cellules[0]).filter(Boolean).join(', ')}</span>}
+                      </button>
+                    </td>
+                  </tr>
+              </tfoot>}
             </table>
           </div>
           </div>
@@ -550,10 +636,12 @@ export function Comparer(p: ComparerProps) {
             </ul>
           )}
           {/* g01-8 : « Compromis : la 1re, … », de l'IA, sinon calculé sur place avec les valeurs du tableau (picto local, pas le ✻ : Q19). */}
-          {(compromisIA || compromisLocal) && (
+          {phraseQuantite && <p className="cn-bloc cn-quantite-phrase"><b>Selon la quantité</b> : <Insec t={phraseQuantite} /></p>}
+          {!matiere && !barresMatiere && lignesAffichees.length > 0 && <BlocPrixParMesure lignes={actifs as never} cols={cols} enBarres />}
+          {compromisAffiche && (
             <p className="cn-encart cn-compromis" data-source={compromisIA ? 'ia' : 'locale'}>
               <Scale size={20} role="img" aria-label="Compromis" className="cn-ok" />
-              <span><b>Compromis :</b> <Insec t={compromisIA ?? compromisLocal} /> <Provenance origine={compromisIA ? 'ia' : 'locale'} /></span>
+              <span><b>Compromis :</b> <Insec t={compromisAffiche} /> <Provenance origine={compromisIA ? 'ia' : 'locale'} /></span>
             </p>
           )}
           {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{aUnTaux ? `≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », ${MENTION_FRAIS}, estimé` : 'Euros : le taux se pose dans la liste des articles'}</p>}
@@ -576,7 +664,7 @@ export function Comparer(p: ComparerProps) {
             </table>
           )}
           <ARelire articles={aRelire} />
-          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={p.onChoisir}>Choisir</button>}
+          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={p.onChoisir}>{libelleBouton}</button>}
         </>
       )}
     </article>

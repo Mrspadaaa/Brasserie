@@ -12,7 +12,8 @@
  */
 import React from 'react';
 import { articleHonnete } from '../../domain/carnets/prixUnitaire';
-import { ExternalLink, Eye, Link2 } from 'lucide-react';
+import { ExternalLink, Eye, Link2, TriangleAlert } from 'lucide-react';
+import { alphaDe, conditionnementsDe, ligneDuPour, prixAuKilo, puceDoute, QUANTITES_POUR, recolteDe, texteChfKg, textePrixConditionnement, vendeurCourt, type ArticleRegle } from './tableauRegles';
 import { libelleEcarte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
 import { memeCaracteristique } from '../../../functions/src/lienFusion';
 import { dispoDe } from '../../domain/carnets/modele';
@@ -322,6 +323,108 @@ export function CarteClassee(p: CarteClasseeProps) {
         {/* C50-8 : « Veiller » et son interrupteur vont ensemble, jamais coupés : le pied passe à la ligne avant de pousser l'interrupteur hors de l'écran */}
         <span className="cn-classee-veille"><span>Veiller</span><Bascule active={!!a.veille?.active} onChange={x => p.onVeille?.(x)} etiquette={`Veiller ${a.nom ?? ''}`.trim()} /></span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * « Glisse une carte vers la gauche : Déplacer, Retirer » (B9 « retiré à droite ») : la carte et ses deux gestes dans une piste qui défile à l'accrochage
+ * (défilement natif : au doigt, à la souris ou au clavier, les boutons restent des boutons). Sans `actions`, la carte seule.
+ */
+export function Glisse({ nom, actions, children }: { nom: string; actions?: { onRetirer: () => void; onDeplacer?: () => void }; children: React.ReactNode }) {
+  if (!actions) return <>{children}</>;
+  return (
+    <div className="cn-glisse" role="group" aria-label={nom}>
+      <div className="cn-glisse-carte">{children}</div>
+      <div className="cn-glisse-actions">
+        {actions.onDeplacer && <button type="button" className="cn-glisse-deplacer" aria-label={`Déplacer l’article « ${nom} »`} onClick={actions.onDeplacer}>Déplacer</button>}
+        <button type="button" className="cn-glisse-retirer" aria-label={`Retirer l’article « ${nom} »`} onClick={actions.onRetirer}>Retirer</button>
+      </div>
+    </div>
+  );
+}
+
+export interface CarteMatiereProps {
+  article: ArticleV;
+  rang: number | null;
+  taux?: number;
+  /** La quantité d'achat de référence du carnet (kg) : « 1 kg 40,69 € » et le gros « ≈41 CHF/kg » la suivent. */
+  pour: number;
+  faconNom?: string;
+  carnetTitre?: string;
+  ecarte?: { raison: string };
+  onOuvrir: () => void;
+  /** Un conditionnement de 1, 5 ou 20 kg touché dans « Conditionnement de … » pose la quantité du carnet. */
+  onPour?: (kg: number) => void;
+  /** Glisser la carte vers la gauche : Déplacer, Retirer. Absent : la carte ne glisse pas. */
+  actions?: { onRetirer: () => void; onDeplacer?: () => void };
+}
+
+/**
+ * La carte d'un article d'un carnet de matière pesée (maquettes2/v01, « articles », B9 « J'aime bien l'idée, retiré à droite ») : rang, vignette, nom,
+ * vendeur · pays · récolte ; α et dispo (avec son doute) en pastilles ; à droite le kilo rendu au gros, dessous le conditionnement de la quantité choisie
+ * avec son prix. Le gros prix se touche pour ouvrir « Conditionnement de <vendeur> · le choix fait le prix » ; glissée à gauche, la carte
+ * montre Déplacer et Retirer (barre de défilement native, à l'accrochage : un geste, et les deux boutons restent des boutons).
+ * Une valeur inconnue est absente ou « ? », jamais 0.
+ */
+export function CarteMatiere(p: CarteMatiereProps) {
+  const a = p.article;
+  const regle = a as unknown as ArticleRegle;
+  const [ouvert, setOuvert] = React.useState(false);
+  const conds = conditionnementsDe(regle, p.taux);
+  const pk = prixAuKilo(regle, p.pour, p.taux);
+  const choisie = ligneDuPour(conds, regle, p.pour, p.taux);
+  const alpha = alphaDe(regle), recolte = recolteDe(regle), doute = puceDoute(regle.doute);
+  const qui = [a.vendeur ?? a.domaine, a.pays, recolte ? `récolte ${recolte}` : null].filter(Boolean).join(' · ');
+  const dispo = dispoDe(a);
+  const nom = a.nom ?? a.domaine ?? 'Article';
+  const plusieurs = conds.length > 1;
+  const prixGros = pk ? texteChfKg(pk) : null;
+  const corps = (
+    <div className={`cn-carte-mat${p.rang === 1 ? ' cn-carte-mat-1' : ''}${p.ecarte ? ' cn-ecarte' : ''}`}>
+      <button type="button" className="cn-carte-mat-corps" onClick={p.onOuvrir} aria-label={`${nom}${p.rang ? `, ${rangTexte(p.rang)}` : ''}`}>
+        {p.rang ? <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span> : null}
+        <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
+        <span className="cn-carte-mat-tx">
+          <b className="cn-deux-lignes">{liesParNbsp(a.nom)}</b>
+          <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>
+        </span>
+      </button>
+      <button type="button" className="cn-carte-mat-prix" aria-expanded={plusieurs ? ouvert : undefined} disabled={!plusieurs} onClick={() => setOuvert(o => !o)}
+        aria-label={prixGros ? `${prixGros} CHF le kilo${plusieurs ? ', conditionnements' : ''}` : 'prix au kilo inconnu'}>
+        {prixGros ? <><b className={`cn-mono${p.rang === 1 ? ' cn-vert' : ''}`}>{prixGros}</b><span className="cn-mut">CHF/kg</span></> : <><b className="cn-inconnu">?</b><span className="cn-mut">CHF/kg</span></>}
+      </button>
+      <span className="cn-carte-mat-pieds">
+        {alpha && <span className="cn-pastille cn-carte-mat-alpha">α <span className="cn-mono">{alpha}</span></span>}
+        {dispo && <span className={`cn-pastille ${dispoClasse(dispo)}`}>{dispo}</span>}
+        {doute && <span className="cn-tag-att"><TriangleAlert size={14} aria-hidden /> {doute}</span>}
+        <span className="cn-sp" />
+        {choisie && <span className="cn-carte-mat-petit"><span className="cn-mut">{choisie.libelle}</span> <span className="cn-mono">{textePrixConditionnement(choisie)}</span></span>}
+      </span>
+    </div>
+  );
+  return (
+    <div className="cn-glisse-cadre">
+      <Glisse nom={nom} actions={p.actions}>{corps}</Glisse>
+      {ouvert && plusieurs && (
+        <section className="cn-bloc cn-conditionnement" aria-label={`Conditionnement de ${vendeurCourt(regle)}`}>
+          <h4 className="cn-mut">Conditionnement de {vendeurCourt(regle)} · le choix fait le prix</h4>
+          {conds.map(l => {
+            const dedans = l === choisie;
+            const touchable = p.onPour && QUANTITES_POUR.includes(l.kg);
+            const ligne = (
+              <>
+                <span>{l.libelle}</span>
+                <span className="cn-mono">{textePrixConditionnement(l)}</span>
+                <span className="cn-mono">{l.chfKg ? <>{Math.round(l.chfKg.chf).toLocaleString('fr-CH').replace(/[ ’]/g, ' ')} <span className="cn-mut">/kg</span></> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>
+              </>
+            );
+            return touchable
+              ? <button key={l.kg} type="button" className={`cn-prend-ligne cn-cond-ligne${dedans ? ' cn-prend-on' : ''}`} aria-pressed={dedans} aria-label={`Pour ${l.libelle}`} onClick={() => p.onPour!(l.kg)}>{ligne}</button>
+              : <div key={l.kg} className={`cn-prend-ligne cn-cond-ligne${dedans ? ' cn-prend-on' : ''}`}>{ligne}</div>;
+          })}
+        </section>
+      )}
     </div>
   );
 }

@@ -30,6 +30,14 @@ import { articleAEscalader, raisonEscalade } from '../../domain/carnets/manques'
 import { Insec, liesParNbsp } from './insecable';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
+import { TriangleAlert } from 'lucide-react';
+import { jetonArome } from '../../domain/levure/couleurs';
+import { nomAlpha } from '../../domain/carnets/alpha';
+import { estMatierePesee } from '../../domain/carnets/prixUnitaire';
+import { libelleDoute, usePour } from './TableauCarnet';
+import {
+  alphaDe, aromesDe, conditionnementsDe, ligneDuPour, noteImport, recolteDe, textePrixConditionnement, texteChfKg, texteQuantite, type ArticleRegle
+} from './tableauRegles';
 
 export interface FicheArticleProps {
   article: ArticleV;
@@ -127,8 +135,15 @@ function huilesDites(v: ValeurV): { texte: string; unite: string } | null {
   return m && /ml/i.test(`${brut} ${v.unite ?? ''}`) ? { texte: m[1].replace('.', ','), unite: 'ml/100 g' } : null;
 }
 
-/** Une case de la grille « Caractéristiques » : son nom, sa valeur dite (ou « non publié »), son rang s'il classe. */
-interface Case { nom: string; texte: string | null; unite?: string; rang?: number; exemple?: boolean }
+/** Une case de la grille « Caractéristiques » : son nom, sa valeur dite (ou « non publié »), son rang s'il classe ; `puce` : un doute D450 dit à côté (« ⚠ dispo ? »). */
+interface Case { nom: string; texte: string | null; unite?: string; rang?: number; exemple?: boolean; puce?: string }
+
+/** Le pays dit en toutes lettres quand la page donne son code (« FR » → « France ») ; un nom déjà écrit reste tel quel. */
+function paysDit(pays: string | undefined): string | undefined {
+  if (!pays) return undefined;
+  if (!/^[A-Za-z]{2}$/.test(pays.trim())) return pays;
+  try { return new Intl.DisplayNames(['fr'], { type: 'region' }).of(pays.trim().toUpperCase()) ?? pays; } catch { return pays; }
+}
 
 export function FicheArticle(p: FicheArticleProps) {
   const a = articleHonnete(p.article);
@@ -199,12 +214,29 @@ export function FicheArticle(p: FicheArticleProps) {
   if (cases.length < 4 && dispoDe(a)) cases.push({ nom: 'Disponibilité', texte: dispoDe(a)! });
   if (cases.length < 4 && a.pays) cases.push({ nom: 'Origine', texte: a.pays });
 
+  /* D451 (maquettes2/v01, fiche) : un houblon (une matière qu'on pèse, dont la page donne l'alpha) s'ouvre sur son alpha en gros, ses arômes en
+     couleur, le tableau « je prends · prix · CHF/kg rendu », puis récolte, forme, origine et dispo (avec son doute D450). Ce que la page dit d'autre
+     reste dans la grille, après. Aucune règle ne lit un nom de produit : la matière et l'alpha lu décident. */
+  const regle = a as unknown as ArticleRegle;
+  const matiere = estMatierePesee(a as never);
+  const alpha = matiere ? alphaDe(regle) : null;
+  const houblon = alpha !== null;
+  const [pour] = usePour(p.titreCarnet);
+  const conds = matiere ? conditionnementsDe(regle, p.taux) : [];
+  const ligneChoisie = ligneDuPour(conds, regle, pour, p.taux);
+  const aromes = houblon ? aromesDe(regle) : [];
+  const recolte = houblon ? recolteDe(regle) : null;
+  const puceDoute = libelleDoute(regle.doute);
+  /* le doute D450 sur la dispo se dit à côté de la disponibilité (« ⚠ dispo ? ») ; la grille reste celle de la page, dans l'ordre de décision */
+  const casesVues: Case[] = puceDoute ? cases.map(c => (c.nom === 'Disponibilité' ? { ...c, puce: puceDoute } : c)) : cases;
+
   /* Les offres de la même machine : même nom (normalisé), dans le carnet ; la moins chère d'abord. */
   const offres = k && a.nom
     ? k.articles.filter(x => x.nom && normaliser(x.nom) === normaliser(a.nom!)).map(articleHonnete).sort((x, y) => (x.prixCentimes ?? Infinity) - (y.prixCentimes ?? Infinity))
     : [a];
   const qui = a.vendeur ?? a.domaine;
   const [poserPrix, setPoserPrix] = React.useState(false);
+  /* houblon : le tableau « je prends » dit déjà l'offre ; le bloc Offre ne reste que s'il porte un geste ou plusieurs vendeurs */
   /* D446 : toutes les photos de la page, une à la fois (‹ ›), la première d'abord ; une photo cassée est écartée */
   const photos = (a.photos?.length ? a.photos : a.photo ? [a.photo] : []).filter(u => !photoCassee(u));
   const [iPhoto, setIPhoto] = React.useState(0);
@@ -242,7 +274,7 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand. Critique 6, n° 20 (D-78) : la photo lue
           de la page ; celle du banc est simulée et le dit (« exemple »). */}
-      {photoCourante ? (
+      {houblon ? null : photoCourante ? (
         <figure className="cn-fiche-photo" data-cadre="photo">
           <img key={photoCourante} onError={() => { marquerCassee(photoCourante); redessiner(n => n + 1); }} src={photoCourante} alt={`photo ${photos.length > 1 ? `${iP + 1} sur ${photos.length} ` : ''}de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} />
           <figcaption><Camera size={16} aria-hidden /> photo{photos.length > 1 ? <> <span className="cn-mono">{iP + 1}/{photos.length}</span></> : null} de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption>
@@ -260,14 +292,54 @@ export function FicheArticle(p: FicheArticleProps) {
           {photoNonLue && <figcaption className="cn-fiche-photo-non-lue"><Camera size={16} aria-hidden /> photo non lue</figcaption>}
         </figure>
       )}
-      <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>
+      {houblon ? (
+        /* B10 : « la photo en tout petit à la place de l'icône » : une tuile à côté du nom, la photo de la page quand il y en a une, sinon l'objet dessiné */
+        <div className="cn-fiche-entete">
+          <span className="cn-fiche-tuile" data-cadre={photoCourante ? 'photo' : 'picto'}>
+            {photoCourante
+              ? <img key={photoCourante} onError={() => { marquerCassee(photoCourante); redessiner(n => n + 1); }} src={photoCourante} alt={`photo de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} />
+              : <span aria-hidden><VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette" taille={44} /></span>}
+          </span>
+          <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>
+        </div>
+      ) : <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>}
+      {houblon && (
+        <>
+          <p className="cn-fiche-qui cn-mut">
+            <span className="cn-sp">{[a.vendeur ?? a.domaine, paysDit(a.pays), a.taxe ? `${a.taxe.toUpperCase()}${a.taxe === 'ttc' && a.pays && /^[A-Za-z]{2}$/.test(a.pays.trim()) ? ` ${a.pays.trim().toUpperCase()}` : ''}` : null].filter(Boolean).join(' · ')}</span>
+          </p>
+          <p className="cn-fiche-alpha"><span className="cn-mut">α{recolte ? ` lot ${recolte}` : ''}</span> <span className="cn-mono cn-fiche-alpha-val">{alpha} %</span></p>
+          {aromes.length > 0 && (
+            <p className="cn-aromes-liste" aria-label="Arômes lus sur la page">{aromes.map(m => {
+              const j = jetonArome(m);
+              return <span key={m} className="cn-arome" style={j ? { background: j.fond, color: j.texte } : undefined}>{m}</span>;
+            })}</p>
+          )}
+          {conds.length > 1 && (
+            <section className="cn-bloc cn-prend" aria-label="Je prends">
+              <div className="cn-prend-ligne cn-prend-tete cn-mut"><span>je prends</span><span>prix</span><span>CHF/kg rendu</span></div>
+              {conds.map(l => {
+                const on = l === ligneChoisie;
+                return (
+                  <div key={l.kg} className={`cn-prend-ligne${on ? ' cn-prend-on' : ''}`} aria-current={on || undefined}>
+                    <span>{l.libelle}{on ? <> <Check size={16} aria-hidden /></> : null}</span>
+                    <span className="cn-mono">{textePrixConditionnement(l)}</span>
+                    <span className="cn-mono">{l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>
+                  </div>
+                );
+              })}
+              {noteImport(regle, pour, p.taux) && <p className="cn-mut cn-prend-note">{noteImport(regle, pour, p.taux)}</p>}
+            </section>
+          )}
+        </>
+      )}
       {(p.facon || ajoute) && (
         <p className="cn-mut">
           {p.facon && <><b className="cn-encre">façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</>}
           {p.facon && ajoute ? ' · ' : ''}{ajoute ? `lien collé le ${ajoute}` : ''}
         </p>
       )}
-      {heros && (
+      {heros && !(houblon && /^alpha\b/i.test(heros.nom)) && (
         <div className="cn-mesure cn-heros">
           <div className="cn-heros-val">
             <span className="cn-mut"><Insec t={heros.libelle} /></span>
@@ -320,16 +392,17 @@ export function FicheArticle(p: FicheArticleProps) {
           {poserPrix && p.onPrix && <PoserPrix centimes={a.prixCentimes} onPoser={c => { p.onPrix!(c); setPoserPrix(false); }} onFermer={() => setPoserPrix(false)} />}
         </>
       )}
-      {(cases.length > 0 || manque.length > 0) && (
+      {(casesVues.length > 0 || manque.length > 0) && (
         <>
           <h3 className="cn-sous">Caractéristiques {lu && <span className="cn-mut">lues sur la fiche du vendeur, {lu}</span>}</h3>
           <dl className="cn-carac" aria-label="Caractéristiques">
-            {cases.map(c => (
+            {casesVues.map(c => (
               <div key={c.nom}>
                 <dt>{c.nom}</dt>
                 <dd>{c.texte === null ? <span className="cn-mut">non publié</span> : <>{c.unite ? <span className="cn-nowrap"><span className={estChiffre(c.texte) ? 'cn-mono' : undefined}>{c.texte}</span><span> {c.unite}</span></span> : <span className={estChiffre(c.texte) ? 'cn-mono' : undefined}><Insec t={c.texte} /></span>}</>}
                   {c.rang ? <span className="cn-vert cn-carac-rang"> {rangTexte(c.rang)}</span> : null}
                   {c.exemple && <> <Provenance origine="exemple" /></>}
+                  {c.puce && <> <span className="cn-tag-att"><TriangleAlert size={14} aria-hidden /> {c.puce}</span></>}
                 </dd>
               </div>
             ))}
@@ -351,7 +424,7 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {!p.choisi && p.onChoisir && (
         <>
-          <button type="button" className="cn-action cn-action-vert cn-large" onClick={p.onChoisir}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}</button>
+          <button type="button" className="cn-action cn-action-vert cn-large" onClick={p.onChoisir}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${texteQuantite(pour)}` : ''}</button>
           <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prix ? <>, <PrixMono texte={prix} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}
