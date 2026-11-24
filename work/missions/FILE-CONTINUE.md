@@ -17,9 +17,10 @@ pause: 2026-11-24T07:26:43Z
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
 - [x] Voie ecr6 (4fdf9a535) : E44-1 (dates d'une récurrente à payer = Calendrier), E44-2 (retrait annonce le remboursement lié), E44-3 (pas de « N° de facture » sur un apport), bandeau d'erreur serveur en français (firestoreRepo.ts)
 - [x] Tour 45 en ligne (index-Ba6_cMq7.js) : 3 problèmes, 0 B ; E44 vérifiés
-- [ ] Carnet : ses choix portés (carnet-q, tour 46 index-D_XfFyFl.js + aiTask) : test en ligne critique-46, mesure du domaine
-- [ ] Voie ecr7 : E45-1..3, puis tour 47 et test
-- [ ] Lecture des liens fiable (D449) : voie liens-modeles (Escalader = Neon, Hydrogen auto dès qu'un champ manque, banc avant/après), puis aiTask en ligne après critique-46 et test
+- [x] Carnet : ses choix portés, en ligne tour 46 ; test critique-46 : 6 problèmes (1 B), domaine 10/10
+- [ ] Tour 47 en ligne (index-BxvQ1J-z.js, aiTask D449) : test critique-47 (E45, liens)
+- [ ] Voie carnet-c46 : C46-1..6, puis tour 48 et test
+- [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
 - [ ] Carnet : lecture d'une photo par l'IA (L-24), une vraie pièce, coût réservé et journalisé
 - [ ] Calendrier : CALP-6, CALP-13, bandeau « Enregistrement sur le serveur… » qui reste, « −1 663 » sous ±, bouton de durée en retard
