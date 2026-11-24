@@ -41,11 +41,17 @@ export function bandeauxCarnet(x: BandeauxV) {
   };
   const aReprendreVus = aReprendre.filter(x => !(x.echec && retour?.messageId === x.messageId) && duCarnet(x.messageId));
   const toutEchec = aReprendreVus.every(x => x.echec);
+  /* LE-1 : une lecture de lien restée en attente (app fermée avant sa fin) se propose ; elle ne repart qu'au toucher « Reprendre » */
+  const nbLectures = aReprendreVus.filter(x => x.lecture).length;
+  const nbMessages = aReprendreVus.length - nbLectures;
+  const toutLecture = nbMessages === 0;
   const repriseNode = enLigne && aReprendreVus.length > 0 && etatR.etape !== 'en-cours' ? (
     <div className="cn-bandeau cnf-reprise" role="status" data-sorte="reprise">
       <div className="cn-bandeau-tete">
-        <span className="cn-sp">{toutEchec ? 'L’IA n’a pas répondu' : 'De retour en ligne'} : {aReprendreVus.length} message{aReprendreVus.length > 1 ? 's' : ''} rangé{aReprendreVus.length > 1 ? 's' : ''} tel quel</span>
-        <button type="button" className="cn-puce" data-relire onClick={() => void rangerMaintenant()}>{toutEchec ? 'Relire' : 'Ranger maintenant'}</button>
+        <span className="cn-sp">{toutLecture
+          ? `Lecture de lien interrompue : ${nbLectures} à reprendre`
+          : `${toutEchec ? 'L’IA n’a pas répondu' : 'De retour en ligne'} : ${nbMessages} message${nbMessages > 1 ? 's' : ''} rangé${nbMessages > 1 ? 's' : ''} tel quel`}</span>
+        <button type="button" className="cn-puce" data-relire onClick={() => void rangerMaintenant()}>{toutLecture ? 'Reprendre' : toutEchec ? 'Relire' : 'Ranger maintenant'}</button>
       </div>
     </div>
   ) : null;

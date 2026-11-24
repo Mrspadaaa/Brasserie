@@ -19,7 +19,7 @@ import type { LienV } from './CarnetOuvert';
 import { titreProposeDe } from './RenommerCarnet';
 import { CARNET_NEUF, destinationDans, majusculeFr, plusieursLignes, rappelVers, sansAutreSujet } from './envoiRegles';
 import { AVIS_IA, PLIER_APRES_MS } from './lignesRegles';
-import type { Annonce, AvisIA, CarnetsVueProps, Jointe, Retour, RetourNeuf, Vue } from './carnetsTypes';
+import type { Annonce, AReprendre, AvisIA, CarnetsVueProps, Jointe, Retour, RetourNeuf, Vue } from './carnetsTypes';
 import { useDonneesCarnets } from './useDonneesCarnets';
 import { useNavigationCarnet } from './useNavigationCarnet';
 import { retourDeMessage } from './retourCarnet';
@@ -115,7 +115,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** Critique 5, n° 24 : les carnets dont le dernier envoi n'a pas eu l'IA (échec, hors ligne, éteinte) : passés à CarnetOuvert. */
   const [iaManquee, setIaManquee] = useState<Readonly<Record<string, AvisIA['sorte']>>>({});
   /** Critique 6, n° 24 : les messages rangés hors ligne, tels quels ; au retour du réseau, « Ranger maintenant » les passe à l'IA. */
-  const [aReprendre, setAReprendre] = useState<{ messageId: string; texte: string; echec?: true }[]>([]);
+  const [aReprendre, setAReprendre] = useState<AReprendre[]>([]);
   /** Critique 5, n° 26 : le titre tapé dans le champ du bas pendant « Se renomme ici ». */
   const [titreEdite, setTitreEdite] = useState('');
   /** G14 (R15) : le lien que le presse-papier tient, lu au focus du champ ; refus silencieux. */
@@ -164,13 +164,17 @@ export function CarnetsVue(p: CarnetsVueProps) {
     setRangeEnCours, setEnTete, setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef,
     retourRef, vueRef, neDeListe, suivi, inversesLiens }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis, suivi]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* IA-ETAPES-VISIBLES : à l'ouverture, une lecture lancée avant la fermeture de l'app est reprise par son jeton (une fois) */
-  const lecturesReprises = useRef(false);
+  /* IA-ETAPES-VISIBLES, LE-1 (24.11) : une lecture lancée avant la fermeture de l'app reste gardée ; l'ouvrir ne la rejoue PLUS (regarder n'écrit
+     jamais : elle rangeait dans le carnet sans geste). Elle se propose dans le bandeau de reprise, une fois par montage ; « Reprendre » la rejoue
+     par son jeton (rangerMaintenant). Un message pas encore lu du fil n'est pas oublié : la liste se relit quand le fil change. */
+  const lecturesOffertes = useRef(new Set<string>());
   useEffect(() => {
-    if (lecturesReprises.current || !suivi) return;
-    lecturesReprises.current = true;
-    void rangement.reprendreLectures();
-  }, [rangement, suivi]);
+    if (!suivi) return;
+    const neuves = rangement.lecturesEnAttente().filter(l => !lecturesOffertes.current.has(l.messageId));
+    if (!neuves.length) return;
+    for (const l of neuves) lecturesOffertes.current.add(l.messageId);
+    setAReprendre(a => [...a, ...neuves.filter(l => !a.some(x => x.messageId === l.messageId)).map(l => ({ messageId: l.messageId, texte: l.texte, lecture: true as const }))]);
+  }, [rangement, suivi, messages]);
   /* une lecture neuve (son jeton) se montre dépliée */
   const jetonLecture = etatR.etape === 'en-cours' ? etatR.lecture?.jeton ?? null : null;
   useEffect(() => { if (jetonLecture) { setLectureRepliee(false); setLectureFermee(null); } }, [jetonLecture]);
@@ -279,6 +283,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     for (const m of liste) {
       const msg = lireMessages(magasin.lire()).find(x => x.id === m.messageId);
       if (!msg) continue;
+      /* LE-1 : une lecture gardée repart par SON jeton (la page déjà lue n'est pas relue), au toucher seulement */
+      if (m.lecture) { envoiActif.current = { envoi: rangement, depuis }; await rangement.reprendreLectures(m.messageId); continue; }
       const ici = msg.carnetMessage.depuis !== 'liste' ? msg.carnetMessage.depuis : null;
       const cree = msg.carnetMessage.effets.find(e => e.cible === 'carnet')?.carnetId;
       if (ici) annonces.current.set(m.messageId, { sorte: 'ici', carnetId: ici });

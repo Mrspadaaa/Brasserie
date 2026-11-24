@@ -110,6 +110,7 @@ export type Appliquer = (r: Resultat) => (Resultat & { ok: true }) | null;
 /** P1, P2 : le retour de l'écriture locale, tenu en réserve tant que l'IA peut la remplacer. */
 export type Attente = { messageId: string; retour: RetourNeuf; montre?: boolean; neuf?: string };
 /** Critique 6, n° 24 : un message rangé tel quel (hors ligne, échec), repris d’un toucher. */
-export type AReprendre = { messageId: string; texte: string; echec?: true };
+/** `lecture` (LE-1) : une lecture de lien restée en attente sur l'appareil ; elle ne repart qu'au toucher « Reprendre ». */
+export type AReprendre = { messageId: string; texte: string; echec?: true; lecture?: true };
 /** Le carnet supprimé, gardé pour Annuler (avec son plan, L-14). */
 export type Supprime = { titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[]; plan?: FinancialPlan };

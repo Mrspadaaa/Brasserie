@@ -345,8 +345,16 @@ export interface Rangement<L> {
   annuler(): void;
   /** D448, échec : « Escalader » relit le lien avec l'IA forte (`escalade: true`, lecture neuve), puis range comme un envoi. */
   escalader(messageId: string, texte: string): Promise<EtatRangement<L>>;
-  /** IA-ETAPES-VISIBLES : à la réouverture, chaque lecture gardée sur l'appareil est reprise par son jeton (finie : sa page ; en cours : suivie). */
-  reprendreLectures(): Promise<void>;
+  /**
+   * LE-1 (24.11) : regarder n'écrit jamais. Les lectures gardées sur l'appareil (lancées, jamais finies) ; cette liste ne lance rien et n'écrit rien :
+   * l'écran les propose d'un toucher. Sans suivi, IA éteinte ou message disparu du fil : aucune.
+   */
+  lecturesEnAttente(): { messageId: string; texte: string }[];
+  /**
+   * IA-ETAPES-VISIBLES : sur le toucher du brasseur (« Reprendre »), une lecture gardée sur l'appareil est reprise par son jeton (finie : sa page ; en
+   * cours : suivie). `seul` : celle de ce message ; sans lui, toutes. Jamais appelée à l'ouverture (LE-1).
+   */
+  reprendreLectures(seul?: string): Promise<void>;
 }
 
 export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
@@ -498,9 +506,14 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       occupe = true;
       try { return await passerIA(messageId, texte, deps.carnets(), { escalade: true }); } finally { occupe = false; }
     },
-    async reprendreLectures() {
+    lecturesEnAttente() {
+      if (!deps.suivi || deps.mode === 'eteint') return [];
+      return deps.suivi.lister().filter(l => !deps.messageExiste || deps.messageExiste(l.messageId)).map(l => ({ messageId: l.messageId, texte: l.texte }));
+    },
+    async reprendreLectures(seul) {
       if (!deps.suivi || deps.mode === 'eteint' || !deps.enLigne()) return;
       for (const l of deps.suivi.lister()) {
+        if (seul !== undefined && l.messageId !== seul) continue;
         if (occupe) return;
         if (deps.messageExiste && !deps.messageExiste(l.messageId)) { deps.suivi.retirer(l.jeton); continue; }
         occupe = true;
