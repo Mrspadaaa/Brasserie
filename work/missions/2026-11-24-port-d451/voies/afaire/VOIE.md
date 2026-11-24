@@ -6,6 +6,7 @@
 - Prérequis : voie domaine commitée.
 
 ## Économie
+- Captures 390 (téléphone surtout, en défilant) et 1280 (peu), thème clair, de chaque état et geste touché, OUVERTES avant de rendre ; côte à côte avec la maquette (règle n° 1).
 - Mécanique : aucune.
 - Gestes (pilote, en ligne, ZZ TEST) : cocher et décocher une tâche ; toucher une ligne (ouvre son problème) ; changer
   l'échéance ; achat daté → paraît dans À venir et au Calendrier, puis retiré ; carte « À ranger » : Oui, Nouveau

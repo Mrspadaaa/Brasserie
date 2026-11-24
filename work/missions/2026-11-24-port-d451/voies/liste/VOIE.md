@@ -7,6 +7,7 @@
 - Prérequis : voies domaine, ia, greffe-p2, probleme, afaire commitées.
 
 ## Économie
+- Captures 390 (téléphone surtout, en défilant) et 1280 (peu), thème clair, de chaque état et geste touché, OUVERTES avant de rendre ; côte à côte avec la maquette (règle n° 1).
 - Mécanique : aucune ; plus de 3 captures à refaire : `DEMANDE EXECUTANT`.
 - Gestes (pilote, en ligne, ZZ TEST) : coup d'œil (chaque case filtre) ; Arbre, À faire, 🔔 ; déplier un sous-domaine ;
   ouvrir un problème, un carnet houblons, un mémo ; Résolus 2026 › Relecture ; saisie depuis la liste : texte, photo seule,

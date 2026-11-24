@@ -6,6 +6,7 @@
 - Prérequis : voie domaine commitée.
 
 ## Économie
+- Captures 390 (téléphone surtout, en défilant) et 1280 (peu), thème clair, de chaque état et geste touché, OUVERTES avant de rendre ; côte à côte avec la maquette (règle n° 1).
 - Mécanique : aucune ; si plus de 3 captures à refaire, `DEMANDE EXECUTANT` (consigne auteur).
 - Gestes (pilote, en ligne, ZZ TEST) : glisser une carte (Déplacer, Retirer) ; ouvrir la fiche ; Comparer avec et sans
   critère ; déplier les égaux ; Choisir ; Escalader et Relire inchangés.

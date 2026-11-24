@@ -8,6 +8,7 @@
   actuelles de `TableauCarnet` et `rubriqueArticles`.
 
 ## Économie
+- Captures 390 (téléphone surtout, en défilant) et 1280 (peu), thème clair, de chaque état et geste touché, OUVERTES avant de rendre ; côte à côte avec la maquette (règle n° 1).
 - Mécanique : aucune ; plus de 3 captures à refaire : `DEMANDE EXECUTANT`.
 - Gestes (pilote, en ligne, ZZ TEST) : changer d'état dans les deux sens (4 × 4), Rouvrir ; option : piste, veille,
   écarter (raison), retenir, écarter une 2e fois ; carte « tâche proposée » À faire et Plus tard ; « Fermer grâce à
