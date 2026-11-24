@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause:
+pause: 2026-11-24T17:30:24.793Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -29,7 +29,7 @@ pause:
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
 - [x] Tour 59 : critique-59, 10 problèmes (3 B : C59-1 Relire range les articles d un autre carnet, C59-4 critère 50 L ne classe pas, C59-6 Citra 0,10 1er), corrigés 9/9
-- [ ] C59 (+ C58-3, C58-4, C50-5 rouverts) : tests puis correctif, après lecture-ecrit
+- [ ] C59 (+ C58-3, C58-4, C50-5 rouverts) : c59-tests en cours, puis c59-fix (ajouter C59-2 : « IA en pause : plafond atteint » au lieu de « L IA n a pas répondu », sans relance en boucle), tour 61 ; tests en ligne SANS appel IA tant que le plafond Google est atteint
 - [ ] Carnet, sa plainte du 24.11 16:46 : critiques persona brasseur et compact (work/missions/2026-11-24-carnet-personas/), puis synthèse, mini maquettes des écarts à ses choix (skill maquettes, artefact neuf), puis port ; prix des houblons (LIEN-PRIX-JUSTE)
 - [x] Écriture à l ouverture d un carnet (LE-1) : cause reprendreLectures (lecture de lien gardée rejouée seule), corrigé 6f2d66fb9, en ligne tour 60 (index-DfTdaO8-.js) ; à vérifier en ligne par le prochain critique
 - [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
