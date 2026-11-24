@@ -104,14 +104,14 @@ const CAS_LUS: CasLu[] = [
     critere: critere('Température à 4 °C', 'Température', 'moins', '°C'),
     a: [{ nom: 'Température de', valeur: '0 °C' }, { nom: 'Température jusqu\'à', valeur: '8 °C' }],
     b: [{ nom: 'Température de', valeur: '2 °C' }, { nom: 'Température à', valeur: '10 °C' }],
-    attendus: [/8\s?°C/, /10\s?°C/]
+    attendus: [/8\s?°c/i, /10\s?°c/i]
   },
   {
     nom: 'température écrite en plage sous un autre nom (« Plage de température 0 à 8 °C »)',
     critere: critere('Température à 4 °C', 'Température', 'moins', '°C'),
     a: [{ nom: 'Plage de température', valeur: '0 à 8 °C' }],
     b: [{ nom: 'Plage de température', valeur: '2 à 10 °C' }],
-    attendus: [/0\s?à\s?8\s?°C/, /2\s?à\s?10\s?°C/]
+    attendus: [/0\s?à\s?8\s?°c/i, /2\s?à\s?10\s?°c/i]
   },
   {
     nom: 'capacité 50 L = volume lu, unité écrite « l » minuscule',
