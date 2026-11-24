@@ -738,7 +738,8 @@ export function compromisDe(t: Tableau | null): string | null {
   const L = lignesEnLice(t);
   if (L.length < 2) return null;
   const premier = L[0];
-  const criteres = t.colonnes.filter(k => k.critereId && k.sens !== 'texte');
+  /* C50-5 (24.11) : un critère dont AUCUN article en lice ne porte la valeur ne départage rien : il ne compte pas, la phrase est celle de « sans critère » */
+  const criteres = t.colonnes.filter(k => k.critereId && k.sens !== 'texte' && L.some(x => x.cellules[k.nom] !== undefined));
   const ouiNon = criteres.filter(k => k.sens === 'oui-non');
   const chiffre = criteres.find(k => k.sens === 'plus' || k.sens === 'moins');
   const memeDevise = (x: LigneTableau) => (x.devise ?? 'CHF') === (premier.devise ?? 'CHF');
@@ -790,14 +791,52 @@ export function compromisDe(t: Tableau | null): string | null {
     return ecart ? `la 1re, la moins chère : ${ecart} de moins que la 2e ; aucun critère ne les départage` : null;
   }
   /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant (g01-8 : la phrase de la maquette choisie reste) */
+  /* C50-5 (sa réponse « Oui », 24.11, qui remplace la phrase de g01-8) : le compromis dit ce qu'on GAGNE et ce qu'on PERD : l'écart de prix avec
+     l'article voisin par le prix, contre l'écart sur le critère qui classe ou, à défaut, sur ce qui distingue les deux articles. Chaque
+     valeur vient du tableau, aucune n'est inventée. */
+  const voisins = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
+  const rival = p1 !== undefined ? [...voisins].sort((a, b) => a.prixCentimes! - b.prixCentimes! || a.rang! - b.rang!)[0] : undefined;
+  const ecartPrix = rival && p1 !== undefined ? rival.prixCentimes! - p1 : 0;
+  const differe = (k: Colonne) => { if (!rival) return false; const a = nombreCellule(rival, k), b = nombreCellule(premier, k); return a !== null && b !== null && a !== b; };
   const dits: string[] = [];
-  for (const k of criteres) { const v = val(premier, k); if (v) dits.push(k.sens === 'oui-non' ? `${k.nom} : ${v}` : `${avecArticle(k.nom, k.sens)} ${v}`); }
+  for (const k of criteres) {
+    const v = val(premier, k);
+    if (!v) continue;
+    if (k.sens === 'oui-non') { dits.push(`${k.nom} : ${v}`); continue; }
+    const vr = rival && differe(k) ? val(rival, k) : null;
+    dits.push(`${avecArticle(k.nom, k.sens)} ${v}${vr && vr !== v ? ` au lieu de ${vr}` : ''}`);
+  }
   if (prix) {
-    const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
-    const moinsCher = autres.length > 0 && autres.every(x => x.prixCentimes! >= p1!);
-    dits.push(moinsCher ? `${prix}, la moins chère` : prix);
+    const moinsCher = voisins.length > 0 && voisins.every(x => x.prixCentimes! >= p1!);
+    const vs = rival ? rangF(rival.rang!) : '';
+    const ecart = ecartPrix === 0 ? '' : ecartPrix > 0 ? `, ${prixTexte(ecartPrix, premier.devise)} de moins que ${vs}` : `, ${prixTexte(-ecartPrix, premier.devise)} de plus que ${vs}`;
+    dits.push(`${moinsCher ? `${prix}, la moins chère` : prix}${ecart}`);
   } else dits.push('prix non lu');
+  /* aucun critère chiffré ne les départage (valeurs égales, ou non chiffrées) : ce qui les distingue, la valeur chiffrée qui diffère (le volume) */
+  const distingue = rival && !(chiffre && differe(chiffre))
+    ? t.colonnes.filter(k => !k.critereId && differe(k)).sort((a, b) => groupeDeLigne(a.nom) - groupeDeLigne(b.nom))[0] : undefined;
+  if (rival && distingue && ecartPrix !== 0) {
+    const vr = val(rival, distingue), v1 = val(premier, distingue);
+    if (vr && v1) dits.push(`${rangF(rival.rang!)} a ${avecArticle(distingue.nom, distingue.sens)} ${vr} au lieu de ${v1}`);
+  }
   return `la 1re, ${dits.join(' ; ')}`;
+}
+
+/**
+ * C50-5 : l'écart de prix entre la 1re et l'article voisin par le prix, dit comme `compromisDe` le dit (« 289,77 CHF »). Le compromis d'une IA
+ * qui ne le contient pas (elle recopie le tableau) ne tient pas lieu de compromis. `null` : pas d'écart à dire (un seul prix, devises mêlées).
+ */
+export function ecartPrixDit(t: Tableau | null): string | null {
+  if (!t) return null;
+  const L = lignesEnLice(t);
+  const p1 = L[0]?.prixCentimes;
+  if (L.length < 2 || p1 === undefined) return null;
+  const dev = L[0].devise ?? 'CHF';
+  const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && (x.devise ?? 'CHF') === dev);
+  if (!autres.length) return null;
+  const rival = [...autres].sort((a, b) => a.prixCentimes! - b.prixCentimes!)[0];
+  const e = Math.abs(rival.prixCentimes! - p1);
+  return e === 0 ? null : prixTexte(e, dev);
 }
 
 /** « tient 80 °C » → « à tenir 80 °C » ; « passe la porte » → « à passer la porte » ; un état (« stable sur une heure ») → « à être … ». */

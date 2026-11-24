@@ -24,6 +24,7 @@ import { memeCaracteristique, trierParDecision } from '../../../functions/src/li
 import { parsePrix } from '../../domain/finance/upgradeRing';
 import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
+import { Insec } from './insecable';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
@@ -226,8 +227,8 @@ export function FicheArticle(p: FicheArticleProps) {
             mot (`filArianeCourt`) ; à 1280, le titre entier. Le nom complet reste lu par le lecteur d'écran. */}
         <button type="button" className="cn-retour cn-fil-ariane" onClick={p.onRetour} aria-label={`Articles · ${p.titreCarnet}`}>
           <ChevronLeft size={20} aria-hidden />
-          <span className="cn-fil-court" aria-hidden>Articles · {filArianeCourt(p.titreCarnet)}</span>
-          <span className="cn-fil-long" aria-hidden>Articles · {p.titreCarnet}</span>
+          <span className="cn-fil-court" aria-hidden>Articles · <Insec t={filArianeCourt(p.titreCarnet)} /></span>
+          <span className="cn-fil-long" aria-hidden>Articles · <Insec t={p.titreCarnet} /></span>
         </button>
         <span className="cn-sp" />
         {rang !== undefined && sur ? <span className="cn-pastille cn-pastille-vert">{rangTexte(rang)} sur {sur}</span> : null}
@@ -264,9 +265,9 @@ export function FicheArticle(p: FicheArticleProps) {
       {heros && (
         <div className="cn-mesure cn-heros">
           <div className="cn-heros-val">
-            <span className="cn-mut">{heros.libelle}</span>
-            <span className="cn-mesure-val"><span className="cn-mono">{heros.texte}</span>{heros.unite ? <small> {heros.unite}</small> : null}</span>
-            {heros.rang && heros.rang > 1 && heros.sur > 1 ? <span className="cn-mut cn-heros-place">{rangTexte(heros.rang)} sur {heros.sur} · {heros.libelle}</span> : null}
+            <span className="cn-mut"><Insec t={heros.libelle} /></span>
+            <span className="cn-mesure-val cn-nowrap"><span className="cn-mono">{heros.texte}</span>{heros.unite ? <small> {heros.unite}</small> : null}</span>
+            {heros.rang && heros.rang > 1 && heros.sur > 1 ? <span className="cn-mut cn-heros-place">{rangTexte(heros.rang)} sur {heros.sur} · <Insec t={heros.libelle} /></span> : null}
           </div>
           {heros.valeurs && heros.moi !== null ? <Piste valeurs={heros.valeurs} moi={heros.moi} sens={heros.sens} unite={heros.unite} /> : null}
         </div>
@@ -320,7 +321,7 @@ export function FicheArticle(p: FicheArticleProps) {
             {cases.map(c => (
               <div key={c.nom}>
                 <dt>{c.nom}</dt>
-                <dd>{c.texte === null ? <span className="cn-mut">non publié</span> : <><span className={estChiffre(c.texte) ? 'cn-mono' : undefined}>{c.texte}</span>{c.unite ? <span> {c.unite}</span> : ''}</>}
+                <dd>{c.texte === null ? <span className="cn-mut">non publié</span> : <>{c.unite ? <span className="cn-nowrap"><span className={estChiffre(c.texte) ? 'cn-mono' : undefined}>{c.texte}</span><span> {c.unite}</span></span> : <span className={estChiffre(c.texte) ? 'cn-mono' : undefined}><Insec t={c.texte} /></span>}</>}
                   {c.rang ? <span className="cn-vert cn-carac-rang"> {rangTexte(c.rang)}</span> : null}
                   {c.exemple && <> <Provenance origine="exemple" /></>}
                 </dd>
@@ -393,8 +394,8 @@ function Piste({ valeurs, moi, sens, unite }: { valeurs: number[]; moi: number; 
   /* C55-3 (R25) : chaque borne dit son unité, une seule fois (« 2,6 m³ », « 6 m³ la plus haute des 2 ») */
   const avecUnite = (v: number) => (unite ? `${nombreTexte(v)} ${unite}` : nombreTexte(v));
   const borne = (v: number) => (v === meilleure
-    ? <span className="cn-piste-borne"><span className="cn-mono">{avecUnite(v)}</span> <span className="cn-mut">{dit}</span></span>
-    : <span className="cn-mono cn-mut cn-piste-borne">{avecUnite(v)}</span>);
+    ? <span className="cn-piste-borne"><span className="cn-mono"><Insec t={avecUnite(v)} /></span> <span className="cn-mut cn-nowrap">{dit}</span></span>
+    : <span className="cn-mono cn-mut cn-piste-borne"><Insec t={avecUnite(v)} /></span>);
   return (
     <div className="cn-piste" role="img" aria-label={`${avecUnite(meilleure)}, ${dit} ; ${avecUnite(pire)}, la moins bonne`}>
       <span className="cn-piste-trait" />

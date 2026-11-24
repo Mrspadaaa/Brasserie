@@ -40,6 +40,8 @@ export interface ApercuV {
   photo: (fichier: File) => Promise<void>; jointe: Jointe | null; retirerJointe: () => void; pliage: Boite<ReturnType<typeof setTimeout> | undefined>;
   presse: string | undefined; setPresse: Etat<string | undefined>;
   lectureUi: LectureUi;
+  /** C56-5 : les messages en échec que le bandeau de reprise porte déjà (avec son Relire) : l'avis de l'aperçu ne le redit pas. */
+  aReprendre: readonly { messageId: string; echec?: true }[];
 }
 
 /** IA-ETAPES-VISIBLES (D448) : ce que la carte des étapes et sa barre repliée lisent et font, fourni par CarnetsVue. */
@@ -69,7 +71,7 @@ export interface LectureUi {
 export function apercuCarnet(x: ApercuV) {
   const { ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet, setCorrigeCarnet, corrige,
     setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef, ajouterEnFacon, aPart,
-    setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse, setPresse, lectureUi } = x;
+    setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse, setPresse, lectureUi, aReprendre } = x;
   const tranche = ouvert ? critereQuiTranche(ouvert) : null;
   /* n° 5 et 21 : la bulle G8 seulement pour « ajouter · avant » (carnet au repos, champ pris et vide : ChampCarnet tient le focus) ;
      jamais sous un retour, une IA en cours ou une modification */
@@ -131,7 +133,9 @@ export function apercuCarnet(x: ApercuV) {
       }
     }
     /* T28-3 : un lien mort a sa carte d'échec ; « L'IA n'a pas répondu : rangé sur place » serait faux (rien n'est rangé) */
-    if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !(etatR.etape === 'echec' && etatR.lecture?.statut === 'introuvable') && !retourDuMessage(etatR.messageId) && !texte.trim()) {
+    if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !(etatR.etape === 'echec' && etatR.lecture?.statut === 'introuvable') && !retourDuMessage(etatR.messageId) && !texte.trim()
+      /* C56-5 (R28) : UN seul avis d'échec : le bandeau de reprise (« L'IA n'a pas répondu : … [Relire] ») le porte déjà, en ligne */
+      && !(etatR.etape === 'echec' && enLigne && aReprendre.some(x => x.echec && x.messageId === etatR.messageId))) {
       return <EtatIA etat={etatR.etape} quoi={AVIS_IA[etatR.etape]} />;
     }
     if (edition) return null;

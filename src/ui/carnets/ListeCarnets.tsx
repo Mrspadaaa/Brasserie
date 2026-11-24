@@ -19,6 +19,7 @@ import React, { useState } from 'react';
 import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { titreAffiche } from './titre';
+import { liesParNbsp } from './insecable';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
@@ -236,7 +237,7 @@ function CarteCarnet({ c, ajouts, range, fait, trouve, onOuvrir, onVoirAVenir }:
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">
-            <b className="cn-carnet-titre">{titreAffiche(c.title)}</b>
+            <b className="cn-carnet-titre">{liesParNbsp(titreAffiche(c.title))}</b>
             {trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : choisi ? (
               <>
                 {k.choix?.pourquoi && <span className="cn-encre-2">{k.choix.pourquoi}</span>}

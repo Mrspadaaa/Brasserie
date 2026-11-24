@@ -499,6 +499,11 @@
 /* C50-9 : la ligne Offre passe à la ligne au lieu de tasser quatre colonnes : disponibilité entière, prix, puis les gestes groupés à droite */
 .cn-offres .cn-offre { flex-wrap: wrap; }
 .cn-offres .cn-offre-corps { flex: 1 1 170px; }
+/* C56-1 (R27) : le vendeur ne passe jamais sous son plus long mot (« ggmgastro.com ») : si lui et le prix ne tiennent pas ensemble, le prix passe
+   à la ligne, à droite (`min-width: min-content` + `flex-wrap`) ; un mot plus large que la ligne se coupe (`break-word`) au lieu de couvrir le prix. */
+.cn-offres .cn-offre-corps { flex-wrap: wrap; row-gap: 2px; }
+.cn-offres .cn-offre-corps .cn-sp { flex: 1 1 0; min-width: min-content; overflow-wrap: break-word; }
+.cn-offres .cn-offre-corps .cn-prix-mono { margin-left: auto; }
 .cn-offre-gestes { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 4px 12px; margin-left: auto; flex: none; max-width: 100%; }
 .cn-offre-corps .cn-sp { display: flex; flex-direction: column; }
 .cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--c-line2); flex: none; }
@@ -577,9 +582,14 @@
 [data-theme='cave'] .cn-fiche-picto { background: rgb(var(--cave-850)); }
 .cn-vignette-fiche { width: 100%; height: 150px; border-radius: 0; background: transparent !important; display: grid; place-items: center; }
 .cn-heros-val .cn-heros-place { font-size: 15px; }
-.cn-heros .cn-piste { height: 52px; }
+/* C56-2 (R27) : la légende de la jauge du héros est dans le flux (la piste grandit avec elle) et passe à la ligne au lieu d'être coupée par le bord de
+   la carte (« la plus haute d »). « 242 L » ne se coupe pas (espace insécable), « la plus haute des 2 » non plus (`cn-nowrap`) : c'est la borne qui descend. */
+.cn-heros .cn-piste { height: auto; min-height: 52px; padding-top: 24px; box-sizing: border-box; }
 .cn-piste-legende { top: 24px; align-items: baseline; }
+.cn-heros .cn-piste-legende { position: static; flex-wrap: wrap; column-gap: 8px; }
+.cn-heros .cn-piste-legende .cn-piste-borne:last-child { margin-left: auto; text-align: right; }
 .cn-piste-borne { white-space: nowrap; }
+.cn-heros .cn-piste-borne { white-space: normal; }
 .cn-carac { grid-template-columns: 1fr 1fr; }
 .cn-carac dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; }
 .cn-prix-mono .cn-prix { font-weight: 600; }

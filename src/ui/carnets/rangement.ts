@@ -324,6 +324,8 @@ export interface DependancesRangement<L> {
   appels?: AppelsIA;
   /** Délai côté client, au-delà duquel l'envoi passe en échec (par défaut 45 s ; 120 s quand un lien est lu, la lecture dure 20 à 35 s). */
   delaiMs?: number;
+  /** C56-4 : le répit (400 ms par défaut) avant l'unique reprise d'un appel en panne. */
+  repitMs?: number;
   /** IA-ETAPES-VISIBLES : la lecture lancée est gardée sur l'appareil jusqu'à sa fin, pour être retrouvée à la réouverture. Absent : rien de gardé. */
   suivi?: SuiviLectures;
   /** T26-4 : un lien seul dont la page est introuvable ne laisse aucun article (ni dans la liste, ni dans le compte). */
@@ -457,7 +459,14 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       }
       if (lecture) { lecture = { ...lecture, rangement: true }; poser({ etape: 'en-cours', messageId, texte, lecture }); }
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), depuis, carnets, pages);
-      const r = await course(appels.ranger(contexte, ctrl.signal));
+      /* C56-4 (R28) : une réponse en panne (`ok: false`, ou un appel qui lève) peut n'être qu'un raté du réseau ou du serveur (tour 56 : « l'IA n'a pas
+         répondu » 1,5 s après Ajouter, puis Relire a rangé en 3 s). Une REPRISE seule, après un court répit, avant d'annoncer l'échec ; l'abandon
+         (✕) et le délai (`TimeoutError`) ne se reprennent pas. Au plus deux appels : le coût et l'attente restent bornés. */
+      let r = await course(appels.ranger(contexte, ctrl.signal)).catch((e: unknown) => { if (coupe()) throw e; return { ok: false as const, error: 'panne' } as Awaited<ReturnType<AppelsIA['ranger']>>; });
+      if (!r.ok && !coupe() && !ERREUR_DELAI.test(r.error ?? '')) {
+        await course(new Promise<void>(fini => setTimeout(fini, deps.repitMs ?? 400)));
+        if (!coupe()) r = await course(appels.ranger(contexte, ctrl.signal));
+      }
       if (coupe()) return sortieCoupee();
       if (!r.ok) return await echouer(ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
       const lignes = lireReponse(r.data, { texte, carnets, depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
