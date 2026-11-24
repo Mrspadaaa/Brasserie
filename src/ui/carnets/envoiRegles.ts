@@ -1,12 +1,18 @@
 /** Les règles de l'envoi d'une phrase (où elle va, ce que l'IA a perdu, un rappel, une autre chose), sorties de CarnetsVue.tsx ; pures. */
 import { estLienSeul, type CarnetDoc } from '../../domain/carnets/modele';
-import { analyserTexte, decouper, genreDEtiquette, genreLocal, jetons, normaliser, objetDe } from '../../domain/carnets/analyseLocale';
+import { analyserTexte, critereMesurable, decouper, genreDEtiquette, genreLocal, jetons, normaliser, objetDe, sansPrefixeBanc } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
 import { liensDuTexte, nombresDe, type LigneCarnet } from '../../domain/carnets/ia';
 import type { GenreNote } from './EtatIA';
 
 export const majusculeFr = (t: string) => t.charAt(0).toLocaleUpperCase('fr-CH') + t.slice(1);
 export const memeTexte = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
+/**
+ * C55-2 (R24) : UNE règle pour ce que l'aperçu promet en « Ce qui compte » et ce que l'envoi range : la ligne locale qui n'est que la phrase
+ * elle-même (au préfixe de test près : il reste sur le message, jamais dans une ligne) est déjà le titre, sauf si elle nomme une grandeur
+ * mesurable (« Marmite de brassage 50 L ») : alors c'est le critère. L'aperçu, l'écriture locale et la réponse de l'IA la lisent d'ici.
+ */
+export const estLaPhrase = (ligne: string, phrase: string) => memeTexte(sansPrefixeBanc(ligne), sansPrefixeBanc(phrase)) && !critereMesurable(ligne);
 
 /**
  * Critique 5, n° 3 (G4, D-134) : le carnet où ira ce qu'on tape dans un carnet ouvert. Le même calcul sert au cadre, pendant la frappe,

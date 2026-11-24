@@ -538,20 +538,20 @@ export function rangVisible(t: Pick<Tableau, 'rangePar'>, l: Pick<LigneTableau, 
 }
 
 /**
- * CRB-14 : l'ordre des lignes de Comparer, celui de sa décision. Le prix d'abord (0), ce qui classe (1), le volume (2), les dimensions
- * extérieures puis intérieures (3), la porte (4), la livraison : dispo, vendeur, pays (5), le reste du groupe dans l'ordre de la page (6),
- * la couleur en bas (7). Le tri est stable : deux lignes du même rang gardent l'ordre où le tableau les donne.
+ * CRB-14, C55-4 (R26) : la famille d'une ligne de Comparer. L'OFFRE d'abord et ensemble : le prix (0), ce qui classe (1), la livraison :
+ * dispo, vendeur, pays (2) ; puis les caractéristiques (3 et plus : volume, dimensions, porte, le reste, la couleur), que `colonnesComparer`
+ * range dans l'ordre de la FICHE (`trierParDecision`), non dans cette suite : la famille ne sert qu'à séparer l'offre des caractéristiques.
  */
-export const LIGNE_PRIX = 0, LIGNE_CRITERE = 1, LIGNE_VOLUME = 2, LIGNE_DIMENSIONS = 3, LIGNE_PORTE = 4, LIGNE_LIVRAISON = 5, LIGNE_GROUPE = 6, LIGNE_COULEUR = 7;
+export const LIGNE_PRIX = 0, LIGNE_CRITERE = 1, LIGNE_LIVRAISON = 2, LIGNE_VOLUME = 3, LIGNE_DIMENSIONS = 4, LIGNE_PORTE = 5, LIGNE_GROUPE = 6, LIGNE_COULEUR = 7;
 export function groupeDeLigne(nom: string, critere = false): number {
   const n = normaliser(nom);
   if (n === COLONNE_PRIX) return LIGNE_PRIX;
   if (critere) return LIGNE_CRITERE;
+  if (/\b(dispo|disponibilite|vendeur|pays|livraison|delai)\b/.test(n)) return LIGNE_LIVRAISON;
   if (/\b(couleur|coloris|teinte)\b/.test(n)) return LIGNE_COULEUR;
   if (/\bporte\b/.test(n)) return LIGNE_PORTE;
   if (/\b(volume|capacite|contenance)\b/.test(n)) return LIGNE_VOLUME;
   if (/\b(dimensions?|largeur|profondeur|longueur|hauteur|encombrement)\b/.test(n)) return LIGNE_DIMENSIONS;
-  if (/\b(dispo|disponibilite|vendeur|pays|livraison|delai)\b/.test(n)) return LIGNE_LIVRAISON;
   return LIGNE_GROUPE;
 }
 

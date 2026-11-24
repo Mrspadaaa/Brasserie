@@ -14,7 +14,7 @@ import { CadreArrivee, type CadreV } from './CadreArrivee';
 import { NoteEnVrac } from './NoteEnVrac';
 import { dateCourte, EtatIA, type ArticleV } from './EtatIA';
 import { BarreLecture, LectureLien, type SaisieLienMort } from './LectureLien';
-import { CARNET_NEUF, destinationDans, memeTexte, prefixeDe, rappelVers, sansAutreSujet } from './envoiRegles';
+import { CARNET_NEUF, destinationDans, estLaPhrase, memeTexte, prefixeDe, rappelVers, sansAutreSujet } from './envoiRegles';
 import { AIDE_AVANT_JUSQU_A, AVIS_IA, EXEMPLES_CREER, exemplesNeufs, vuesVrac } from './lignesRegles';
 import type { Annonce, Boite, Etat, Jointe, Retour, Supprime, Vue } from './carnetsTypes';
 
@@ -162,7 +162,7 @@ export function apercuCarnet(x: ApercuV) {
         return <CadreArrivee cadre={{ sorte: 'lien', url, phase: 'avant', depuisListe: true, vers: pr.titre, lecturePossible: mode !== 'eteint' && enLigne }} onAnnuler={() => setTexte('')} aides={aides} />;
       }
       /* n° 2 : la phrase entière n'est pas son propre critère (« Ce qui compte » reste à l'IA), seulement un critère tiré d'elle */
-      const critere = lignesApercu.find(l => l.sorte === 'critere' && !memeTexte(l.texte, texte));
+      const critere = lignesApercu.find(l => l.sorte === 'critere' && !estLaPhrase(l.texte, texte));
       /* tour 3, f5b n° 3 : la phrase nomme le carnet proche lui-même (« Ventilation de la salle ») : « Ouvrir ce carnet », le champ se vide */
       const ouvrir = !!pr && nommeLeCarnet(texte, pr.titre);
       const c: CadreV = { sorte: 'creer', titre: titreDePhrase(texte),

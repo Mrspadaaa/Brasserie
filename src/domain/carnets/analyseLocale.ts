@@ -340,6 +340,27 @@ const NOM_PAR_UNITE: Readonly<Record<string, string>> = {
   kg: 'poids', '°C': 'température', bacs: 'bacs', becs: 'becs', 'fûts': 'fûts'
 };
 const UNITES_DE_COMPTE = new Set(['bacs', 'becs', 'fûts']);
+/**
+ * C55-2 (R24) : les mots qui disent déjà la grandeur d'une unité (« volume de la cuve 50 L » dit le volume). Quand les mots avant le nombre
+ * nomment un OBJET (« marmite de brassage 50 L »), la caractéristique est la grandeur de l'unité (volume), celle que les articles portent :
+ * sans elle, le critère se nommerait « marmite de brassage », une colonne que personne ne remplit.
+ */
+const MOTS_DE_GRANDEUR: Readonly<Record<string, RegExp>> = {
+  L: /volume|capacit|contenance|litre/, 'm³/h': /debit/, 'kg/h': /debit/, 'L/min': /debit/, 'L/h': /debit/, kW: /puissance|watt|consommation/, W: /puissance|watt|consommation/,
+  dB: /bruit|sonore|decibel/, bar: /pression/, kg: /poids|masse|charge|capacit/, '°C': /temperature|chaleur/
+};
+/**
+ * C55-2 (R24) : un critère qui NOMME une grandeur mesurable (« Marmite de brassage 50 L » : le volume ; « Fond de bac 38 cm minimum » non : cm n'a pas
+ * de nom sûr) sert à classer des articles ; même identique au titre, il n'est pas du bruit. « Tuyau silicone 8 mm, 5 m » ne nomme aucune grandeur :
+ * c'est le titre, il reste le titre (critique 5, n° 24).
+ */
+export function critereMesurable(texte: string): boolean {
+  return extraireCriteres(texte).criteres.some(k => { const c = k.caracteristique; return !!c?.unite && !!MOTS_DE_GRANDEUR[c.unite]?.test(normaliser(c.nom)); });
+}
+const grandeurDe = (nomEcrit: string | undefined, unite: string): string | undefined => {
+  const dite = MOTS_DE_GRANDEUR[unite];
+  return nomEcrit && dite && !dite.test(normaliser(nomEcrit)) ? NOM_PAR_UNITE[unite] : undefined;
+};
 /** Les mots qui bordent le nom d'une caractéristique sans en faire partie (« il faudrait au moins … », « la porte du local fait … »). */
 const BORDS = new Set([
   'le', 'la', 'les', 'l', 'un', 'une', 'des', 'du', 'de', 'd', 'a', 'au', 'aux', 'en', 'pour', 'avec', 'il', 'faut', 'faudrait', 'doit', 'doivent',
@@ -419,7 +440,7 @@ export function extraireCriteres(texte: string): CriteresLus {
     const seuil = mot ? ` ${/^min/.test(mot) ? 'minimum' : /^max/.test(mot) ? 'maximum' : mot}` : compte ? '' : sens === 'moins' ? ' au plus' : ' au moins';
     const valeur = `${q.texte} ${q.unite}${seuil}`;
     const t = avant && !compte ? `${avant} ${valeur}` : compte ? valeur : `${nom} : ${valeur}`;
-    garder({ texte: majuscule(t), caracteristique: { nom, unite: q.unite, sens }, quantite: q });
+    garder({ texte: majuscule(t), caracteristique: { nom: grandeurDe(avant, q.unite) ?? nom, unite: q.unite, sens }, quantite: q });
   }
   return { criteres, facons };
 }

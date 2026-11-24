@@ -222,4 +222,6 @@
 /* D419 A1 : au téléphone la colonne des libellés se serre pour que ses trois articles tiennent sans défiler (cmp-a1) */
 @media (max-width: 899px) {
   .cn-comparer .cn-tableau-comparer tbody th { min-width: 60px; max-width: 74px; padding-left: 6px; padding-right: 4px; }
+  /* C55-1 (R23) : un libellé à mot long (« Branchement » 85 px, « refroidissement » 96 px) relève son plafond au juste nécessaire ; mot entier, jamais coupé */
+  .cn-comparer .cn-tableau-comparer tbody th[data-mot-long] { max-width: 100px; }
 }

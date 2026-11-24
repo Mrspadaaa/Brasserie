@@ -70,12 +70,14 @@ describe('CRB-5 : pas de rang tant que rien ne classe', () => {
 });
 
 describe('CRB-13 et CRB-14 : dispo, vendeur, pays en lignes, dans l\'ordre de sa décision', () => {
-  it('l\'ordre : prix, volume, dimensions, porte, livraison, le groupe, la couleur en bas', () => {
+  /* C55-4 (R26, 24.11) : l'offre (prix, dispo, vendeur, pays) reste ensemble, en tête ; puis l'ordre de la FICHE (volume, énergie, dimensions,
+     porte, le reste, construction, couleur). Avant : dispo, vendeur, pays au milieu des caractéristiques (plainte du tour 55). */
+  it('l\'ordre : l\'offre ensemble en tête, puis les caractéristiques dans l\'ordre de la fiche, la couleur en bas', () => {
     const t = tableau(chambre())!;
     const noms = colonnesComparer(t).map(c => c.nom);
     expect(noms).toEqual([
-      'prix', 'Volume utile', 'Dimensions du produit', 'Dimensions intérieures (L x P x H)', 'Largeur de la porte', 'Hauteur de la porte',
-      'dispo', 'vendeur', 'pays', 'Exécution/équipement', 'Performance', 'Épaisseur du matériel', 'Couleur'
+      'prix', 'dispo', 'vendeur', 'pays', 'Volume utile', 'Performance', 'Dimensions du produit', 'Dimensions intérieures (L x P x H)',
+      'Hauteur de la porte', 'Largeur de la porte', 'Exécution/équipement', 'Épaisseur du matériel', 'Couleur'
     ]);
   });
   it('les lignes de livraison reprennent ce que l\'article porte ; sans valeur chez personne, pas de ligne', () => {

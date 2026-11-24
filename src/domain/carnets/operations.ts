@@ -16,7 +16,7 @@ import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { lienCanonique } from './lien';
-import { jetons, normaliser, quantitesDe } from './analyseLocale';
+import { critereMesurable, jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
@@ -204,7 +204,9 @@ const sansPrefixeTest = (t: string) => t.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, 
 /** Critique 5, n° 24 : le texte est le titre de l'idée, ou sa phrase entière quand la phrase dit plus que le titre. */
 function estTitreOuPhrase(c: CarnetDoc, texte: string): boolean {
   const t = sansPrefixeTest(texte);
-  if (memeTexte(t, sansPrefixeTest(c.title))) return true;
+  /* C55-2 (R24) : un critère qui nomme une grandeur mesurable (« Marmite de brassage 50 L » : le volume) n'est pas écarté parce que le titre,
+     tiré de la même phrase, le répète : l'aperçu l'a promis (« Ce qui compte · … »), et c'est le seul endroit où la mesure classe. */
+  if (memeTexte(t, sansPrefixeTest(c.title))) return !critereMesurable(t);
   const phrase = sansPrefixeTest(c.carnet.phrase);
   return memeTexte(t, phrase) && !memeTexte(sansPrefixeTest(titreDePhrase(c.carnet.phrase)), phrase);
 }

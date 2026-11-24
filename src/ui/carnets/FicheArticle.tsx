@@ -268,7 +268,7 @@ export function FicheArticle(p: FicheArticleProps) {
             <span className="cn-mesure-val"><span className="cn-mono">{heros.texte}</span>{heros.unite ? <small> {heros.unite}</small> : null}</span>
             {heros.rang && heros.rang > 1 && heros.sur > 1 ? <span className="cn-mut cn-heros-place">{rangTexte(heros.rang)} sur {heros.sur} · {heros.libelle}</span> : null}
           </div>
-          {heros.valeurs && heros.moi !== null ? <Piste valeurs={heros.valeurs} moi={heros.moi} sens={heros.sens} /> : null}
+          {heros.valeurs && heros.moi !== null ? <Piste valeurs={heros.valeurs} moi={heros.moi} sens={heros.sens} unite={heros.unite} /> : null}
         </div>
       )}
       {(prix || qui || p.onPrix) && (
@@ -383,18 +383,20 @@ function PrixMono({ texte }: { texte: string }) {
  * gauche, le grand à droite (fini « 242 la plus haute » à gauche sur la fiche et à droite sur la feuille). Bornée des deux côtés : la plus basse
  * valeur connue à gauche, la plus haute à droite ; « la plus haute des 4 » (ou « la plus basse ») dit celle qui est la meilleure pour ce critère.
  */
-function Piste({ valeurs, moi, sens }: { valeurs: number[]; moi: number; sens: string }) {
+function Piste({ valeurs, moi, sens, unite }: { valeurs: number[]; moi: number; sens: string; unite?: string }) {
   const tri = [...valeurs].sort((x, y) => x - y);
   const min = tri[0], max = tri[tri.length - 1];
   const pos = (v: number) => (max === min ? 0 : ((v - min) / (max - min)) * 100);
   const meilleure = sens === 'plus' ? max : min;
   const pire = sens === 'plus' ? min : max;
   const dit = `la plus ${sens === 'moins' ? 'basse' : 'haute'} des ${valeurs.length}`;
+  /* C55-3 (R25) : chaque borne dit son unité, une seule fois (« 2,6 m³ », « 6 m³ la plus haute des 2 ») */
+  const avecUnite = (v: number) => (unite ? `${nombreTexte(v)} ${unite}` : nombreTexte(v));
   const borne = (v: number) => (v === meilleure
-    ? <span className="cn-piste-borne"><span className="cn-mono">{nombreTexte(v)}</span> <span className="cn-mut">{dit}</span></span>
-    : <span className="cn-mono cn-mut cn-piste-borne">{nombreTexte(v)}</span>);
+    ? <span className="cn-piste-borne"><span className="cn-mono">{avecUnite(v)}</span> <span className="cn-mut">{dit}</span></span>
+    : <span className="cn-mono cn-mut cn-piste-borne">{avecUnite(v)}</span>);
   return (
-    <div className="cn-piste" role="img" aria-label={`${nombreTexte(meilleure)}, ${dit} ; ${nombreTexte(pire)}, la moins bonne`}>
+    <div className="cn-piste" role="img" aria-label={`${avecUnite(meilleure)}, ${dit} ; ${avecUnite(pire)}, la moins bonne`}>
       <span className="cn-piste-trait" />
       {tri.map((v, i) => <span key={i} className={`cn-piste-rond${v === moi ? ' cn-piste-moi' : ''}`} style={{ left: `${pos(v)}%` }} />)}
       <span className="cn-piste-legende">

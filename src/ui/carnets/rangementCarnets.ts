@@ -3,13 +3,13 @@ import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase }
 import type { SuiviLectures } from '../../domain/carnets/lecture';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
 import { appliquerEcritures, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
-import { analyserTexte, normaliser, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
+import { analyserTexte, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
 import type { LigneCarnet } from '../../domain/carnets/ia';
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
-import { CARNET_NEUF, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
+import { CARNET_NEUF, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
 import { depuisIA, depuisLocale, pourIA, vuesVrac } from './lignesRegles';
 import type { RetourDe } from './retourCarnet';
 import type { Annonce, Appliquer, AReprendre, Attente, AvisIA, Boite, CarnetsVueProps, Etat, Retour, RetourNeuf, Vue } from './carnetsTypes';
@@ -107,7 +107,7 @@ export function creerRangementCarnets(x: RangementV) {
         neuf = nouvelIdCarnet('CARNET');
         const titre = titreNeuf ?? titreDePhrase(txt);
         /* n° 2 : la phrase entière n'est pas un critère d'elle-même (« Ce qui compte : Moulin à malt… ») ; elle est déjà le titre */
-        r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && memeTexte(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
+        r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && estLaPhrase(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
         if (!estLienSeul(txt)) annonce = { sorte: 'cree', carnetId: neuf, titre, phrase: txt };
       } else {
         /* la découpe annoncée par le cadre (même `planVrac`, mêmes carnets) : chaque ligne là où elle a été annoncée */
@@ -196,9 +196,15 @@ export function creerRangementCarnets(x: RangementV) {
         /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre ; sauf si elle
            porte une quantité ou un prix (« tuyau silicone 8 mm, 5 m » à acheter : rien n'est perdu) */
         const recopie = (l: LigneCarnet) => l.sorte !== 'article' && memeTexte(l.texte, an.phrase) && l.quantite === undefined && l.prixCentimes === undefined;
+        /* C55-2 (R24) : l'aperçu a promis « Ce qui compte · … » (la mesure que la phrase porte, lue en local). Une IA qui ne rend que l'idée, ou
+           pas cette mesure, ne la défait pas : le critère local reste, comme l'aperçu l'a dit. Même règle que l'aperçu : la phrase entière
+           n'est pas son propre critère (memeTexte), et une mesure que l'IA a reprise dans un critère (« Volume de 50 L ») n'est pas doublée. */
+        const dejaDite = (q: { valeur: number; unite: string }) => ici.some(l => l.sorte === 'critere' && quantitesDe(l.texte).some(y => y.valeur === q.valeur && y.unite === q.unite));
+        const promis = analyserTexte(txt).filter(l => l.sorte === 'critere' && l.quantites.length > 0 && !estLaPhrase(l.texte, an.phrase) && !l.quantites.every(dejaDite));
         aRanger = [
           ...(ici.length || !lignes.some(ailleurs) ? [{ ...dest, sorte: 'idee' } as LigneARanger] : []),
           ...ici.filter(l => l.sorte !== 'idee' && !recopie(l)).map(l => depuisIA(l, dest)),
+          ...promis.map(l => depuisLocale(l, dest)),
           ...lignes.filter(ailleurs).map(l => depuisIA(l, { carnetId: l.carnetId! }))];
         const titreIA = lignes.find(l => l.sorte === 'idee')?.titre ?? lignes.find(l => l.carnetNeuf)?.carnetNeuf ?? lignes.find(l => l.titrePropose)?.titrePropose;
         if (aRanger.some(l => l.sorte === 'idee') && titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };

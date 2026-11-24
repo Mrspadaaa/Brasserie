@@ -14,7 +14,8 @@ import React from 'react';
 import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
 import { estEtranger, MENTION_FRAIS, renduArticle, tauxVersChf } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
-import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
+import { trierParDecision } from '../../../functions/src/lienFusion';
+import { compromisDe, groupeDeLigne, LIGNE_LIVRAISON, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import { BoutonRelire } from './BoutonRelire';
@@ -45,16 +46,23 @@ export function colonnesVue(t: Tableau): ColonneVue[] {
 const LIVRAISON = [{ cle: '__dispo', nom: 'dispo', champ: 'dispo' }, { cle: '__vendeur', nom: 'vendeur', champ: 'vendeur' }, { cle: '__pays', nom: 'pays', champ: 'pays' }] as const;
 
 /**
- * Les lignes de Comparer, dans l'ordre de sa décision (CRB-14, `groupeDeLigne`) : le prix TOUJOURS en tête (CRB-2 : une rangée absente ne
- * dit rien, « prix ? » dit qu'on ne sait pas), ce qui classe, le volume, les dimensions, la porte, la livraison (dispo, vendeur, pays :
- * CRB-13), le reste du groupe, la couleur en bas. `colonnesVue` reste celle du carnet (CarnetOuvert) : elle n'est pas touchée.
+ * Les lignes de Comparer (CRB-14, C55-4 / R26) : L'OFFRE d'abord et ensemble, le prix TOUJOURS en tête (CRB-2 : une rangée absente ne dit
+ * rien, « prix ? » dit qu'on ne sait pas), ce qui classe (sa place décidée), puis dispo, vendeur, pays (CRB-13) ; ensuite les
+ * caractéristiques dans l'ordre de la FICHE (`trierParDecision`, le même que `FicheArticle` : température, volume, énergie, froid,
+ * dimensions, porte, construction, couleur ; le nom départage, jamais l'ordre de la page). `colonnesVue` reste celle du carnet
+ * (CarnetOuvert) : elle n'est pas touchée.
  */
 export function colonnesComparer(t: Tableau): ColonneVue[] {
   const deCritere = new Set(t.colonnes.filter(c => c.critereId).map(c => c.nom));
   const prix: ColonneVue = { cle: '__prix', nom: 'prix', unite: t.lignes.find(l => l.devise)?.devise ?? 'CHF', sens: 'moins', critere: false };
   const livraison: ColonneVue[] = LIVRAISON.filter(x => t.lignes.some(l => !!l[x.champ])).map(x => ({ cle: x.cle, nom: x.nom, sens: 'texte', critere: false }));
   const toutes = [prix, ...colonnesVue(t).filter(c => c.cle !== '__prix'), ...livraison];
-  return toutes.map((c, i) => ({ c, i, g: groupeDeLigne(c.nom, deCritere.has(c.cle)) })).sort((a, b) => a.g - b.g || a.i - b.i).map(x => x.c);
+  const famille = (c: ColonneVue) => groupeDeLigne(c.nom, deCritere.has(c.cle));
+  const offre = toutes.map((c, i) => ({ c, i, g: famille(c) })).filter(x => x.g <= LIGNE_LIVRAISON).sort((a, b) => a.g - b.g || a.i - b.i).map(x => x.c);
+  /* la valeur et l'unité lues sur le 1er article qui la porte : un nom que la liste ne connaît pas se range par son unité (« 400 W » : l'énergie) */
+  const lue = (c: ColonneVue) => t.lignes.map(l => l.cellules[c.cle]).find(v => v !== undefined);
+  const caracteristiques = trierParDecision(toutes.filter(c => famille(c) > LIGNE_LIVRAISON).map(c => ({ nom: c.nom, c })), [], undefined, x => lue(x.c)?.valeur, x => lue(x.c)?.unite ?? x.c.unite).map(x => x.c);
+  return [...offre, ...caracteristiques];
 }
 
 function nombre(v?: ValeurV): number | null {
@@ -68,6 +76,24 @@ export function texteCellule(l: LigneT, c: ColonneVue): string | null {
   const liv = LIVRAISON.find(x => x.cle === c.cle);
   if (liv) return l[liv.champ] ?? null;
   return texteSelonNom(c.nom, valeurTexte(l.cellules[c.cle]), l.cellules[c.cle]?.valeur);
+}
+
+/**
+ * C55-1 (R23) : un libellé de ligne dont un mot est long (« Branchement », « refroidissement » : 11 signes ou plus, plus de 70 px à 14 px) ne
+ * tient pas dans les 74 px que le téléphone laisse aux libellés (CRB-3 : ses trois articles se voient à 390). Ce libellé-là, et lui seul, relève
+ * son plafond (`th[data-mot-long]`, comparer-compact.css) : sa colonne s'élargit juste de ce qu'il faut, jamais coupée au milieu d'un mot
+ * (c48 R2 : « Dimension / s »), jamais sur la valeur voisine. Les libellés courts gardent leurs 74 px.
+ */
+export const aMotLong = (libelle: string): boolean => libelle.split(/[s/]+/).some(m => [...m].length >= 11);
+
+/**
+ * C55-3 (R25) : le grand chiffre de l'en-tête d'une colonne dit son unité (« 242 L », « 2,6 m³ »), une seule fois : la ligne du tableau la dit
+ * déjà à sa manière, mais l'en-tête se lit seul. Une valeur qui la porte (« 0 à 8 °C ») reste telle quelle.
+ */
+export function texteEntete(l: LigneT, c: ColonneVue): string | null {
+  const t = texteCellule(l, c);
+  const u = c.unite && !c.cle.startsWith('__') ? c.unite : undefined;
+  return t && u && !t.includes(u) ? `${t} ${u}` : t;
 }
 
 /**
@@ -436,7 +462,7 @@ export function Comparer(p: ComparerProps) {
                           {vignettes && <Vignette photo={photoDe(l)} picto={p.pictos?.[l.articleId]} />}
                           {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille. A1 : rond de 26 px sur le bas du picto */}
                           {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b className={`cn-cmp-rang${rangVisible(t, l) === 1 ? ' cn-cmp-rang-1' : ''}`}>{rangVisible(t, l)}</b> : null}
-                          {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros">{texteCellule(l, colEntete)}</span> : null}
+                          {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros">{texteEntete(l, colEntete)}</span> : null}
                           <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
                           {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend">{[l.vendeur, l.pays].filter(Boolean).join(' · ')}</span>}
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
@@ -457,7 +483,7 @@ export function Comparer(p: ComparerProps) {
                   const uniteEntete = unite && !ordre.some(l => porteUnite(texteCellule(l, c))) ? unite : undefined;
                   return (
                     <tr key={c.cle} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
-                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.cle.startsWith('__') ? (c.unite ? <span className="cn-mut"> {c.unite}</span> : null) : uniteEntete ? <span className="cn-mut"> {uniteEntete}</span> : null}</th>
+                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined} data-mot-long={aMotLong(libelle) ? true : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.cle.startsWith('__') ? (c.unite ? <span className="cn-mut"> {c.unite}</span> : null) : uniteEntete ? <span className="cn-mut"> {uniteEntete}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
                         const v = c.cle === '__prix' || c.cle.startsWith('__') ? undefined : l.cellules[c.cle];
