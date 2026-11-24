@@ -1,16 +1,27 @@
 /** Le tableau du carnet ouvert (h05-3) et la ligne d'un lien à relire, sortis de CarnetOuvert.tsx. */
 import React, { useLayoutEffect, useRef } from 'react';
-import { ExternalLink, Eye, Link2 } from 'lucide-react';
+import { ExternalLink, Eye, Link2, TriangleAlert } from 'lucide-react';
 import { cleDeNom, rangDeDecision, trierParDecision } from '../../../functions/src/lienFusion';
 import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../domain/carnets/comparer';
 import { dispoDe } from '../../domain/carnets/modele';
 import { convertiChf, estEtranger, renduArticle } from '../../domain/carnets/prixRendu';
 import { colonnesVue, estMesure, meilleursDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
-import { mentionTaxe, montant, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
+import { mentionTaxe, montant, Provenance, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
 import { prixOrigine } from './PrixPastille';
 import { VignetteObjet } from './pictos';
 import { etendue, pastilleFacon, sansEcarte, texteMoinsBien, type Ligne, type Separation } from './ouvertCalculs';
 import { liesParNbsp } from './insecable';
+import { jetonArome } from '../../domain/levure/couleurs';
+import {
+  alphaDe, aromesCommuns, aDesPaliers, choisirMesures, colonnesMatiere, ecouterQuantitePour, estCarnetDeMatiere, largeursBarres, lignesSelonLaQuantite, meilleursPrixAuKilo,
+  phraseSelonLaQuantite, plusBasDe, poserQuantitePour, prixAuKilo, prixParMesure, quantitePour, QUANTITES_POUR, recolteDe, texteChfKg, texteQuantite, uniteExtensive, type ArticleRegle
+} from './tableauRegles';
+
+/** La quantité d'achat de référence du carnet (« pour 1 kg »), partagée par le tableau, « Selon la quantité » et l'en-tête ; clé : le titre du carnet. */
+export function usePour(cle: string): [number, (kg: number) => void] {
+  const kg = React.useSyncExternalStore(ecouterQuantitePour, () => quantitePour(cle), () => quantitePour(cle));
+  return [kg, (n: number) => poserQuantitePour(cle, n)];
+}
 
 const DEVISES = new Set(['CHF', 'EUR', '€', 'Fr.', 'USD', '$']);
 
@@ -30,13 +41,24 @@ export function colonnesCarnet(t: TableauV): ColonneVue[] {
   /* ... et d'abord celle qui décide le plus (volume avant dimensions : `rangDeDecision`) */
   /* C53 (R16) : la fiche dit les dimensions extérieures avant les intérieures ; UNE colonne de tableau garde les intérieures (la place utile d'une chambre froide) */
   const rangColonne = (nom: string) => (/^dimensions int/.test(cleDeNom(nom)) ? rangDeDecision('dimensions') - 0.5 : rangDeDecision(nom));
-  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? trierParDecision(mesures.filter(distingue), [], rangColonne)[0] ?? mesures[0];
+  /* D451 n° 7 (B7, B8 : « Pas juste le prix, 2 ou 3 caractéristiques principales ») : jusqu'à deux mesures, celles qui classent puis celles qui
+     distinguent (`choisirMesures`, tableauRegles.ts), avant le prix */
+  const valeurs = choisirMesures(mesures.map(c => ({ cle: c.cle, nom: c.nom, sens: c.sens, distingue: distingue(c), rang: rangColonne(c.nom) })))
+    .map(x => mesures.find(c => c.cle === x.cle)).filter((c): c is ColonneVue => !!c);
   /* L-19 (prix en francs et en euros, « Prix en euros ») : l'en-tête disait « EUR » au-dessus de 3 350 CHF. Monnaies mêlées : l'en-tête
      dit CHF, chaque prix d'une autre monnaie dit la sienne (TableauCarnet). */
   const devises = new Set(t.lignes.filter(l => l.prixCentimes !== undefined).map(l => l.devise ?? 'CHF'));
   /* D447 : un prix hors franc se lit converti (≈, au cours de la lecture ou de la facture) sous l'en-tête CHF, l'original dit sous le nom */
   const prixVu = prix && (devises.size > 1 || [...devises].some(d => d.toUpperCase() !== 'CHF')) ? { ...prix, unite: 'CHF' } : prix;
-  return [valeur, prixVu].filter((x): x is ColonneVue => !!x);
+  return [...valeurs, prixVu].filter((x): x is ColonneVue => !!x);
+}
+
+/** Les colonnes d'un carnet de matière pesée (houblon, B7) : α, récolte si un article la dit, puis le prix au kilo à la quantité d'achat. */
+const COLONNE_ALPHA: ColonneVue = { cle: '__alpha', nom: 'α', sens: 'plus', critere: false };
+const COLONNE_RECOLTE: ColonneVue = { cle: '__recolte', nom: 'récolte', sens: 'plus', critere: false };
+const COLONNE_PRIX_KG: ColonneVue = { cle: '__prixkg', nom: 'CHF/kg', sens: 'moins', critere: false };
+export function colonnesMatiereCarnet(articles: readonly ArticleRegle[]): ColonneVue[] {
+  return [...colonnesMatiere(articles).map(c => (c === 'alpha' ? COLONNE_ALPHA : COLONNE_RECOLTE)), COLONNE_PRIX_KG];
 }
 
 /** L-19 : la largeur d'une colonne, celle de sa plus longue valeur dans la police de sa cellule, entre 44 et 104 px (au-delà, elle passe à la ligne). */
@@ -123,10 +145,24 @@ export function lignesClassees(t: TableauV, aRelire: ArticleV[], sauf?: string):
 }
 
 export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir, conclusion, taux }: { taux?: number; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; sep: Separation | null; sauf?: string; onOuvrir: (id: string) => void; conclusion?: React.ReactNode }) {
-  const cols = colonnesCarnet(tableau);
-  const meilleurs = new Map(cols.map(c => [c.cle, meilleursDe(tableau, c)]));
   const lignes = lignesClassees(tableau, aRelire, sauf);
   const art = (id: string) => k.articles.find(a => a.id === id);
+  /* D451 n° 7 (B7) : une matière pesée (houblon) se lit α · récolte · CHF/kg à la quantité d'achat (« pour 1 kg ») ; le reste, 2 mesures puis le prix */
+  const enLiceArts = lignes.filter(l => !l.ecarte).map(l => art(l.articleId)).filter((a): a is ArticleV => !!a);
+  const matiere = estCarnetDeMatiere(enLiceArts as never);
+  const [pour] = usePour(titre);
+  const cols = matiere ? colonnesMatiereCarnet(enLiceArts as never) : colonnesCarnet(tableau);
+  const prixKg = new Map(enLiceArts.map(a => [a.id, prixAuKilo(a as never, pour, taux)] as const));
+  const meilleurs = new Map(cols.map(c => {
+    if (c.cle === '__prixkg') return [c.cle, meilleursPrixAuKilo(prixKg)] as const;
+    if (c.cle === '__alpha' || c.cle === '__recolte') {
+      const lu = enLiceArts.map(a => [a.id, Number((c.cle === '__alpha' ? alphaDe(a as never) : recolteDe(a as never))?.replace(',', '.'))] as const).filter(([, n]) => Number.isFinite(n));
+      if (!lu.length || (c.cle === '__alpha' && lu.length < 2)) return [c.cle, new Set<string>()] as const;
+      const max = Math.max(...lu.map(([, n]) => n));
+      return [c.cle, new Set(lu.filter(([, n]) => n === max).map(([id]) => id))] as const;
+    }
+    return [c.cle, meilleursDe(tableau, c)] as const;
+  }));
   /* CRN-18 (critique carnet 21.11) : carnet réalisé ou archivé, la machine est achetée ; la ligne ne dit plus « veille » (la bascule reste dans sa fiche) */
   const fini = k.sortie?.etat === 'realise' || !!k.archive;
   const veille = (a?: ArticleV) => !fini && !!a?.veille?.active;
@@ -150,6 +186,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
   });
 
   return (
+    <>
     <div ref={refTab} className="cn-tab" role="table" aria-label="Articles, rangés dans leur façon">
       {blocs.map((b, i) => {
         const prix = etendue(b.lignes.map(l => l.prixCentimes).filter((x): x is number => typeof x === 'number'));
@@ -177,7 +214,10 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
               const a = art(l.articleId);
               /* tour 3, f7 n° 7 : la façon écartée porte déjà la raison en pastille ; son article, écarté pour la même raison, dit « écarté » seul */
               const memeRaison = !!l.ecarte && b.facon?.etat === 'ecartee' && !!b.facon.raison && sansEcarte(l.ecarte.raison) === sansEcarte(b.facon.raison);
-              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, (a ? dispoDe(a) : undefined)?.replace(/\bsemaines?\b/, 'sem.'), a && convertiChf(l, taux) !== undefined ? prixOrigine(a) : mentionTaxe(l.taxe).trim() || null].filter(Boolean).join(' · ');
+              const sousStd = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, (a ? dispoDe(a) : undefined)?.replace(/\bsemaines?\b/, 'sem.'), a && convertiChf(l, taux) !== undefined ? prixOrigine(a) : mentionTaxe(l.taxe).trim() || null].filter(Boolean).join(' · ');
+              /* B7 (maquette v01) : sous le nom d'un houblon, le vendeur et son pays ; le prix d'origine, la quantité et le rendu vivent dans la carte, la fiche et Comparer */
+              const sous = matiere && !l.ecarte ? [a ? vendeurCourt(a) : undefined, a?.pays].filter(Boolean).join(' · ') : sousStd;
+              const doute = matiere && !l.ecarte ? libelleDoute(douteDe(a)) : null;
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>
@@ -188,17 +228,22 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                     <span className="cn-nom-entier">{liesParNbsp(l.nom)}</span>
                     <span className="cn-mut">
                       {sous}
+                      {doute && <>{sous ? ' ' : ''}<span className="cn-tag-att" title={douteDe(a)}><TriangleAlert size={14} aria-hidden /> {doute}</span></>}
                       {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}
                       {veille(a) && <span className="cn-nowrap" title="veille demandée">{sous ? ' ·' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille</span>}
                       {/* C53-4 / R19 : la quantité et le prix unitaire (« 50 L · 10,40 CHF/L ») se lisent ICI, dans la colonne du nom qui a la place, entiers ; la colonne prix ne dit que le prix.
                           Chaque morceau ne se coupe pas (le nombre reste avec son unité), la ligne se replie entre eux. */}
-                      {!l.ecarte && l.quantite && l.parUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.quantite}</span> · <span className="cn-nowrap">{l.parUnite}</span></span>}
+                      {!matiere && !l.ecarte && l.quantite && l.parUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.quantite}</span> · <span className="cn-nowrap">{l.parUnite}</span></span>}
                       {/* R49 : un prix donné à l'unité (Brau : « 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg ») se lit ici, à la place d'une quantité de conditionnement qu'il n'a pas */}
-                      {!l.ecarte && !l.quantite && l.prixUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.prixUnite}</span></span>}
+                      {!matiere && !l.ecarte && !l.quantite && l.prixUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.prixUnite}</span></span>}
                       {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) || (l.quantite && l.parUnite) || l.prixUnite ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
                   {cols.map((c, ci) => {
+                    if (matiere) {
+                      const txt = c.cle === '__alpha' ? (a ? alphaDe(a as never) : null) : c.cle === '__recolte' ? (a ? recolteDe(a as never) : null) : (() => { const p = prixKg.get(l.articleId); return p ? texteChfKg(p) : null; })();
+                      return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{txt ? <span className="cn-mono cn-nowrap">{txt}</span> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>;
+                    }
                     const brut = texteCellule(l, c);
                     /* C59-7 : le même prix que Comparer et la pastille (le rendu estimé), jamais le converti seul */
                     const rendu = c.cle === '__prix' && estEtranger(l) ? renduArticle(l, taux) : null;
@@ -224,6 +269,10 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
         </div>
       )}
     </div>
+    {matiere
+      ? <BlocsMatiere articles={enLiceArts} titre={titre} taux={taux} />
+      : <BlocPrixParMesure lignes={lignes.filter(l => !l.ecarte)} cols={cols} />}
+    </>
   );
 }
 
@@ -242,4 +291,110 @@ export function LigneARelire({ article: a }: { article: ArticleV }) {
       {a.url && <a className="cn-lien cn-tab-ouvrir" href={a.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
     </div>
   );
+}
+
+/** D450 : le doute entre les deux lectures, quand l'article en porte un (champ facultatif, hors du type de la vue). */
+const douteDe = (a: object | undefined): string | undefined => (a as { doute?: string } | undefined)?.doute;
+
+/** D450 : le doute entre les deux lectures se dit « dispo ? » quand il porte sur la disponibilité, sinon « à vérifier » ; jamais un mot inventé (le texte entier est dans l'infobulle). */
+export function libelleDoute(doute: string | undefined): string | null {
+  if (!doute?.trim()) return null;
+  return /dispo|stock|[ée]puis|rupture|lager|verf[uü]gbar|disponib/i.test(doute) ? 'dispo ?' : 'à vérifier';
+}
+
+/** Le nom court d'un vendeur pour une tête de colonne (« Brau- und Rauchshop » → « Brau »). */
+const vendeurCourt = (a: Pick<ArticleV, 'vendeur' | 'nom' | 'domaine'>): string => {
+  const v = (a.vendeur ?? a.domaine ?? a.nom ?? '').trim();
+  return v.length > 14 ? (v.split(/[\s-]+/)[0] || v) : v;
+};
+
+/**
+ * « Selon la quantité » et « Arômes » sous le tableau d'un carnet de houblons (maquette v01, B7) : le prix au kilo de chaque vendeur à 1, 5 et 20 kg
+ * (le meilleur en vert), puis les arômes lus, colorés par famille. Les deux disparaissent quand ils n'ont rien à dire (un seul conditionnement
+ * par vendeur, aucun arôme lu) : jamais un bloc vide.
+ */
+export function BlocsMatiere({ articles, titre, taux }: { articles: ArticleV[]; titre: string; taux?: number }) {
+  const [pour, poser] = usePour(titre);
+  const regle = articles as unknown as Array<ArticleRegle & { id: string }>;
+  const lignes = aDesPaliers(regle) ? lignesSelonLaQuantite(regle, taux) : [];
+  const aromes = aromesCommuns(regle);
+  return (
+    <>
+      {lignes.length > 0 && (
+        <section className="cn-bloc cn-quantite" aria-label="Selon la quantité">
+          <h4><b>Selon la quantité</b> <span className="cn-mut">CHF/kg, rendu</span></h4>
+          <div className="cn-quantite-grille" role="table" style={{ gridTemplateColumns: `auto repeat(${articles.length}, minmax(0, 1fr))` }}>
+            <span role="columnheader" />
+            {articles.map(a => <span key={a.id} role="columnheader" className="cn-mut cn-quantite-tete">{vendeurCourt(a)}</span>)}
+            {lignes.map(l => (
+              <React.Fragment key={l.kg}>
+                <span role="rowheader" className={l.kg === pour ? 'cn-quantite-pour' : undefined}>{texteQuantite(l.kg)}</span>
+                {articles.map(a => {
+                  const p = l.prix.get(a.id);
+                  return <span key={a.id} role="cell" className={`cn-quantite-val${l.gagnants.has(a.id) ? ' cn-meilleur' : ''}`}>{p ? <span className="cn-mono">{texteChfKg(p)}</span> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>;
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+          <span hidden data-pour={pour} onClick={() => poser(pour)} />
+        </section>
+      )}
+      {aromes.length > 0 && (
+        <section className="cn-bloc cn-aromes" aria-label="Arômes">
+          <h4><b>Arômes</b> <span className="cn-mut">{articles.length > 1 ? 'lus sur les pages' : 'lus sur la page'}</span></h4>
+          <p className="cn-aromes-liste">{aromes.map(m => {
+            const j = jetonArome(m);
+            return <span key={m} className="cn-arome" style={j ? { background: j.fond, color: j.texte } : undefined}>{m}</span>;
+          })}</p>
+        </section>
+      )}
+    </>
+  );
+}
+
+/**
+ * « Prix au m³ » (maquette v01, carnet-froid) : le prix d'une unité de la mesure principale (volume, surface, masse : ce qui s'additionne), en barres
+ * « moins = mieux » qui s'ajoutent aux valeurs du tableau (B12 : « l'idée des barres mais en complément »). Calculé ici, dit tel (« calculé »,
+ * jamais « proposé par l'IA » sans l'IA). Rien si moins de 2 articles ont un prix et la mesure, ou si la mesure ne s'additionne pas (une température).
+ */
+export function BlocPrixParMesure({ lignes, cols }: { lignes: Ligne[]; cols: ColonneVue[] }) {
+  const col = cols.find(c => c.cle !== '__prix' && c.sens !== 'oui-non' && (uniteExtensive(c.unite) || lignes.some(l => /^[\d\s.,]+\s?(?:m³|m²|L)$/i.test(valeurTexteBrut(l.cellules[c.nom])))));
+  if (!col) return null;
+  const unite = col.unite && uniteExtensive(col.unite) ? col.unite : /(m³|m²|L)\s*$/i.exec(valeurTexteBrut(lignes.map(l => l.cellules[col.nom]).find(Boolean)))?.[1];
+  if (!unite) return null;
+  const valeurs = new Map<string, number | null>(lignes.map(l => {
+    const chf = l.prixCentimes !== undefined && (l.devise ?? 'CHF').toUpperCase() === 'CHF' ? l.prixCentimes : convertiChf(l);
+    return [l.articleId, prixParMesure(chf, nombreMesure(l.cellules[col.nom]))] as const;
+  }));
+  if ([...valeurs.values()].filter(v => v !== null).length < 2) return null;
+  const meilleurs = plusBasDe(valeurs);
+  const barres = largeursBarres(valeurs);
+  const ordre = [...lignes].sort((x, y) => (valeurs.get(x.articleId) ?? Infinity) - (valeurs.get(y.articleId) ?? Infinity));
+  return (
+    <section className="cn-bloc cn-barres" aria-label={`Prix au ${unite}`}>
+      <h4><b>Prix au {unite}</b> <span className="cn-mut">moins = mieux</span> <Provenance origine="locale" /></h4>
+      {ordre.map((l, i) => {
+        const v = valeurs.get(l.articleId);
+        if (v === null || v === undefined) return null;
+        const bon = meilleurs.has(l.articleId);
+        const txt = `${nombreMesure(l.cellules[col.nom])?.toLocaleString('fr-CH', { maximumFractionDigits: 2 }).replace(/[ ’]/g, ' ')} ${unite}`;
+        return (
+          <div key={l.articleId} className="cn-barre">
+            <span className={`cn-rang${i === 0 ? ' cn-rang-1' : ''}`}>{i + 1}</span>
+            <span className="cn-barre-nom">{txt}</span>
+            <span className="cn-barre-piste" aria-hidden><i className={bon ? undefined : 'cn-barre-autre'} style={{ width: `${barres.get(l.articleId) ?? 0}%` }} /></span>
+            <b className={`cn-mono cn-barre-val${bon ? ' cn-vert' : ''}`}>{Math.round(v).toLocaleString('fr-CH').replace(/[ ’]/g, ' ')}</b>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+const valeurTexteBrut = (v: { valeur?: unknown; unite?: unknown } | undefined): string => (v && (typeof v.valeur === 'string' || typeof v.valeur === 'number') ? `${v.valeur}${typeof v.unite === 'string' && !String(v.valeur).includes(v.unite) ? ` ${v.unite}` : ''}` : '');
+/** Le nombre d'une mesure lue (« 4,06 », « 2,6 m³ ») ; `null` : inconnu (jamais 0). */
+function nombreMesure(v: { valeur?: unknown } | undefined): number | null {
+  if (!v || typeof v.valeur === 'boolean') return null;
+  if (typeof v.valeur === 'number') return Number.isFinite(v.valeur) ? v.valeur : null;
+  const m = /-?\d+(?:[.,]\d+)?/.exec(String(v.valeur ?? '').replace(/[\s  ']/g, ''));
+  return m ? Number(m[0].replace(',', '.')) : null;
 }

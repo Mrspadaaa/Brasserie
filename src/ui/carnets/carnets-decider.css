@@ -226,3 +226,33 @@
   /* C55-1 (R23) : un libellé à mot long (« Branchement » 85 px, « refroidissement » 96 px) relève son plafond au juste nécessaire ; mot entier, jamais coupé */
   .cn-comparer .cn-tableau-comparer tbody th[data-mot-long] { max-width: 100px; }
 }
+
+/* ───── D451, greffe-p2 (maquettes2/v01, B7 à B12) : blocs sous le tableau, pastilles d'en-tête, cartes, fiche ───── */
+.cn-bloc { border: 1px solid var(--c-line); border-radius: 16px; background: var(--c-bg); padding: 8px 12px 10px; margin-top: 8px; }
+.cn-bloc > h4 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 0 0 4px; font-size: 16px; color: var(--c-ink); }
+.cn-bloc > h4 .cn-mut { font-size: 14px; font-weight: 400; }
+.cn-quantite-grille { display: grid; column-gap: 8px; align-items: center; font-size: 15px; }
+.cn-quantite-grille > span { padding: 5px 0; border-top: 1px solid var(--c-line); }
+.cn-quantite-grille > .cn-quantite-tete { border-top: 0; text-align: right; font-size: 14px; padding-top: 0; }
+.cn-quantite-grille > [role="columnheader"]:first-child { border-top: 0; }
+.cn-quantite-val { text-align: right; padding-left: 6px; padding-right: 8px; border-radius: 8px; }
+.cn-quantite-pour { font-weight: 700; }
+.cn-aromes-liste { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; }
+.cn-arome { padding: 3px 10px; border-radius: 999px; font-size: 15px; background: var(--c-s1); color: var(--c-ink); }
+.cn-barre { display: grid; grid-template-columns: 32px minmax(56px, auto) minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 3px 0; }
+.cn-barre-nom { font-size: 15px; }
+.cn-barre-piste { height: 8px; border-radius: 999px; background: var(--c-s1); overflow: hidden; }
+.cn-barre-piste > i { display: block; height: 100%; border-radius: 999px; background: var(--c-zonet); }
+.cn-barre-piste > i.cn-barre-autre { background: var(--c-line2); }
+.cn-barre-val { min-width: 44px; text-align: right; font-size: 16px; }
+.cn-tag-att { display: inline-flex; align-items: center; gap: 3px; padding: 0 8px; border-radius: 8px; background: var(--c-attbg); color: var(--c-att); font-weight: 600; white-space: nowrap; }
+.cn-tag-att svg { flex: none; }
+/* la ligne d'en-tête « Articles 2 · Comparer · pour 1 kg ▾ » : trois pastilles, la dernière à droite */
+.cn-seg { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 40px; }
+.cn-seg-pastille { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; font-weight: 400; }
+.cn-seg-pastille[aria-pressed="true"], .cn-seg-pastille[data-on] { background: var(--c-ink); color: var(--c-bg); border-color: var(--c-ink); font-weight: 700; }
+.cn-seg-pastille b { font-weight: 700; }
+.cn-seg-droite { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; color: var(--c-mut); font-size: 15px; }
+.cn-pour { position: relative; display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px 0 14px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; }
+.cn-pour select { appearance: none; background: transparent; border: 0; color: inherit; font: inherit; padding: 0 18px 0 0; min-height: 34px; }
+.cn-pour svg { position: absolute; right: 8px; pointer-events: none; }

@@ -331,7 +331,8 @@ describe('R50 (C64-3) : un seul prix et un seul CHF/kg pour un article, sur tout
   const approx = (t: string) => [...t.normalize('NFKC').replace(/[\s  ]+/g, ' ').matchAll(/≈\s?(\d+(?:[.,]\d+)?)(?!\d)/g)].map(m => m[1]);
   const parKilo = (t: string) => [...t.normalize('NFKC').replace(/[\s  ]+/g, ' ').matchAll(/(\d+[.,]\d{2})\s?CHF\s?\/\s?kg/g)].map(m => m[1]);
   it('le « ≈ N CHF » de CITRA® (US) est le même sur la carte, le tableau, la feuille, la fiche et Comparer (≈3 et ≈4 : non)', () => {
-    const lues = surfaces.map(([nom, f]) => { cleanup(); return { nom, valeurs: approx(f()) }; });
+    /* D451 disparaît n° 7 : le tableau du carnet dit désormais le CHF/kg à la quantité d'achat (≈74 à 50 g), plus le prix du sachet ; il ne compte plus parmi les surfaces du « ≈ N CHF » */
+    const lues = surfaces.filter(([nom]) => nom !== 'tableau').map(([nom, f]) => { cleanup(); return { nom, valeurs: approx(f()) }; });
     const toutes = new Set(lues.flatMap(l => l.valeurs));
     expect(toutes.size, `« ≈ » par surface : ${JSON.stringify(lues)}`).toBeLessThanOrEqual(1);
   });
@@ -342,7 +343,8 @@ describe('R50 (C64-3) : un seul prix et un seul CHF/kg pour un article, sur tout
     expect(lues.filter(l => l.valeurs.length).length, `le CHF/kg est dit au moins deux fois : ${JSON.stringify(lues)}`).toBeGreaterThanOrEqual(2);
   });
   it('le CHF/kg dit est sur la base du prix montré : « ≈ N CHF » les 50 g donne N / 0,05 CHF/kg, à 10 CHF près', () => {
-    const t = visible(tableauRendu(duo()));
+    /* D451 disparaît n° 7 : la base du prix montré se lit sur la fiche (le tableau dit le CHF/kg à la quantité d'achat) */
+    const t = visible(fiche(duo(), 0));
     const a = approx(t)[0], k = parKilo(t)[0];
     expect(a, t.slice(0, 400)).toBeDefined();
     expect(k, t.slice(0, 400)).toBeDefined();

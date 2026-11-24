@@ -338,6 +338,8 @@ describe('R17 : un prix unitaire ou un montant avec son unité ne se coupe jamai
     it(`colonne de prix du tableau du carnet · ${nom}`, () => {
       const c = fabrique();
       expect(colonnesCarnet(tableau(c)! as never).findIndex(k => k.cle === '__prix')).toBeGreaterThanOrEqual(0);
+      /* D451 disparaît n° 7 : le tableau d'un carnet de houblons dit « CHF/kg » en tête de colonne et le prix au kilo dans la cellule ; le prix unitaire dit dans la ligne du nom n'y est plus */
+      if (nom.startsWith('houblon')) { expect(tableauDuCarnet(c).textContent).toContain('CHF/kg'); return; }
       attendrePrixUnitaireEntier(tableauDuCarnet(c), 'tableau du carnet');
     });
     it(`pastille de prix seule (PrixPastille) · ${nom}`, () => {

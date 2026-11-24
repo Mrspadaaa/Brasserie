@@ -295,7 +295,9 @@ describe('R14 : le prix se dit seul ou en prix unitaire entier, jamais avec une 
     });
     it(`colonne de prix du tableau du carnet · ${nom}`, () => {
       const c = fabrique();
-      const ci = colonnesCarnet(tableau(c)! as never).findIndex(k => k.cle === '__prix');
+      /* D451 disparaît n° 7 : un carnet de houblons se lit α · récolte · CHF/kg (à 1 kg) ; la colonne du prix est la dernière dans les deux dispositions */
+      const nbColonnes = tableauDuCarnet(c).querySelectorAll('[role="columnheader"][data-tete]').length;
+      const ci = colonnesCarnet(tableau(c)! as never).findIndex(k => k.cle === '__prix') >= 0 && nbColonnes ? nbColonnes - 1 : -1;
       expect(ci).toBeGreaterThanOrEqual(0);
       const cellules = [...tableauDuCarnet(c).querySelectorAll(`[role="cell"][data-col="${ci}"]`)].map(e => joint(e));
       expect(cellules).toHaveLength(2);

@@ -5,7 +5,8 @@ import type { comptesCarnet } from '../../domain/carnets/comptes';
 import { CarteArticle } from './CarteArticle';
 import { Provenance, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
-import { TableauCarnet } from './TableauCarnet';
+import { TableauCarnet, usePour } from './TableauCarnet';
+import { aDesPaliers, estCarnetDeMatiere, QUANTITES_POUR, texteQuantite, type ArticleRegle } from './tableauRegles';
 import type { Separation } from './ouvertCalculs';
 import type { CarnetOuvertProps, RangeeV } from './carnetOuvertTypes';
 import { liesParNbsp } from './insecable';
@@ -57,6 +58,32 @@ function gererArticles({ p, k, gerer, setGerer, vers, setVers }: ArticlesCarnetV
   );
 }
 
+/**
+ * La ligne d'en-tête de la maquette v01 : « [Articles 2] [Comparer] ········ pour [1 kg ⌄] ». Articles (noir) ouvre la feuille des cartes ; Comparer
+ * ouvre Comparer ; « pour » est la quantité d'achat de référence d'un carnet de matière pesée dont un vendeur a plusieurs conditionnements
+ * (le tableau et « Selon la quantité » la lisent). Absent quand il n'a pas de sens : jamais un réglage mort.
+ */
+function PastillesArticles({ n, k, titre, onCartes, onComparer, cartes }: { n: number; k: ContenuCarnetV; titre: string; onCartes: () => void; onComparer?: () => void; cartes: boolean }) {
+  const [pour, poser] = usePour(titre);
+  const regle = k.articles as unknown as ArticleRegle[];
+  const avecPour = estCarnetDeMatiere(regle) && aDesPaliers(regle);
+  return (
+    <>
+      <button type="button" className="cn-tete-bouton cn-seg-pastille" data-on aria-haspopup="dialog" aria-expanded={cartes} onClick={onCartes}><b>Articles</b> <span className="cn-mono cn-compte">{n}</span></button>
+      <button type="button" className="cn-lien cn-comparer-lien cn-seg-pastille" onClick={onComparer}>Comparer</button>
+      {avecPour && (
+        <span className="cn-seg-droite">pour
+          <label className="cn-pour"><span className="cn-cache">Quantité d’achat de référence</span>
+            <select aria-label="Quantité d’achat de référence" value={pour} onChange={e => poser(Number(e.target.value))}>
+              {QUANTITES_POUR.map(q => <option key={q} value={q}>{texteQuantite(q)}</option>)}
+            </select><ChevronDown size={16} aria-hidden />
+          </label>
+        </span>
+      )}
+    </>
+  );
+}
+
 export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
   const { p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion, gerer, setGerer } = v;
   return (
@@ -69,16 +96,9 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
                 `comptesCarnet` (lus et sans aperçu ensemble, n° 15) ; le lien sans aperçu se lit dans le tableau (« Lien sans aperçu ·
                 Ouvrir »). P12 (h03-5) : toucher « Articles » ouvre la feuille des cartes. */}
             <div className="cn-rubrique-tete cn-tete-articles">
-              {p.tableau ? (
-                <button type="button" className="cn-tete-bouton" aria-haspopup="dialog" aria-expanded={cartes} onClick={() => setCartes(true)}>
-                  <Tag size={18} aria-hidden /><b>Articles</b>
-                  <span className="cn-mut cn-mono cn-compte">{n.articles}</span>
-                  <ChevronDown size={16} aria-hidden className="cn-mut" />
-                </button>
-              ) : (
+              {p.tableau ? <PastillesArticles n={n.articles} k={k} titre={c.title} onCartes={() => setCartes(true)} onComparer={p.onComparer} cartes={cartes} /> : (
                 <><Tag size={18} aria-hidden /><b>Articles</b><span className="cn-mut cn-mono cn-compte">{n.articles}</span></>
               )}
-              {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
               {p.onRetirerArticle && (
                 <button type="button" className="cn-ico cn-articles-actions" aria-label="Articles, actions" aria-expanded={gerer} onClick={() => { setGerer(!gerer); v.setVers(null); }}><Ellipsis size={22} aria-hidden /></button>
               )}
