@@ -7,6 +7,7 @@
 ## Économie
 - Mécanique : aucune.
 - Gestes : sans objet (aucun écran joué ; lecture de code et des maquettes).
+- Tests : sans objet (voie de plan, aucun code) ; les voies de port écrivent les leurs avec --reporter=dot > tests.log.
 
 ## Tenue
 - RESULTAT.md tenu au fil.
