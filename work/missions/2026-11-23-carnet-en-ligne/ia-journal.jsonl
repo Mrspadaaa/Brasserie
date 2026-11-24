@@ -431,3 +431,11 @@
 {"date":"2026-11-24T10:08:07.436Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.002,"voie":"critique-52"}
 {"date":"2026-11-24T10:08:34.091Z","tache":"lireLien","url":"brewstore marmite 50 L (C50 rejeu, E47)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
 {"date":"2026-11-24T10:08:58.301Z","tache":"lireLien","url":"galaxus KS240L (C50 rejeu, E47)","modele":"serveur (aiTask tour 52, CoUp1JRM)","cout_chf":0.01,"voie":"critique-52"}
+{"date":"2026-11-24T10:50:40.444Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.002,"voie":"critique-53"}
+{"date":"2026-11-24T10:51:04.306Z","tache":"lireLien","url":"ggmgastro 4,06 m3 (C50/C52 rejeu)","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.01,"voie":"critique-53"}
+{"date":"2026-11-24T10:51:26.544Z","tache":"lireLien","url":"ggmgastro 2,6 m3 (C50/C52 rejeu)","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.01,"voie":"critique-53"}
+{"date":"2026-11-24T10:51:53.527Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.002,"voie":"critique-53"}
+{"date":"2026-11-24T10:52:18.643Z","tache":"lireLien","url":"brewstore marmite 50 L (C52-2 rejeu)","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.01,"voie":"critique-53"}
+{"date":"2026-11-24T10:52:41.811Z","tache":"lireLien","url":"galaxus KS240L (C50 rejeu)","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.01,"voie":"critique-53"}
+{"date":"2026-11-24T10:59:31.315Z","tache":"ranger","texte":"ZZ TEST — houblon Citra","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.002,"voie":"critique-53"}
+{"date":"2026-11-24T10:59:53.845Z","tache":"lireLien","url":"hopfenmarkt Citra (ordre fiche houblon)","modele":"serveur (aiTask tour 53, BImwE2Gr)","cout_chf":0.01,"voie":"critique-53"}
