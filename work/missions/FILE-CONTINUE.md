@@ -20,8 +20,8 @@ pause: 2026-11-24T08:25:18Z
 - [x] Carnet : ses choix portés, en ligne tour 46 ; test critique-46 : 6 problèmes (1 B), domaine 10/10
 - [x] Tour 47 : test critique-47, 6 problèmes (0 B), E45 vérifiés, E47-1..5 versés
 - [x] Tour 48 en ligne (index-DJIfW4-y.js, carnet-c46)
-- [ ] Voie e47 : E47-1..5, C46-5, puis tour 49 et test
-- [ ] Voie c48 après e47 : C48-1..6 (prix des chambres froides non lus, Relire proposé ; Comparer), brief par RÈGLE + grep des équivalents, tests écrits par un autre agent depuis le constat ; test en ligne qui rejoue aussi les corrigés (C46-3,4,6 sur ZZ)
+- [ ] Tour 49 en ligne (index-Bk3VRdwH.js, e47 052e89cb7, aiTask) : test critique-49 avec rejeu des corrigés
+- [ ] Voie c48 : tests rouges par un agent (c48-tests), puis correctif par un autre (c48-fix), tour 50, test en ligne
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
 - [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
