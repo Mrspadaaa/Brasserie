@@ -7,6 +7,7 @@
 ## Économie
 - Mécanique : aucune.
 - Gestes : sans écran ; la carte « rangé pour toi » est rendue par la voie liste.
+- Captures 390 et 1280 ouvertes : sans objet ici (aucun écran touché) ; elles reviennent aux voies d écran.
 - IA réelle : aucune dans les tests ordinaires. Un seul test réel facultatif, lancé à la main, 8 rangements au plus
   (0,10 CHF), journalisé dans work/missions/2026-11-23-carnet-en-ligne/ia-journal.jsonl ; seulement si les functions sont
   déployées par le pilote avec accord ; sinon, rien de réel.
