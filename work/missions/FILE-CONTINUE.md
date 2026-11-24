@@ -28,7 +28,8 @@ pause: 2026-11-24T16:24:50.484Z
 - [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
-- [ ] Tour 59 en ligne (index-BoCN8sbd.js : c58-fix) : test critique-59
+- [x] Tour 59 : critique-59, 10 problèmes (3 B : C59-1 Relire range les articles d un autre carnet, C59-4 critère 50 L ne classe pas, C59-6 Citra 0,10 1er), corrigés 9/9
+- [ ] C59 (+ C58-3, C58-4, C50-5 rouverts) : tests puis correctif, après lecture-ecrit
 - [ ] Carnet, sa plainte du 24.11 16:46 : critiques persona brasseur et compact (work/missions/2026-11-24-carnet-personas/), puis synthèse, mini maquettes des écarts à ses choix (skill maquettes, artefact neuf), puis port ; prix des houblons (LIEN-PRIX-JUSTE)
 - [ ] URGENT à vérifier (persona compact, D1) : « Enregistrement sur le serveur… » à la simple OUVERTURE de son carnet Chambre froide (aussi sur sa capture 5) : l app écrit-elle en lisant ? (cause probable : domaine, ordre ou relecture posés à l ouverture) ; trouver l écriture (grep des écritures déclenchées au montage de CarnetOuvert), la supprimer si elle n est pas un geste du brasseur
 - [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
@@ -46,6 +47,7 @@ pause: 2026-11-24T16:24:50.484Z
 - [ ] REPRISE-GENERALE du 22.11 : Eau (alerte à 660), Matériel (equipment/undefined), Stock et Autres stocks, Ma levure, Malts/sucres
 
 ## En attente de lui
+- [attente] IA en ligne bloquée depuis ~15:48 UTC le 24.11 : plafond de dépenses IA du projet atteint (AI Studio) ; à lui de le relever ou non
 - [x] Tags en-ligne tour27..44 retirés de GitHub (24.11, son accord)
 - [x] Tour 57 : critique-57, 2 problèmes (0 B), POI-1 et Q4-1 vérifiés
 

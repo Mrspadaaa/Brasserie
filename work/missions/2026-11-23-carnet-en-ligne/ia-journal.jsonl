@@ -478,3 +478,13 @@
 {"date":"2026-11-24T14:46:43.272Z","tache":"lireLien","url":"brewstore marmite 50 L (rejeu)","modele":"serveur (aiTask tour 58, CPpfj_-A)","cout_chf":0.01,"voie":"critique-58"}
 {"date":"2026-11-24T14:47:07.424Z","tache":"lireLien","url":"galaxus KS240L (rejeu)","modele":"serveur (aiTask tour 58, CPpfj_-A)","cout_chf":0.01,"voie":"critique-58"}
 {"date":"2026-11-24T14:49:26.207Z","tache":"ranger (Relire, joint ZZ)","texte":"ZZ TEST — joint torique 20 mm","modele":"serveur (aiTask tour 58, CPpfj_-A)","cout_chf":0.002,"voie":"critique-58"}
+{"date":"2026-11-24T15:45:20.337Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.002,"voie":"critique-59"}
+{"date":"2026-11-24T15:46:32.280Z","tache":"lireLien","url":"ggmgastro 4,06 m3 (rejeu)","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.01,"voie":"critique-59"}
+{"date":"2026-11-24T15:47:48.456Z","tache":"lireLien","url":"ggmgastro 2,6 m3 (rejeu)","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.01,"voie":"critique-59"}
+{"date":"2026-11-24T15:48:15.463Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.002,"voie":"critique-59"}
+{"date":"2026-11-24T15:49:30.033Z","tache":"lireLien","url":"brewstore marmite 50 L (rejeu)","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.01,"voie":"critique-59"}
+{"date":"2026-11-24T15:50:44.526Z","tache":"lireLien","url":"galaxus KS240L (rejeu)","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.01,"voie":"critique-59"}
+{"date":"2026-11-24T15:51:44.922Z","tache":"ranger","texte":"ZZ TEST — tuyau silicone 8 mm, 5 m","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.002,"voie":"critique-59"}
+{"date":"2026-11-24T15:53:43.323Z","tache":"ranger (Relire, joint ZZ)","texte":"ZZ TEST — joint torique 20 mm","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.002,"voie":"critique-59"}
+{"date":"2026-11-24T15:54:20.482Z","tache":"ranger (Relire, joint ZZ)","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 59, BoCN8sbd)","cout_chf":0.002,"voie":"critique-59"}
+{"date":"2026-11-24T15:55:15Z","tache":"note","voie":"critique-59","note":"aiTask refuse depuis ~15:48 UTC : plafond de dépenses IA du projet atteint (AI Studio), ok:false en 0,25 s. Coût réel critique-59 : 3 appels aboutis (C1 ranger, Z1 et Z2 lireLien) ≈ 0,022 CHF ; marmite, tuyau, liens M1/M2, joint (simulé) et 2 Relire : refusés, 0 CHF."}
