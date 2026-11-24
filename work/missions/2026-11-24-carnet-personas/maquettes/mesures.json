@@ -1,0 +1,242 @@
+{
+ "v01": {
+  "liste": {
+   "zone": 70,
+   "rempli": 70
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 69
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 49
+  },
+  "articles": {
+   "zone": 41,
+   "rempli": 41
+  },
+  "fiche": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "comparer": {
+   "zone": 77,
+   "rempli": 70
+  },
+  "comparer-sans": {
+   "zone": 77,
+   "rempli": 73
+  }
+ },
+ "v02": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "carnet": {
+   "zone": 88,
+   "rempli": 66
+  },
+  "carnet-froid": {
+   "zone": 88,
+   "rempli": 47
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 57
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 72
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 75
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 73
+  }
+ },
+ "v03": {
+  "liste": {
+   "zone": 77,
+   "rempli": 73
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 59
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 53
+  },
+  "articles": {
+   "zone": 29,
+   "rempli": 29
+  },
+  "fiche": {
+   "zone": 72,
+   "rempli": 71
+  },
+  "comparer": {
+   "zone": 72,
+   "rempli": 62
+  },
+  "comparer-sans": {
+   "zone": 72,
+   "rempli": 61
+  }
+ },
+ "v04": {
+  "liste": {
+   "zone": 77,
+   "rempli": 68
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 56
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 46
+  },
+  "articles": {
+   "zone": 83,
+   "rempli": 41
+  },
+  "fiche": {
+   "zone": 83,
+   "rempli": 62
+  },
+  "comparer": {
+   "zone": 83,
+   "rempli": 63
+  },
+  "comparer-sans": {
+   "zone": 83,
+   "rempli": 63
+  }
+ },
+ "v05": {
+  "liste": {
+   "zone": 70,
+   "rempli": 59
+  },
+  "carnet": {
+   "zone": 88,
+   "rempli": 59
+  },
+  "carnet-froid": {
+   "zone": 88,
+   "rempli": 43
+  },
+  "articles": {
+   "zone": 38,
+   "rempli": 38
+  },
+  "fiche": {
+   "zone": 81,
+   "rempli": 69
+  },
+  "comparer": {
+   "zone": 81,
+   "rempli": 57
+  },
+  "comparer-sans": {
+   "zone": 81,
+   "rempli": 54
+  }
+ },
+ "v06": {
+  "liste": {
+   "zone": 70,
+   "rempli": 52
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 57
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 51
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 25
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 61
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 55
+  }
+ },
+ "v07": {
+  "liste": {
+   "zone": 89,
+   "rempli": 50
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 54
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 47
+  },
+  "articles": {
+   "zone": 34,
+   "rempli": 34
+  },
+  "fiche": {
+   "zone": 89,
+   "rempli": 52
+  },
+  "comparer": {
+   "zone": 89,
+   "rempli": 54
+  },
+  "comparer-sans": {
+   "zone": 89,
+   "rempli": 57
+  }
+ },
+ "v08": {
+  "liste": {
+   "zone": 77,
+   "rempli": 54
+  },
+  "carnet": {
+   "zone": 89,
+   "rempli": 44
+  },
+  "carnet-froid": {
+   "zone": 89,
+   "rempli": 50
+  },
+  "articles": {
+   "zone": 84,
+   "rempli": 37
+  },
+  "fiche": {
+   "zone": 84,
+   "rempli": 59
+  },
+  "comparer": {
+   "zone": 84,
+   "rempli": 61
+  },
+  "comparer-sans": {
+   "zone": 84,
+   "rempli": 61
+  }
+ }
+}

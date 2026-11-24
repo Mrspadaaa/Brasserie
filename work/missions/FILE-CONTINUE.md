@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T19:16:41.948Z
+pause: 2026-11-24T19:17:43.870Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -32,8 +32,8 @@ pause: 2026-11-24T19:16:41.948Z
 - [x] Tour 61 : critique-61, 7 problèmes (2 B), corrigés 12/14 ; changement de « Houblons citra » à 18:17Z = son Relire de 19:17 (sa capture)
 - [ ] C61 après prix-houblon : C61-1 (B, liste des carnets « dès 0,10 CHF »), C61-2 (B, « Lecture de lien interrompue [Reprendre] » après chaque lecture finie : régression de LE-1), C59-8 rouvert, C59-6, C61-3..7 ; tests rouges par une voie, correctif par une autre
 - [ ] Tour 62 en ligne (index-D3jS7C01.js : BD-1 avis d enregistrement en pastille, écriture réelle seule) : à vérifier en ligne au prochain critique
-- [ ] Carnet, sa plainte du 24.11 16:46 : personas FAITS (brasseur 23 pb, compact 29 pb) ; voie maquettes en cours (work/missions/2026-11-24-carnet-personas/maquettes/) ; puis artefact privé neuf (page de choix) au brasseur, puis port de son choix ; + tableau : 2 ou 3 caractéristiques par ligne (ses mots) ; + ses captures annotées 19:30 (espace mal utilisé)
-- [ ] Voie prix-houblon en cours (R39..R42 : prix avec conditionnement, CHF/kg pour comparer, Relire qui retrouve un prix, en-tête « prix EUR ») ; puis aiTask (son accord : « si il faut modifier iatask c est pas un problème ») et tour suivant ; + ESCALADER-SUR-MANQUE (Escalader dès qu un champ manque) ; + D450 (IA toujours sur la page entière, accord des deux lectures) ; + comparer lecture markdown (A) et url_context (B)
+- [attente] Carnet compact : page de choix publiée https://claude.ai/artifact/PvSK6T86Js26GWa7QTqh2k (8 versions, part de donnée 70 à 89 %) ; attend son classement (bouton Copier) ; 3 décisions : barre du bas gardée, champ Ajouter derrière le +, note qui rétrograde (v02, v07)
+- [ ] Voie prix-houblon2 en cours (reprise : prix-houblon a commité 64cf3f08b sans RESULTAT ni preuve) ; puis aiTask + tour 63 + critique
 - [ ] NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; voie note-tests puis note-fix après prix-houblon (mêmes fichiers) ; affichage et poids sur le rang : axe des mini maquettes
 - [ ] LIEN-PAS-PRODUIT (ses mots 24.11) : un lien d information (frais d envoi, conditions, guide) n est pas un article ; l IA le range comme information et le rattache au vendeur ou aux articles (frais d envoi → prix rendu) ; avec la synthèse NOTE-EXPLOITEE
 - [x] Écriture à l ouverture d un carnet (LE-1) : cause reprendreLectures (lecture de lien gardée rejouée seule), corrigé 6f2d66fb9, en ligne tour 60 (index-DfTdaO8-.js) ; à vérifier en ligne par le prochain critique
