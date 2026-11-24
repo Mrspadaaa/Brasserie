@@ -2858,3 +2858,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Carnet) : « Test sur le carnet de la chambre froide »
 
 - 24.11 (Calendrier, capture : rangée Fêtes « vi 12 oct. → 3 janv. », en-tête « S53 ») : « 3 Javier en S53 ?? »
+
+- 24.11 (Calendrier, à la question « S53 2026 » quand une semaine déborde sur la nouvelle année ?) : « Non »
