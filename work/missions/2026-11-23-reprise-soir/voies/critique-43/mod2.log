@@ -1,0 +1,34 @@
+M3 ["Archives @12,499 66x30","Bord @0,804 65x40","Finances @65,804 65x40","Calendrier @130,804 66x40","Brassins @195,804 65x40","Stocks, 11 articles à commander @260,804 65x40","Clients @325,804 65x40","Fermer @330,409 44x44","Noter un encaissement @16,577 358x44","Modifier @16,629 122x44","Avoir ou remboursement @146,629 228x44","Échéance de la facture : 24 déc. @16,751 107x28"]
+M4 champs ["Rechercher une opération=","Nom=ZZ TEST — Vente","Montant en CHF=4,80","Client=","N° de facture=ZZ-REF","null=ZZ note","null=on","Photo du ticket=","Fichier ou PDF="]
+M4 changer ["Retour au tableau de bord @8,6 86x28","Période précédente @137,3 34x34","Période : Tout l’historique. Choisir la plage @171,3 88x34","Période suivante @259,3 34x34","Rechercher (⌘K) @298,6 28x28","Plus : saisie au nom de Gaëtan @330,2 52x36","Synthèse @12,41 90x32","Opérations @104,41 90x32","Prévisions @196,41 90x32","Annuel @288,41 90x32","Rechercher @338,90 32x32","Ventes +4,80 : ne montrer que cette catégorie @20,186 40x122","Fixes 11,00 : ne montrer que cette catégorie @110,186 40x122","Brassage 113,90 : ne montrer que cette catégorie @150,186 40x122","Nettoyage 23,00 : ne montrer que cette catégorie @191,186 40x122","Autres 134,20 : ne montrer que cette ca
+M4 après Échap true false
+montant champ Montant en CHF
+M4 fin null
+M4 cal ["−470 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes","ZZ TEST — Vente, à recevoir, 24 déc., S52, +5"] Ventes
++5
+à encaisser S48–S53
+op {"x":168.4375,"y":421.5,"a":"ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"}
+M7 détail  ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ + pièce ¦ 3,50 ¦ Brau- und Rauchshop GmbH · 372765 · malts, grain, houblons ¦ ✓ payé 27 avr. · banque ¦ facture ¦ 110,40 ¦  ¦ Nettoyage ¦ 23,00 ¦  ¦ consomable ( masque gant) ¦  · Facture REN-001 ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ 23,00 ¦  ¦ Impôts ¦ 1,20 ¦  ¦ ZZ TEST — Impôts ¦ à payer · 24 déc. · dans 30 j ¦ sans pièce ¦ Marquer payé ¦ 1,20 ¦  ¦ Autres frais ¦ 133,00 ¦  ¦ ZZ TEST — Autre sortie ¦ ✓ payé 20 nov. · banque ¦ sans pièce ¦ + pièce ¦ 1,00 ¦ Vêtements et sous-vêtements (achat personnel / non brassicole) ¦  · vertbaudet ¦ ✓ payé 30 août · ban
+M8 champs ["Nom=ZZ TEST — Achat","Montant en CHF=3,50","Précision=Achat","Fournisseur=","N° de facture=ZZ-REF","null=ZZ note","null=on","Photo du ticket=","Fichier ou PDF="]
+M8 changer ["Ventes +4,80 : ne montrer que cette catégorie @20,-98 40x122","Fixes 11,00 : ne montrer que cette catégorie @110,-98 40x122","Brassage 113,90 : ne montrer que cette catégorie @150,-98 40x122","Nettoyage 23,00 : ne montrer que cette catégorie @191,-98 40x122","Autres 134,20 : ne montrer que cette catégorie @231,-98 40x122","Matériel 5 500,00 : ne montrer que cette catégorie @280,-98 40x122","Apports +9 492,50 : ne montrer que cette catégorie @330,-98 40x122","ZZ TEST — Salaire · Charges fixes · 5,00 CHF · à payer · 24 déc. · dan @24,88 249x35","Marquer payé 5,00 CHF @281,107 97x24","ZZ TEST — Loyer · Charges fixes · 4,00 CHF · à payer · 24 déc. ·
+M8 après Échap true false
+M8 PAS DE CURSEUR
+M8 fin null
+M9 ops ["ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"]
+op {"x":168.4375,"y":421.5,"a":"ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"}
+M9 détail  ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ + pièce ¦ 3,50 ¦ Brau- und Rauchshop GmbH · 372765 · malts, grain, houblons ¦ ✓ payé 27 avr. · banque ¦ facture ¦ 110,40 ¦  ¦ Nettoyage ¦ 23,00 ¦  ¦ consomable ( masque gant) ¦  · Facture REN-001 ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ 23,00 ¦  ¦ Impôts ¦ 1,20 ¦  ¦ ZZ TEST — Impôts ¦ à payer · 24 déc. · dans 30 j ¦ sans pièce ¦ Marquer payé ¦ 1,20 ¦  ¦ Autres frais ¦ 133,00 ¦  ¦ ZZ TEST — Autre sortie ¦ ✓ payé 20 nov. · banque ¦ sans pièce ¦ + pièce ¦ 1,00 ¦ Vêtements et sous-vêtements (achat personnel / non brassicole) ¦  · vertbaudet ¦ ✓ payé 30 août · ban
+M9 cal ["−470 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes","ZZ TEST — Achat, 19 nov., S47, −4"]
+op {"x":168.4375,"y":421.5,"a":"ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"}
+montant champ Montant en CHF
+M10 fin null
+M11 ops ["ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"]
+op {"x":168.4375,"y":421.5,"a":"ZZ TEST — Achat · Brassage · 3,50 CHF · payé 19 nov. · banque · sans pièce"}
+M11 détail  ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ + pièce ¦ 3,50 ¦ Brau- und Rauchshop GmbH · 372765 · malts, grain, houblons ¦ ✓ payé 27 avr. · banque ¦ facture ¦ 110,40 ¦  ¦ Nettoyage ¦ 23,00 ¦  ¦ consomable ( masque gant) ¦  · Facture REN-001 ¦ ✓ payé 19 nov. · banque ¦ sans pièce ¦ 23,00 ¦  ¦ Impôts ¦ 1,20 ¦  ¦ ZZ TEST — Impôts ¦ à payer · 24 déc. · dans 30 j ¦ sans pièce ¦ Marquer payé ¦ 1,20 ¦  ¦ Autres frais ¦ 133,00 ¦  ¦ ZZ TEST — Autre sortie ¦ ✓ payé 20 nov. · banque ¦ sans pièce ¦ + pièce ¦ 1,00 ¦ Vêtements et sous-vêtements (achat personnel / non brassicole) ¦  · vertbaudet ¦ ✓ payé 30 août · ba
+M11 cal ["−470 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes","ZZ TEST — Achat, 19 nov., S47, −4"]
+op {"x":168.4375,"y":421.5,"a":"ZZ TEST — Apport · Apports privés · + 5,00 CHF · encaissé 22 nov. · banque · sans pièce"}
+M12 champs ["Nom=ZZ TEST — Apport","Montant en CHF=5,00","Nom=","N° de facture=","null=","null=on","Photo du ticket=","Fichier ou PDF="]
+M12 PAS DE changer
+op {"x":145.7265625,"y":378.5,"a":"ZZ TEST — Loyer · Charges fixes · 4,00 CHF · à payer · 24 déc. · dans 30 j · sans pièce"}
+M13 champs ["Nom=ZZ TEST — Loyer","Montant en CHF=4,00","Bailleur=","N° de facture=","null=","null=on","Photo du ticket=","Fichier ou PDF="]
+M13 changer ["Retour au tableau de bord @8,6 86x28","Période précédente @137,3 34x34","Période : Tout l’historique. Choisir la plage @171,3 88x34","Période suivante @259,3 34x34","Rechercher (⌘K) @298,6 28x28","Plus : saisie au nom de Gaëtan @330,2 52x36","Synthèse @12,41 90x32","Opérations @104,41 90x32","Prévisions @196,41 90x32","Annuel @288,41 90x32","Rechercher @338,90 32x32","Ventes +4,80 : ne montrer que cette catégorie @20,128 40x122","Fixes 11,00 : ne montrer que cette catégorie @110,128 40x122","Brassage 113,90 : ne montrer que cette catégorie @150,128 40x122","Nettoyage 23,00 : ne montrer que cette catégorie @191,128 40x122","Autres 134,20 : ne montrer que cette c
+M13 après Échap true false

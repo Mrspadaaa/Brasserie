@@ -1,0 +1,9 @@
+INTROUVABLE Solde et paramètres financiers
+R0 {"depenser":"−472 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes","caisse":"","synthese":"","parametres":"Enregistrement refusé : Missing or insufficient permissions. ¦ 🍺 ¦ L'Affinée ¦ Tout ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦  ¦ Toutes les dates ¦  ¦ +4 ¦ Ventes ¦ +1 ¦ Entrées ¦ 11 ¦ Fixes ¦ 115 ¦ Brassage ¦ 23 ¦ Nettoyage ¦ 134 ¦ Autres ¦ 5 500 ¦ Matériel ¦ +9 493 ¦ Apports ¦  ¦ payé ¦ 272,90 ¦ à payer ¦ 10,20 ¦ dépensé ¦ 283,10 ¦  ¦ Charges fixes ¦ 11,00 ¦  ¦ ZZ TEST — Salaire ¦ à payer · 24 déc. · dans 30 j ¦ sans pièce ¦ Marquer payé ¦ 5,00 ¦ ZZ TEST — Loyer ¦ à payer · 24 déc. · dans 30 j ¦ sans pièce ¦ Marquer payé ¦ 4,00 ¦ ZZ TEST — Abonnement ¦
+R1  ¦ ZZ TEST — Autre entrée ¦ Autre entrée · 23.11 ¦ +1,10 ¦ ↑ sort ¦ ZZ TEST — Abonnement ¦ Abonnement · 22.11 ¦ −2,00 ¦ ↓ rentre ¦ ZZ TEST — Autre sortie ¦ Autre sortie · 20.11 ¦ −1,00 ¦ ↓ rentre ¦ ZZ TEST — Achat ¦ Achat · 19.11 ¦ −4,50 ¦ ↓ rentre
+R2 masque  ¦  ¦ Aucune pièce ne correspond.
+R3 23  ¦  ¦ Aucune pièce ne correspond.
+R4 Brau  ¦  ¦ Aucune pièce ne correspond.
+R5  ¦ Remboursement ¦ changer ¦ Remboursement de… ¦ CHF ¦ Mon mois ¦ — ¦ De quelle pièce ?
+R6 bouton {"x":299.3125,"y":814,"t":"De quelle pièce ?","d":false}
+R7 serie ¦  · Facture voir impot ¦ Paiement à confirmer ¦ sans pièce ¦ À confirmer ¦ 4 000,00 ¦  ¦ Date à vérifier ¦ 45,00 ¦  ¦ bac malt + raccord bauhause ¦ Paiement à confirmer ¦ sans pièce ¦ À confirmer ¦ 45,00 ¦ Pourquoi les autres frais pèsent autant ? ¦ Par date ¦ Filtres ¦ Doublons ¦ Apport ou prélèvement privé ¦ Archives ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ 11 ¦ Stocks ¦ Clients ¦ Saisir à la main ¦ Remboursement ¦ changer ¦ Remboursement de… ¦ ,00 ¦ CHF ¦ Mon mois ¦ +1,00 ¦ De quelle pièce ? ¦ De quelle pièce ? ¦ ZZ TEST — Achat ¦ Achat · 19.11 ¦ −4,50 ¦ ↓ rentre

@@ -1,0 +1,225 @@
+🍺
+L'Affinée
+Tout
+A
+G
+Synthèse
+Opérations
+Prévisions
+Annuel
+
+Toutes les dates
+
+Écritures annulées
+110
+Brassage
+23
+Nettoyage
+132
+Autres
+5 500
+Matériel
++9 490
+Apports
+
+payé
+265,40
+à payer
+0,00
+dépensé
+265,40
+
+Annulées
+
+ZZ TEST — Vente
+Annulé
++3,80
+Remboursement ZZ TEST — Achat lié
+Annulé
++0,50
+ZZ TEST — Annuler
+Annulé
+0,30
+ZZ TEST — Saisir un autre
+Annulé
+0,20
+Remboursement ZZ TEST — Achat
+Annulé
++1,00
+ZZ TEST — Vente
+Annulé
++3,80
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — Loyer
+Annulé
+4,00
+ZZ TEST — Annuler
+Annulé
+0,30
+ZZ TEST — Saisir un autre
+Annulé
+0,20
+Remboursement ZZ TEST — Achat
+Annulé
++1,00
+ZZ TEST — Vente
+Annulé
++3,80
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — Loyer
+Annulé
+4,00
+Remboursement ZZ TEST — Achat
+Annulé
++1,00
+ZZ TEST — Saisir un autre
+Annulé
+0,60
+ZZ TEST — Annuler
+Annulé
+0,50
+ZZ TEST — Vente
+Annulé
++3,80
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — Loyer
+Annulé
+4,00
+ZZ TEST — Autre entrée
+Annulé
++1,10
+ZZ TEST — Autre entrée
+Annulé
++1,10
+ZZ TEST — Autre entrée
+Annulé
++1,10
+ZZ TEST — Saisir un autre
+Annulé
+0,60
+ZZ TEST — Annuler
+Annulé
+0,50
+ZZ TEST — Vente
+Annulé
++3,80
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — Loyer
+Annulé
+4,00
+ZZ TEST — Annuler
+Annulé
+1,00
+ZZ TEST — Vente
+Annulé
++3,80
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — apport croix
+Annulé
++1,00
+ZZ TEST — Loyer
+Annulé
+4,00
+ZZ TEST — apport
+Annulé
++1,00
+ZZ TEST — apport voile
+Annulé
++1,00
+ZZ TEST — apport
+Annulé
++1,00
+ZZ TEST — Achat du jour
+Annulé
+1,00
+ZZ TEST — Impôts
+Annulé
+1,20
+ZZ TEST — Salaire
+Annulé
+5,00
+ZZ TEST — Loyer
+Annulé
+4,00
+ZZ TEST — M3 — achat B100
+Annulé
+500,00
+ZZ TEST — Achat lié
+Annulé
+2,00
+ZZ TEST — Apport
+Annulé
++5,00
+ZZ TEST — Pour moi
+Annulé
+2,50
+ZZ TEST — Abonnement
+Annulé
+2,00
+Page 1 sur 3
+Pourquoi les autres frais pèsent autant ?
+Par date
+Filtres
+1
+Doublons
+Apport ou prélèvement privé
+Archives
+Courantes
+Tout
+Sans filtre
+10
+toutes les dates
+À payer
+À encaisser
+À compléter
+7
+Sans justificatif
+7
+Sans date
+1
+Paiements à confirmer
+6
+Toutes catégories
+Brassage
+Matériel
+Nettoyage
+Charges fixes
+Local et travaux
+Autres frais
+Ventes
+Apports privés
+Écritures annulées uniquement
+Retirer les filtres
+Gérer les archives
+Bord
+Finances
+Calendrier
+Brassins
+11
+Stocks
+Clients

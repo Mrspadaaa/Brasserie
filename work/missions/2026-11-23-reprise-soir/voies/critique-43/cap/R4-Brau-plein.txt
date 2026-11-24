@@ -1,0 +1,202 @@
+Enregistrement refusé : Missing or insufficient permissions.
+🍺
+L'Affinée
+Tout
+A
+G
+Synthèse
+Opérations
+Prévisions
+Annuel
+
+Toutes les dates
+
++4
+Ventes
++1
+Entrées
+11
+Fixes
+115
+Brassage
+23
+Nettoyage
+134
+Autres
+5 500
+Matériel
++9 493
+Apports
+
+payé
+272,90
+à payer
+10,20
+dépensé
+283,10
+
+Charges fixes
+11,00
+
+ZZ TEST — Salaire
+à payer · 24 déc. · dans 30 j
+sans pièce
+Marquer payé
+5,00
+ZZ TEST — Loyer
+à payer · 24 déc. · dans 30 j
+sans pièce
+Marquer payé
+4,00
+ZZ TEST — Abonnement
+✓ payé 22 nov. · banque
+sans pièce
+2,00
+
+Ventes
++3,80
+
+ZZ TEST — Vente
+à encaisser · 24 déc. · dans 30 j
+sans pièce
+Marquer encaissé
++3,80
+
+Autres entrées
++1,10
+
+ZZ TEST — Autre entrée
+✓ encaissé 23 nov. · banque
+sans pièce
++ pièce
++1,10
+
+Brassage
+114,90
+
+ZZ TEST — Achat
+✓ payé 14 nov. · banque
+sans pièce
++ pièce
+4,50
+Brau- und Rauchshop GmbH · 372765 · malts, grain, houblons
+✓ payé 27 avr. · banque
+facture
+110,40
+
+Nettoyage
+23,00
+
+consomable ( masque gant)
+ · Facture REN-001
+✓ payé 19 nov. · banque
+sans pièce
+23,00
+
+Impôts
+1,20
+
+ZZ TEST — Impôts
+à payer · 24 déc. · dans 30 j
+sans pièce
+Marquer payé
+1,20
+
+Autres frais
+133,00
+
+ZZ TEST — Autre sortie
+✓ payé 20 nov. · banque
+sans pièce
++ pièce
+1,00
+Vêtements et sous-vêtements (achat personnel / non brassicole)
+ · vertbaudet
+✓ payé 30 août · banque
+pièce
+132,00
+
+Apports et prélèvements
++9 492,50
+
+De ma poche
+✓ encaissé 23 nov. · banque
+sans pièce
++ pièce
++1 200,00
+ZZ TEST — Apport
+✓ encaissé 22 nov. · banque
+sans pièce
++ pièce
++5,00
+ZZ TEST — Pour moi
+✓ payé 22 nov. · banque
+sans pièce
++ pièce
+2,50
+Versement mensuel Aricia
+ · voir compte bcv
+Paiement à confirmer
+sans pièce
+À confirmer
++800,00
+Versement extra Gaëtan
+ · voir compte bcv
+Paiement à confirmer
+sans pièce
+À confirmer
++3 890,00
+Versement mensuel Gaëtan
+ · voir compte bcv
+Paiement à confirmer
+sans pièce
+À confirmer
++3 600,00
+
+Matériel · à part
+5 500,00
+
+Plomberie + evier
+Paiement à confirmer
+sans pièce
+À confirmer
+1 500,00
+sol brasserie
+ · Facture voir impot
+Paiement à confirmer
+sans pièce
+À confirmer
+4 000,00
+
+Date à vérifier
+45,00
+
+bac malt + raccord bauhause
+Paiement à confirmer
+sans pièce
+À confirmer
+45,00
+Pourquoi les autres frais pèsent autant ?
+Par date
+Filtres
+Doublons
+Apport ou prélèvement privé
+Archives
+Bord
+Finances
+Calendrier
+Brassins
+11
+Stocks
+Clients
+Saisir à la main
+Remboursement
+changer
+Remboursement de…
+CHF
+Mon mois
+—
+De quelle pièce ?
+De quelle pièce ?
+
+Aucune pièce ne correspond.

@@ -1,0 +1,38 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/ecr5Ecritures.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 143[2mms[22m[39m
+[31m   [31m×[31m E43-1 : déplacer la date d’un achat payé n’est jamais refusé par le serveur[2m > [22mModifier : date 19.11 → 14.11, Enregistrer : aucun lot refusé, pièce et paiement au 14.11, achat payé[39m[32m 116[2mms[22m[39m
+[31m     → expected [ Array(1) ] to deeply equal [][39m
+   [32m✓[39m E41-1 : retirer un achat qui a un remboursement lié[2m > [22mle remboursement part avec l’achat, tous deux annulés, aucun lot refusé[32m 27[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/ecr5Ecritures.test.tsx[2m > [22mE43-1 : déplacer la date d’un achat payé n’est jamais refusé par le serveur[2m > [22mModifier : date 19.11 → 14.11, Enregistrer : aucun lot refusé, pièce et paiement au 14.11, achat payé
+[31m[1mAssertionError[22m: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "transactions/TX-D : Missing or insufficient permissions (le solde réglé ou le dernier paiement a changé en même temps que d'autres champs, ou la pièce a été réécrite avec un solde périmé : date, lastPaymentId, proofNotes)",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/ecr5Ecritures.test.tsx:[2m45:23[22m[39m
+    [90m 43| [39m    await act(async () => { fireEvent.submit(document.querySelector('f…
+    [90m 44| [39m    [35mawait[39m [34mact[39m([35masync[39m () [33m=>[39m { [35mawait[39m sim[33m.[39m[34mattendre[39m()[33m;[39m })[33m;[39m
+    [90m 45| [39m    [34mexpect[39m(sim[33m.[39mrefus)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 46| [39m    expect(String(sim.piece('TX-D')?.date)).toMatch(/2026-11-14|14\.11…
+    [90m 47| [39m    const vivants = sim.paiements().filter(p => !p.reversalOfId && !si…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 01:47:07
+[2m   Duration [22m 2.90s[2m (transform 1.07s, setup 279ms, collect 1.68s, tests 143ms, environment 598ms, prepare 61ms)[22m
+

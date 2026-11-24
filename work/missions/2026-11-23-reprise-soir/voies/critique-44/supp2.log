@@ -1,0 +1,10 @@
+T cible ZZ TEST — Achat · Nettoyage · 4,50 CHF · payé 13 nov. · banque · sans pièce
+T confirmer  ? Son paiement de 4,50 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre. ¦  ¦ Garder ¦ Confirmer le retrait
+T achat après ulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens. ¦  ¦ Retirer cette écriture ¦  ¦ Retirer cette écriture ? Son paiement de 4,50 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre. ¦  ¦ Garder ¦ Confirmer le retrait
+T résultat ZZ TEST — Achat · Nettoyage · 4,50 CHF · 1 → 1
+T cible ZZ TEST — Achat · Nettoyage · 4,50 CHF · payé 13 nov. · banque · sans pièce
+T confirmer  ? Son paiement de 4,50 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre. ¦  ¦ Garder ¦ Confirmer le retrait
+T achat après ulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens. ¦  ¦ Retirer cette écriture ¦  ¦ Retirer cette écriture ? Son paiement de 4,50 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre. ¦  ¦ Garder ¦ Confirmer le retrait
+T résultat ZZ TEST — Achat · Nettoyage · 4,50 CHF · 1 → 1
+T restent (non retirables) ["ZZ TEST — Achat · Nettoyage · 4,50 CHF · payé 13 nov. · banque · sans pièce"]
+T9 restants ["ZZ TEST — Achat · Nettoyage · 4,50 CHF · payé 13 nov. · banque · sans pièce"]
