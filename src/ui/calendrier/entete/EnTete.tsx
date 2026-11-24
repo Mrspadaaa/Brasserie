@@ -17,6 +17,7 @@ import type { ActionCadre, Instantane } from '../cadre/etat';
 import { MOIS_LONGS } from '../../../components/periode/periode';
 import { axeDeLEchelle, echelleDeVue, fenetreDePeriode as fenetreDe, lundi as lundiIso } from '../../../domain/calendrier/temps';
 import type { Colonne } from '../frise/Rangee';
+import { useRentree } from '../frise/useRentree';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
@@ -205,6 +206,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // La largeur : mesurée, sinon la colonne de la frise × le nombre de colonnes, sinon 390.
   const zone = useRef<HTMLDivElement>(null);
   const racine = useRef<HTMLDivElement>(null);
+  /* POI-1 (24.11) : les boutons de tête contre le bord de l'écran (le plein écran à droite, la clé à gauche) étendent leur toucher vers l'intérieur */
+  useRentree(racine, '.ent-k, .ent-mb, .ent-per, .ent-ret-b, .ent-pl, .ent-al, .ent-cc');
   const cadreCourbe = useRef<HTMLDivElement | null>(null);
   const cadreGrande = useRef<HTMLDivElement | null>(null);
   const boutonPeriode = useRef<HTMLButtonElement>(null);

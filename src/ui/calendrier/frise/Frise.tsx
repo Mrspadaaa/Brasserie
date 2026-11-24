@@ -7,6 +7,7 @@ import { posee } from './posee';
 import { xDeDate } from '../entete/alignement';
 import type { AxeCourbe } from '../entete/Fenetre';
 import { usePincement } from './usePincement';
+import { useRentree } from './useRentree';
 import { cheminDePoints, routerFil } from './routageFil';
 import { aDesJours, type SensPincement } from '../echelle';
 import './frise.css';
@@ -210,11 +211,16 @@ const CalqueTraits = React.memo(React.forwardRef<PoseTraits, { idMasque: string 
   );
 }));
 
+/** Les petits boutons et pastilles de la frise dont la zone de toucher se rentre contre le bord de l'écran (frise.css, ::before). */
+const SELECTEUR_RENTREE = '.cal-marque, .cal-plus, .cal-oeil, .cal-cachees, .cal-caddie, .cal-renvoi, button.cal-lie';
+
 export const Frise: React.FC<FriseProps> = props => {
   const { choses, colonnes, paysage, ordre, masquees, filtre, epingles, etoiles, selectionId, menuId, detail, largeurRepli = 360, reserveDroite = 0, onMesure } = props;
   const zone = React.useRef<HTMLDivElement | null>(null);
   const [mesuree, setMesuree] = React.useState(0);
   const calque = React.useRef<PoseTraits | null>(null);
+  /* POI-1 (24.11, « tout est au bord, l'actionnable est plus difficile sur mobile ») : les boutons et pastilles contre le bord de l'écran étendent leur toucher vers l'intérieur */
+  useRentree(zone, SELECTEUR_RENTREE);
   const idMasque = `cal-masque-fil-${React.useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
 
   React.useLayoutEffect(() => {

@@ -4,6 +4,8 @@ import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
 import type React from 'react';
 import { joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
 import type { Colonne } from './Rangee';
+import { correctionPrise, priseDebut, priseDebutAvant, priseFin, priseFinAvant, vueEcran, type VueEcran } from './prisesBord';
+import { vitesseCalendrier } from './defileBord';
 
 /**
  * Les gestes d'une barre de la frise (MISSION § État de l'art : Pointer Events natifs, `setPointerCapture`, appui long = minuterie
@@ -85,8 +87,9 @@ const ZONE_DEFILE_PX = BANDE_PX;
  * T29-6 (23.11, « tenir la barre 2,5 s au bord droit : la frise passe de 6 sem. à 6 mois et l'événement saute de 11 semaines ») : le défilement
  * au bord est mesuré. La vitesse du module `geste` croît avec la profondeur du doigt ; comptée en colonnes de l'appui (65 px à 6 sem.), elle
  * allait jusqu'à 8 colonnes par seconde. Au plus 3 colonnes par seconde : un doigt tenu 2,5 s ajoute 7 semaines, jamais 20.
+ * Q4-1 (24.11, « Trop lente sur le calendrier ») : la vitesse du module est multipliée par 2,5 (defileBord.ts) et le plafond passe à 8 colonnes par seconde.
  */
-export const COLONNES_MAX_PAR_S = 3;
+export const COLONNES_MAX_PAR_S = 8;
 export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number): number {
   return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * dt);
 }
@@ -97,22 +100,30 @@ export function sensDefilement(x: number, arme: number, cadre: { left: number; r
 }
 
 /** Le doigt est-il sur la zone du bord droit de `el` ? Lu sur la boîte de la barre (une boîte vide, jsdom : non). */
-export function surLeBord(el: Element, x: number, zone: number): boolean {
-  if (!zone) return false;
+export function surLeBord(el: Element, x: number, zone: number, vue: VueEcran = vueEcran()): boolean {
+  return prisePourBord(el, x, zone, 'fin', vue).dans;
+}
+
+/**
+ * POI-1 (24.11, « tout est au bord, l'actionnable est plus difficile sur mobile ») : la prise d'un bord de barre contre le bord de l'écran, où Android
+ * place le geste retour, se rentre vers l'intérieur (au moins 44 px hors des 24 px du bord, prisesBord.ts) ; la zone d'avant reste prise. `corr` : le
+ * décalage du doigt posé dans la part rentrée, pour que la fin tirée parte de son jour et non d'un saut.
+ */
+export function prisePourBord(el: Element, x: number, zone: number, cote: CoteBord, vue: VueEcran = vueEcran()): { dans: boolean; corr: number } {
+  if (!zone) return { dans: false, corr: 0 };
   const r = el.getBoundingClientRect();
-  if (!(r.width > 0)) return false;
-  return x >= r.right - Math.min(zone, r.width / 3) && x <= r.right + zone;
+  if (!(r.width > 0)) return { dans: false, corr: 0 };
+  const rentree = cote === 'fin' ? priseFin(r.left, r.right, zone, vue) : priseDebut(r.left, r.right, zone, vue);
+  if (x < rentree[0] || x > rentree[1]) return { dans: false, corr: 0 };
+  return { dans: true, corr: correctionPrise(x, cote === 'fin' ? priseFinAvant(r.left, r.right, zone) : priseDebutAvant(r.left, r.right, zone)) };
 }
 
 /** CHG-4 : le bord tiré, la fin (droit) ou le début (gauche). */
 export type CoteBord = 'fin' | 'debut';
 
 /** CHG-4 : le doigt est-il sur la zone du bord gauche de `el` ? Au plus le quart de la barre : le corps garde au moins 5/12 de sa largeur. */
-export function surLeBordDebut(el: Element, x: number, zone: number): boolean {
-  if (!zone) return false;
-  const r = el.getBoundingClientRect();
-  if (!(r.width > 0)) return false;
-  return x >= r.left - zone && x <= r.left + Math.min(zone, r.width / 4);
+export function surLeBordDebut(el: Element, x: number, zone: number, vue: VueEcran = vueEcran()): boolean {
+  return prisePourBord(el, x, zone, 'debut', vue).dans;
 }
 
 interface Etat {
@@ -146,6 +157,8 @@ interface Etat {
   /** T9-1 : le point le plus avancé dans le sens armé (hystérésis du sens, armerSens). */
   pivot: number;
   xPrec: number;
+  /** POI-1 : le décalage (px) du doigt pris dans la part rentrée du bord ; 0 dans la zone d'avant. */
+  corr: number;
   acc: number;
   raf: number;
   tPrec: number;
@@ -287,7 +300,7 @@ export function usePointeur(options: OptionsPointeur) {
     if (s.axe0 && axe) {
       /* CAL-JOUR-EXACT : le bout tiré va au jour dont la colonne contient le doigt, d'où qu'il ait été pris (la zone du bord fait 22 px) */
       const bout = opts.current.bout?.(s.cote);
-      return bout ? joursJusquAuDoigt(axe, s.xPrec, bout) : joursDuDoigt(s.axe0, s.x0, axe, s.xPrec);
+      return bout ? joursJusquAuDoigt(axe, s.xPrec + s.corr, bout) : joursDuDoigt(s.axe0, s.x0, axe, s.xPrec);
     }
     const d = largeurJourDe(opts.current) || 1;
     return Math.round((s.xPrec - s.L) / d - (s.x0 - s.L) / (s.d0 || d) - 7 * s.recul);
@@ -316,13 +329,18 @@ export function usePointeur(options: OptionsPointeur) {
     const cibleEl = e.target as HTMLElement | null;
     const marque = cibleEl?.closest?.('[data-bord]');
     let cote: CoteBord = marque?.getAttribute('data-bord') === 'debut' ? 'debut' : 'fin';
-    let bord = !!marque || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
-    if (!bord && !cibleEl?.closest?.('[data-jalon]') && surLeBordDebut(e.currentTarget, e.clientX, opts.current.zoneBordDebut ?? 0)) { bord = true; cote = 'debut'; }
+    const priseFinBord = prisePourBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0, 'fin');
+    let bord = !!marque || priseFinBord.dans;
+    let corr = marque ? 0 : priseFinBord.corr;
+    if (!bord && !cibleEl?.closest?.('[data-jalon]')) {
+      const priseDebutBord = prisePourBord(e.currentTarget, e.clientX, opts.current.zoneBordDebut ?? 0, 'debut');
+      if (priseDebutBord.dans) { bord = true; cote = 'debut'; corr = priseDebutBord.corr; }
+    }
     const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', cote, k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
       L, R: cadreDe(e.currentTarget).right, w0: o0.largeurColonne, d0: largeurJourDe(o0),
       axe0: o0.colonnes?.length && o0.largeurColonne > 0 ? { colonnes: o0.colonnes, largeurColonne: o0.largeurColonne, gauche: L } : null,
-      bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null,
+      bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, corr, acc: 0, raf: 0, tPrec: 0, echap: null,
       el: e.currentTarget, frise: e.currentTarget.closest?.('[data-frise]') ?? null, ecoute: null };
     if (etat.current) stopDefile(etat.current);
     etat.current = s;
@@ -399,7 +417,7 @@ export function usePointeur(options: OptionsPointeur) {
       /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
       /* VISION-tour9 n° 2 : comptée en colonnes de l'APPUI (une fenêtre qui grandit rétrécit ses colonnes : comptée en colonnes du moment, elle
          allait de 6 à 23 semaines en 1,5 s et la bulle ne suivait plus) */
-      s.acc += colonnesParImage(vitesse, dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)));
+      s.acc += colonnesParImage(vitesseCalendrier(vitesse), dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)));
       while (s.acc >= 1) {
         s.acc -= 1;
         /* la barre sortirait d'une fenêtre qui GLISSE : elle ne fait alors que grandir (jamais une barre tenue qui disparaît sous le doigt) ;
@@ -473,7 +491,8 @@ export function usePointeur(options: OptionsPointeur) {
     else if (s.mode === 'bord') {
       o.onLacheBord?.(s.k, annule, s.cote);
       /* CHG-4 : un toucher sur le bord gauche, sans mouvement, ouvre encore le détail (comme sur le corps) */
-      if (s.cote === 'debut' && !s.bouge && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
+      /* POI-1 : de même un toucher dans la part rentrée du bord droit (un point d'étape, le corps de la barre) : il ne tire rien, il ouvre */
+      if ((s.cote === 'debut' || s.corr !== 0) && !s.bouge && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
     }
     else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) {
       /* TOUCHER-FANTOME (21.11, tour7 : toucher « La Cigogne, 3 fûts » a annulé la vente) : le toucher ouvre le détail au lâcher ; le `click`

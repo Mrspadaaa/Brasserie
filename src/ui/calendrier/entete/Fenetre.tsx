@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe, numeroSemaine } from '../../../domain/calendrier';
 import { ajouterJours, jourCourt, largeurTexte, placeEtiquette, type Boite } from './Courbe';
-import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, roleSous, useGlisse } from '../../geste';
+import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, useGlisse, zonesBords } from '../../geste';
+import { rentrer, vueDansRepere, type VueEcran } from '../frise/prisesBord';
+import { vitesseCalendrier } from '../frise/defileBord';
 import { avalerClicSuivant } from '../usePointeurCourbe';
 
 /**
@@ -159,12 +161,29 @@ const PRISE_DEDANS = 10;
  * - Début : 34 px dehors à gauche, 10 px dedans ; jamais ramenée : quand la fenêtre commence à la première semaine, seul son bord dépasse, et le
  *   doigt qui part de « maintenant » lit la courbe (le geste c2-b du jouable) au lieu de pousser la fenêtre.
  */
-export function zonesPoignees(gauche: number, droite: number, largeur: number, debutRamenee = false): { debut: { l: number; w: number }; fin: { l: number; w: number } } {
+export function zonesPoignees(gauche: number, droite: number, largeur: number, debutRamenee = false, vue: VueEcran = { gauche: 0, droite: largeur }): { debut: { l: number; w: number }; fin: { l: number; w: number } } {
   const finL = Math.max(0, Math.min(droite - PRISE_DEDANS, largeur - PRISE_POIGNEE));
   // CAL-PASSE (20.11) : quand la courbe commence AVANT aujourd'hui, l'index 0 n'est plus « maintenant » : le doigt qui part du bord gauche ne lit
   // plus la courbe, il recule la fenêtre. La prise du début reste donc entière dans l'écran (44 px) au lieu de sortir de 34 px.
   const debutL = gauche - (PRISE_POIGNEE - PRISE_DEDANS);
-  return { debut: { l: debutRamenee ? Math.max(0, debutL) : debutL, w: PRISE_POIGNEE }, fin: { l: finL, w: PRISE_POIGNEE } };
+  /* POI-1 (24.11, « maintenant tout est au bord, l'actionnable est plus difficile sur mobile ») : contre le bord de l'écran (geste retour d'Android, 24 px),
+     la prise rentre vers l'intérieur du cadre pour que sa part utile fasse 44 px ; elle s'arrête où commence la prise de l'autre bout. Le dessin ne bouge pas. */
+  const dedansMax = Math.min(CIBLE_PX / 2, (droite - gauche) / 3);
+  const zd = rentrer([debutRamenee ? Math.max(0, debutL) : debutL, (debutRamenee ? Math.max(0, debutL) : debutL) + PRISE_POIGNEE], vue, [-Infinity, droite - dedansMax]);
+  const zf = rentrer([finL, finL + PRISE_POIGNEE], vue, [gauche + dedansMax, Infinity]);
+  return { debut: { l: zd[0], w: zd[1] - zd[0] }, fin: { l: zf[0], w: zf[1] - zf[0] } };
+}
+
+/**
+ * Le rôle du doigt posé en `x` (px de la courbe) sur le cadre [`xa`, `xb`] : celui de `roleSous` (module geste, partagé), avec la prise de chaque bout
+ * rentrée contre le bord de l'écran (POI-1). Loin du bord, le même rôle que `roleSous`.
+ */
+export function roleRentre(x: number, xa: number, xb: number, vue: VueEcran): 'a' | 'b' | 'corps' {
+  const z = zonesBords(xa, xb), dedans = Math.min(CIBLE_PX / 2, Math.max(0, xb - xa) / 3);
+  const a = rentrer(z.a, vue, [-Infinity, xb - dedans]), b = rentrer(z.b, vue, [xa + dedans, Infinity]);
+  if (x < a[1]) return 'a';
+  if (x >= b[0]) return 'b';
+  return 'corps';
 }
 
 /** Écart entre la bulle du tirage et le bout tiré : au-delà de la prise de la poignée posée dans le cadre (10 px). */
@@ -316,7 +335,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       /* CAL-SANS-LECTURE (D436) : hors du cadre, le doigt fait défiler la fenêtre ; sans stopPropagation, l'appui long (courbe en grand) reste. */
       if (!dehors) e.stopPropagation();
       if (recalage.current) { cancelAnimationFrame(recalage.current); recalage.current = 0; }
-      const role = dehors ? 'defile' : roleSous(x, xa, xb);
+      const role = dehors ? 'defile' : roleRentre(x, xa, xb, vueDansRepere(r?.left ?? 0));
       return { role, a0: index, b0: index + nombre, a: index, b: index + nombre, w, left: r?.left ?? 0, vue0: v, v, off: role === 'a' ? xa - x : role === 'b' ? xb - x : 0, pan: 0 };
     },
     suivre: (dx, s, x) => {
@@ -349,7 +368,9 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       }
       montrer(s);
     },
-    bord: (sens, vitesse, dt, s) => {
+    bord: (sens, vitesseBrute, dt, s) => {
+      /* Q4-1 (24.11, « Trop lente sur le calendrier ») : ×2,5 sur la vitesse du module geste, propre au Calendrier */
+      const vitesse = vitesseCalendrier(vitesseBrute);
       if (s.role === 'defile') return;
       if (s.role === 'corps') { s.pan += sens * vitesse * s.v.span * dt; return; }
       if ((s.role === 'b' && sens > 0) || (s.role === 'a' && sens < 0)) {
