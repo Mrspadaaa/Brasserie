@@ -11,15 +11,17 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T07:26:43Z
+pause: 2026-11-24T07:59:44Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
 - [x] Voie ecr6 (4fdf9a535) : E44-1 (dates d'une récurrente à payer = Calendrier), E44-2 (retrait annonce le remboursement lié), E44-3 (pas de « N° de facture » sur un apport), bandeau d'erreur serveur en français (firestoreRepo.ts)
 - [x] Tour 45 en ligne (index-Ba6_cMq7.js) : 3 problèmes, 0 B ; E44 vérifiés
 - [x] Carnet : ses choix portés, en ligne tour 46 ; test critique-46 : 6 problèmes (1 B), domaine 10/10
-- [ ] Tour 47 en ligne (index-BxvQ1J-z.js, aiTask D449) : test critique-47 (E45, liens)
-- [ ] Voie carnet-c46 : C46-1..6, puis tour 48 et test
+- [x] Tour 47 : test critique-47, 6 problèmes (0 B), E45 vérifiés, E47-1..5 versés
+- [x] Tour 48 en ligne (index-DJIfW4-y.js, carnet-c46)
+- [ ] Voie e47 : E47-1..5, C46-5, puis tour 49 et test
+- [ ] Test sur SON carnet « chambre froide » (sa demande 24.11), tour 48 : chaque vue, chaque geste qui n écrit pas ; rien d écrit sur ses données sans accord ; capture 390 regardée
 - [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
 - [ ] Carnet : lecture d'une photo par l'IA (L-24), une vraie pièce, coût réservé et journalisé
