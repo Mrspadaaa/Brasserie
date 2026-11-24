@@ -185,7 +185,7 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
         ...taxeLue, ...change, ...livraison,
         ...(l.vendeur ? { vendeur: l.vendeur } : {}), ...(toutes.length ? { photo: toutes[0], photos: toutes } : {}),
         /* BL-15 : « plus disponible » est dit par la page (Discontinued, « retiré du catalogue ») ; jamais confondu avec une rupture */
-        ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : p.dispo === 'retire' ? 'plus disponible' : 'rupture' } : {}),
+        ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : p.dispo === 'retire' ? 'plus disponible' : p.dispo === 'sur-commande' ? ['sur commande', p.dispoDelai].filter(Boolean).join(' · ') : 'rupture' } : {}), /* E47-1 : « sur commande » (et son délai, s'il est écrit) n'est jamais dit « rupture » */
         ...(Object.keys(valeurs).length ? { valeurs } : {})
       } as LigneARanger;
     }

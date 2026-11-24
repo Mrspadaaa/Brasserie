@@ -42,7 +42,7 @@ export function mesureCritere(article: ArticleV, critere?: CritereV): { texte: s
   const c = critere?.caracteristique;
   if (!c) return null;
   const v = article.valeurs[c.nom];
-  const t = texteSelonNom(c.nom, valeurTexte(v));
+  const t = texteSelonNom(c.nom, valeurTexte(v), v?.valeur);
   if (t === null) return null;
   return { texte: t, unite: v?.unite ?? c.unite };
 }
@@ -73,7 +73,7 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
     if (sauf && nom === sauf) return [];
     /* un nombre lu en texte (« 2000 ») se dit comme un nombre (« 2 000 ») */
     const n = typeof v.valeur === 'string' ? nombreValeur(v) : null;
-    const t = texteSelonNom(nom, valeurTexte(n !== null ? { ...v, valeur: n } : v));
+    const t = texteSelonNom(nom, valeurTexte(n !== null ? { ...v, valeur: n } : v), v.valeur);
     if (t === null) return [];
     if (typeof v.valeur === 'boolean') return [`${nom} : ${t}`];
     /* CRN-17 : un critère oui-non lu en texte se dit par son verbe (h05-3 « capte la buée ») : « tient 80 °C », jamais « tient 80 °C oui » */

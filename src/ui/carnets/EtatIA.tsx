@@ -94,7 +94,16 @@ export const mentionTaxe = (taxe?: 'ht' | 'ttc'): string => (taxe === 'ht' ? ' H
  * Ernte, récolte, millésime, vintage) ; une quantité garde son espace des milliers (« 2 500 l »).
  */
 const MILLESIME = /ann[ée]e|jahr|ernte|r[ée]colte|mill[ée]sime|vintage|harvest|year/i;
-export function texteSelonNom(nom: string, texte: string | null): string | null {
+/**
+ * E47-4 : une référence (« Réf. du fabricant », « Numéro d'article », EAN, GTIN) est un texte, jamais une quantité : « 109971 », « 40.003 »
+ * se recopient tels que la page les écrit (espaces de milliers retirés). `brut` : la valeur d'origine, quand l'appelant l'a.
+ */
+const IDENTIFIANT = /(?:^|[\s(])(?:r[ée]f(?:[ée]rence)?s?|num[ée]ro|n°|no\.|nr\.?|artikel(?:nummer)?|sku|ean|gtin|upc|mpn|code[- ]barres?|code article)(?=$|[\s.)])/i;
+export function texteSelonNom(nom: string, texte: string | null, brut?: string | number | boolean): string | null {
+  if (texte !== null && IDENTIFIANT.test(nom)) {
+    const source = typeof brut === 'string' || typeof brut === 'number' ? String(brut).trim() : texte;
+    return /^\d[\d\s  '’]*$/.test(source) ? source.replace(/[\s  '’]/g, '') : source;
+  }
   return texte !== null && MILLESIME.test(nom) && /^\d[\s  ]\d{3}$/.test(texte) ? texte.replace(/[\s  ]/g, '') : texte;
 }
 /** Une valeur lue : nombre en chiffres, oui-non en mots ; absente : null. */

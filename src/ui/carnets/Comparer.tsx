@@ -66,7 +66,7 @@ export function texteCellule(l: LigneT, c: ColonneVue): string | null {
   if (c.cle === '__prix') return montant(l.prixCentimes);
   const liv = LIVRAISON.find(x => x.cle === c.cle);
   if (liv) return l[liv.champ] ?? null;
-  return texteSelonNom(c.nom, valeurTexte(l.cellules[c.cle]));
+  return texteSelonNom(c.nom, valeurTexte(l.cellules[c.cle]), l.cellules[c.cle]?.valeur);
 }
 
 /**

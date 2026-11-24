@@ -161,7 +161,9 @@ export function valeursEmbarquees(etat: unknown): ValeurLue[] {
     if (!o || typeof o !== 'object' || prof > 16 || ++noeuds > 250_000) return;
     if (Array.isArray(o)) {
       const pairs = o.map(pairObjet).filter((x): x is ValeurLue => !!x);
-      if (pairs.length >= 3) { out.push(...pairs); return; }
+      /* E47-5 : un groupe de caractéristiques de la plateforme (« specifications » : Leistung, Energiedeklaration…) peut n'en porter qu'une ou deux ;
+         trois lignes sont exigées d'une liste anonyme, pas d'un groupe qui se dit lui-même « specifications » et dont toutes les entrées sont des paires. */
+      if (pairs.length >= 3 || (pairs.length >= 1 && pairs.length === o.length && /^specifications?$/i.test(cle))) { out.push(...pairs); return; }
       if (CLE_ATOUTS.test(cle) && o.length >= 2 && o.length <= 14 && o.every((x) => typeof x === 'string' && x.length <= 110)) {
         for (const s of o as string[]) {
           const m = compact(s).match(/^([^:：]{2,45})\s*[:：]\s*(.{1,100})$/);

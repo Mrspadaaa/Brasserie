@@ -20,6 +20,26 @@ const arrondi = (n: number) => Math.round(n * 100) / 100;
 /** `true` si ce nom de caractéristique dit une longueur. */
 export const estLongueur = (nom: string): boolean => NOM_LONGUEUR.test(nom);
 
+const MESURE_SEULE = /^\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)\s*$/i;
+/**
+ * E47-2 : une longueur écrite d'un bloc (« 143,5 cm », « 370 mm ») dit son unité dans son texte ; la colonne de Comparer ne la voyait pas
+ * (deux unités dans une colonne). Ici le texte se sépare en nombre et unité, pour les noms de longueur seulement ; une valeur à plusieurs
+ * termes (« 525 × 550 mm ») ou sans unité reste telle quelle.
+ */
+export function separerUnite(nom: string, v: Valeur): Valeur {
+  if (v.unite || typeof v.valeur !== 'string' || !estLongueur(nom)) return v;
+  const m = v.valeur.match(MESURE_SEULE);
+  if (!m) return v;
+  const n = Number(m[1].replace(',', '.'));
+  return Number.isFinite(n) ? { ...v, valeur: n, unite: m[2].toLowerCase() } : v;
+}
+
+/** L'unité de longueur d'une colonne : la plus lue ; à égalité, le cm (l'unité du brasseur), puis le mm, puis le m. */
+export function uniteDeColonneLongueur(comptes: ReadonlyMap<string, number>): string | undefined {
+  const rang = (u: string) => { const i = ['cm', 'mm', 'm'].indexOf(u.toLowerCase()); return i < 0 ? 9 : i; };
+  return [...comptes.entries()].filter(([u]) => u !== '').sort((x, y) => y[1] - x[1] || rang(x[0]) - rang(y[0]))[0]?.[0];
+}
+
 /** La valeur passée dans l'unité de la colonne ; `null` : pas une longueur, unité inconnue ou nombre illisible. */
 export function convertirLongueur(nom: string, uniteColonne: string, v: Valeur, nombre: number | null): Valeur | null {
   const de = v.unite ? EN_MM[v.unite.trim().toLowerCase()] : undefined;

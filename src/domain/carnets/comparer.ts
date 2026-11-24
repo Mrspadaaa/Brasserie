@@ -8,7 +8,7 @@
 import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
-import { convertirLongueur, mmSansUnite } from './longueurs';
+import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -73,14 +73,14 @@ export function colonnesLues(articles: readonly Article[], deja: readonly Colonn
     if (!cle || vues.has(cle) || v === undefined || v.valeur === '') continue;
     const c = comptes.get(cle) ?? { nom, n: 0, unites: new Map<string, number>() };
     c.n += 1;
-    const u = v.unite ?? '';
+    const u = separerUnite(nom, v).unite ?? '';
     c.unites.set(u, (c.unites.get(u) ?? 0) + 1);
     comptes.set(cle, c);
   }
   const sortie: Colonne[] = [];
   for (const c of comptes.values()) {
     if (c.n < 2) continue;
-    const unite = [...c.unites.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
+    const unite = estLongueur(c.nom) ? uniteDeColonneLongueur(c.unites) : [...c.unites.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
     sortie.push({ nom: c.nom, ...(unite ? { unite } : {}), sens: 'texte', lue: true });
   }
   return sortie;
@@ -100,8 +100,9 @@ export function aRelireDe(c: CarnetDoc | Donnees): Article[] {
 /** La valeur que porte l'article lui-même ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). */
 function valeurPropre(a: Article, col: Pick<Colonne, 'nom' | 'unite'>): Valeur | undefined {
   const cle = Object.keys(a.valeurs).find(k => normaliser(k) === normaliser(col.nom));
-  const v = cle ? a.valeurs[cle] : undefined;
-  if (!v) return undefined;
+  const brute = cle ? a.valeurs[cle] : undefined;
+  if (!brute) return undefined;
+  const v = separerUnite(col.nom, brute); /* E47-2 : « 370 mm » écrit d'un bloc rejoint l'unité de la colonne */
   if (col.unite && v.unite && v.unite !== col.unite) return convertirLongueur(col.nom, col.unite, v, nombreDe(v.valeur)) ?? undefined;
   if (col.unite && !v.unite) return mmSansUnite(col.nom, col.unite, v, nombreDe(v.valeur)) ?? v;
   return v;

@@ -45,7 +45,9 @@ export interface PageLue {
   /** « dès » : plusieurs prix sont publiés, le plus bas est donné. */
   prixDes?: boolean;
   /** `retire` : la page dit le produit plus disponible (BL-15). */
-  dispo?: 'en-stock' | 'rupture' | 'retire';
+  dispo?: 'en-stock' | 'rupture' | 'retire' | 'sur-commande';
+  /** Le délai d'un article sur commande (« expédié sous 28 jours »), tel que la page le dit. */
+  dispoDelai?: string;
   vendeur?: string;
   /** La première photo (compatibilité) ; `photos` les garde toutes (D446). */
   photo?: string;

@@ -37,7 +37,9 @@ export interface Extraction {
   taxe?: 'ht' | 'ttc';
   /** Le prix taxe comprise quand la page publie les deux (le HT reste dans `prix`). */
   prixTTC?: number;
-  dispo?: 'en-stock' | 'rupture' | 'retire';
+  dispo?: 'en-stock' | 'rupture' | 'retire' | 'sur-commande';
+  /** Le délai d'un article sur commande, tel que la page le dit (« expédié sous 28 jours ») ; absent : la page n'en dit pas. */
+  dispoDelai?: string;
   vendeur?: string;
   photos: string[];
   valeurs: Array<{ nom: string; valeur: string; unite?: string }>;
@@ -464,6 +466,37 @@ function livraisonCH(offres: Json[], visible: string, prix: number | undefined, 
 // Extraction
 // ---------------------------------------------------------------------------------------------------------------------------
 
+const MATIERE_LIGNE = /^(?:Edelstahl|Inox|Acier inox(?:ydable)?|Stainless steel|Chromstahl|Kupfer|Cuivre|Aluminium)(?:[- ]?(?:AISI|V2A|V4A)?\s*\d{3}|\s+1\.4\d{3})?$/i;
+const INDUCTION_NON = /^(?:nicht\s+f[üu]r\s+induktion\s+geeignet|ne\s+convient\s+pas\s+(?:à|pour)\s+l['’]?induction|pas\s+compatible\s+(?:avec\s+)?(?:l['’])?induction|not\s+(?:suitable|compatible)\s+for\s+induction)\.?$/i;
+const INDUCTION_OUI = /^(?:induktion(?:s)?(?:geeignet|tauglich)|f[üu]r\s+induktion\s+geeignet|geeignet\s+f[üu]r\s+induktion|compatible\s+(?:avec\s+l['’])?induction|induction\s+compatible|suitable\s+for\s+induction)\.?$/i;
+/**
+ * E47-5 : la matière et la compatibilité induction, que les boutiques écrivent en puce ou en ligne seule (« Edelstahl AISI 304 », « Nicht für
+ * Induktion geeignet ») sans « Nom : valeur ». Une ligne ENTIÈRE doit dire cela, hors navigation et pied de page : rien n'est déduit d'un mot
+ * dans une phrase.
+ */
+function essentielsDeLaPage($: CheerioAPI): Array<{ nom: string; valeur: string }> {
+  const out: Array<{ nom: string; valeur: string }> = [];
+  $('body *').slice(0, 6000).each((_, e) => {
+    const el = $(e);
+    if (el.children().length || el.closest('nav, header, footer, script, style, noscript').length) return;
+    const t = compact(el.text());
+    if (t.length < 5 || t.length > 70) return;
+    if (!out.some((x) => x.nom === 'Matière') && MATIERE_LIGNE.test(t)) out.push({ nom: 'Matière', valeur: t.replace(/^Edelstahl/i, 'Acier inox').replace(/^Chromstahl/i, 'Acier chromé').replace(/^Kupfer/i, 'Cuivre') });
+    else if (!out.some((x) => x.nom === 'Induction') && (INDUCTION_NON.test(t) || INDUCTION_OUI.test(t))) out.push({ nom: 'Induction', valeur: INDUCTION_NON.test(t) ? 'non' : 'oui' });
+  });
+  return out;
+}
+const SUR_COMMANDE  = /auf\s+bestellung|sur\s+commande|on\s+(?:back)?order|backorder/i;
+const DELAI_EXPEDITION = /(?:wird\s+in|versendet\s+(?:in|innerhalb\s+von)|lieferzeit\s*:?|expédi\w*\s+(?:sous|dans|en)|livr\w*\s+(?:sous|dans|en)|ships?\s+(?:in|within)|delivery\s+(?:in|within))\s*(?:ca\.?\s*)?(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?\s*(Tag\w*|Werktag\w*|Woche\w*|jours?|semaines?|days?|weeks?)/i;
+/** « Dieses Produkt wird in 28 Tagen versendet » → « expédié sous 28 jours » : le délai écrit par la page, dans ses mots français ; rien si la page n'en écrit pas. */
+function delaiExpedition(visible: string): string | undefined {
+  const m = visible.match(DELAI_EXPEDITION);
+  if (!m) return undefined;
+  const n = m[2] ? `${m[1]} à ${m[2]}` : m[1];
+  const semaines = /^(?:woche|semaine|week)/i.test(m[3]);
+  const plusieurs = m[2] ? true : Number(m[1]) > 1;
+  return `expédié sous ${n} ${semaines ? 'semaine' : 'jour'}${plusieurs ? 's' : ''}`;
+}
 const RETIRE = /nicht\s+mehr\s+(?:verfügbar|lieferbar|erhältlich)|plus\s+disponible|n['’]est\s+plus\s+disponible|no\s+longer\s+available|discontinued|ausgelistet/i;
 const LISTE_PRIX = /ListPrice|StrikethroughPrice|SRP|MSRP|InvoicePrice|SalePrice_none/i;
 
@@ -584,7 +617,10 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const dispoSchema = dispos.size === 1 ? [...dispos][0] : (meta('product:availability') ?? meta('og:availability') ?? '');
   const stock = stockStatus('', dispoSchema.replace(/\s+/g, ''));
   const retire = /Discontinued/i.test(dispoSchema) || (RETIRE.test(visible.slice(0, 6000)) && !offres.length);
-  const dispo = retire ? 'retire' as const : stock === 'in_stock' ? 'en-stock' as const : stock === 'out_of_stock' ? 'rupture' as const : undefined;
+  /* E47-1 : « sur commande » (schema.org PreOrder / BackOrder, ou « Auf Bestellung » sur une page muette) n'est pas une rupture : l'article se commande ; le délai est celui que la page écrit. */
+  const surCommande = !retire && (/PreOrder|BackOrder|PreSale/i.test(dispoSchema) || (!/InStock|OutOfStock|SoldOut/i.test(dispoSchema) && SUR_COMMANDE.test(visible.slice(0, 8000)) && delaiExpedition(visible.slice(0, 8000)) !== undefined));
+  const dispoDelai = surCommande ? delaiExpedition(visible.slice(0, 8000)) : undefined;
+  const dispo = retire ? 'retire' as const : surCommande ? 'sur-commande' as const : stock === 'in_stock' ? 'en-stock' as const : stock === 'out_of_stock' ? 'rupture' as const : undefined;
 
   const { l: livraison, doute: douteLivraison } = livraisonCH(offres, visible, prix, devise, suisse);
   if (douteLivraison) doutes.push(`port : ${douteLivraison}`);
@@ -631,6 +667,7 @@ export function extraireProduit(html: string, url: URL): Extraction {
   let fusion = completerValeurs(valeurs, [...embarquees, ...depuisDescriptions]);
   let dNom = 0;
   { const n = completerValeurs(fusion.valeurs, mesuresDuNom(nom)); fusion = n; dNom = n.ajoutees; }
+  fusion = completerValeurs(fusion.valeurs, essentielsDeLaPage($));
   valeurs.splice(0, valeurs.length, ...(fusion.valeurs as Valeur[]));
   etapes.push(valeurs.length
     ? { nom: 'caract', statut: 'trouve', detail: detailCaract(valeurs.length, dHtml, dNom) }
@@ -645,6 +682,7 @@ export function extraireProduit(html: string, url: URL): Extraction {
     ...(prix !== undefined && taxe.taxe ? { taxe: taxe.taxe } : {}),
     ...(taxe.prixTTC !== undefined ? { prixTTC: taxe.prixTTC } : {}),
     ...(dispo ? { dispo } : {}),
+    ...(dispoDelai ? { dispoDelai } : {}),
     ...(vendeur ? { vendeur: couper(vendeur, 80) } : {}),
     photos, valeurs,
     ...(livraison ? { livraison } : {}),

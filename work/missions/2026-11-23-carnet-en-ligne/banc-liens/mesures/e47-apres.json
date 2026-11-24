@@ -1,0 +1,6670 @@
+{
+ "le": "2026-11-24T08:06:15.689Z",
+ "ia": null,
+ "bilanIA": null,
+ "taux": {
+  "liens": 63,
+  "prixSansJsonLd": "17/21 (81 %)",
+  "caracteristiquesSansJsonLd": "10/16 (63 %)",
+  "photoSansJsonLd": "21/24 (88 %)",
+  "nom": "58/63 (92 %)",
+  "prixAffiche": "52/56 (93 %)",
+  "photoAffichee": "56/59 (95 %)",
+  "caracteristiques": "35/48 (73 %)",
+  "htDit": "9/9 (100 %)",
+  "livraisonCH": "15/23 (65 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 1,
+   "genres": [
+    "redirection",
+    "ht",
+    "rupture",
+    "multilingue"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "=",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 334,
+   "lu": {
+    "url": "https://www.gastro-held.ch/products/mastro-kuehlschrank-600-liter-aus-edelstahl-010c-bma0060",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Mastro Kühlschrank 600 Liter aus Edelstahl, 0°/+10°C",
+    "prix": 1820.9,
+    "devise": "CHF",
+    "taxe": "ht",
+    "prixTTC": 1968.39,
+    "dispo": "rupture",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/218105-BMA0060_e2a007b1-1a8e-4c1b-91f8-1dc4ab7a58c8.webp?v=1784032984&width=550",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/218105-BMA0060_e2a007b1-1a8e-4c1b-91f8-1dc4ab7a58c8.webp?v=1784032984&width=550"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 820,90 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "hors taxe · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "17 caractéristiques : 16 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : la fiche du site dit un port de 7,90 CHF, la page « livraison gratuite »"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume de réfrigération",
+      "valeur": "600",
+      "unite": "l"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "0,385",
+      "unite": "kW"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "600 Liter"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "700",
+      "unite": "mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "2030",
+      "unite": "mm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "710",
+      "unite": "mm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "110",
+      "unite": "kg"
+     },
+     {
+      "nom": "Raccordement",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Plage de réfrigération",
+      "valeur": "Réfrigération normale"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "Air pulsé"
+     },
+     {
+      "nom": "Verrouillable",
+      "valeur": "non"
+     },
+     {
+      "nom": "Réglable en hauteur",
+      "valeur": "non"
+     },
+     {
+      "nom": "Nombre de portes",
+      "valeur": "1"
+     },
+     {
+      "nom": "Type de porte",
+      "valeur": "Klappbare porte pleine"
+     },
+     {
+      "nom": "Top Preise",
+      "valeur": "Über 9.500 Artikel in Profi-Qualität zu günstigen Preisen"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "Mastro"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 2,
+   "genres": [
+    "ht",
+    "prix-barre",
+    "pistage"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 317,
+   "lu": {
+    "url": "https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-650-gn-21-monoblock-616-liter-kuehlraumvolumen-3-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh650tnm?utm_source=google&utm_medium=cpc&utm_campaign=pmax_kuehlung&gclid=Cj0KCQiAz8bpBhD7ARIsAKtQb2kZ9Xq",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "GastroHero Gastronomie Kühlschrank ECO 700 GN 2/1 Monoblock , 616 Liter Kühlraumvolumen, 3 verstellbare Einlegeböden, Robuste Bauweise, Edelstahl",
+    "prix": 1011.9,
+    "devise": "CHF",
+    "taxe": "ht",
+    "prixTTC": 1093.86,
+    "dispo": "en-stock",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/224977-gnh650btm_10_1.webp?v=1769340201&width=1200",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/224977-gnh650btm_10_1.webp?v=1769340201&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224981-gnh650btm_2_1_230b64ff-458c-4638-a878-420648f25b91.webp?v=1783148659&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224983-gnh650btm_3_1_4e3f1f23-8d08-4feb-bc4d-d36de15d1c4e.webp?v=1783148660&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224984-gnh650btm_5_1_66c94db8-5cad-4fb4-aaa8-4d240fc297cb.webp?v=1783148660&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224985-gnh650btm_4_1_e8c2b24c-ef67-4067-8cd2-670e41d74c8a.webp?v=1783148661&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224987-gnh650btm_9_1_61020f33-c3ac-434b-a8e6-75f9879457ef.webp?v=1783148661&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224988-gnh650btm_6_1_9ab2989a-a6c5-4792-af36-e12c834b439c.webp?v=1783148661&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224986-gnh650btm_8_1_746387ab-d9aa-4f93-aea4-5b04d1779a54.webp?v=1783148662&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224982-gnh650btm_1_2_2b8fe05b-cb98-4f49-b544-efccc0d20990.webp?v=1783148662&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224978-gnh650tnm_gnh650btm_technische_zeichnung_ii_1_f1f1c627-6c1b-401e-b4ff-162b473eb5a0.webp?v=1783148663&width=848",
+     "https://www.gastro-held.ch/cdn/shop/files/224979-monoblock_fu_technische_zeichnung_1_8e6d35b2-89f0-4217-a5b7-155fa2c70d7d.webp?v=1783148663&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/224980-gnh650tnm_gnh650btm_technische_zeichnung_i_1_2a42a412-971d-486c-a380-fda34b37e91f.webp?v=1783148664&width=1200"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 011,90 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "hors taxe · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : la fiche du site dit un port de 7,90 CHF, la page « livraison gratuite »"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume de réfrigération",
+      "valeur": "616",
+      "unite": "l"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "616",
+      "unite": "l"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "0,36",
+      "unite": "kW"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "940"
+     },
+     {
+      "nom": "Plage de température",
+      "valeur": "+2 à +8 °C"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Niveau de qualité",
+      "valeur": "Eco"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "740",
+      "unite": "mm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "830",
+      "unite": "mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "2010",
+      "unite": "mm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "87",
+      "unite": "kg"
+     },
+     {
+      "nom": "Raccordement",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Plage de réfrigération",
+      "valeur": "Réfrigération normale"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "Air pulsé"
+     },
+     {
+      "nom": "Zones de température",
+      "valeur": "1"
+     },
+     {
+      "nom": "Verrouillable",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Réglable en hauteur",
+      "valeur": "non"
+     },
+     {
+      "nom": "Clayettes réglables en hauteur",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Nombre de portes",
+      "valeur": "1"
+     },
+     {
+      "nom": "Type de porte",
+      "valeur": "Klappbare porte pleine"
+     },
+     {
+      "nom": "Top Preise",
+      "valeur": "Über 9.500 Artikel in Profi-Qualität zu günstigen Preisen"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "GastroHero"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 3,
+   "genres": [
+    "eur-hors-tva-ch",
+    "ht",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 309,
+   "lu": {
+    "url": "https://www.ggmgastro.com/de-de-eur/edelstahl-kuehlzelle-2100x1200mm-3-7m3-inkl-kuehlaggregat-kf2112e-wkaf5end",
+    "domaine": "ggmgastro.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Edelstahl Kühlzelle - 2100x1200mm - 3,7m³ - inkl. Kühlaggregat",
+    "prix": 3867.49,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "photo": "https://cdn.ggmgastro.com/asset/2f7345c6-8de4-4f2b-ab9e-04b42d02bd7d/JPG/KF2112E-WKAF5END_1.jpg",
+    "photos": [
+     "https://cdn.ggmgastro.com/asset/2f7345c6-8de4-4f2b-ab9e-04b42d02bd7d/JPG/KF2112E-WKAF5END_1.jpg",
+     "https://cdn.ggmgastro.com/asset/4452562c-eb4d-45a9-ac90-f548033b35d2/JPG/KF2112E-WKAF5END_0.jpg",
+     "https://img.youtube.com/vi/hsZ7_nzwjSo/default.jpg",
+     "https://cdn.ggmgastro.com/asset/1df8aff6-7f30-4a27-b1c8-f7d5d1348658/JPG/KF21_12_15_21_front.jpg",
+     "https://cdn.ggmgastro.com/asset/bd61967a-a76c-466c-85aa-1b8ee35ab739/JPG/KF2112E-WKAF5END_3.jpg",
+     "https://cdn.ggmgastro.com/asset/7a0b3109-7d12-4243-beee-9fd83a4ebd8f/JPG/frenox_new_aggregate_steel_close-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/f0abf80d-86fc-4f67-a862-0f36c850be52/JPG/kf2121e-aggregat_6-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/ac50d3a9-8459-47c5-aad0-2277e916d0ca/JPG/KF_detail_door.jpg",
+     "https://cdn.ggmgastro.com/asset/2dfdec8d-df6d-4641-998b-270d0cf76656/JPG/kf2121e-aggregat_11-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/c3bfda3f-73ed-4c6c-9141-ef0372e7c333/JPG/KFE_TFE_aggregat_detail_construction.jpg",
+     "https://cdn.ggmgastro.com/asset/eecb6f18-d677-4ac3-b8d3-48232a4d97a3/JPG/KF2112-WKAF5ND_drawing_1.jpg",
+     "https://cdn.ggmgastro.com/asset/ba1c64f0-c6ed-4164-b721-8419116bb756/JPG/WKAF5ND_sketch.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "ggmgastro.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 3 867,49 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Matériau",
+      "valeur": "Inox AISI 430"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "550 Watt"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Température de",
+      "valeur": "-2 °C"
+     },
+     {
+      "nom": "Température jusqu'à",
+      "valeur": "8 °C"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "2100 x 1200 x 2010 mm"
+     },
+     {
+      "nom": "Dimensions intérieures",
+      "valeur": "1940 x 1040 x 1850 mm"
+     },
+     {
+      "nom": "Largeur de porte",
+      "valeur": "700 mm"
+     },
+     {
+      "nom": "Hauteur de porte",
+      "valeur": "1845 mm"
+     },
+     {
+      "nom": "Finition / équipement",
+      "valeur": "mit Kühlaggregat"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Épaisseur d'isolation",
+      "valeur": "42 kg/m³"
+     },
+     {
+      "nom": "Isolierungsdicke",
+      "valeur": "80 mm"
+     },
+     {
+      "nom": "Épaisseur du matériau",
+      "valeur": "0,50 mm"
+     },
+     {
+      "nom": "Mode de fonctionnement",
+      "valeur": "Elektro"
+     },
+     {
+      "nom": "Phase",
+      "valeur": "1N~/PE"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "Air pulsé"
+     },
+     {
+      "nom": "Type de réfrigérant",
+      "valeur": "R290 (Propan) GWP: 3"
+     },
+     {
+      "nom": "Quantité de réfrigérant",
+      "valeur": "0,40 kg"
+     },
+     {
+      "nom": "Aggregatbreite",
+      "valeur": "450 mm"
+     },
+     {
+      "nom": "Aggregattiefe",
+      "valeur": "370 mm"
+     },
+     {
+      "nom": "Aggregathöhe",
+      "valeur": "770 mm"
+     },
+     {
+      "nom": "État à la livraison",
+      "valeur": "Nicht Montiert"
+     },
+     {
+      "nom": "Mode d'expédition",
+      "valeur": "Spedition"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 4,
+   "genres": [
+    "ht",
+    "prix-barre",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "",
+   "inventions": [],
+   "ms": 303,
+   "lu": {
+    "url": "https://www.ggmgastro.com/de-ch-chf/edelstahl-kuehlzelle-1800x2100mm-5-88m3-inkl-kuehlaggregat-kf1821e-wkaf75end",
+    "domaine": "ggmgastro.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Edelstahl Kühlzelle - 1800x2100mm - 5,88m³ - inkl. Kühlaggregat",
+    "prix": 4096.58,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "photo": "https://cdn.ggmgastro.com/asset/d231c237-1ec4-4c6a-99c8-9c91ebee1401/JPG/KF1821E-WKAF75END_1.jpg",
+    "photos": [
+     "https://cdn.ggmgastro.com/asset/d231c237-1ec4-4c6a-99c8-9c91ebee1401/JPG/KF1821E-WKAF75END_1.jpg",
+     "https://cdn.ggmgastro.com/asset/87f1c03b-9b2b-4cfd-8f77-36063a08d8a2/JPG/KF1821E-WKAF75END_0.jpg",
+     "https://img.youtube.com/vi/hsZ7_nzwjSo/default.jpg",
+     "https://cdn.ggmgastro.com/asset/7673b197-1825-4da3-ab9a-eceab0a37645/JPG/KF18_12_15_21_front.jpg",
+     "https://cdn.ggmgastro.com/asset/1ba77a6c-3878-45d8-8782-397c4c550d9f/JPG/KF1821E-WKAF75END_3.jpg",
+     "https://cdn.ggmgastro.com/asset/7a0b3109-7d12-4243-beee-9fd83a4ebd8f/JPG/frenox_new_aggregate_steel_close-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/8ba0313c-aca9-4b3c-a7b3-a9d455df57e4/JPG/636846182978653960-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/0225dcf4-3ab2-47c1-baac-d1978ca96dbb/JPG/636846190421559848-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/ed73d153-819b-4b89-8bea-6f0a1dba3cc4/JPG/636846168086869575-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/c3bfda3f-73ed-4c6c-9141-ef0372e7c333/JPG/KFE_TFE_aggregat_detail_construction.jpg",
+     "https://cdn.ggmgastro.com/asset/a05e20c3-214e-4b7e-9912-02700edc33e9/JPG/KF1821_WKAF75ND_KF2121_WKAF75ND_sketch-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/426df892-ddda-4b01-b1a5-5d51f0d55569/JPG/KF1821-WKAF75ND_drawing_1.jpg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "ggmgastro.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 4 096,58 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Matériau",
+      "valeur": "Inox AISI 430"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "550 Watt"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Température de",
+      "valeur": "0 °C"
+     },
+     {
+      "nom": "Température jusqu'à",
+      "valeur": "8 °C"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "1800 x 2100 x 2010 mm"
+     },
+     {
+      "nom": "Dimensions intérieures",
+      "valeur": "1640 x 1940 x 1850 mm"
+     },
+     {
+      "nom": "Largeur de porte",
+      "valeur": "700 mm"
+     },
+     {
+      "nom": "Hauteur de porte",
+      "valeur": "1845 mm"
+     },
+     {
+      "nom": "Finition / équipement",
+      "valeur": "mit Kühlaggregat"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Épaisseur d'isolation",
+      "valeur": "42 kg/m³"
+     },
+     {
+      "nom": "Isolierungsdicke",
+      "valeur": "80 mm"
+     },
+     {
+      "nom": "Épaisseur du matériau",
+      "valeur": "0,50 mm"
+     },
+     {
+      "nom": "Mode de fonctionnement",
+      "valeur": "Elektro"
+     },
+     {
+      "nom": "Phase",
+      "valeur": "1N~/PE"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "Air pulsé"
+     },
+     {
+      "nom": "Type de réfrigérant",
+      "valeur": "R290 (Propan) GWP: 3"
+     },
+     {
+      "nom": "Quantité de réfrigérant",
+      "valeur": "0,13 kg"
+     },
+     {
+      "nom": "Aggregatbreite",
+      "valeur": "450 mm"
+     },
+     {
+      "nom": "Aggregattiefe",
+      "valeur": "370 mm"
+     },
+     {
+      "nom": "Aggregathöhe",
+      "valeur": "770 mm"
+     },
+     {
+      "nom": "État à la livraison",
+      "valeur": "Nicht Montiert"
+     },
+     {
+      "nom": "Mode d'expédition",
+      "valeur": "Spedition"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 5,
+   "genres": [
+    "devise-etrangere",
+    "ht",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 307,
+   "lu": {
+    "url": "https://www.ggmgastro.com/en-gb-gbp/stainless-steel-commercial-sink-unit-eco-600x600mm-with-single-bowl-centre-with-undershelf-with-upstand-stk66bm1-eco",
+    "domaine": "ggmgastro.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Stainless Steel Commercial Sink Unit ECO - 600x600mm - with Single Bowl Centre - with Undershelf - with Upstand",
+    "prix": 207.04,
+    "devise": "GBP",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "photo": "https://cdn.ggmgastro.com/asset/65fdd902-df18-41c2-a8e8-9cb97c552433/JPG/STK66BM1-ECO_1.jpg",
+    "photos": [
+     "https://cdn.ggmgastro.com/asset/65fdd902-df18-41c2-a8e8-9cb97c552433/JPG/STK66BM1-ECO_1.jpg",
+     "https://cdn.ggmgastro.com/asset/cf7ddf9b-96cc-480a-90fc-af4b7e96f237/JPG/STK66BM1_ECO_0-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/138b0979-1d5d-4bb5-b258-b1d33a69f3c4/JPG/STK66BM1_ECO_2-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/d58bb36e-480a-4dc3-b5b7-e0a5380a3223/JPG/STK66BM1_ECO_3-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/72d17f2a-81ed-4d6c-b64f-02177a44ef22/JPG/STK66BM-ECO_1.jpg",
+     "https://cdn.ggmgastro.com/asset/4222722b-00f5-45a4-a675-6b826114c4db/JPG/STK_detail_4_new.jpg",
+     "https://cdn.ggmgastro.com/asset/88325509-e8b7-4660-8fb6-84dab1024d22/JPG/STK_detail_1_new.jpg",
+     "https://cdn.ggmgastro.com/asset/4d1b6570-4b07-42ff-9d52-10934d6d38cc/JPG/STK_detail_4-1_new.jpg",
+     "https://cdn.ggmgastro.com/asset/a5fcc466-78e6-4e03-9e4a-065e73f5f9f7/JPG/STK_detail_5_new.jpg",
+     "https://cdn.ggmgastro.com/asset/1d79348f-8130-4bd8-a76a-d42bb3e97c15/JPG/STK66BM1_ECO_room-jpg.jpg",
+     "https://cdn.ggmgastro.com/asset/28183e8c-68dd-460c-a071-0646e4530b87/JPG/STK66BM1_drawing-jpg.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "ggmgastro.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 207,04 GBP"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "11"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "16 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Largeur",
+      "valeur": "600 mm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "600 mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "970 mm"
+     },
+     {
+      "nom": "Depth",
+      "valeur": "15 mm"
+     },
+     {
+      "nom": "Height",
+      "valeur": "100 mm"
+     },
+     {
+      "nom": "Width",
+      "valeur": "400 mm"
+     },
+     {
+      "nom": "Drain size in basin",
+      "valeur": "50 mm"
+     },
+     {
+      "nom": "Worktop thickness",
+      "valeur": "Approx. 60 mm"
+     },
+     {
+      "nom": "Stainless steel legs",
+      "valeur": "40 mm x 40 mm"
+     },
+     {
+      "nom": "État à la livraison",
+      "valeur": "Not Mounted"
+     },
+     {
+      "nom": "Poids brut",
+      "valeur": "19 kg"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "18 kg"
+     },
+     {
+      "nom": "Basin",
+      "valeur": "W400xD400mm"
+     },
+     {
+      "nom": "Mode d'expédition",
+      "valeur": "Parcel"
+     }
+    ],
+    "change": {
+     "taux": 1.06,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 6,
+   "genres": [
+    "bloque",
+    "cloudflare"
+   ],
+   "statut": "bloquee",
+   "nom": "?",
+   "prix": "?",
+   "photo": "?",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 244,
+   "lu": {
+    "url": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+    "domaine": "brouwland.com",
+    "statut": "bloquee",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "bloquee"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 7,
+   "genres": [
+    "bloque",
+    "cloudflare",
+    "lien-mort"
+   ],
+   "statut": "bloquee",
+   "nom": "?",
+   "prix": "·",
+   "photo": "·",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 244,
+   "lu": {
+    "url": "https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html",
+    "domaine": "brouwland.com",
+    "statut": "bloquee",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "bloquee"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 8,
+   "genres": [
+    "retire",
+    "no-image"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "·",
+   "photo": "·",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 300,
+   "lu": {
+    "url": "https://www.galaxus.ch/fr/s2/product/kibernetik-getraenkekuehlschrank-115-l-kuehlschrank-freistehend-46573335",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik Réfrigérateur à boissons",
+    "dispo": "retire",
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "absent"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 9,
+   "genres": [
+    "lien-mort"
+   ],
+   "statut": "introuvable",
+   "nom": "·",
+   "prix": "·",
+   "photo": "·",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 8,
+   "lu": {
+    "url": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+    "domaine": "brewtools.com",
+    "statut": "introuvable",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "la page n’existe plus (erreur 404)"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 10,
+   "genres": [
+    "devise-etrangere",
+    "rupture"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 214,
+   "lu": {
+    "url": "https://kegland.com.au/products/fermzilla-60l-all-rounder-pressure-rated-keg-fermenter",
+    "domaine": "kegland.com.au",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "FermZilla All Rounder 60L - Includes Stand, Tank, Stainless Handle, Lid, Airlock, Stick on Thermomet",
+    "prix": 79.95,
+    "devise": "AUD",
+    "dispo": "rupture",
+    "vendeur": "KegLand",
+    "photo": "https://kegland.com.au/cdn/shop/files/fermzilla-all-rounder-60l-includes-stand-tank-stainless-handle-lid-airlock-stick-on-thermomet-kegland-1_374383fc-efa3-4928-971f-5c53487378b5.png?v=1687331452&width=1920",
+    "photos": [
+     "https://kegland.com.au/cdn/shop/files/fermzilla-all-rounder-60l-includes-stand-tank-stainless-handle-lid-airlock-stick-on-thermomet-kegland-1_374383fc-efa3-4928-971f-5c53487378b5.png?v=1687331452&width=1920"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "kegland.com.au"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 79,95 AUD"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques : 1 du tableau de la page, 23 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Zilla Labs",
+      "valeur": "Enzymes, Nutrients, Fining, Brewing Salts & Lautering Aids"
+     }
+    ],
+    "change": {
+     "taux": 0.52,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 11,
+   "genres": [
+    "devise-etrangere",
+    "pistage"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 215,
+   "lu": {
+    "url": "https://kegland.com.au/products/27l-fermzilla-tri-conical-easy-grip-pressure-fermenter-starter-kit?variant=1&utm_source=facebook&utm_medium=paid&fbclid=IwAR2xYz",
+    "domaine": "kegland.com.au",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "27L FermZilla Tri-Conical Easy-Grip Pressure Fermenter Starter Kit",
+    "prix": 170.1,
+    "devise": "AUD",
+    "dispo": "en-stock",
+    "vendeur": "KegLand",
+    "photo": "https://kegland.com.au/cdn/shop/files/KL47296_-_27L_FermZilla_Tri-Conical_Mega-Grip_Pressure_Fermenter_Kit_-_00.jpg?v=1768878849&width=1920",
+    "photos": [
+     "https://kegland.com.au/cdn/shop/files/KL47296_-_27L_FermZilla_Tri-Conical_Mega-Grip_Pressure_Fermenter_Kit_-_00.jpg?v=1768878849&width=1920"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "kegland.com.au"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 170,10 AUD"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques : 1 du tableau de la page, 23 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Zilla Labs",
+      "valeur": "Enzymes, Nutrients, Fining, Brewing Salts & Lautering Aids"
+     }
+    ],
+    "change": {
+     "taux": 0.52,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 12,
+   "genres": [
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 208,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/20-litre-braumeister-plus1",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel 20-litre #Braumeister PLUS",
+    "prix": 1990,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Braumeister_20_Liter_2023.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/47070-30-speidels-braumeister-plus-2020-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/legende-braumeister-plus-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-vorne.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-hinten.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-edelstahlverschraubung.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/braumeister-signet.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-heizspirale.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-malzrohr.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 990 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "10"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Max. malt quantity",
+      "valeur": "6 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 13,
+   "genres": [
+    "eur-hors-tva-ch",
+    "lot",
+    "prix-des"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 208,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/complete-kit-braumeister-plus-20-liter",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Complete kit #Braumeister Plus 20 liter",
+    "prix": 4995,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidels-braumeister.de/media/images/info/00001-132_neu.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/info/00001-132_neu.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/131.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Bier-KEG-9-Liter-NC.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Zapf-Set-Barbecue.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Festbier_neu.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 4 995 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20 liter"
+     },
+     {
+      "nom": "Malt mill for the",
+      "valeur": "20 litre Braumeister"
+     },
+     {
+      "nom": "Brewing ingredients for",
+      "valeur": "20 litres"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 14,
+   "genres": [
+    "bloque",
+    "cloudflare",
+    "redirection"
+   ],
+   "statut": "bloquee",
+   "nom": "?",
+   "prix": "·",
+   "photo": "·",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 208,
+   "lu": {
+    "url": "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter",
+    "domaine": "braumarkt.com",
+    "statut": "bloquee",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "bloquee"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 15,
+   "genres": [
+    "redirection",
+    "js-lourd",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 213,
+   "lu": {
+    "url": "https://www.brewtools.com/brewing-system-accessories/7712553/starter-pack-4-valve-setup-for-b40pro-b80pro-b150pro",
+    "domaine": "brewtools.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Starter pack, 4-valve setup",
+    "prix": 879,
+    "devise": "EUR",
+    "photo": "https://www.brewtools.com/Media/Cache/Images/2/6/WEB_Image_Starter_pack__4-valve_setup_For_B40pro_B_4-pack_newcooler-1178674132.jpeg",
+    "photos": [
+     "https://www.brewtools.com/Media/Cache/Images/2/6/WEB_Image_Starter_pack__4-valve_setup_For_B40pro_B_4-pack_newcooler-1178674132.jpeg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewtools.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 879 EUR (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1 (galerie de la page)"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 16,
+   "genres": [
+    "non-livrable",
+    "js-lourd"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "·",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 206,
+   "lu": {
+    "url": "https://www.galaxus.ch/de/s2/product/gastro-hero-lagerkuehlschrank-eco-edelstahl-590-l-kuehlschrank-freistehend-21180918",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Gastro Hero Lagerkühlschrank Eco Edelstahl",
+    "dispo": "rupture",
+    "photo": "https://static01.galaxus.com/productimages/8/9/7/9/7/1/9/1/3/0/0/6/5/0/1/2/8/6/8/2093a546-85dc-4114-ba38-e56a4bb17ed8_cropped.jpg_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/8/9/7/9/7/1/9/1/3/0/0/6/5/0/1/2/8/6/8/2093a546-85dc-4114-ba38-e56a4bb17ed8_cropped.jpg_sea.jpeg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "13 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "590 l"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Type de réfrigérateur",
+      "valeur": "Réfrigérateur de gastronomie"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "81 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "76 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "199 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Groupe de matériau",
+      "valeur": "Metall"
+     },
+     {
+      "nom": "Sens d'ouverture de la porte",
+      "valeur": "Rechts"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "85 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 17,
+   "genres": [
+    "pistage",
+    "js-lourd",
+    "marque-a-part"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 310,
+   "lu": {
+    "url": "https://www.galaxus.ch/de/s2/product/kibernetik-ks340l-331-l-kuehlschrank-freistehend-2774998?utm_source=google&utm_medium=cpc&gclid=EAIaIQobChMI8x",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik KS340L",
+    "prix": 445,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/2/7/0/0/5/3/5/7/2/8/9/0/1/4/0/6/3/2/6/01a0e1ab-a6c3-7e39-aed9-d321b5b9850d_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/2/7/0/0/5/3/5/7/2/8/9/0/1/4/0/6/3/2/6/01a0e1ab-a6c3-7e39-aed9-d321b5b9850d_sea.jpeg",
+     "https://static01.galaxus.com/productimages/4/7/9/7/7/3/7/5/1/8/2/3/2/2/6/0/4/5/7/01a0b4cf-b805-7206-aaad-79e2fcd12598_sea.jpeg",
+     "https://static01.galaxus.com/productimages/8/2/6/2/7/8/5/7/0/3/8/0/6/3/7/4/9/3/8/01a0b4ca-0550-702a-b288-37929bf8a954_sea.jpeg",
+     "https://static01.galaxus.com/productimages/4/0/0/8/3/5/3/4/4/8/7/6/0/0/3/3/8/8/4/019a60f9-28f8-7b13-b536-9c9aec8e51c8_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 445 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "20 caractéristiques : 1 du tableau de la page, 19 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "331 l"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Puissance absorbée",
+      "valeur": "85 W"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "114 kWh"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "E"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "1.725 x 600 x 620 mm"
+     },
+     {
+      "nom": "Type de réfrigérateur",
+      "valeur": "Réfrigérateur sans compartiment congélateur"
+     },
+     {
+      "nom": "Niveau sonore (max.)",
+      "valeur": "40 dB"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "60 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "59 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "172,5 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Blanc"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Blanc"
+     },
+     {
+      "nom": "Classe climatique",
+      "valeur": "N (Normal)"
+     },
+     {
+      "nom": "Caractéristiques du réfrigérateur",
+      "valeur": "Verstellbare Regale"
+     },
+     {
+      "nom": "Longueur du câble",
+      "valeur": "1,5 m"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Pays d'origine",
+      "valeur": "Deutschland"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "51 kg"
+     },
+     {
+      "nom": "NoFrost",
+      "valeur": "non"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 18,
+   "genres": [
+    "js-lourd",
+    "marque-a-part"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 310,
+   "lu": {
+    "url": "https://www.digitec.ch/de/s1/product/candy-cncq2t518eb-279-l-kuehlschrank-freistehend-48998967",
+    "domaine": "digitec.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Candy CNCQ2T518EB",
+    "prix": 450,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/1/6/2/2/7/5/4/4/2/6/2/7/5/4/3/2/1/9/2/01a0d4c8-9256-7685-a678-194ae0f75386_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/1/6/2/2/7/5/4/4/2/6/2/7/5/4/3/2/1/9/2/01a0d4c8-9256-7685-a678-194ae0f75386_sea.jpeg",
+     "https://static01.galaxus.com/productimages/5/1/2/3/2/0/2/3/8/7/4/2/6/2/2/2/5/4/1/01a1f7ee-8ea4-76f3-b0fa-7d5d450f843f_sea.jpeg",
+     "https://static01.galaxus.com/productimages/1/2/8/1/8/4/9/2/6/7/6/7/0/0/7/5/7/1/7/01a1f7c9-093d-7f44-b81c-9c8e09b3016e_sea.jpeg",
+     "https://static01.galaxus.com/productimages/8/0/6/0/6/7/4/3/0/8/3/2/0/1/1/7/7/4/4/019cda74-efd6-7d31-ba04-d24372f9b0d4_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "digitec.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 450 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "15 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "279 l"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "220 - 240 V"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "237 kWh"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "E"
+     },
+     {
+      "nom": "Niveau sonore (max.)",
+      "valeur": "38 dB"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "54,5 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "60,2 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "182,5 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Noir"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Noir"
+     },
+     {
+      "nom": "Volume utile réfrigérateur",
+      "valeur": "197 l"
+     },
+     {
+      "nom": "Volume utile congélateur",
+      "valeur": "82 l"
+     },
+     {
+      "nom": "Caractéristiques du réfrigérateur",
+      "valeur": "Abtauautomatik"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "56 kg"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 19,
+   "genres": [
+    "marque-a-part"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 311,
+   "lu": {
+    "url": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gastro-208l-mitte-372429",
+    "domaine": "brack.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik Gewerbekühlschrank Gastro 208L Mitte",
+    "prix": 544.8,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://assets.brack.ch/images2/9/5/9/58293959/58293959_xl3.jpg",
+    "photos": [
+     "https://assets.brack.ch/images2/9/5/9/58293959/58293959_xl3.jpg",
+     "https://assets.brack.ch/images2/9/0/4/53960409/53960409_xl3.jpg",
+     "https://assets.brack.ch/images2/6/4/9/198218946/198218946_xl3.jpg",
+     "https://assets.brack.ch/images2/9/5/9/58293959/58293959_xxl.jpg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brack.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 544,80 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "19 caractéristiques : 5 du tableau de la page, 13 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "493 kWh"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "208 L"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "58 kg"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "90 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "84 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "53 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Noir"
+     },
+     {
+      "nom": "NoFrost",
+      "valeur": "non"
+     },
+     {
+      "nom": "Construction",
+      "valeur": "Freistehend"
+     },
+     {
+      "nom": "Einbaunormen",
+      "valeur": "Keine"
+     },
+     {
+      "nom": "Volume utile réfrigérateur",
+      "valeur": "188 l"
+     },
+     {
+      "nom": "Volume utile congélateur",
+      "valeur": "0 l"
+     },
+     {
+      "nom": "Dégivrage réfrigération",
+      "valeur": "Manuell"
+     },
+     {
+      "nom": "Point fort",
+      "valeur": "Nutzinhalt von 188 l"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 20,
+   "genres": [
+    "marque-a-part",
+    "pistage"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 311,
+   "lu": {
+    "url": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gk130l01-rechts-wechselbar-711099?gclid=Cj0KCQiA5rGuBhCnARIsAN11vgR&utm_source=google",
+    "domaine": "brack.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik Gewerbekühlschrank GK130L01 Rechts (wechselbar)",
+    "prix": 341.1,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://assets.brack.ch/images2/7/7/9/226419977/226419977_xl3.jpg",
+    "photos": [
+     "https://assets.brack.ch/images2/7/7/9/226419977/226419977_xl3.jpg",
+     "https://assets.brack.ch/images2/1/7/9/226419971/226419971_xl3.jpg",
+     "https://assets.brack.ch/images2/3/7/9/226419973/226419973_xl3.jpg",
+     "https://assets.brack.ch/images2/5/7/9/226419975/226419975_xl3.jpg",
+     "https://assets.brack.ch/images2/9/7/9/226419979/226419979_xl3.jpg",
+     "https://assets.brack.ch/images2/7/9/1/226421197/226421197_xl3.jpg",
+     "https://assets.brack.ch/images2/7/7/9/226419977/226419977_xxl.jpg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brack.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 341,10 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "7"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "20 caractéristiques : 5 du tableau de la page, 15 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "C"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "330 kWh"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "30 kg"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "55 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "85 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "55 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Noir"
+     },
+     {
+      "nom": "Dimensions intérieures",
+      "valeur": "440 (B) x 720 (H) x 420 (T) mm"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "550 (B) x 850 (H) x 550 (T) mm"
+     },
+     {
+      "nom": "Construction",
+      "valeur": "Freistehend"
+     },
+     {
+      "nom": "Einbaunormen",
+      "valeur": "Keine"
+     },
+     {
+      "nom": "Volume utile réfrigérateur",
+      "valeur": "115 l"
+     },
+     {
+      "nom": "Volume utile congélateur",
+      "valeur": "0 l"
+     },
+     {
+      "nom": "Niveau sonore en fonctionnement",
+      "valeur": "39 dBA"
+     },
+     {
+      "nom": "Dégivrage réfrigération",
+      "valeur": "Manuell"
+     },
+     {
+      "nom": "Point fort",
+      "valeur": "Nutzinhalt von 115 l (0 l Gefrierteil und 115 l Kühlteil)"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 21,
+   "genres": [
+    "retire",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "·",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 311,
+   "lu": {
+    "url": "https://www.hornbach.ch/de/p/edelstahlregal-gastro-regal-kaiserthal-180-x-100-x-50-cm-4-boeden-tragkraft-320-kg/10684563/",
+    "domaine": "hornbach.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Edelstahlregal Gastro Regal Kaiserthal 180 x 100 x 50 cm 4 Böden Tragkraft 320 kg",
+    "dispo": "retire",
+    "vendeur": "HORNBACH",
+    "photo": "https://media.hornbach.ch/hb/packshot/as.82178185.jpg?dvid=8",
+    "photos": [
+     "https://media.hornbach.ch/hb/packshot/as.82178185.jpg?dvid=8"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hornbach.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "5 caractéristiques : 1 ailleurs dans la page, 4 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Matière",
+      "valeur": "Acier inox"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "180 cm"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "100 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "50 cm"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "320 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 22,
+   "genres": [
+    "lent",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 311,
+   "lu": {
+    "url": "https://www.landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447",
+    "domaine": "landi.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Schwerlastregal 180 × 160 × 60 cm",
+    "prix": 79.95,
+    "devise": "CHF",
+    "photo": "https://www.landi.ch/ImageOriginal/Img/product/105/447/105447_schwerlastregal-180-160-60-cm_105447_1.jpg",
+    "photos": [
+     "https://www.landi.ch/ImageOriginal/Img/product/105/447/105447_schwerlastregal-180-160-60-cm_105447_1.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "landi.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 79,95 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "5 caractéristiques : 2 ailleurs dans la page, 3 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Matériau",
+      "valeur": "Acier, MDF"
+     },
+     {
+      "nom": "Charge par clayette",
+      "valeur": "250 kg"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "180 cm"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "160 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "60 cm"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 23,
+   "genres": [
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 311,
+   "lu": {
+    "url": "https://www.landi.ch/shop/weisswaren_150104/tiefkuehltruhe-prima-vista-308l_105650",
+    "domaine": "landi.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Tiefkühltruhe Prima Vista 308l",
+    "prix": 379,
+    "devise": "CHF",
+    "photo": "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_4.jpg",
+    "photos": [
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_4.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_3.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_0.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_1.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_5.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista-308l_105650_0.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "landi.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 379 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "308 l"
+     },
+     {
+      "nom": "L × H × P",
+      "valeur": "112 × 85 × 73 cm."
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 24,
+   "genres": [
+    "bloque"
+   ],
+   "statut": "bloquee",
+   "nom": "?",
+   "prix": "?",
+   "photo": "?",
+   "caract": "",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 305,
+   "lu": {
+    "url": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+    "domaine": "jumbo.ch",
+    "statut": "bloquee",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "bloquee"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 25,
+   "genres": [
+    "bloque",
+    "cloudflare"
+   ],
+   "statut": "bloquee",
+   "nom": "?",
+   "prix": "?",
+   "photo": "?",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 315,
+   "lu": {
+    "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+    "domaine": "bauhaus.ch",
+    "statut": "bloquee",
+    "luLe": 0,
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "absent",
+      "detail": "bloquee"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 26,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 315,
+   "lu": {
+    "url": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidels Braumeister PLUS 20 Liter",
+    "prix": 2190,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Speidels Braumeister PLUS 20 Liter - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~2.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~3.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~4.jpg",
+     "https://www.sios.ch/media/image/product/4396/lg/4396.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 2 190 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "BE720P"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumeister"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 27,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 315,
+   "lu": {
+    "url": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra (USA) 1 kg Hopfenpellets Typ 90",
+    "prix": 72.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Citra (USA) 1 kg Hopfenpellets Typ 90 - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+     "https://www.sios.ch/media/image/product/2949/lg/2949.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 72,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "1 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "HH0251001"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Pellets type 90"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 28,
+   "genres": [
+    "prix-kg",
+    "prix-des",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 315,
+   "lu": {
+    "url": "https://www.sios.ch/Malz-Pilsner",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Pilsner Malz, 3-5 EBC, 25 kg",
+    "prix": 36.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Pilsner Malz, 3-5 EBC, 25 kg - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+     "https://www.sios.ch/media/image/product/1909/lg/1909.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 36,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques : 2 du tableau de la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Couleur (EBC)",
+      "valeur": "3-5 EBC"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "MZ1010025"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumalz (Brühmalz)"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 29,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 315,
+   "lu": {
+    "url": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+    "domaine": "brauundrauchshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Spectrum CITRA 1 kg",
+    "prix": 401,
+    "devise": "CHF",
+    "vendeur": "Brau- und Rauchshop",
+    "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg",
+    "photos": [
+     "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauundrauchshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 401 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Spectrum CITRA",
+      "valeur": "1 kg"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "1 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 30,
+   "genres": [
+    "site-suisse",
+    "caract",
+    "commande"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 316,
+   "lu": {
+    "url": "https://brewstore.ch/materiel/systeme-de-brassage/microbrasserie-speidel-braumeister-plus-20-l-avec-double-enveloppe/",
+    "domaine": "brewstore.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+    "prix": 2345,
+    "devise": "CHF",
+    "dispo": "sur-commande",
+    "dispoDelai": "expédié sous 10 jours",
+    "photo": "https://brewstore.ch/images/detailed/3656/sk2hcpzyxr-5550220a-501x501h.jpg",
+    "photos": [
+     "https://brewstore.ch/images/detailed/3656/sk2hcpzyxr-5550220a-501x501h.jpg",
+     "https://brewstore.ch/images/detailed/3656/tribj9ikxw-speidel-800x800w.jpg",
+     "https://brewstore.ch/images/detailed/3656/wpbav29aqc-5550220aa-648x648w.jpg",
+     "https://brewstore.ch/images/detailed/3656/x3x4hubdvm-5550220ac-800x800w.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewstore.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 2 345 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20 L"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 31,
+   "genres": [
+    "site-suisse",
+    "caract",
+    "commande"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 316,
+   "lu": {
+    "url": "https://brewstore.ch/materiel/casseroles-et-cuves/casserole-de-brassage-motorisee-50l/",
+    "domaine": "brewstore.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Motorisierter Edelstahl-Maischekessel 50 L",
+    "prix": 520,
+    "devise": "CHF",
+    "dispo": "sur-commande",
+    "dispoDelai": "expédié sous 28 jours",
+    "photo": "https://brewstore.ch/images/detailed/1478/g9tyxdmfst-75-l-motorisierter-topf-1225-zoom.jpg",
+    "photos": [
+     "https://brewstore.ch/images/detailed/1478/g9tyxdmfst-75-l-motorisierter-topf-1225-zoom.jpg",
+     "https://brewstore.ch/images/detailed/1478/xinh6ky49i-75-l-motorisierter-topf-2958.jpg",
+     "https://brewstore.ch/images/detailed/1478/2clix3kbyt-75-l-motorisierter-topf-9949.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewstore.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 520 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12 caractéristiques : 9 du tableau de la page, 2 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Moteur",
+      "valeur": "220 V – 0,09 kW"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "50 L"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Acier inox AISI 304"
+     },
+     {
+      "nom": "Induction",
+      "valeur": "non"
+     },
+     {
+      "nom": "Vitesse de rotation",
+      "valeur": "28 U/min"
+     },
+     {
+      "nom": "Robinet inox",
+      "valeur": "3/4\""
+     },
+     {
+      "nom": "Diamètre intérieur",
+      "valeur": "455 mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "370 mm"
+     },
+     {
+      "nom": "Dimensions avec moteur",
+      "valeur": "ca. 525 × 550 mm (H)"
+     },
+     {
+      "nom": "Épaisseur de paroi",
+      "valeur": "1 mm"
+     },
+     {
+      "nom": "Épaisseur du fond",
+      "valeur": "1,5 mm"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 32,
+   "genres": [
+    "prix-barre",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 316,
+   "lu": {
+    "url": "https://www.bierbrauzubehoer.ch/speidels-braumeister/braumeister-von-speidel/1680/braumeister-20liter-automatisch",
+    "domaine": "bierbrauzubehoer.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Braumeister 20Liter, Automatisch",
+    "prix": 1000,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Sevibräu Bierbrauzubehör Online-Shop",
+    "photo": "https://www.bierbrauzubehoer.ch/media/image/b1/11/17/speidels_braumeister_20_liter_2015_1_600x600.jpg",
+    "photos": [
+     "https://www.bierbrauzubehoer.ch/media/image/b1/11/17/speidels_braumeister_20_liter_2015_1_600x600.jpg",
+     "https://www.bierbrauzubehoer.ch/media/image/fa/ac/00/speidels_braumeister_20_liter_2015_1.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "bierbrauzubehoer.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 000 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques : 2 du tableau de la page, 1 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20Liter"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "29,5 kg"
+     },
+     {
+      "nom": "Malzmenge",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "12500-1"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 33,
+   "genres": [
+    "variantes",
+    "prix-kg",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 436,
+   "lu": {
+    "url": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+    "domaine": "hopfenmarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra Hopfenpellets",
+    "prix": 6.7,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Hopfenmarkt",
+    "photo": "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp",
+    "photos": [
+     "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp"
+    ],
+    "livraison": {
+     "prix": 4.9,
+     "devise": "CHF"
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenmarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 6,70 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port 4,90 CHF"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "13 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Pays de récolte",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Récolte",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Type de houblon",
+      "valeur": "Houblon mixte"
+     },
+     {
+      "nom": "Forme",
+      "valeur": "Pellets"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "12,8 %"
+     },
+     {
+      "nom": "Bêta",
+      "valeur": "4 %"
+     },
+     {
+      "nom": "Cohumulone",
+      "valeur": "24,2 %"
+     },
+     {
+      "nom": "Huiles totales",
+      "valeur": "2,5",
+      "unite": "ml/100 g"
+     },
+     {
+      "nom": "Myrcène",
+      "valeur": "59,8 %"
+     },
+     {
+      "nom": "Humulène",
+      "valeur": "13 %"
+     },
+     {
+      "nom": "Caryophyllène",
+      "valeur": "7,4 %"
+     },
+     {
+      "nom": "Farnésène",
+      "valeur": "0,1 %"
+     },
+     {
+      "nom": "Variantes",
+      "valeur": "50 g · 100 g (affichée) · 250 g · 500 g · 1 kg"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 34,
+   "genres": [
+    "variantes",
+    "prix-kg",
+    "rupture",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 436,
+   "lu": {
+    "url": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+    "domaine": "hopfenmarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Mosaic Hopfenpellets",
+    "prix": 7.25,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Hopfenmarkt",
+    "photo": "https://hopfenmarkt.ch/storage/4/conversions/mosaic-large.webp",
+    "photos": [
+     "https://hopfenmarkt.ch/storage/4/conversions/mosaic-large.webp"
+    ],
+    "livraison": {
+     "prix": 4.9,
+     "devise": "CHF"
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenmarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 7,25 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port 4,90 CHF"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "13 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Pays de récolte",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Récolte",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Type de houblon",
+      "valeur": "Houblon mixte"
+     },
+     {
+      "nom": "Forme",
+      "valeur": "Pellets"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "11,4 %"
+     },
+     {
+      "nom": "Bêta",
+      "valeur": "3,4 %"
+     },
+     {
+      "nom": "Cohumulone",
+      "valeur": "21,2 %"
+     },
+     {
+      "nom": "Huiles totales",
+      "valeur": "0,8",
+      "unite": "ml/100 g"
+     },
+     {
+      "nom": "Myrcène",
+      "valeur": "47,9 %"
+     },
+     {
+      "nom": "Humulène",
+      "valeur": "16,2 %"
+     },
+     {
+      "nom": "Caryophyllène",
+      "valeur": "7,2 %"
+     },
+     {
+      "nom": "Farnésène",
+      "valeur": "0,2 %"
+     },
+     {
+      "nom": "Variantes",
+      "valeur": "50 g · 100 g (affichée) · 250 g · 500 g · 1 kg (épuisé)"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 35,
+   "genres": [
+    "prix-des",
+    "variantes",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "?",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 442,
+   "lu": {
+    "url": "https://hopfenshop.ch/produkt/citra-hopfen/",
+    "domaine": "hopfenshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra",
+    "vendeur": "www.hopfenshop.ch",
+    "photo": "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png",
+    "photos": [
+     "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "n. a."
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 36,
+   "genres": [
+    "site-suisse",
+    "js-lourd",
+    "ht",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "=",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 438,
+   "lu": {
+    "url": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+    "domaine": "baldinger.biz",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter Speidel",
+    "prix": 1620,
+    "devise": "CHF",
+    "taxe": "ht",
+    "dispo": "en-stock",
+    "vendeur": "Max Baldinger AG",
+    "photo": "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+    "photos": [
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x196w.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-200x200w.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "baldinger.biz"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 620 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "hors taxe · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "9 caractéristiques : 8 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Tension",
+      "valeur": "230 V (Absicherung mindestens 10 A)"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "20"
+     },
+     {
+      "nom": "Wiederverkäufer-Produktgruppe",
+      "valeur": "D"
+     },
+     {
+      "nom": "Résistance chauffante",
+      "valeur": "2000 W Heizleistung"
+     },
+     {
+      "nom": "Pompe",
+      "valeur": "9 W"
+     },
+     {
+      "nom": "Stock du vendeur",
+      "valeur": "an Lager"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "Speidel"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "55.502.00"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 37,
+   "genres": [
+    "site-suisse",
+    "js-lourd",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 437,
+   "lu": {
+    "url": "https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619",
+    "domaine": "trivendo.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "50-Liter Edelstahl Braukessel für Einsteiger – Hopfenkochen & Hobby-Bierbrauen leicht gemacht",
+    "prix": 289.9,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "vendeur": "TRIVENDO",
+    "photo": "https://www.trivendo.ch/web/image/product.product/603/image_1920?unique=17ad27b",
+    "photos": [
+     "https://www.trivendo.ch/web/image/product.product/603/image_1920?unique=17ad27b",
+     "https://www.trivendo.ch/web/image/product.template/619/image_1024?unique=17ad27b"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "trivendo.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 289,90 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Puissance / raccordement",
+      "valeur": "230 V / 50 Hz / 2 x 2'000 Watt"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Rostfreier inox"
+     },
+     {
+      "nom": "Contenu",
+      "valeur": "50 Liter"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "40 cm Durchmesser / 40 cm Höhe"
+     },
+     {
+      "nom": "Épaisseur de paroi",
+      "valeur": "1 mm"
+     },
+     {
+      "nom": "Konstruktion Wand",
+      "valeur": "Inox / Aluminium / Inox (optimale Wärmespeicherung)"
+     },
+     {
+      "nom": "Durchmesser Kühlspirale",
+      "valeur": "ca. 20,5 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "8 cm"
+     },
+     {
+      "nom": "Anzahl Windungen",
+      "valeur": "8"
+     },
+     {
+      "nom": "Innendurchmesser Leitung",
+      "valeur": "6 mm"
+     },
+     {
+      "nom": "Aussendurchmesser Leitung",
+      "valeur": "8 mm"
+     },
+     {
+      "nom": "Länge der Kühlspirale",
+      "valeur": "Insgesamt 6 Meter"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 38,
+   "genres": [
+    "lot",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 442,
+   "lu": {
+    "url": "https://mashcamp.shop/shop/brauanlagen/gaerbehaelter/gaerbehaelter-edelstahl-drucklos/speidel-edelstahl-konus-gaertank-60-liter-set-drucklos/",
+    "domaine": "mashcamp.shop",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+    "prix": 1384.8,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "mashcamp.shop",
+    "photo": "https://mashcamp.shop/wp-content/uploads/2023/01/104000145_Speidel-Edelstahl-Konus-Gaertank-60-Liter-SET-drucklos1.jpg",
+    "photos": [
+     "https://mashcamp.shop/wp-content/uploads/2023/01/104000145_Speidel-Edelstahl-Konus-Gaertank-60-Liter-SET-drucklos1.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mashcamp.shop"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 384,80 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 1 du tableau de la page, 1 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Acier inox"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "39,000 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 39,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 440,
+   "lu": {
+    "url": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+    "domaine": "hebu-shop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+    "prix": 398,
+    "devise": "CHF",
+    "photo": "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-1.jpg",
+    "photos": [
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-1.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-2.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_for-all-micro-brewery_s500-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_S500-1_vcjkbligi7864-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_Interior_7861431-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_Interior_4586531-scaled.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hebu-shop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 398 CHF (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6 (galerie de la page)"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "5 caractéristiques : 4 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "50 L"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "15 kg"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "46 × 46 × 82 cm"
+     },
+     {
+      "nom": "Fabricant",
+      "valeur": "HEBUfacturing"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "2810GB-50"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 40,
+   "genres": [
+    "prix-barre",
+    "ht",
+    "variante-url",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 437,
+   "lu": {
+    "url": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+    "domaine": "mrgastro.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Klima Italia Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm",
+    "prix": 1339.36,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "vendeur": "M&R Gastro Schweiz",
+    "photo": "https://mrgastro.ch/cdn/shop/files/GN-650-TN.jpg?v=1786209385&width=1600",
+    "photos": [
+     "https://mrgastro.ch/cdn/shop/files/GN-650-TN.jpg?v=1786209385&width=1600"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mrgastro.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 339,36 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12 caractéristiques : 9 du tableau de la page, 2 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Capacité",
+      "valeur": "440–650 l"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "0,36 kW"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "220 V"
+     },
+     {
+      "nom": "Volume net",
+      "valeur": "440 L"
+     },
+     {
+      "nom": "Volume brut",
+      "valeur": "650 L"
+     },
+     {
+      "nom": "Consommation d'énergie",
+      "valeur": "1,78 kWh/24 h"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "440 L"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Acier inox AISI 201"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "112 kg"
+     },
+     {
+      "nom": "Poids brut",
+      "valeur": "140 kg"
+     },
+     {
+      "nom": "Épaisseur d'isolation",
+      "valeur": "60 mm"
+     },
+     {
+      "nom": "Wichtige Eckdaten",
+      "valeur": "440–650 l, 0,36 kW"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 41,
+   "genres": [
+    "rupture",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 239,
+   "lu": {
+    "url": "https://brauen.de/braukessel-aus-edelstahl-50-l-mit-auslauf-fuer-maischebrauer",
+    "domaine": "brauen.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "BREWFERM Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer",
+    "prix": 244,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "brauen.de",
+    "photo": "https://brauen.de/media/image/38/f7/bf/50-liter-braukessel_600x600.jpg",
+    "photos": [
+     "https://brauen.de/media/image/38/f7/bf/50-liter-braukessel_600x600.jpg",
+     "https://brauen.de/media/image/be/90/c3/brauen-neu.png"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauen.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 244 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques : 3 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "50 l"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "8 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "SW10043"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "8 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 42,
+   "genres": [
+    "prix-kg",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 239,
+   "lu": {
+    "url": "https://brauen.de/25-kg-pilsner-malz-sackware-ungeschrotet",
+    "domaine": "brauen.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Weyermann® 25 kg Pilsner Malz - Sackware ungeschrotet",
+    "prix": 45.9,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "brauen.de",
+    "photo": "https://brauen.de/media/image/7c/09/d9/Weyermann-Malz-Aroma-Rad_Weyermann-Pilsner-Malz_W-rze.jpg",
+    "photos": [
+     "https://brauen.de/media/image/7c/09/d9/Weyermann-Malz-Aroma-Rad_Weyermann-Pilsner-Malz_W-rze.jpg",
+     "https://brauen.de/media/image/61/e5/9a/Weyermann-Malz-Aroma-Rad_Weyermann-Pilsner-Malz_Ganzkorn.jpg",
+     "https://brauen.de/media/image/3d/e2/e6/weyermann-25-kg-sackware_600x600.jpg",
+     "https://brauen.de/media/image/be/90/c3/brauen-neu.png"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauen.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 45,90 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "6 caractéristiques : 5 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "25,2 kg"
+     },
+     {
+      "nom": "Type de malt",
+      "valeur": "Pilsner"
+     },
+     {
+      "nom": "MHD",
+      "valeur": "18.05.2028"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "SW10065"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "25,2 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 43,
+   "genres": [
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 239,
+   "lu": {
+    "url": "https://www.brauhardware.de/de/T50.html",
+    "domaine": "brauhardware.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braukessel 50 Liter",
+    "prix": 169.99,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Brauhardware",
+    "photo": "https://www.brauhardware.de/images/product_images/info_images/Topf%20Uebersicht_94_0_104_0.JPG",
+    "photos": [
+     "https://www.brauhardware.de/images/product_images/info_images/Topf%20Uebersicht_94_0_104_0.JPG",
+     "https://www.brauhardware.de/images/product_images/info_images/Topf%20Griff_94_1_104_1.jpg",
+     "https://www.brauhardware.de/images/product_images/info_images/Topf%20Boden_94_2_104_2.jpg",
+     "https://www.brauhardware.de/images/product_images/info_images/ai_innen_Tauchhuelse_94_3_104_3.png",
+     "https://www.brauhardware.de/images/product_images/info_images/af_mit_Thermometer_94_4_104_4.png",
+     "https://www.brauhardware.de/images/product_images/info_images/aa_Komplett%20freigestellt_5_4_94_5_104_5.png",
+     "https://www.brauhardware.de/images/product_images/info_images/images/product_images/original_images/IMG_5419_94_6_104_6.JPEG"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauhardware.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 169,99 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "7"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "7 caractéristiques : 3 du tableau de la page, 3 ailleurs dans la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "50 Liter"
+     },
+     {
+      "nom": "Technische Daten",
+      "valeur": "Material: Inox (1,4016) Boden: Sandwichaufbau für optimale Hitzeverteilung Innendurchmesser: c…"
+     },
+     {
+      "nom": "Hauteur intérieure",
+      "valeur": "ca. 400 mm Materialstärke"
+     },
+     {
+      "nom": "Boden",
+      "valeur": "ca. 6 mm, Wandstärke: ca. 0,8 mm Die Maße können fertigungsbedingt geringfügig abweichen"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "T50"
+     },
+     {
+      "nom": "Délai de livraison",
+      "valeur": "2 - 5 Tage (Ausland abweichend)"
+     },
+     {
+      "nom": "Stock du vendeur",
+      "valeur": "Stück"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 44,
+   "genres": [
+    "lot",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 239,
+   "lu": {
+    "url": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Set Edelstahl Konus Gärtank 60 Liter",
+    "prix": 1333,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255",
+    "photos": [
+     "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 333 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 45,
+   "genres": [
+    "prix-kg",
+    "variantes",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 240,
+   "lu": {
+    "url": "https://www.braupartner.de/citra-r-hopfenpellets",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra® Hopfenpellets",
+    "prix": 7.29,
+    "devise": "EUR",
+    "prixDes": true,
+    "taxe": "ttc",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622",
+    "photos": [
+     "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 7,29 EUR (dès)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "7 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Origine",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Type de houblon",
+      "valeur": "Houblon aromatique"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "ca. 14,0 %"
+     },
+     {
+      "nom": "Récolte",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Type de pellets",
+      "valeur": "90"
+     },
+     {
+      "nom": "Quantité minimale",
+      "valeur": "100 Gramm"
+     },
+     {
+      "nom": "Menge immer in",
+      "valeur": "100 g-Schritten bestellbar (z.B. 100 Gramm, 200 Gramm, 300 Gramm usw.)"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 46,
+   "genres": [
+    "prix-kg",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 240,
+   "lu": {
+    "url": "https://gastro-brennecke.de/25kg-pilsner-malz-braumalz-ungeschrotet-sackware",
+    "domaine": "gastro-brennecke.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "WEYERMANN 25kg Pilsner Malz Braumalz ungeschrotet Sackware",
+    "prix": 46,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Gastro Brennecke GmbH & Co. KG",
+    "photo": "https://gastro-brennecke.de/media/58/4c/bb/1716534670/weyermann-sack_897.jpg?ts=1716534670",
+    "photos": [
+     "https://gastro-brennecke.de/media/58/4c/bb/1716534670/weyermann-sack_897.jpg?ts=1716534670",
+     "https://gastro-brennecke.de/media/ff/a1/c2/1716534672/pilz-malz-braumalz_3537.jpg?ts=1716534672",
+     "https://gastro-brennecke.de/media/d2/17/dd/1716534674/pilsner_5263.jpg?ts=1716534674"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-brennecke.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 46 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "16 caractéristiques : 15 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Couleur (EBC)",
+      "valeur": "3 - 5 (strohgelb bis goldgelb)"
+     },
+     {
+      "nom": "Empfohlene Schüttung",
+      "valeur": "Bis zu 100 %"
+     },
+     {
+      "nom": "Malzcharakter",
+      "valeur": "Mild, leicht süßlich, feine Getreidenote"
+     },
+     {
+      "nom": "Geeignet für",
+      "valeur": "Pilsner, Helles, Lager, Kölsch"
+     },
+     {
+      "nom": "Usage",
+      "valeur": "Helles Bier, Lager"
+     },
+     {
+      "nom": "Farbe (EBC)",
+      "valeur": "0-10 EBC (hell)"
+     },
+     {
+      "nom": "Getreide",
+      "valeur": "Gerste"
+     },
+     {
+      "nom": "Origine",
+      "valeur": "Deutschland"
+     },
+     {
+      "nom": "Malz-Zustand",
+      "valeur": "ungeschrotet"
+     },
+     {
+      "nom": "Type de malt",
+      "valeur": "Pilsnermalz"
+     },
+     {
+      "nom": "Verwendung",
+      "valeur": "Basismalz"
+     },
+     {
+      "nom": "Optimale Lagerung",
+      "valeur": "Großgebinde für langfristige Frische"
+     },
+     {
+      "nom": "Effiziente Verarbeitung",
+      "valeur": "Perfekt für große Sude & Brauereibedarf"
+     },
+     {
+      "nom": "Kombinierbar mit Spezialmalzen",
+      "valeur": "Für mehr Geschmacksvielfalt"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Taille de l'emballage",
+      "valeur": "25 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 47,
+   "genres": [
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 240,
+   "lu": {
+    "url": "https://www.bier-brauen.at/gaertank-konisch-60",
+    "domaine": "bier-brauen.at",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "ERPEL Edelstahl Gärbehälter konisch - 60 Liter",
+    "prix": 185.34,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Konischer Gärtank aus Edelstahl mit 60 Liter Volumen",
+    "photo": "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+    "photos": [
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~2.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~3.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~4.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~5.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~6.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~7.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/lg/gaertank-konisch-60.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "bier-brauen.at"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 185,34 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8 caractéristiques : 7 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "Robinet de vidange en bas",
+      "valeur": "1\" Außengewinde"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "10,80 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "PD-31234"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "9120111123540"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Gärkeller"
+     },
+     {
+      "nom": "Fabricant",
+      "valeur": "ERPEL"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 48,
+   "genres": [
+    "variantes",
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 240,
+   "lu": {
+    "url": "https://shop.speidel-edelstahlbehaelter.de/de/bier-cider-mischgetraenke/edelstahl-konus-gaertank-60-liter",
+    "domaine": "shop.speidel-edelstahlbehaelter.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Gär- und Lagerbehälter FD-ZKG 60 Liter",
+    "prix": 1104,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidel-edelstahlbehaelter.de/media/images/info/konustank-60-liter-drucklos1.jpg",
+    "photos": [
+     "https://shop.speidel-edelstahlbehaelter.de/media/images/info/konustank-60-liter-drucklos1.jpg",
+     "https://shop.speidel-edelstahlbehaelter.de/media/images/info/gaer-und-lagerbehaelter-fd-zkg-60-liter.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidel-edelstahlbehaelter.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 104 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume nominal",
+      "valeur": "60 l / Gärinhalt ca. 58 l"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Gär- und Lagerbehälter FD-ZKG",
+      "valeur": "60 Liter"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 49,
+   "genres": [
+    "lot",
+    "variantes",
+    "eur-hors-tva-ch",
+    "configurateur"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "?",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 588,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter",
+    "photo": "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 50,
+   "genres": [
+    "prix-barre",
+    "variantes",
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 606,
+   "lu": {
+    "url": "https://www.brewtools.com/all-in-one/7714334/b40pro-brewing-system-3-dot-2kw-9kg-malt",
+    "domaine": "brewtools.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "B40pro Brewing System, EU",
+    "prix": 1279.2,
+    "devise": "EUR",
+    "photo": "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4485-edit171533299.jpeg",
+    "photos": [
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4485-edit171533299.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4446-14384818.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4448787936041.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4450-1175843964.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4520-edit-1036503417.jpeg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewtools.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 279,20 EUR (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5 (galerie de la page)"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 51,
+   "genres": [
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 592,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B075QH8DGT",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Klarstein Bierbrauset, Bierbrauanlage, Maischekessel zum Bier Brauen, Bier-Selbstbrauset, Selber Bier Brauen Set, Braukessel, Umwälzpumpe, Touch-Panel, Gärbehälter 50 Liter, 3000",
+    "prix": 374.97,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX679_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 374,97 CHF (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "18 caractéristiques : 16 du tableau de la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Puissance",
+      "valeur": "‎3000 Watt"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "‎220 Volt"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "‎Inox"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "50 Liter"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "‎Argent"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "‎42 x 43 x 80 cm; 12 Kilogramm"
+     },
+     {
+      "nom": "Automatische Abschaltung",
+      "valeur": "‎non"
+     },
+     {
+      "nom": "Weitere Spezifikationen",
+      "valeur": "‎Easy to use"
+     },
+     {
+      "nom": "Poids de l'article",
+      "valeur": "‎12 Kilograms"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B075QH8DGT"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,4 4,4 von 5 Sternen (286) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 281.255 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 3 in"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "24. September 2017"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "‎Klarstein"
+     },
+     {
+      "nom": "Numéro de modèle",
+      "valeur": "‎FP3-Mundschenk-XXL"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 52,
+   "genres": [
+    "marketplace",
+    "prix-kg",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 593,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B074PTR695",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Brewferm 100g Hopfenpellets T90 Sorte Hallertauer Perle zum Bierbrauen und für Kaltauszüge Aktueller Alphasäuregehalt variiert im Bereich von 5-10%",
+    "prix": 11.37,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "photo": "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX355_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX450_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX679_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 11,37 CHF (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "11 caractéristiques : 10 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "‎100 Gramm"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B074PTR695"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "17. Juni 2014"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,8 4,8 von 5 Sternen (18) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 425.562 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 145 in"
+     },
+     {
+      "nom": "Auslaufartikel (Produktion durch Hersteller eingestellt)",
+      "valeur": "non"
+     },
+     {
+      "nom": "Abpackung",
+      "valeur": "100 g / lichgeschützte Vakuumverpackung für optimales Aroma und Haltbarkeit"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "100 g"
+     },
+     {
+      "nom": "Dimensions de l'emballage",
+      "valeur": "‎19,7 x 13 x 8,2 cm; 100 Gramm"
+     },
+     {
+      "nom": "Numéro de modèle",
+      "valeur": "4014"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 53,
+   "genres": [
+    "marketplace",
+    "rupture",
+    "prix-des"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 593,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B00L4F0QAE",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "100g Magnum Hopfenpellets zum Bierbrauen, Alphasäuregehalt: 14,3%",
+    "prix": 8.33,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY355_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 8,33 CHF (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "10 caractéristiques : 9 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids de l'article",
+      "valeur": "‎99,79 Gramm"
+     },
+     {
+      "nom": "Artikelgewicht",
+      "valeur": "‎99,8 g"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B00L4F0QAE"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,8 4,8 von 5 Sternen (5) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 1124889 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 564 in"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "18. Juni 2014"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "100 g"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "‎Brewferm"
+     },
+     {
+      "nom": "Numéro de modèle",
+      "valeur": "‎0531566"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 54,
+   "genres": [
+    "lien-court",
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 874,
+   "lu": {
+    "url": "https://www.amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&ref_=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&social_share=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5",
+    "domaine": "amazon.fr",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Amazon Kindle 16 Go (nouvelle génération) : désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube",
+    "prix": 126.11,
+    "devise": "EUR",
+    "photo": "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY550_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY606_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY679_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY741_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY879_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.fr"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 126,11 EUR (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "En parfait accord",
+      "valeur": "gardez votre Kindle bien au chaud avec notre étui en maille (vendu séparément)."
+     },
+     {
+      "nom": "Amazon Kindle 16 Go (nouvelle génération)",
+      "valeur": "désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube : Amazon…"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 55,
+   "genres": [
+    "lien-court",
+    "marketplace",
+    "variantes",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 865,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B0HHXH8V29?ref=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&ref_=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&social_share=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&bestFormat=true",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Was schreibe ich bloß?: Über 1.000 professionelle Formulierungen für die psychiatrische Pflegedokumentation",
+    "prix": 22.13,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "photo": "https://m.media-amazon.com/images/I/61+VM7oiRhL._SL1293_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SL1293_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY342_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY385_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY425_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY466_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY522_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 22,13 CHF (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8 caractéristiques : 7 du tableau de la page, 1 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "ASIN",
+      "valeur": "‎ B0HHXH8V29"
+     },
+     {
+      "nom": "Herausgeber",
+      "valeur": "‎ Independently published"
+     },
+     {
+      "nom": "Erscheinungstermin",
+      "valeur": "‎ 5. September 2026"
+     },
+     {
+      "nom": "Sprache",
+      "valeur": "‎ Deutsch"
+     },
+     {
+      "nom": "Seitenzahl der Print-Ausgabe",
+      "valeur": "‎ 222 Seiten"
+     },
+     {
+      "nom": "ISBN-13",
+      "valeur": "‎ 979-8170614462"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "‎ 21,59 x 1,42 x 27,94 cm"
+     },
+     {
+      "nom": "Was schreibe ich bloß?",
+      "valeur": "Über 1.000 professionelle Formulierungen für die psychiatrische Pflegedokumentation : Glaser, Susan…"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 56,
+   "genres": [
+    "marketplace",
+    "js-lourd",
+    "livraison-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 583,
+   "lu": {
+    "url": "https://www.mediamarkt.ch/de/product/_klarstein-mundschenk-maischekessel-88419523.html",
+    "domaine": "mediamarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "KLARSTEIN Mundschenk Maischekessel Silber-Metallic",
+    "prix": 606.95,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "vendeur": "MediaMarkt",
+    "photo": "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MP_155163632/fee_786_587_png",
+    "photos": [
+     "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MP_155163632/fee_786_587_png"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mediamarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 606,95 CHF (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 57,
+   "genres": [
+    "lien-court",
+    "prix-barre",
+    "js-lourd",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 591,
+   "lu": {
+    "url": "https://www.galaxus.ch/de/s1/product/41965972",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Royal Catering Braukessel mit Isolierung Bierbrauanlage Heimbrauanlage 60 L Edelstahl 3000 W",
+    "prix": 244,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/3/7/7/6/9/4/5/5/2/0/8/8/8/0/5/4/7/1/5/2668df6f-e906-4263-a058-7e2dcbd16efd_cropped.jpg_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/3/7/7/6/9/4/5/5/2/0/8/8/8/0/5/4/7/1/5/2668df6f-e906-4263-a058-7e2dcbd16efd_cropped.jpg_sea.jpeg",
+     "https://static01.galaxus.com/productimages/5/4/5/7/9/9/3/7/2/4/9/5/0/5/8/7/8/5/2/c4db7391-a4a1-47d1-990a-5b12c459b7d2_cropped.jpg_sea.jpeg",
+     "https://static01.galaxus.com/productimages/6/9/9/5/1/9/6/3/3/5/6/1/1/3/0/8/2/2/1/39dff10f-fd5a-40c5-a24d-bb4232f84afb_cropped.jpg_sea.jpeg",
+     "https://static01.galaxus.com/productimages/8/1/1/5/7/9/9/7/6/7/4/4/3/6/3/2/3/3/7/244054e4-0270-4e0d-92b6-20d64581bfe2_cropped.jpg_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 244 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "9 caractéristiques : 7 ailleurs dans la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 l"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "3000 W"
+     },
+     {
+      "nom": "Longueur",
+      "valeur": "48 cm"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "48 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "82 cm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "17000 g"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Noir"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Noir"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 58,
+   "genres": [
+    "lien-court",
+    "variantes",
+    "js-lourd",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 591,
+   "lu": {
+    "url": "https://www.digitec.ch/de/s1/product/43103635",
+    "domaine": "digitec.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik KSG90",
+    "prix": 136,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/3/6/5/5/9/7/4/0/7/5/1/7/1/4/5/3/6/9/6/01a0b210-57d4-7d7d-af43-cf8f99db99b9_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/3/6/5/5/9/7/4/0/7/5/1/7/1/4/5/3/6/9/6/01a0b210-57d4-7d7d-af43-cf8f99db99b9_sea.jpeg",
+     "https://static01.galaxus.com/productimages/5/1/9/2/2/0/1/2/7/5/1/0/6/4/8/8/4/5/1/01a0ae9f-1729-71c6-a9db-261fa7f025bd_sea.jpeg",
+     "https://static01.galaxus.com/productimages/7/9/8/4/9/7/3/7/7/0/9/8/7/4/3/6/8/7/7/01a0b568-0d91-7b51-820f-9c6c004d7013_sea.jpeg",
+     "https://static01.galaxus.com/productimages/1/1/1/4/4/3/8/6/5/3/2/3/4/3/6/5/8/8/5/01a0d420-38ee-7ead-be2b-a09ef9ff89ef_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "digitec.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 136 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "18 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "89 l"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "220 - 240 V"
+     },
+     {
+      "nom": "Puissance absorbée",
+      "valeur": "90 W"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "85 kWh"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "E"
+     },
+     {
+      "nom": "Type de réfrigérateur",
+      "valeur": "Réfrigérateur avec compartiment congélateur"
+     },
+     {
+      "nom": "Niveau sonore (max.)",
+      "valeur": "39 dB"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "48 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "50 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "84 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Blanc"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Blanc"
+     },
+     {
+      "nom": "Volume utile réfrigérateur",
+      "valeur": "85 l"
+     },
+     {
+      "nom": "Volume utile congélateur",
+      "valeur": "4 l"
+     },
+     {
+      "nom": "Longueur du câble",
+      "valeur": "1,6 m"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Pays d'origine",
+      "valeur": "China"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "19 kg"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 59,
+   "genres": [
+    "multilingue",
+    "site-suisse",
+    "js-lourd",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 592,
+   "lu": {
+    "url": "https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik KS240L",
+    "prix": 302,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+     "https://static01.galaxus.com/productimages/7/0/7/5/2/8/7/8/8/5/0/2/0/8/7/5/9/3/4/01a0b4d4-76e3-7e54-953f-dbda6cdb1f11_sea.jpeg",
+     "https://static01.galaxus.com/productimages/4/5/8/4/5/9/1/0/9/8/3/1/4/2/3/6/6/6/8/01a0d41f-7d9d-71b1-b4e7-1108d38f6a31_sea.jpeg",
+     "https://static01.galaxus.com/productimages/6/9/2/3/5/1/9/6/6/1/8/0/1/4/0/2/4/4/2/01a0d41f-7d63-712b-ab80-9da1d422907d_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 302 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "17 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "242 l"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "220 - 240 V"
+     },
+     {
+      "nom": "Puissance absorbée",
+      "valeur": "90 W"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "104 kWh"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "E"
+     },
+     {
+      "nom": "Type de réfrigérateur",
+      "valeur": "Réfrigérateur sans compartiment congélateur"
+     },
+     {
+      "nom": "Niveau sonore (max.)",
+      "valeur": "40 dB"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "54 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "143,5 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Classe climatique",
+      "valeur": "N (Normal)"
+     },
+     {
+      "nom": "Caractéristiques du réfrigérateur",
+      "valeur": "Compartiment Fresh Zone"
+     },
+     {
+      "nom": "Longueur du câble",
+      "valeur": "1,6 m"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Pays d'origine",
+      "valeur": "China"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "38 kg"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 60,
+   "genres": [
+    "multilingue",
+    "site-suisse",
+    "js-lourd",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 592,
+   "lu": {
+    "url": "https://www.galaxus.ch/fr/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik KS240L",
+    "prix": 302,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+     "https://static01.galaxus.com/productimages/7/0/7/5/2/8/7/8/8/5/0/2/0/8/7/5/9/3/4/01a0b4d4-76e3-7e54-953f-dbda6cdb1f11_sea.jpeg",
+     "https://static01.galaxus.com/productimages/4/5/8/4/5/9/1/0/9/8/3/1/4/2/3/6/6/6/8/01a0d41f-7d9d-71b1-b4e7-1108d38f6a31_sea.jpeg",
+     "https://static01.galaxus.com/productimages/6/9/2/3/5/1/9/6/6/1/8/0/1/4/0/2/4/4/2/01a0d41f-7d63-712b-ab80-9da1d422907d_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 302 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "19 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "242 l"
+     },
+     {
+      "nom": "Tension du réseau",
+      "valeur": "220 - 240 V"
+     },
+     {
+      "nom": "Consommation d'énergie",
+      "valeur": "90 W"
+     },
+     {
+      "nom": "Consommation d'énergie par an",
+      "valeur": "104 kWh"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "E"
+     },
+     {
+      "nom": "Niveau sonore (max.)",
+      "valeur": "40 dB"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "54 cm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "143,5 cm"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Couleur exacte",
+      "valeur": "Argent"
+     },
+     {
+      "nom": "Classe climatique",
+      "valeur": "N (Normal)"
+     },
+     {
+      "nom": "Caractéristiques du réfrigérateur",
+      "valeur": "Compartiment Fresh Zone"
+     },
+     {
+      "nom": "Longueur du câble",
+      "valeur": "1,6 m"
+     },
+     {
+      "nom": "Réfrigérant",
+      "valeur": "R-600a"
+     },
+     {
+      "nom": "Pays d'origine",
+      "valeur": "Chine"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "38 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "49548562"
+     },
+     {
+      "nom": "Réf. du fabricant",
+      "valeur": "109971"
+     },
+     {
+      "nom": "Est probablement équipé d'un adaptateur secteur",
+      "valeur": "Oui"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 61,
+   "genres": [
+    "prix-barre",
+    "ht",
+    "multilingue",
+    "site-suisse",
+    "livraison-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 602,
+   "lu": {
+    "url": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1",
+    "prix": 913.9,
+    "devise": "CHF",
+    "taxe": "ht",
+    "prixTTC": 987.93,
+    "dispo": "en-stock",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/232085-snackh400tn_right_2.webp?v=1769340548&width=1200",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/232085-snackh400tn_right_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232094-snackh400tn_ge_ffnet_2_8ffdd315-6cb8-444a-a61b-5507cd77b424.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232086-snackh400tn_masse_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232090-snackh400tn-left_2_fd0bbcdb-8db2-4a9f-b521-67b056eff2cc.webp?v=1783240004&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232091-snackh400tn-l_ftung_2_3c439adc-101e-456f-93e8-a58490c17e54.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/6117836-snackh400tn-roste_2.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232096-snackh400tn-temperaturanzeige_2_70e0f24b-e2b2-415f-89f3-28ca074d9eb1.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232093-snackh400tn-led_2_13570867-5c61-42b0-be08-3d5e2a47e946.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232087-snackh400tn-ablauf_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232095-snackh400tn-schl_ssel_2_9ef08718-24bf-41ca-9462-a2ca787ac4a3.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/6117834-snackh400tn-fu__2.webp?v=1783240003&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232089-snackh400tn_back_2_1b40f43e-faa3-42ee-941d-2922ade2c3d1.webp?v=1783240004&width=1200"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 913,90 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "hors taxe · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "20 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : la fiche du site dit un port de 7,90 CHF, la page « livraison gratuite »"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume de réfrigération",
+      "valeur": "429",
+      "unite": "l"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "819",
+      "unite": "kWh/an"
+     },
+     {
+      "nom": "Plage de température",
+      "valeur": "+2 à +8 °C"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "inox"
+     },
+     {
+      "nom": "Niveau de qualité",
+      "valeur": "Eco"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "680",
+      "unite": "mm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "710",
+      "unite": "mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "2010",
+      "unite": "mm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "82",
+      "unite": "kg"
+     },
+     {
+      "nom": "Raccordement",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Plage de réfrigération",
+      "valeur": "réfrigération classique"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "ventilé / à air pulsé"
+     },
+     {
+      "nom": "Zones de température",
+      "valeur": "1"
+     },
+     {
+      "nom": "Verrouillable",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Réglable en hauteur",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Clayettes réglables en hauteur",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Nombre de portes",
+      "valeur": "1"
+     },
+     {
+      "nom": "Type de porte",
+      "valeur": "Porte pleine rabattable"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "GastroHero"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 62,
+   "genres": [
+    "prix-barre",
+    "prix-kg",
+    "js-lourd",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 595,
+   "lu": {
+    "url": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+    "domaine": "fischer-lahr.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "(340DMF600) FISCHER-LAHR® Maische-Fermenter FM60 60 Liter, Gärbehälter Edelstahl, konisch mit Boden-Restauslauf, Gärröhrchen, Innen-Thermometer, Spanndeckel, Mini-Gärtank ideal zur",
+    "prix": 179,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "LAGERVERKAUF: 60 L Edelstahl Bier- und Fermentations-Gärfass, - FISCHER-LAHR",
+    "photo": "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden.jpg",
+    "photos": [
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~2.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~3.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~4.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~5.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~6.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~7.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~8.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~9.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~10.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~11.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~12.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "fischer-lahr.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 179 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Matière",
+      "valeur": "V2A inox"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "60 l"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Inox AISI 304"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "7,20",
+      "unite": "kg"
+     },
+     {
+      "nom": "Geeignet",
+      "valeur": "für Alkohol unter 35 %"
+     },
+     {
+      "nom": "Fass-Art",
+      "valeur": "Fermenter / Gärbehälter EdelstahlBier-Lagertank"
+     },
+     {
+      "nom": "Particularités",
+      "valeur": "Mit Thermometer: Abfüllgeräte, Fässer oder Kochbehälter..."
+     },
+     {
+      "nom": "Poids de l'article",
+      "valeur": "7,20 kg"
+     },
+     {
+      "nom": "Contenu",
+      "valeur": "60,00 l"
+     },
+     {
+      "nom": "Bezeichnung",
+      "valeur": "Maische-Fermenter FM60"
+     },
+     {
+      "nom": "Fass-Form",
+      "valeur": "Konisch mit Boden-Restauslauf"
+     },
+     {
+      "nom": "Besonderheiten",
+      "valeur": "Fermenter mit Thermometer und Gärspund"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "D: 40 x H: 70 cm"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "✔ Konischer Boden mit Doppel-Ablass",
+      "valeur": "Sediment setzt sich unten ab - klare Flüssigkeit lässt sich separat abziehen."
+     },
+     {
+      "nom": "✔ Präzise Gärkontrolle",
+      "valeur": "Integriertes Innen-Thermometer (0 - 40 °C) für konstante Temperaturüberwachung im Fass."
+     },
+     {
+      "nom": "✔ Luftdichter Deckel mit Gärröhrchen",
+      "valeur": "CO₂ kann entweichen, Sauerstoff bleibt draußen - Aroma bleibt erhalten."
+     },
+     {
+      "nom": "✔ Einfache Reinigung & sicherer Stand",
+      "valeur": "Breite Deckelöffnung, stabile Edelstahlgriffe, drei Standfüße mit Schutzkappen."
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "9,00 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "340DMF600"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "4250699446764"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Bier-Lagertank"
+     },
+     {
+      "nom": "Fabricant",
+      "valeur": "FISCHER-LAHR® ⇒ geeignet für - Alkohol <35 % , ⇒ zur Herstellung von - Wein, Most, Bier,"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 63,
+   "genres": [
+    "rupture",
+    "prix-barre",
+    "ht",
+    "variante-url",
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "=",
+   "livraison": "",
+   "inventions": [],
+   "ms": 601,
+   "lu": {
+    "url": "https://www.gastro-held.ch/products/barkuehlschrank-eco-350-mit-klapptueren-schwarz-led-beleuchtung-unterbaubar-bkse350kt?variant=67996628713702",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "GastroHero Barkühlschrank ECO 350 mit Klapptüren schwarz, LED Beleuchtung, unterbaubar",
+    "prix": 788.9,
+    "devise": "CHF",
+    "taxe": "ht",
+    "prixTTC": 852.8,
+    "dispo": "rupture",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/18730923-bkse350kt_barkuehlschrank-eco_1.webp?v=1794341560&width=900",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/18730923-bkse350kt_barkuehlschrank-eco_1.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730925-bkse350kt_barkuehlschrank-eco_2.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730924-bkse350kt_barkuehlschrank-eco_3.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730928-bkse350kt_barkuehlschrank-eco_4.webp?v=1794341561&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730927-bkse350kt_barkuehlschrank-eco_5.webp?v=1794341561&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730926-bkse350kt_barkuehlschrank-eco_6.webp?v=1794341561&width=900"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 788,90 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "hors taxe · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "20 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : la fiche du site dit un port de 7,90 CHF, la page « livraison gratuite »"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume de réfrigération",
+      "valeur": "338",
+      "unite": "l"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "0,26",
+      "unite": "kW"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "C"
+     },
+     {
+      "nom": "Consommation annuelle",
+      "valeur": "1.760"
+     },
+     {
+      "nom": "Température ambiante maximale",
+      "valeur": "25",
+      "unite": "°C"
+     },
+     {
+      "nom": "Plage de température",
+      "valeur": "+2 à +8 °C"
+     },
+     {
+      "nom": "Niveau de qualité",
+      "valeur": "Eco"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "noir"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "1350",
+      "unite": "mm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "520",
+      "unite": "mm"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "845",
+      "unite": "mm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "70",
+      "unite": "kg"
+     },
+     {
+      "nom": "Raccordement",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Plage de réfrigération",
+      "valeur": "Réfrigération normale"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "Air pulsé"
+     },
+     {
+      "nom": "Verrouillable",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Nombre de portes",
+      "valeur": "3"
+     },
+     {
+      "nom": "Type de porte",
+      "valeur": "Porte vitrée rabattable"
+     },
+     {
+      "nom": "Top Preise",
+      "valeur": "Über 9.500 Artikel in Profi-Qualität zu günstigen Preisen"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "GastroHero"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  }
+ ]
+}

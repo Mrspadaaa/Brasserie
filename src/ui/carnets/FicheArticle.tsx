@@ -171,7 +171,7 @@ export function FicheArticle(p: FicheArticleProps) {
     const huiles = HUILES.test(normaliser(nom)) ? huilesDites(v) : null;
     if (huiles) return { nom, texte: huiles.texte, unite: huiles.unite, rang: rangDe(nom), exemple: v.origine === 'exemple' };
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
-    return { nom, texte: texteSelonNom(nom, n !== null ? nombreTexte(n) : valeurTexte(v)), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
+    return { nom, texte: texteSelonNom(nom, n !== null ? nombreTexte(n) : valeurTexte(v), v.valeur), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
   }));
   /* T25-7 : les colonnes du carnet que l'article ne publie pas se disent ensemble, dans UNE phrase sous la grille (« Non publié par le
      vendeur : Malzmenge · Max. Malzmenge · Stromanschluss »), jamais trois cases « non publié » qui font croire à une valeur. L'inconnu

@@ -19,7 +19,7 @@ import { Sheet } from '../Sheet';
 import { Horizons } from '../saisie/Horizons';
 import { DureeFenetre } from '../calendrier/frise/DureeFenetre';
 import { plageDate } from '../plageDate';
-import { lundiDe } from '../../domain/calendrier';
+import { francsExacts, lundiDe } from '../../domain/calendrier';
 import { jeudiDe } from '../../domain/horizons';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
@@ -71,7 +71,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
   /* critique 8, n° 4 : détaché, la carte le dit (« du carnet Frigo · détaché »), jamais « depuis son carnet » */
   const origine = u?.sourceCarnetId ? (present && (memeTexte(titreCarnet, plan.title) || !titreCarnet) ? 'depuis son carnet' : titreCarnet ? `du carnet ${titreCarnet}` : 'd’un carnet') + suffixeLien(lien) : '';
   /* « 4 900 CHF TTC » : espace avant les milliers, comme les prix du carnet (critique 5, n° 37) */
-  const francs = String(Math.round(plan.amountCents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const francs = francsExacts(plan.amountCents); /* C46-5 : 79,95 reste 79,95 ; un montant rond reste sans centimes ; même rendu que la carte du Calendrier */
   const prix = d.budgetKnown ? `${francs} CHF TTC${partsInconnues(plan) ? ', au moins' : ''}` : 'prix à estimer'; // virgule-ok : francs est un entier arrondi, espacé par milliers
   const vendeur = plan.vendor ?? art?.vendeur;
   const details = [vendeur, vendeur && art?.dispo ? art.dispo : null].filter(Boolean).join(' · ');
@@ -163,7 +163,8 @@ const moisCourtDe = (plan: FinancialPlan) => { const date = isoDate(plan.date); 
 const RENVOI_PREVISIONS = 'Datés et budgétés, ils entrent dans Finances › Prévisions';
 
 /* ───── Atelier › Matériel › À venir : la maquette kh1r (carte du prochain achat, liste par horizon, bandeau « Caisse fin de mois », crayon, repères d'état) ───── */
-const chf0 = (cents: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 0 }).format(Math.round(cents / 100));
+/* C46-5 : les centimes se disent dès qu'il y en a (79,95), un montant rond reste sans (80) : `francsExacts`, comme la carte du Calendrier */
+export const chf0 = (cents: number) => francsExacts(cents);
 const chf2 = (cents: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100);
 const nomMois = (mois: string, month: 'short' | 'long') => new Date(`${mois}-15T12:00:00`).toLocaleDateString('fr-CH', { month });
 /** L-40 : un mois passé ou d'une autre année dit son année (« juil. » valait 2026 et 2027 sur la même liste) ; ceux de l'année en cours, à venir, restent courts. */

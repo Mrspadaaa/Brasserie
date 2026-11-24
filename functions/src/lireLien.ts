@@ -3,7 +3,7 @@ import { coursVersChf, type Cours } from './coursChange.js';
 import { caracteristiquesTechniques, CARACT_SUFFISANTES, completerParIA, iaUtile, type AppelIA } from './lienIA.js';
 import { completerValeurs, lireJsonPlateforme, plateformeDe } from './lienPlateforme.js';
 import { pageLueParGoogle, type AppelPageBloquee } from './lienBloquee.js';
-import { traduireValeurs } from './lienLibelles.js';
+import { prioriserValeurs, traduireValeurs } from './lienLibelles.js';
 import type { PageLue } from './carnetIA.js';
 
 /**
@@ -116,6 +116,7 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
     ...(x.taxe ? { taxe: x.taxe } : {}),
     ...(x.prixTTC !== undefined ? { prixTTC: x.prixTTC } : {}),
     ...(x.dispo ? { dispo: x.dispo } : {}),
+    ...(x.dispoDelai ? { dispoDelai: x.dispoDelai } : {}),
     ...(x.vendeur ? { vendeur: x.vendeur } : {}),
     ...(x.photos.length ? { photo: x.photos[0], photos: x.photos } : {}),
     ...(x.valeurs.length ? { valeurs: x.valeurs } : {}),
@@ -181,7 +182,7 @@ export interface OptionsLecture {
 /** Les noms des caractéristiques en français (`lienLibelles.ts`) ; la valeur n'est jamais touchée. */
 function enFrancais(page: PageLue): PageLue {
   if (!page.valeurs) return page;
-  const valeurs = traduireValeurs(page.valeurs);
+  const valeurs = prioriserValeurs(traduireValeurs(page.valeurs) ?? []); /* E47-5 : l'essentiel d'abord */
   const { valeurs: _avant, ...reste } = page;
   return valeurs?.length ? { ...reste, valeurs } : reste;
 }

@@ -98,6 +98,16 @@ const TABLE: ReadonlyArray<readonly [readonly string[], string]> = [
   [['kategorie', 'category'], 'Catégorie'],
   [['artikelnummer', 'artikel-nr.', 'art.nr.', 'artikel-nr', 'art.-nr.'], 'Numéro d\'article'],
   [['modellnummer'], 'Numéro de modèle'],
+  [['herstellernummer', 'hersteller-nr.', 'herstellerartikelnummer', 'mpn', 'manufacturer part number'], 'Réf. du fabricant'],
+  [['gesamtabmessungen mit motor', 'abmessungen mit motor', 'gesamtmasse mit motor'], 'Dimensions avec moteur'],
+  [['gesamtabmessungen', 'gesamtmasse', 'gesamtgrosse', 'overall dimensions'], 'Dimensions totales'],
+  [['induktion', 'induktionsgeeignet', 'induktionstauglich'], 'Induction'],
+  [['kaltemittel', 'kaltemittel-typ (kaeltemittel)'], 'Réfrigérant'],
+  [['genaue farbbezeichnung'], 'Couleur exacte'],
+  [['materialgruppe'], 'Groupe de matériau'],
+  [['turanschlag'], 'Sens d\'ouverture de la porte'],
+  [['leistungsaufnahme'], 'Puissance absorbée'],
+  [['ursprungsland', 'herstellungsland'], 'Pays d\'origine'],
   [['farbe', 'color', 'colour'], 'Couleur'],
   [['farbe (ebc)'], 'Couleur (EBC)'],
   [['material', 'produktmaterial'], 'Matériau'],
@@ -187,6 +197,10 @@ export function libelleFrancais(nom: string): string {
 const memeValeur = (a: Valeur, b: Valeur) => cle(`${a.valeur} ${a.unite ?? ''}`) === cle(`${b.valeur} ${b.unite ?? ''}`);
 
 
+/** Un nom qui désigne un identifiant (référence, numéro d'article, EAN…) : sa valeur est recopiée telle quelle, jamais formatée en nombre. */
+const IDENTIFIANT_NOM = /(?:^|[\s(])(?:r[ée]f(?:[ée]rence)?s?\b|num[ée]ro|n°|no\.|nr\.?|artikel(?:nummer)?|sku|ean|gtin|upc|mpn|code[- ]barres?|code article)(?=$|[\s.)])/i;
+export const estIdentifiant = (nom: string): boolean => IDENTIFIANT_NOM.test(nom.normalize('NFC'));
+
 /** Les huiles totales d'un houblon se disent pour 100 g de cônes (« 0.8ml » sur la page, « ml/100 g » dans le métier : T28-14). */
 const HUILES = /^\s*(\d+(?:[.,]\d+)?)\s*ml(?:\s*\/\s*100\s*g)?\s*$/i;
 
@@ -204,6 +218,8 @@ function enFrancais<T extends Valeur>(v: T): T {
     else if (/\d/.test(v.valeur)) nom = libelleFrancais(porte.base);
   }
   let valeur = valeurFrancaise(v.valeur, unite);
+  /* E47-4 : une référence est un texte, jamais une quantité : « 109971 » ne devient pas « 109 971 » (espaces de milliers retirés s'il y en avait) */
+  if (estIdentifiant(nom)) valeur = /^\d[\d\s '’]*$/.test(v.valeur.trim()) ? v.valeur.replace(/[\s '’]/g, '') : v.valeur.trim();
   if (nom === 'Huiles totales') {
     const h = (unite ? `${v.valeur} ${unite}` : v.valeur).match(HUILES);
     if (h) { valeur = h[1].replace('.', ','); unite = 'ml/100 g'; }
@@ -243,5 +259,30 @@ export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[]
     const i = sortie.findIndex((v) => v.nom === POIDS_NET);
     if (i >= 0) sortie[i] = { ...sortie[i], nom: 'Poids' };
   }
-  return sortie;
+  return sansDoublonDeVolume(sortie);
+}
+
+/** Les noms qui disent le volume de l'appareil : la même valeur sous deux d'entre eux n'est qu'une caractéristique (E47-5 : « Capacité 50 L » et « Volume 50 L »). */
+const FAMILLE_VOLUME = ['Volume', 'Capacité', 'Contenu'];
+function sansDoublonDeVolume<T extends Valeur>(valeurs: T[]): T[] {
+  const gardes = new Map<string, T>();
+  for (const v of valeurs) {
+    if (!FAMILLE_VOLUME.includes(v.nom)) continue;
+    const k = cle(`${v.valeur} ${v.unite ?? ''}`);
+    const deja = gardes.get(k);
+    if (!deja || (deja.nom !== 'Volume' && v.nom === 'Volume')) gardes.set(k, v);
+  }
+  return valeurs.filter((v) => !FAMILLE_VOLUME.includes(v.nom) || gardes.get(cle(`${v.valeur} ${v.unite ?? ''}`)) === v);
+}
+
+/**
+ * L'essentiel d'abord (E47-5) : ce qui décide d'un achat (matière, compatibilité induction, énergie, volume, puissance, moteur, tension,
+ * température) ; puis le reste dans l'ordre de la page ; en dernier le secondaire (numéros, marque, emballage, adaptateur secteur, expédition).
+ * Tri stable : à rang égal, l'ordre de la page est gardé. Rien n'est retiré ni ajouté ici.
+ */
+const ESSENTIEL = /^(?:mati[eè]re|mat[eé]riau|induction|compatib|classe d.effic|consommation|volume|capacit[eé]|puissance|moteur|tension|plage de temp[eé]rature|temp[eé]rature)/i;
+const SECONDAIRE = /(?:adaptateur|^point fort|^marque$|^fabricant$|^cat[eé]gorie$|emballage|^d[eé]lai de livraison|^stock du vendeur|mode d.exp[eé]dition|poids d.exp[eé]dition)/i;
+const rangDe = (nom: string): number => (estIdentifiant(nom) || SECONDAIRE.test(nom) ? 2 : ESSENTIEL.test(nom) && !/^volume utile (?:r[eé]frig|cong)/i.test(nom) ? 0 : 1);
+export function prioriserValeurs<T extends Valeur>(valeurs: T[]): T[] {
+  return valeurs.map((v, i) => ({ v, i, r: rangDe(v.nom) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.v);
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ajouterJours, francs, francsSignes, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
+import { ajouterJours, francs, francsExacts, francsSignes, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
 
 /**
@@ -21,6 +21,8 @@ export type { SoldeSemaine, MouvementNomme } from '../../../domain/calendrierCai
 export const chf = (centimes: number): string => francs(centimes);
 /** « +988 », « −56 » : le signe est toujours dit (0 se dit « 0 »). */
 export const sg = (centimes: number): string => (centimes === 0 ? '0' : francsSignes(centimes));
+/* C46-5 : le montant d'une chose nommée sur la frise se dit comme sur sa carte (« −79,95 » ; un montant rond sans centimes) ; les totaux (solde, écarts, semaines) et l'échelle gardent les francs entiers (`chf`, `sg`) */
+export const sgExact = (centimes: number): string => (centimes === 0 ? '0' : francsSignesExacts(centimes));
 export { ajouterJours };
 export const MOIS_MIN = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const;
 /** Mois (0 à 11) d'une semaine : celui de son jeudi, comme la semaine ISO. */
@@ -242,7 +244,7 @@ export interface MisePlacee { i: number; centimes: number; titres: readonly stri
 /** Les deux textes de la mise de côté, le plus complet d'abord (z2s : « 1 140 mis de côté pour le frigo »). */
 export function textesMise(m: MisePlacee): string[] {
   const pour = m.titres.length ? ` pour ${m.titres.join(', ')}` : '';
-  return [`${chf(m.centimes)} mis de côté${pour}`, `${chf(m.centimes)} mis de côté`];
+  return [`${francsExacts(m.centimes)} mis de côté${pour}`, `${francsExacts(m.centimes)} mis de côté`];
 }
 /** Le carré hachuré de la mise de côté (12 px) et son écart au texte. */
 const CARRE_MISE = 16;
@@ -332,7 +334,7 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
     const marcheT = Math.min(ya, yb), marcheB = Math.max(ya, yb);
     // Une chose étoilée doit se voir : toute la hauteur lui est ouverte, et son nom seul (sans montant) si le nom entier ne tient pas.
     const loin = m.etoile ? Infinity : mouvement ? LOIN_MARCHE : LOIN_MISE_MAX;
-    const montant = mouvement && m.centimes !== null ? sg(m.centimes) : '';
+    const montant = mouvement && m.centimes !== null ? sgExact(m.centimes) : '';
     /* CAL-PASSE (21.11, n° 7) : un nom qui ne tient pas se raccourcit (avant « · », puis coupé avec « … »), le montant gardé, avant de se taire */
     const raccourcis = mouvement ? raccourcir(m.nom) : [];
     // CHD-2 : « Emballage · Jhhh ×2 −90 » : le nombre de mouvements regroupés se lit à côté du nom, jamais coupé avec lui
