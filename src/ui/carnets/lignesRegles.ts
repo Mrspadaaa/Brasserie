@@ -2,7 +2,7 @@
 import { lireCarnets, lireMessages, nomArticle, type CarnetDoc } from '../../domain/carnets/modele';
 import type { Destination, LigneARanger } from '../../domain/carnets/operations';
 import { avecArticleTypo, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
-import { analyserLigne, normaliser, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
+import { analyserLigne, extraireCriteres, normaliser, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import type { CarnetPourIA, LigneCarnet } from '../../domain/carnets/ia';
 import type { PlanVrac } from './rangement';
 import type { LigneVracV } from './NoteEnVrac';
@@ -118,7 +118,12 @@ export function depuisLocale(l: LigneLocale, dest: Destination): LigneARanger {
     return { ...dest, sorte: 'article', origine: 'locale', lecture: l.url ? 'a-lire' : 'lue',
       ...(l.url ? { url: l.url, domaine: l.domaine } : { nom: l.texte }), ...(l.prixCentimes !== undefined ? { prixCentimes: l.prixCentimes, devise: l.devise } : {}) } as LigneARanger;
   }
-  if (l.sorte === 'critere') return { ...dest, sorte: 'critere', texte: l.texte, origine: 'locale' } as LigneARanger;
+  /* C58-5 (R33) : la mesure que l'aperçu a promise (« Marmite de brassage 50 L ») est créée AVEC sa caractéristique (le volume) : le critère classe */
+  if (l.sorte === 'critere') {
+    const q = l.quantites[0];
+    const car = q ? extraireCriteres(l.phrase).criteres.find(k => k.quantite && k.quantite.valeur === q.valeur && k.quantite.unite === q.unite)?.caracteristique : undefined;
+    return { ...dest, sorte: 'critere', texte: l.texte, origine: 'locale', ...(car ? { caracteristique: car } : {}) } as LigneARanger;
+  }
   return { ...dest, sorte: 'note', texte: l.texte, genre: l.genre } as LigneARanger;
 }
 

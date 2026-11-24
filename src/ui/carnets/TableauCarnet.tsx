@@ -10,6 +10,7 @@ import { mentionTaxe, montant, type ArticleV, type ContenuCarnetV, type FaconV }
 import { prixOrigine } from './PrixPastille';
 import { VignetteObjet } from './pictos';
 import { etendue, pastilleFacon, sansEcarte, texteMoinsBien, type Ligne, type Separation } from './ouvertCalculs';
+import { liesParNbsp } from './insecable';
 
 const DEVISES = new Set(['CHF', 'EUR', '€', 'Fr.', 'USD', '$']);
 
@@ -184,7 +185,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                   <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, b.facon?.nom, titre]} classe="cn-vignette-petite" taille={30} />
                   <span className="cn-tab-nom" role="cell">
                     {/* tour 3, f5c n° 9 : le nom entier ; deux articles de même nom se distinguent par leur vendeur (« · Brassage Romandie ») */}
-                    <span className="cn-nom-entier">{l.nom}</span>
+                    <span className="cn-nom-entier">{liesParNbsp(l.nom)}</span>
                     <span className="cn-mut">
                       {sous}
                       {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}

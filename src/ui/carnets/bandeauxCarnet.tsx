@@ -32,7 +32,14 @@ export function bandeauxCarnet(x: BandeauxV) {
     neDeListe, couperEnvoi, annuler, appliquer, magasin, aides, setRetour, poserRetourEtat, setEnTete, setVientDEtreCree, setVue, setRangeEnCours, ajouterAuSuggere, deplacerVersSuggere,
     ecartees, setEcartees } = x;
   /* le message dont le bandeau « L'IA n'a pas répondu » est affiché porte son « Relire » dans ce bandeau ; la ligne durable prend le relais */
-  const aReprendreVus = aReprendre.filter(x => !(x.echec && retour?.messageId === x.messageId));
+  /* C58-3 (R34) : dans un carnet ouvert, l'avis ne parle que des messages de CE carnet (écrits depuis lui, ou qu'il a rangés) ; les autres attendent dans la liste.
+     Un message que le fil ne connaît pas (pas encore écrit) reste dit : mieux vaut un avis de trop qu'un message perdu. */
+  const duCarnet = (messageId: string) => {
+    if (!ouvert || vue.sorte !== 'carnet') return true;
+    const m = messages.find(y => y.id === messageId);
+    return !m || m.carnetMessage.depuis === ouvert.id || m.carnetMessage.effets.some(e => e.carnetId === ouvert.id);
+  };
+  const aReprendreVus = aReprendre.filter(x => !(x.echec && retour?.messageId === x.messageId) && duCarnet(x.messageId));
   const toutEchec = aReprendreVus.every(x => x.echec);
   const repriseNode = enLigne && aReprendreVus.length > 0 && etatR.etape !== 'en-cours' ? (
     <div className="cn-bandeau cnf-reprise" role="status" data-sorte="reprise">

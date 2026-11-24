@@ -6,14 +6,46 @@
  * comparables, prix compris) ; `Array.prototype.sort` stable. Une valeur inconnue se range après les connues, jamais comme 0.
  */
 import { parseDecimal } from '../../ui/numericInput';
-import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
+import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
-const donnees = (c: CarnetDoc | Donnees): Donnees => ('carnet' in c ? c.carnet : c);
+/**
+ * C58-5 (R33) : un critère AFFICHÉ qui porte une mesure (« Marmite de brassage 50 L ») classe les articles. Une IA qui le rend sans caractéristique, ou
+ * avec le nom de la phrase (« Marmite de brassage », que personne ne remplit), ne le prive pas de sa mesure : la grandeur de l'unité (le volume) se lit
+ * dans son texte (`extraireCriteres`, la même règle que l'aperçu) et le critère prend cette caractéristique, SEULEMENT si au moins un article la porte
+ * (aucune colonne inventée). Une caractéristique que les articles portent déjà, un oui-non ou un « texte » voulu restent tels quels.
+ */
+function caracteristiqueMesurable(k: Critere, articles: readonly Article[]): Caracteristique | undefined {
+  const car = k.caracteristique;
+  if (car && (car.sens === 'oui-non' || car.sens === 'texte')) return car;
+  const porte = (x: Caracteristique) => articles.some(a => !!valeurPropre(a, x));
+  if (car && porte(car)) return car;
+  const deduite = extraireCriteres(k.texte).criteres.find(x => x.caracteristique && x.caracteristique.sens !== 'oui-non')?.caracteristique;
+  if (!deduite || !porte(deduite)) return car;
+  if (car?.unite && deduite.unite && uniteCanonique(car.unite) !== uniteCanonique(deduite.unite)) return car;
+  return deduite;
+}
+const COMPLETES = new WeakMap<object, { articles: readonly Article[]; n: number; d: Donnees }>();
+function avecCriteresMesurables(d: Donnees): Donnees {
+  if (!d.criteres.length) return d;
+  const memo = COMPLETES.get(d.criteres);
+  if (memo && memo.articles === d.articles && memo.n === d.articles.length) return memo.d;
+  let change = false;
+  const criteres = d.criteres.map(k => {
+    const car = caracteristiqueMesurable(k, d.articles);
+    if (car === k.caracteristique) return k;
+    change = true;
+    return { ...k, caracteristique: car } as Critere;
+  });
+  const sortie = change ? { ...d, criteres } : d;
+  COMPLETES.set(d.criteres, { articles: d.articles, n: d.articles.length, d: sortie });
+  return sortie;
+}
+const donnees = (c: CarnetDoc | Donnees): Donnees => avecCriteresMesurables('carnet' in c ? c.carnet : c);
 
 /* ---------- article défini, pour des phrases justes (« le débit », « la profondeur ») ---------- */
 
@@ -733,6 +765,49 @@ const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
  * 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ». Aucun moins cher : la 1re, et pourquoi.
  * Rien d'inventé : chaque valeur vient du tableau ; `null` à moins de 2 articles en lice.
  */
+/** La valeur d'une ligne pour une colonne, l'unité dite une fois (« 242 L », jamais « 242 l L ») ; `null` si la cellule est vide. */
+function valeurDite(x: LigneTableau, k: Colonne): string | null {
+  const v = x.cellules[k.nom];
+  if (!v) return null;
+  const t = nombreTexte(v.valeur);
+  return k.unite && !t.endsWith(k.unite) ? `${t} ${k.unite}` : t;
+}
+
+/** Une colonne chiffrée dont les deux articles ne portent pas la même valeur. */
+const differeEntre = (a: LigneTableau, b: LigneTableau, k: Colonne) => { const x = nombreCellule(a, k), y = nombreCellule(b, k); return x !== null && y !== null && x !== y; };
+
+/**
+ * C58-4 (R32, sa réponse « Oui » : le compromis dit ce qu'on GAGNE et ce qu'on PERD, avec ou sans critère) : ce que l'article voisin par le prix a de
+ * différent de la 1re, dit avec les valeurs du tableau qui les distinguent (le critère chiffré qui classe s'il diffère, sinon la valeur chiffrée qui
+ * diffère, la plus parlante d'abord : « la 2e a le volume 4,06 m³ au lieu de 2,6 m³ »). `null` : aucune valeur ne les distingue (rien d'inventé :
+ * un même volume ne donne aucune perte). `nombres` sert à savoir si une phrase d'IA les dit déjà.
+ */
+function distinguerPar(t: Tableau, premier: LigneTableau, rival: LigneTableau, chiffre?: Colonne): { texte: string; nombres: string[] } | null {
+  const k = chiffre && differeEntre(rival, premier, chiffre) ? chiffre
+    : t.colonnes.filter(c => !c.critereId && differeEntre(rival, premier, c)).sort((a, b) => groupeDeLigne(a.nom) - groupeDeLigne(b.nom))[0];
+  if (!k) return null;
+  const vr = valeurDite(rival, k), v1 = valeurDite(premier, k);
+  if (!vr || !v1) return null;
+  return { texte: `${rangF(rival.rang!)} a ${avecArticle(k.nom, k.sens)} ${vr} au lieu de ${v1}`, nombres: [nombreTexte(rival.cellules[k.nom]!.valeur), nombreTexte(premier.cellules[k.nom]!.valeur)] };
+}
+
+/**
+ * C58-4 : ce qu'on PERD au prix du gain, pour un compromis d'IA qui ne dit que le gain (« 289,77 CHF de moins que la 2e »). Seulement si la 1re est la
+ * moins chère et qu'une valeur chiffrée distingue le voisin par le prix ; `null` sinon.
+ */
+export function perteDite(t: Tableau | null): { texte: string; nombres: string[] } | null {
+  if (!t) return null;
+  const L = lignesEnLice(t);
+  const premier = L[0];
+  if (L.length < 2 || premier.prixCentimes === undefined) return null;
+  const dev = premier.devise ?? 'CHF';
+  const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && (x.devise ?? 'CHF') === dev);
+  const rival = [...autres].sort((a, b) => a.prixCentimes! - b.prixCentimes!)[0];
+  if (!rival || rival.prixCentimes! <= premier.prixCentimes) return null;
+  const chiffre = t.colonnes.find(k => k.critereId && (k.sens === 'plus' || k.sens === 'moins') && L.some(x => x.cellules[k.nom] !== undefined));
+  return distinguerPar(t, premier, rival, chiffre);
+}
+
 export function compromisDe(t: Tableau | null): string | null {
   if (!t) return null;
   const L = lignesEnLice(t);
@@ -746,7 +821,7 @@ export function compromisDe(t: Tableau | null): string | null {
   const p1 = premier.prixCentimes;
   const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
   /* C50-6 : l'unité se dit une fois (« 242 L », jamais « 242 l L ») */
-  const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; if (!v) return null; const t = nombreTexte(v.valeur); return k.unite && !t.endsWith(k.unite) ? `${t}${unite(k)}` : t; };
+  const val = valeurDite;
   if (p1 !== undefined && criteres.length > 0) {
     /* tour 3, PCN-106 : jamais une proposition sous son minimum (ou au-dessus de son maximum) */
     const candidats = L.slice(1).filter(x => !x.horsSeuil && x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
@@ -788,7 +863,10 @@ export function compromisDe(t: Tableau | null): string | null {
     const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
     const moinsCher = p1 !== undefined && autres.length > 0 && autres.every(x => x.prixCentimes! >= p1);
     const ecart = moinsCher && deuxieme.prixCentimes !== undefined && memeDevise(deuxieme) && deuxieme.prixCentimes > p1! ? prixTexte(deuxieme.prixCentimes - p1!, premier.devise) : null;
-    return ecart ? `la 1re, la moins chère : ${ecart} de moins que la 2e ; aucun critère ne les départage` : null;
+    if (!ecart) return null;
+    /* C58-4 (R32) : le gain dit, la perte aussi : ce que la 2e a de plus, avec les valeurs qui les distinguent (jamais inventées) */
+    const perte = distinguerPar(t, premier, deuxieme);
+    return `la 1re, la moins chère : ${ecart} de moins que la 2e${perte ? `, mais ${perte.texte}` : ' ; aucun critère ne les départage'}`;
   }
   /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant (g01-8 : la phrase de la maquette choisie reste) */
   /* C50-5 (sa réponse « Oui », 24.11, qui remplace la phrase de g01-8) : le compromis dit ce qu'on GAGNE et ce qu'on PERD : l'écart de prix avec

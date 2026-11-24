@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { titreAffiche } from './titre';
-import { liesParNbsp } from './insecable';
+import { InsecMarque, liesParNbsp } from './insecable';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
@@ -216,7 +216,7 @@ function Vignette({ c }: { c: CarnetV }) {
 function LigneTrouvee({ t }: { t: Trouve }) {
   const x = t.texte ?? '';
   const d = t.debut ?? 0, f = t.fin ?? 0;
-  return <span className="cnd-cite" data-trouve={t.sorte}>{t.sorte === 'article' ? 'article' : 'note'} : {x.slice(0, d)}<b>{x.slice(d, f)}</b>{x.slice(f)}</span>;
+  return <span className="cnd-cite" data-trouve={t.sorte}>{t.sorte === 'article' ? 'article' : 'note'} : <InsecMarque t={x} debut={d} fin={f} /></span>;
 }
 
 function CarteCarnet({ c, ajouts, range, fait, trouve, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean; fait?: boolean; trouve?: Trouve | null } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
@@ -367,7 +367,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
                 <VignetteObjet photo={a.photo} mots={[a.nom, c.carnet.facons.find(f => f.id === a.faconId)?.nom, c.title]} classe="cn-vignette-petite" />
                 {/* n° 32 : « Isobarique 4 becs pré-évacuation » / « 2 offres · 11 200 à 11 700 CHF » / « dans <carnet> » : le nom garde la largeur */}
                 <span className="cn-sp cn-veille-tx">
-                  <b>{a.nom ?? a.domaine}</b>
+                  <b>{liesParNbsp(a.nom ?? a.domaine)}</b>
                   {(offres.length > 1 || prixOffres(offres)) && (
                     <span className="cn-encre-2">
                       {offres.length > 1 ? `${offres.length} offres` : ''}{offres.length > 1 && prixOffres(offres) ? ' · ' : ''}

@@ -29,7 +29,7 @@ import { phraseEnTitre } from './ListeCarnets';
 import { PREFIXE_PLANNING } from '../../domain/carnets/anciens';
 import { Photos } from './Photos';
 import { titreAffiche } from './titre';
-import { Insec } from './insecable';
+import { liesParNbsp } from './insecable';
 import { VignetteObjet } from './pictos';
 import { sansApercu } from './Comparer';
 import { etendue, etiquetteStatut, provenanceCritere, separationDe } from './ouvertCalculs';
@@ -182,7 +182,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       </div>
       <div className="cn-titre-ligne">
         {/* f13 tour 2 (n° 4) : « Embouteillage », sa majuscule ; le titre stocké ne change pas */}
-        <h2 className="cn-titre"><Insec t={titreAffiche(c.title)} /></h2>
+        <h2 className="cn-titre">{liesParNbsp(titreAffiche(c.title))}</h2>
         <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
       </div>
       {/* Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, sa maquette g5:v04-4 telle quelle : l'encadré « Idée · 17 nov. / Ensuite :

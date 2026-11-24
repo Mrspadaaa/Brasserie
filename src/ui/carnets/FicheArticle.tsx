@@ -24,7 +24,7 @@ import { memeCaracteristique, trierParDecision } from '../../../functions/src/li
 import { parsePrix } from '../../domain/finance/upgradeRing';
 import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
-import { Insec } from './insecable';
+import { Insec, liesParNbsp } from './insecable';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
@@ -255,7 +255,7 @@ export function FicheArticle(p: FicheArticleProps) {
           {photoNonLue && <figcaption className="cn-fiche-photo-non-lue"><Camera size={16} aria-hidden /> photo non lue</figcaption>}
         </figure>
       )}
-      <h2 className="cn-titre">{a.nom ?? a.domaine ?? 'Lien sans aperçu'}</h2>
+      <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>
       {(p.facon || ajoute) && (
         <p className="cn-mut">
           {p.facon && <><b className="cn-encre">façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</>}

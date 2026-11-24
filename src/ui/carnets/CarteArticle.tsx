@@ -18,6 +18,7 @@ import { dispoDe } from '../../domain/carnets/modele';
 import { montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
 import { VignetteObjet } from './pictos';
 import { detailPrix, PrixPastille, PrixRenduDetail, PrixTexte } from './PrixPastille';
+import { liesParNbsp } from './insecable';
 
 export interface CarteArticleProps {
   article: ArticleV;
@@ -170,7 +171,7 @@ export function CarteArticle(p: CarteArticleProps) {
       <>
         <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
         <span className="cn-article-tx">
-          <b className="cn-article-nom">{a.nom}</b>
+          <b className="cn-article-nom">{liesParNbsp(a.nom)}</b>
           {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
           {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{vues.join(' · ')}{reste > 0 ? <span className="cn-mut"> · +{reste}</span> : null}</span>}
           {(prix || dispoDe(a)) && (
@@ -207,7 +208,7 @@ export function CarteArticle(p: CarteArticleProps) {
       {p.rang !== undefined && !p.ecarte && <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span>}
       <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
       <div className="cn-article-tx">
-        <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <PrixTexte a={a} taux={p.taux} muet />}</span>
+        <span className="cn-ligne"><b className="cn-sp">{liesParNbsp(a.nom)}</b>{prix && <PrixTexte a={a} taux={p.taux} muet />}</span>
         <span className="cn-mut">
           {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, dispoDe(a), prix ? detailPrix(a, p.taux) : null].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
@@ -285,7 +286,7 @@ export function CarteClassee(p: CarteClasseeProps) {
           {p.rang ? <span className={`cn-rang cn-classee-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span> : null}
         </span>
         <span className="cn-classee-tx">
-          <b className="cn-deux-lignes">{a.nom}</b>
+          <b className="cn-deux-lignes">{liesParNbsp(a.nom)}</b>
           {/* « exemple » se dit une fois, au pied de la feuille (h06-5 « Vendeurs, prix et photos : exemple ») */}
           <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}</span>
           {dispoDe(a) && <span><span className={`cn-dispo${/stock/i.test(dispoDe(a)!) ? ' cn-vert' : ' cn-att'}`}>{dispoDe(a)}</span></span>}

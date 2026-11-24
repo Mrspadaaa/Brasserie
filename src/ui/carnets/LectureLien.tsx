@@ -18,6 +18,7 @@ import { parsePrix } from '../../domain/finance/upgradeRing';
 import { boutonEscalader, type Relecture } from './lectureRegles';
 import './carnets.css';
 import './lecture-lien.css';
+import { liesParNbsp } from './insecable';
 
 /** L'horloge de la lecture : une seconde, tant qu'elle tourne. */
 function useMaintenant(actif: boolean): number {
@@ -268,7 +269,7 @@ function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string
         <button type="button" className="cnl-article" onClick={p.onOuvrirArticle} disabled={!p.onOuvrirArticle}>
           {a.photo ? <img className="cnl-vignette" src={a.photo} alt="" /> : <span className="cnl-vignette" aria-hidden />}
           <span className="cnl-qui">
-            <b className="cnl-lien">{a.nom ?? lienLisible(l.url)}</b>
+            <b className="cnl-lien">{liesParNbsp(a.nom ?? lienLisible(l.url))}</b>
             <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ') || domaineDe(l.url)} {p.pastille}</span>
           </span>
           {prix && <span className="cn-mono cnl-prix">{prix}&nbsp;{a.devise ?? 'CHF'}</span>}

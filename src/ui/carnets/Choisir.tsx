@@ -18,6 +18,7 @@ import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
+import { liesParNbsp } from './insecable';
 
 export interface ValeurPlaceeV { nom: string; texte: string; rang?: number; exAequo?: boolean }
 
@@ -190,7 +191,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
       <div className="cn-carte cn-choisi-carte">
         <Photo src={a.photo} className="cn-vignette cn-choisi-photo" repli={p.picto ? <span className="cn-vignette cn-choisi-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
         <div className="cn-sp">
-          <b>{a.nom}</b>
+          <b>{liesParNbsp(a.nom)}</b>
           <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ')}</span>
           {(prix || dispoDe(a)) && <span><b className="cn-mono">{prix ?? ''}</b>{prix && dispoDe(a) ? <span className="cn-mut"> · </span> : null}{dispoDe(a) ? <span className="cn-mut">{dispoDe(a)}</span> : null}</span>}
           {detail && <span className="cn-mut">{detail}</span>}
@@ -295,7 +296,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           <Photo src={a.photo} className="cn-vignette cn-offre-photo" repli={p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
-            : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
+            : <div className="cn-sp cn-offre-nom"><b>{liesParNbsp(a.nom ?? a.vendeur)}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
               {detail && <span className="cn-mut">{detail}</span>}
               {/* n° 39 : le prix seul, sans rond vide devant (il n'avait aucun rôle) */}
               {prix && <span className="cn-offre-prix"><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
@@ -359,7 +360,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             <Photo src={o.article.photo} className="cn-vignette" />
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
-              : <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
+              : <div className="cn-article-tx"><b>{liesParNbsp(o.article.nom)}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
             <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
           </div>
         );

@@ -31,6 +31,9 @@
 .cn-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .cn-inline { vertical-align: -3px; display: inline; }
 .cn-nowrap { white-space: nowrap; }
+/* C58-2 (R31) : l'enveloppe d'un « nombre + unité » (insecable.tsx) ne coupe pas et ne change JAMAIS la taille du texte autour (le sélecteur
+   `.cn-ouvert :is(span, …) { font-size: 14px !important }` plus bas la rapetissait dans un titre de 18 px) : elle hérite, !important compris. */
+.cn-nombre { white-space: nowrap; font-size: inherit !important; }
 .cn-cite { font-style: italic; color: var(--c-mut); }
 .cn-exemple { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px dashed var(--c-line2); border-radius: 999px; font-size: 14px; color: var(--c-ink2); }
 .cn-prov { display: inline-flex; vertical-align: -2px; }
@@ -193,7 +196,7 @@
 .cn-carac { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
 .cn-carac > div { padding: 8px 0; border-top: 1px solid var(--c-line); }
 .cn-carac dt { color: var(--c-mut); }
-.cn-carac dd { font-size: 16px; }
+.cn-carac dd { font-size: inherit; } /* C58-2 : la valeur a la taille de sa ligne (14 px dans le carnet ouvert) : un nombre et son texte autour ne changent pas de taille */
 .cn-droite { display: flex; flex-direction: column; align-items: flex-end; }
 
 /* Choisir (R07) */
@@ -498,7 +501,9 @@
 .cn-offre-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 /* C50-9 : la ligne Offre passe à la ligne au lieu de tasser quatre colonnes : disponibilité entière, prix, puis les gestes groupés à droite */
 .cn-offres .cn-offre { flex-wrap: wrap; }
-.cn-offres .cn-offre-corps { flex: 1 1 170px; }
+/* C58-6 (R34) : le prix a UNE place, à droite de la CARTE : la ligne du vendeur prend toute la largeur (`flex-basis: 100%`), le prix s'y aligne à droite (marge
+   automatique) quel que soit le vendeur ; les gestes (Poser le prix, Relire, Ouvrir) vont dessous. Avant, la ligne ne prenait que 170 px : le prix flottait au milieu. */
+.cn-offres .cn-offre-corps { flex: 1 1 100%; }
 /* C56-1 (R27) : le vendeur ne passe jamais sous son plus long mot (« ggmgastro.com ») : si lui et le prix ne tiennent pas ensemble, le prix passe
    à la ligne, à droite (`min-width: min-content` + `flex-wrap`) ; un mot plus large que la ligne se coupe (`break-word`) au lieu de couvrir le prix. */
 .cn-offres .cn-offre-corps { flex-wrap: wrap; row-gap: 2px; }

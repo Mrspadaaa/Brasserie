@@ -15,11 +15,11 @@ import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
 import { estEtranger, MENTION_FRAIS, renduArticle, tauxVersChf } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { trierParDecision } from '../../../functions/src/lienFusion';
-import { compromisDe, ecartPrixDit, groupeDeLigne, LIGNE_CRITERE, LIGNE_LIVRAISON, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
+import { compromisDe, ecartPrixDit, perteDite, groupeDeLigne, LIGNE_CRITERE, LIGNE_LIVRAISON, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import { BoutonRelire } from './BoutonRelire';
-import { Insec } from './insecable';
+import { Insec, liesParNbsp } from './insecable';
 import './carnets-decider.css';
 import './comparer-compact.css';
 
@@ -399,14 +399,23 @@ export function Comparer(p: ComparerProps) {
   const aUnTaux = actifs.some(l => estEtranger(l) && tauxVersChf(l, p.taux));
   /* C48-4 (décision (b)) : sans critère qui classe, un compromis (de l'IA ou calculé) qui recopie les valeurs du tableau n'apprend rien : il
      n'est pas montré (l'IA récitant, le calcul local prend sa place, qui ne récite jamais). Avec un critère, la phrase de la maquette g01-8 reste. */
-  const recite = (phrase: string) => cqc.length === 0 && !!t && recopieLeTableau(phrase, t);
+  /* C58-4 (R32, arbitrage du pilote 24.11) : une phrase qui DIT L'ÉCART DE PRIX apprend ce que le tableau ne dit pas (le gain) ; la perte se dit par les valeurs
+     qui distinguent les articles, même si le tableau les montre. Seule une phrase sans écart, qui recopie le tableau, est écartée (c48Regles R4). */
+  const recite = (phrase: string) => cqc.length === 0 && !!t && recopieLeTableau(phrase, t) && !(!!ecartPrixDit(t) && ditLEcart(phrase));
   /* C50-5 : un compromis (de l'IA) qui ne dit pas l'écart de prix ne dit pas ce qu'on gagne et ce qu'on perd (tour 50 : « la 1re, 2 697,74 CHF, la moins
      chère », que le tableau dit déjà) : le calcul local, qui le dit, prend sa place. Aucun écart à dire (un seul prix) : la phrase de l'IA reste. */
   const ecartDit = ecartPrixDit(t);
   const ditLEcart = (phrase: string) => !ecartDit || phrase.replace(/[\s  ]/g, '').includes(ecartDit.replace(/\s?[A-Z]{3}$/, '').replace(/[\s  ]/g, ''));
   /* seul un compromis qui RECOPIE le tableau sans dire l'écart est écarté : « la 1re gagne un mètre cube de place, mais coûte plus cher » (sans valeur du tableau) reste */
   const recopieSansEcart = (phrase: string) => !!t && !ditLEcart(phrase) && recopieLeTableau(phrase, t);
-  const compromisIA = p.compromis && !recite(p.compromis) && !recopieSansEcart(p.compromis) ? p.compromis : null;
+  /* C58-4 : un compromis d'IA qui dit le gain sans la perte (« 289,77 CHF de moins que la 2e ») reçoit la perte du tableau (« la 2e a le volume 4,06 m³ au lieu de 2,6 m³ ») */
+  const perte = perteDite(t);
+  const completeParPerte = (phrase: string) => {
+    if (!perte) return phrase;
+    const nu = phrase.replace(/[s  ]/g, '');
+    return perte.nombres.every(n => nu.includes(n.replace(/[s  ]/g, ''))) ? phrase : `${phrase.replace(/[s.;]+$/, '')}, mais ${perte.texte}`;
+  };
+  const compromisIA = p.compromis && !recite(p.compromis) && !recopieSansEcart(p.compromis) ? completeParPerte(p.compromis) : null;
   const compromisLocal = compromisIA ? null : (() => { const c = compromisDe(t); return c && !recite(c) ? c : null; })();
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6). L-27 : un seul article lu (le choisi, et des liens non
      lus) a sa colonne ; seul un tableau sans aucun article lu reste à naître */
@@ -473,7 +482,7 @@ export function Comparer(p: ComparerProps) {
                           {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille. A1 : rond de 26 px sur le bas du picto */}
                           {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b className={`cn-cmp-rang${rangVisible(t, l) === 1 ? ' cn-cmp-rang-1' : ''}`}>{rangVisible(t, l)}</b> : null}
                           {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros"><Insec t={texteEntete(l, colEntete)} /></span> : null}
-                          <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
+                          <span className="cn-cmp-nom">{liesParNbsp(sa ? sa.titre : l.nom)}</span>
                           {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend">{[l.vendeur, l.pays].filter(Boolean).join(' · ')}</span>}
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
                         </button>
@@ -506,7 +515,7 @@ export function Comparer(p: ComparerProps) {
                             {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">–</span>}
-                            {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
+                            {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}
                           </td>
                         );
                       })}
@@ -522,14 +531,14 @@ export function Comparer(p: ComparerProps) {
           {sansValeurLue.length > 0 && <p className="cn-mut cn-cmp-sans-lue">Aucune valeur lue pour : {sansValeurLue.map(c => libelleCaracteristique(c.nom)).join(', ')}</p>}
           {domines.length > 0 && (
             <ul className="cn-cmp-domines" aria-label="Moins bien sur tout">
-              {domines.map(({ l, par }) => <li key={l.articleId}><b className="cn-encre">{rangF(l.rang!)}, {l.nom}</b> : moins bien que {rangF(par)} sur tout</li>)}
+              {domines.map(({ l, par }) => <li key={l.articleId}><b className="cn-encre">{rangF(l.rang!)}, {liesParNbsp(l.nom)}</b> : moins bien que {rangF(par)} sur tout</li>)}
             </ul>
           )}
           {/* g01-8 : « Compromis : la 1re, … », de l'IA, sinon calculé sur place avec les valeurs du tableau (picto local, pas le ✻ : Q19). */}
           {(compromisIA || compromisLocal) && (
             <p className="cn-encart cn-compromis" data-source={compromisIA ? 'ia' : 'locale'}>
               <Scale size={20} role="img" aria-label="Compromis" className="cn-ok" />
-              <span><b>Compromis :</b> {compromisIA ?? compromisLocal} <Provenance origine={compromisIA ? 'ia' : 'locale'} /></span>
+              <span><b>Compromis :</b> <Insec t={compromisIA ?? compromisLocal} /> <Provenance origine={compromisIA ? 'ia' : 'locale'} /></span>
             </p>
           )}
           {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{aUnTaux ? `≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », ${MENTION_FRAIS}, estimé` : 'Euros : le taux se pose dans la liste des articles'}</p>}
@@ -543,7 +552,7 @@ export function Comparer(p: ComparerProps) {
                   const sa = apercuLigne(l, p.nonLus);
                   return (
                     <tr key={l.articleId}>
-                      <th scope="row">{sa ? `${sa.titre} · ${sa.sous}` : l.nom}</th>
+                      <th scope="row">{liesParNbsp(sa ? `${sa.titre} · ${sa.sous}` : l.nom)}</th>
                       <td className="cn-ecarte cn-ecarte-raison">{libelleEcarte(l.ecarte!.raison)}</td>
                     </tr>
                   );

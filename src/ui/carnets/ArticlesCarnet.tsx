@@ -8,6 +8,7 @@ import { LigneRangee } from './LigneRangee';
 import { TableauCarnet } from './TableauCarnet';
 import type { Separation } from './ouvertCalculs';
 import type { CarnetOuvertProps, RangeeV } from './carnetOuvertTypes';
+import { liesParNbsp } from './insecable';
 
 export interface ArticlesCarnetV {
   p: CarnetOuvertProps; c: CarnetV; k: ContenuCarnetV; n: ReturnType<typeof comptesCarnet>; neuf: boolean; picto: number;
@@ -34,7 +35,7 @@ function gererArticles({ p, k, gerer, setGerer, vers, setVers }: ArticlesCarnetV
         return (
           <div key={a.id} role="listitem">
             <p className="cn-critere cn-critere-court cn-critere-retirable">
-              <span className="cn-sp"><b>{nom}</b>{a.domaine && a.nom ? <span className="cn-mut"> · {a.domaine}</span> : null}</span>
+              <span className="cn-sp"><b>{liesParNbsp(nom)}</b>{a.domaine && a.nom ? <span className="cn-mut"> · {a.domaine}</span> : null}</span>
               {p.onDeplacerArticle && autres.length > 0 && (
                 <button type="button" className="cn-lien" aria-expanded={vers === a.id} aria-label={`Déplacer l’article « ${nom} »`} onClick={() => setVers(vers === a.id ? null : a.id)}>Déplacer</button>
               )}

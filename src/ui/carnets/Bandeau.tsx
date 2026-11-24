@@ -13,6 +13,7 @@ import { Calculator, Check, TriangleAlert, Undo2, WifiOff } from 'lucide-react';
 import { PictoLocal, Provenance } from './EtatIA';
 import { estLienSeul } from '../../domain/carnets/modele';
 import type { PageLue } from '../../domain/carnets/ia';
+import { liesParNbsp } from './insecable';
 
 /** La fin de la ligne citée sous « ✓ Carnet créé » : d'où vient le titre. Seule la phrase écrite par lui est « votre phrase en titre ». */
 const ORIGINE_TITRE: Record<TitreDe, string> = {
@@ -208,7 +209,7 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
       {b.sorte === 'deuxieme' && b.faconsNees ? <p className="cn-mut">{b.faconsNees} façons nées des {b.faconsNees} articles</p> : null}
       {b.sorte === 'ailleurs' && b.article && (
         <p className="cn-bandeau-article">
-          <b>{b.article.nom}</b>
+          <b>{liesParNbsp(b.article.nom)}</b>
           {(b.article.detail || b.article.exemple) && <span className="cn-mut"> · {b.article.detail}{b.article.exemple && <> <Provenance origine="exemple" /></>}</span>}
           {b.article.prix && <span> · <b className="cn-chiffre">{b.article.prix}</b></span>}
         </p>
