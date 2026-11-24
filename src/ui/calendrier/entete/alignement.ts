@@ -113,6 +113,16 @@ export function joursJusquAuDoigt(a: AxeDoigt, x: number, bout: string): number 
 }
 
 /**
+ * K57-2 (24.11, test en ligne : prise à 15, 30 ou 60 px du bout, la fin sautait de 2 à 3 jours dès le premier mouvement) : saisir une poignée ne change
+ * rien, le bout suit le DÉPLACEMENT du doigt depuis le point de prise. Le décalage (px) entre le doigt posé en `x0` et le milieu du jour du bout (`bout`,
+ * ISO) : ajouté à la position du doigt, il fait lire au bout le jour qu'il a déjà tant que le doigt ne bouge pas ; `joursJusquAuDoigt` rend alors 0.
+ */
+export function correctionAuBout(a: AxeDoigt, x0: number, bout: string): number {
+  const x = a.gauche + xDeJourReel(a.colonnes, a.largeurColonne, jourReel(bout) + 0.5);
+  return Number.isFinite(x) && Number.isFinite(x0) ? x - x0 : 0;
+}
+
+/**
  * Les colonnes de l'axe du moment entre la colonne du point pris (le jour sous le doigt à l'appui, reporté sur l'axe du moment) et celle sous le
  * doigt maintenant : le pas d'une barre glissée (son dessin `k × colonne`, sa date un mois, une semaine ou un jour par colonne). `parJour` (axe en
  * semaines, CAL-JOUR) : les jours, en septièmes de semaine. Plancher des deux côtés : la colonne sous le doigt reçoit ce qu'il a pris.

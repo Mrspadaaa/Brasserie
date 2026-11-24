@@ -4,7 +4,7 @@ import { lundiDe, numeroSemaine } from '../../../domain/calendrier';
 import { ajouterJours, jourCourt, largeurTexte, placeEtiquette, type Boite } from './Courbe';
 import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, useGlisse, zonesBords } from '../../geste';
 import { rentrer, vueDansRepere, type VueEcran } from '../frise/prisesBord';
-import { vitesseCalendrier } from '../frise/defileBord';
+import { plafondFenetre, vitesseCalendrier } from '../frise/defileBord';
 import { avalerClicSuivant } from '../usePointeurCourbe';
 
 /**
@@ -372,10 +372,11 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       /* Q4-1 (24.11, « Trop lente sur le calendrier ») : ×2,5 sur la vitesse du module geste, propre au Calendrier */
       const vitesse = vitesseCalendrier(vitesseBrute);
       if (s.role === 'defile') return;
-      if (s.role === 'corps') { s.pan += sens * vitesse * s.v.span * dt; return; }
+      /* K57-1 : au plus 8 colonnes par seconde, comme les barres (plafondFenetre) ; la croissance était un pourcentage de l'échelle par image (exponentielle) */
+      if (s.role === 'corps') { s.pan += sens * Math.min(vitesse * s.v.span * dt, plafondFenetre(s.vue0.span, dt)); return; }
       if ((s.role === 'b' && sens > 0) || (s.role === 'a' && sens < 0)) {
         const ancre = s.role === 'b' ? s.a0 : s.b0, xAncre = (ancre - s.v.v0) / s.v.span;
-        const span = Math.min(total * 1.3, s.v.span * (1 + vitesse * 0.6 * dt));
+        const span = Math.min(total * 1.3, s.v.span + Math.min(s.v.span * vitesse * 0.6 * dt, plafondFenetre(s.vue0.span, dt)));
         s.v = { span, v0: ancre - xAncre * span };
       }
     },

@@ -2,7 +2,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { MARGE_BOUTS_PX, borner, poserPlage, roleSous, useGlisse } from '../../geste';
 import { ajouterJours, etiquetteS, jourAvecAnnee, jourLisible, lundiDe, semaineAvecAn, type Rangee } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
-import { vitesseCalendrier } from './defileBord';
+import { plafondFenetre, vitesseCalendrier } from './defileBord';
 import './feuille.css';
 
 /**
@@ -149,7 +149,8 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
     bord: (sens, vitesseBrute, dt, s) => {
       /* Q4-1 (24.11, « Trop lente sur le calendrier ») : ×2,5 sur la vitesse du module geste, propre au Calendrier */
       const vitesse = vitesseCalendrier(vitesseBrute);
-      const pas = vitesse * s.vue.span * dt, span = Math.min(max * 1.2, s.vue.span + pas);
+      /* K57-1 : au plus 8 colonnes par seconde, comme les barres et le cadre de l'en-tête (plafondFenetre) */
+      const pas = Math.min(vitesse * s.vue.span * dt, plafondFenetre(s.vue0.span, dt)), span = Math.min(max * 1.2, s.vue.span + pas);
       if (s.role === 'corps') {
         // R7 : le corps avance dans le sens du doigt, l'échelle défile avec lui
         s.off += sens * pas;

@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
 import type React from 'react';
-import { joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
+import { correctionAuBout, joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
 import type { Colonne } from './Rangee';
 import { correctionPrise, priseDebut, priseDebutAvant, priseFin, priseFinAvant, vueEcran, type VueEcran } from './prisesBord';
-import { vitesseCalendrier } from './defileBord';
+import { COLONNES_MAX_PAR_S, vitesseCalendrier } from './defileBord';
 
 /**
  * Les gestes d'une barre de la frise (MISSION § État de l'art : Pointer Events natifs, `setPointerCapture`, appui long = minuterie
@@ -89,7 +89,7 @@ const ZONE_DEFILE_PX = BANDE_PX;
  * allait jusqu'à 8 colonnes par seconde. Au plus 3 colonnes par seconde : un doigt tenu 2,5 s ajoute 7 semaines, jamais 20.
  * Q4-1 (24.11, « Trop lente sur le calendrier ») : la vitesse du module est multipliée par 2,5 (defileBord.ts) et le plafond passe à 8 colonnes par seconde.
  */
-export const COLONNES_MAX_PAR_S = 8;
+export { COLONNES_MAX_PAR_S };
 export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number): number {
   return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * dt);
 }
@@ -157,8 +157,10 @@ interface Etat {
   /** T9-1 : le point le plus avancé dans le sens armé (hystérésis du sens, armerSens). */
   pivot: number;
   xPrec: number;
-  /** POI-1 : le décalage (px) du doigt pris dans la part rentrée du bord ; 0 dans la zone d'avant. */
+  /** K57-2 : le décalage (px) du doigt posé au milieu du jour du bout tiré : le bord suit le déplacement du doigt, jamais sa position absolue. */
   corr: number;
+  /** POI-1 : le doigt a été posé dans la part rentrée du bord (hors de la zone d'avant) : un toucher bref y ouvre la fiche. */
+  rentree: boolean;
   acc: number;
   raf: number;
   tPrec: number;
@@ -331,17 +333,20 @@ export function usePointeur(options: OptionsPointeur) {
     let cote: CoteBord = marque?.getAttribute('data-bord') === 'debut' ? 'debut' : 'fin';
     const priseFinBord = prisePourBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0, 'fin');
     let bord = !!marque || priseFinBord.dans;
-    let corr = marque ? 0 : priseFinBord.corr;
+    let corr = marque ? 0 : priseFinBord.corr, rentree = !marque && priseFinBord.corr !== 0;
     if (!bord && !cibleEl?.closest?.('[data-jalon]')) {
       const priseDebutBord = prisePourBord(e.currentTarget, e.clientX, opts.current.zoneBordDebut ?? 0, 'debut');
-      if (priseDebutBord.dans) { bord = true; cote = 'debut'; corr = priseDebutBord.corr; }
+      if (priseDebutBord.dans) { bord = true; cote = 'debut'; corr = priseDebutBord.corr; rentree = priseDebutBord.corr !== 0; }
     }
     const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', cote, k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
       L, R: cadreDe(e.currentTarget).right, w0: o0.largeurColonne, d0: largeurJourDe(o0),
       axe0: o0.colonnes?.length && o0.largeurColonne > 0 ? { colonnes: o0.colonnes, largeurColonne: o0.largeurColonne, gauche: L } : null,
-      bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, corr, acc: 0, raf: 0, tPrec: 0, echap: null,
+      bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, corr, rentree, acc: 0, raf: 0, tPrec: 0, echap: null,
       el: e.currentTarget, frise: e.currentTarget.closest?.('[data-frise]') ?? null, ecoute: null };
+    /* K57-2 : le bout tiré part de son jour : la prise ne change rien, le bord suit le déplacement du doigt (`corr` : le décalage de la prise au milieu du jour du bout) */
+    const boutPris = bord && s.axe0 ? o0.bout?.(s.cote) : undefined;
+    if (boutPris && s.axe0) s.corr = correctionAuBout(s.axe0, e.clientX, boutPris);
     if (etat.current) stopDefile(etat.current);
     etat.current = s;
     const annuler = () => {
@@ -492,7 +497,7 @@ export function usePointeur(options: OptionsPointeur) {
       o.onLacheBord?.(s.k, annule, s.cote);
       /* CHG-4 : un toucher sur le bord gauche, sans mouvement, ouvre encore le détail (comme sur le corps) */
       /* POI-1 : de même un toucher dans la part rentrée du bord droit (un point d'étape, le corps de la barre) : il ne tire rien, il ouvre */
-      if ((s.cote === 'debut' || s.corr !== 0) && !s.bouge && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
+      if ((s.cote === 'debut' || s.rentree) && !s.bouge && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
     }
     else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) {
       /* TOUCHER-FANTOME (21.11, tour7 : toucher « La Cigogne, 3 fûts » a annulé la vente) : le toucher ouvre le détail au lâcher ; le `click`
