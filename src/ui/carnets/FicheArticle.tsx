@@ -18,7 +18,7 @@ import { articleHonnete } from '../../domain/carnets/prixUnitaire';
 import { Camera, Check, ChevronLeft, ChevronRight, ExternalLink, Eye, Pencil } from 'lucide-react';
 import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
 import { dispoDe } from '../../domain/carnets/modele';
-import { detailPrix, prixTexteArticle } from './PrixPastille';
+import { detailPrix, prixUnique } from './PrixPastille';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, tableau as calculerTableau, valeursLuesDe, type Place } from '../../domain/carnets/comparer';
 import { memeCaracteristique, trierParDecision } from '../../../functions/src/lienFusion';
@@ -132,8 +132,8 @@ export function FicheArticle(p: FicheArticleProps) {
   const k = p.carnet;
   const devise = a.devise ?? 'CHF';
   /* D447 : hors franc, le prix converti ; l'original, « HT » et le port se disent sous l'offre (`detailPrix`) */
-  const t0 = prixTexteArticle(a, p.taux);
-  const prix = t0?.approx ? `≈${t0.montant} ${t0.devise}` : prixTexte(a.prixCentimes, devise);
+  const t0 = prixUnique(a, p.taux);
+  const prix = t0?.approx ? `≈${t0.montant} ${t0.devise}${t0.rendu ? ' rendu' : ''}` : prixTexte(a.prixCentimes, devise);
   const veille = !!a.veille?.active;
   const lu = dateCourte(Object.values(a.valeurs).find(v => v.luLe)?.luLe);
   const ajoute = dateCourte(a.ajouteLe);
@@ -279,8 +279,8 @@ export function FicheArticle(p: FicheArticleProps) {
           <div className="cn-offres">
             {offres.map(o => {
               const moi = o.id === a.id;
-              const t2 = prixTexteArticle(o, p.taux);
-              const p2 = t2?.approx ? `≈${t2.montant} ${t2.devise}` : prixTexte(o.prixCentimes, o.devise ?? 'CHF');
+              const t2 = prixUnique(o, p.taux);
+              const p2 = t2?.approx ? `≈${t2.montant} ${t2.devise}${t2.rendu ? ' rendu' : ''}` :prixTexte(o.prixCentimes, o.devise ?? 'CHF');
               const d2 = detailPrix(o, p.taux);
               const corps = (
                 <>

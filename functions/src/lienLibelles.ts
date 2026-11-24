@@ -13,6 +13,7 @@
  */
 
 import { nomEtUnite, nombreSeul, valeurFrancaise } from './lienValeurs.js';
+import { aromesEnFrancais, estLigneAromes } from './aromesFrancais.js';
 import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, parPartDHuile, cleDeNom, texteDeValeur, RANG_INCONNU } from './lienFusion.js';
 
 export { estIdentifiant };
@@ -34,6 +35,8 @@ const TABLE: ReadonlyArray<readonly [readonly string[], string]> = [
   [['nenninhalt', 'nennvolumen'], 'Volume nominal'],
   [['fassungsvermogen', 'kapazitat', 'capacity'], 'Capacité'],
   [['inhalt'], 'Contenu'],
+  // C59-9 : les arômes d'un houblon (leurs valeurs se traduisent dans `enFrancais`)
+  [['aromen', 'aroma', 'aromas', 'aromaprofil', 'aroma profile', 'flavor', 'flavour'], 'Arômes'],
   // Dimensions
   [['breite', 'width'], 'Largeur'],
   [['hohe', 'height'], 'Hauteur'],
@@ -221,6 +224,8 @@ function enFrancais<T extends Valeur>(v: T): T {
     else if (/\d/.test(v.valeur)) nom = libelleFrancais(porte.base);
   }
   let valeur = valeurFrancaise(v.valeur, unite);
+  /* C59-9 (R38) : « Limette, Mango, tropische Früchte » se lit « citron vert, mangue, fruits tropicaux » ; un arôme inconnu reste tel quel */
+  if (estLigneAromes(brut)) valeur = aromesEnFrancais(v.valeur);
   /* C54-2 (R21) : « Étape 1N~/PE » est le branchement électrique (monophasé avec neutre et terre) : un brasseur lit « Branchement », jamais « Étape » seul.
      Seulement quand la valeur dit un branchement (nombre de phases, ~, PE) : une « Étape 2 » d'un autre genre garde son nom. */
   if (cle(nom) === 'etape' && VALEUR_DE_BRANCHEMENT.test(v.valeur)) nom = 'Branchement';

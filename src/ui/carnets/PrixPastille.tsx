@@ -113,6 +113,16 @@ export function prixTexteArticle(a: ArticleV, taux?: number): { montant: string;
   const m = conv !== undefined ? montant(Math.round(conv / 100) * 100) : montant(a.prixCentimes);
   return m ? { montant: m, devise: conv !== undefined ? 'CHF' : (a.devise ?? 'CHF'), approx: conv !== undefined } : null;
 }
+/**
+ * C59-7 (R37) : UN prix par article, dit pareil dans Comparer, la feuille Articles, le tableau et la fiche. Hors franc, avec un cours : le rendu estimé (celui de la
+ * pastille et de la cellule de Comparer, maquette B1), arrondi au franc ; sans cours : le prix dans sa devise ; en francs : le prix. `rendu` dit que le montant est le rendu.
+ */
+export function prixUnique(a: ArticleV, taux?: number): { montant: string; devise: string; approx: boolean; rendu: boolean } | null {
+  const r = renduArticle(a, taux);
+  if (r && r.totalChf !== undefined) return { montant: montant(Math.round(r.totalChf / 100) * 100) ?? '?', devise: 'CHF', approx: true, rendu: true };
+  const t = prixTexteArticle(a, taux);
+  return t ? { ...t, rendu: false } : null;
+}
 export function PrixTexte({ a, taux, muet }: { a: ArticleV; taux?: number; muet?: boolean }) {
   const t = prixTexteArticle(a, taux);
   if (!t) return null;

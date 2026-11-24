@@ -9,6 +9,7 @@ import { parseDecimal } from '../../ui/numericInput';
 import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
+import { aromesEnFrancais, estLigneAromes } from '../../../functions/src/aromesFrancais';
 import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
@@ -79,13 +80,26 @@ export interface Colonne {
   critereSource?: 'phrase' | 'ia';
   /** C59-4 (R36) : la mesure CIBLE d'un critère qui la dit sans borne (« Marmite de brassage 50 L ») : la colonne classe par proximité à elle, jamais « plus grand d'abord ». */
   cible?: number;
+  /** C59-4 (R36) : les mots de genre du critère à cible (« marmite », « brassage » dans « Marmite de brassage 50 L »), hors nombre, unité et nom de la caractéristique. */
+  genre?: string[];
 }
+/** Mots d'un critère à cible qui disent QUOI on cherche (le genre), sans le nom de la caractéristique ni les petits mots ; vide si le critère n'en dit aucun. */
+function motsDeGenre(texte: string, nomCar: string): string[] {
+  const pas = new Set(normaliser(nomCar).split(/[^a-z0-9]+/).filter(Boolean));
+  return normaliser(texte).split(/[^a-z]+/).filter(m => m.length >= 5 && !pas.has(m));
+}
+/** Un nom d'article qui reprend un mot de genre du critère : « Marmite de brassage inox » pour « Marmite de brassage 50 L ». */
+const dansLeGenre = (nom: string, mots: readonly string[]): boolean => { const n = normaliser(nom); return mots.some(m => n.includes(m)); };
+/** Un nom qui ne dit rien du genre cherché pèse comme 12 % d'écart de plus à la cible : à 45 L, une marmite nommée passe devant un 50 L pile d'un autre genre ; à 60 L, non. */
+const MALUS_HORS_GENRE = 0.12;
 /** Un critère qui dit une borne (« au moins », « plus de », « max ») n'est pas une cible : « plus » ou « moins » y gardent leur sens. */
 const BORNE_DITE = /(au moins|au plus|minimum|maximum|pas moins|pas plus|\bmini?\b|\bmaxi?\b|plus de|moins de|plus que|moins que|jusqu|d'au|≥|≤|>|<|sup[ée]rieur|inf[ée]rieur|d[ée]passe)/i;
 /** Valeur ordonnable d'une cellule pour CETTE colonne : la distance à la cible si elle en a une (plus petite = mieux), sinon la valeur. */
-function ordonnableCol(v: Valeur | undefined, k: Colonne): number | null {
+function ordonnableCol(v: Valeur | undefined, k: Colonne, nomArticle?: string): number | null {
   const n = ordonnable(v, k.sens);
-  return n !== null && k.cible !== undefined && (k.sens === 'plus' || k.sens === 'moins') ? Math.abs(n - k.cible) : n;
+  if (n === null || k.cible === undefined || (k.sens !== 'plus' && k.sens !== 'moins')) return n;
+  const horsGenre = nomArticle !== undefined && !!k.genre?.length && !dansLeGenre(nomArticle, k.genre);
+  return Math.abs(n - k.cible) + (horsGenre ? MALUS_HORS_GENRE * Math.abs(k.cible) : 0);
 }
 /** Le sens du tri de la colonne : par proximité à une cible, plus petite distance d'abord. */
 const sensCol = (k: Pick<Colonne, 'sens' | 'cible'>): Colonne['sens'] => (k.cible !== undefined && (k.sens === 'plus' || k.sens === 'moins') ? 'moins' : k.sens);
@@ -101,7 +115,7 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
     if (!car || vues.has(normaliser(car.nom))) continue;
     vues.add(normaliser(car.nom));
     const but = (car.sens === 'plus' || car.sens === 'moins') && !BORNE_DITE.test(k.texte) ? seuilDe(k) : null;
-    sortie.push({ nom: car.nom, ...(car.unite ? { unite: uniteCanonique(car.unite) } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k), ...(but ? { cible: but.valeur } : {}) });
+    sortie.push({ nom: car.nom, ...(car.unite ? { unite: uniteCanonique(car.unite) } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k), ...(but ? { cible: but.valeur } : {}), ...(but && motsDeGenre(k.texte, car.nom).length ? { genre: motsDeGenre(k.texte, car.nom) } : {}) });
   }
   return sortie;
 }
@@ -150,10 +164,26 @@ const LUES = new WeakMap<object, Record<string, Valeur>>();
  * (synonymes réunis, plage de température, unité écrite une fois), dans l'ordre de la page (Comparer garde l'ordre de ses groupes, CRB-14). Les noms ne sont pas retraduits (`lireCarnet` l'a
  * fait) ; ce que le brasseur a écrit (origine « vous ») n'est jamais fusionné. Idempotent, mémorisé par objet : aucun recalcul par cellule.
  */
-export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeur> {
+/**
+ * C59-8 (R38) : sur un houblon vendu « Citra 13.6% », la page donne l'acide alpha sous le NOM DE LA VARIÉTÉ (« Citra : 13,6 % »). C'est l'alpha : le brasseur lit
+ * « Alpha 13,6 % », en tête (cerveau/brasseur/penser-brasseur.md : α d'abord). Seulement quand le nom de la caractéristique ouvre le nom de l'article et que sa valeur
+ * est le pourcentage écrit dans ce nom ; aucune autre ligne n'est touchée.
+ */
+function nomAlpha(nomArticle: string | undefined, nom: string, x: Valeur): string {
+  if (!nomArticle || x.unite !== '%' || normaliser(nom) === 'alpha') return nom;
+  const n = normaliser(nomArticle);
+  const c = normaliser(nom);
+  if (c.length < 3 || !(n === c || n.startsWith(`${c} `))) return nom;
+  const num = String(x.valeur).replace(',', '.').trim();
+  const dansLeNom = /^\d+(?:\.\d+)?$/.test(num) && Number(num) >= 1 && Number(num) <= 30 && nomArticle.replace(/,/g, '.').replace(/\s+%/g, '%').includes(`${num}%`);
+  return dansLeNom ? 'Alpha' : nom;
+}
+export function valeursLuesDe(a: Pick<Article, 'valeurs'> & { nom?: string }): Record<string, Valeur> {
   let v = LUES.get(a.valeurs);
   if (!v) {
-    const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom }));
+    const aAlpha = Object.keys(a.valeurs).some(k => normaliser(k) === 'alpha');
+    /* C59-9 : les arômes déjà stockés en allemand ou en anglais se lisent en français (la lecture serveur le fait pour les pages lues dès maintenant) */
+    const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom: aAlpha ? nom : nomAlpha(a.nom, nom, x), ...(estLigneAromes(nom) && typeof x.valeur === 'string' ? { valeur: aromesEnFrancais(x.valeur) } : {}) }));
     const fusion = fusionnerCaracteristiques(entrees.filter(x => x.origine !== 'vous').map(mesureNormalisee));
     v = Object.fromEntries([...fusion, ...entrees.filter(x => x.origine === 'vous')].map(({ nom, ...x }) => [nom, x as Valeur]));
     LUES.set(a.valeurs, v);
@@ -168,7 +198,7 @@ export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeu
  * dit), puis le reste dans l'ordre de la fiche ; jamais une huile mineure à leur place. Un article sans alpha n'est pas touché.
  */
 const TETE_DE_HOUBLON: readonly RegExp[] = [/^alpha\b/, /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/, /^(?:huiles? totales?|total oils?|gesamtol)\b/];
-export function valeursLuesOrdonnees(a: Pick<Article, 'valeurs'>, premiers: readonly string[] = []): Record<string, Valeur> {
+export function valeursLuesOrdonnees(a: Pick<Article, 'valeurs'> & { nom?: string }, premiers: readonly string[] = []): Record<string, Valeur> {
   const rangees = trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers, undefined, x => x.e[1].valeur, x => x.e[1].unite).map(x => x.e);
   const tete =(e: [string, Valeur]) => TETE_DE_HOUBLON.findIndex(r => r.test(cleDeNom(e[0])));
   if (!rangees.some(e => tete(e) === 0)) return Object.fromEntries(rangees);
@@ -402,7 +432,7 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
     for (const k of cles) {
       const d = k.sorte === 'prix'
         ? comparerSur(prixDeClassement(a, k.parUnite ?? null), prixDeClassement(b, k.parUnite ?? null), 'moins')
-        : comparerSur(ordonnableCol(valeurDe(a, k.colonne), k.colonne), ordonnableCol(valeurDe(b, k.colonne), k.colonne), sensCol(k.colonne));
+        : comparerSur(ordonnableCol(valeurDe(a, k.colonne), k.colonne, a.nom), ordonnableCol(valeurDe(b, k.colonne), k.colonne, b.nom), sensCol(k.colonne));
       if (d !== 0) return d;
     }
     return 0;
@@ -432,7 +462,7 @@ export function domine(a: Article, b: Article, colonnes: readonly Colonne[]): bo
       if (ta && tb && normaliser(`${ta.valeur} ${ta.unite ?? ''}`) !== normaliser(`${tb.valeur} ${tb.unite ?? ''}`)) return false;
       continue;
     }
-    const va = ordonnableCol(valeurDe(a, k), k), vb = ordonnableCol(valeurDe(b, k), k);
+    const va = ordonnableCol(valeurDe(a, k), k, a.nom), vb = ordonnableCol(valeurDe(b, k), k, b.nom);
     if (va === null || vb === null) continue;
     ecarts.push(comparerSur(vb, va, sensCol(k))); /* < 0 : b meilleur */
   }
@@ -799,7 +829,8 @@ function nombreDit(l: LigneTableau, k: Colonne): number | null {
   if (n !== null) return n;
   const v = l.cellules[k.nom]?.valeur;
   if (typeof v !== 'string') return null;
-  const m = /^\s*(-?\d+(?:[.,]\d+)?)\s*[^\d\s,.]/.exec(v);
+  /* un seul nombre et son unité : « 2,6 m³ » ; jamais un triplet de dimensions (« 1640 x 1340 x 1850 mm »), une plage (« 0 °C à 8 °C ») ni une phrase qui en porte plusieurs */
+  const m = /^\s*(-?\d+(?:[.,]\d+)?)\s*[^\d\s,.][^\d]*$/.exec(v);
   return m ? Number(m[1].replace(',', '.')) : null;
 }
 const differeEntre = (a: LigneTableau, b: LigneTableau, k: Colonne) => { const x = nombreDit(a, k), y = nombreDit(b, k); return x !== null && y !== null && x !== y; };

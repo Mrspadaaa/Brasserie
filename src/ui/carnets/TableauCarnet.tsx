@@ -4,7 +4,7 @@ import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { cleDeNom, rangDeDecision, trierParDecision } from '../../../functions/src/lienFusion';
 import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../domain/carnets/comparer';
 import { dispoDe } from '../../domain/carnets/modele';
-import { convertiChf, estEtranger } from '../../domain/carnets/prixRendu';
+import { convertiChf, estEtranger, renduArticle } from '../../domain/carnets/prixRendu';
 import { colonnesVue, estMesure, meilleursDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
 import { mentionTaxe, montant, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
 import { prixOrigine } from './PrixPastille';
@@ -198,7 +198,9 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                   </span>
                   {cols.map((c, ci) => {
                     const brut = texteCellule(l, c);
-                    const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
+                    /* C59-7 : le même prix que Comparer et la pastille (le rendu estimé), jamais le converti seul */
+                    const rendu = c.cle === '__prix' && estEtranger(l) ? renduArticle(l, taux) : null;
+                    const conv = rendu?.totalChf !== undefined ? rendu.totalChf : c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
                     const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
                     const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
                     return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{/* C53-4 / R19 : la colonne dit le prix, rien d'autre ; « 50 L · 10,40 CHF/L » (69 px) débordait sa cellule (44 px) ; le prix unitaire reste entier dans Articles, Comparer et la fiche */}</span>;
