@@ -2,7 +2,7 @@
 name: autonomie-decisions
 description: L'utilisateur veut le moins d'intervention possible ; les décisions courantes sont tranchées par le pilote, les lourdes par le skill conseil ; le goût revient au brasseur, en variantes.
 type: agents
-maj: 2026-11-08
+maj: 2026-11-24
 sources: mémoire locale affinee-autonomie-decisions.md
 ---
 
@@ -27,3 +27,4 @@ Voir (leçon L11) et [[agents-sans-openai]].
 - Rien ne retient un déploiement prêt (08.11 : « pourquoi ? pourquoi ça attends `??? ») : les captures locales et les suites longues se font après, en ligne.
 - Relais (08.11, dans le fil de la pilote : « Le relais de l'autre branche suffit.... ») : son accord relayé mot pour mot par la session de monitoring vaut accord écrit ; ne pas lui faire répéter un oui déjà donné ailleurs.
 - Restent à son oui (direct ou relayé) : modifier ou retirer ses vraies écritures (en lot surtout : l'outil le refuse sans accord explicite), push, PR, merge, règles Firestore.
+- Ne pas s'arrêter (24.11 : « créé un mécanisme qui ne te fais pas arrêté ») : file `work/missions/FILE-CONTINUE.md`, hook Stop `.claude/hooks/continuer.mjs` ; tant qu'une ligne « - [ ] » reste, le tour continue ; l'irréversible passe en « - [attente] » groupé au récap.
