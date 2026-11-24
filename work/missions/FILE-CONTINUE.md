@@ -10,12 +10,12 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 - Garde-fou : trois arrêts d'affilée sans changement de ce fichier laissent passer l'arrêt.
 
 actif: oui
-session: libre
-pause:
+session: f97e7359-a046-4072-af48-f44ecac2f73e
+pause: 2026-11-24T06:48:58Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
-- [ ] Voie ecr6 : E44-1 (dates d'une récurrente à payer = Calendrier), E44-2 (retrait annonce le remboursement lié), E44-3 (pas de « N° de facture » sur un apport), bandeau d'erreur serveur en français (firestoreRepo.ts)
+- [x] Voie ecr6 (4fdf9a535) : E44-1 (dates d'une récurrente à payer = Calendrier), E44-2 (retrait annonce le remboursement lié), E44-3 (pas de « N° de facture » sur un apport), bandeau d'erreur serveur en français (firestoreRepo.ts)
 - [ ] Tour 45 en ligne (ligne T de deploy-leger.sh → tour45) et test d'écran critique des écritures touchées, soldes et période identiques
 - [ ] Carnet : ses choix Q-1 A, Q-1b B, Q-2 C, Q-5 A, Q-6 A et filtres par domaine (D437), port puis test en ligne
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
@@ -28,5 +28,6 @@ pause:
 - [ ] REPRISE-GENERALE du 22.11 : Eau (alerte à 660), Matériel (equipment/undefined), Stock et Autres stocks, Ma levure, Malts/sucres
 
 ## En attente de lui
+- [attente] Tags en-ligne/*-tour27..44 poussés sur le dépôt PUBLIC : ils contiennent les captures de l app réelle (cap/, plaintes/). Les retirer du dépôt distant = son accord (deploy-leger ne pousse plus les tags depuis le tour 45)
 - [attente] Q-4 du Calendrier : vitesse du défilement au bord, sur son téléphone
-- [attente] Push de la branche claude/refonte-houblons-v4 et PR
+- [x] PR ouverte : https://github.com/Mrspadaaa/Brasserie/pull/204 (branche claude/reprise-soir-24-11, sans captures de l app réelle) ; à remettre à jour après chaque lot
