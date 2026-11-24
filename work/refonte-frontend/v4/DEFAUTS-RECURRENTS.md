@@ -527,3 +527,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## LIEN-PRIX-JUSTE (24.11)
 - Ses mots : « Et le prix... » sur Citra : Brau- und Rauchshop « dès 0,10 », MotlerHops « ≈4 · 3,72 € ».
 - Contrôle : au banc des liens, ces deux pages lues donnent le prix du conditionnement affiché (ou le prix au kilo, dit comme tel) ; échoue sur la lecture du 24.11.
+
+## ESCALADER-SUR-MANQUE (24.11)
+- Ses mots : « Et pourquoi il y a pas de bouton pour escaler la lecture ? » (Relire du Citra Brau- und Rauchshop : « Page relue », prix « ? »).
+- Contrôle : un article lu dont un champ attendu manque (prix « ? », nom, caractéristiques sous le seuil) montre « Escalader » (Neon, D449) sur sa fiche et dans Comparer, pas seulement sur un lien mort ; échoue sur index-CHXDhK_A.js (Escalader seulement sur lien mort, critique-47).

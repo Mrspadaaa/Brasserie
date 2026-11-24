@@ -2876,3 +2876,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 19:17 (Carnet Houblons citra, capture plaintes/2026-11-24-relire-citra.jpg : Relire sur Citra 13.6% Brau- und Rauchshop → « Page relue », prix « ? » ; en-tête « prix EUR ») : « Ça fonctionne même plus, si il faut modifier iatask c est pas un problème... »
 
 - 24.11 (Carnet, lecture des liens) : « https://www.brauundrauchshop.ch/citra-136-2 Mais ce genre de lien doit être lue correctement, et surtout on doit comparé les bonnes données »
+
+- 24.11 (Carnet, après Relire sans prix) : « Et pourquoi il y a pas de bouton pour escaler la lecture ? »
