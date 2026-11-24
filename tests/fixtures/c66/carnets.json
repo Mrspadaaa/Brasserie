@@ -1,0 +1,100 @@
+{
+  "_note": "Voie c66-tests (25.11). Valeurs relevées sur les captures du tour 66 (voies/critique-66/RESULTAT.md) ; vendeurs publics ou fictifs, aucune donnée personnelle. HM = hopfenmarkt Citra : 50 g 3,60 · 100 g 6,70 · 250 g 15,95 · 500 g 31,35 · 1 kg 62,20 CHF (100 g affichée) ; M1 = MotlerHops « CITRA® (US) » : 50 g 3,72 € · 250 g 14,06 € · 500 g 24,97 € · 1 kg 40,69 € (cours 0,918 : ≈40 CHF/kg rendu avec la TVA d'import) ; B1 (Brau- und Rauchshop) n'est PAS ici : le test le tire de la vraie page lue (tests/fixtures/c64/brau-citra-136.html.gz), pour avoir l'article tel que l'app le garde. Au kilo, à 1 kg : MotlerHops ≈40 < Hopfenmarkt 62 < Brau 80.",
+  "pellets": {
+    "titre": "ZZ TEST — pellets (c66)",
+    "articles": [
+      {
+        "id": "HM", "nom": "Citra Hopfenpellets", "vendeur": "Hopfenmarkt", "pays": "CH", "dispo": "en stock",
+        "prixCentimes": 670, "devise": "CHF", "taxe": "ttc",
+        "conditionnement": { "valeur": 100, "unite": "g" },
+        "offres": [
+          { "valeur": 50, "unite": "g", "prixCentimes": 360 },
+          { "valeur": 100, "unite": "g", "prixCentimes": 670 },
+          { "valeur": 250, "unite": "g", "prixCentimes": 1595 },
+          { "valeur": 500, "unite": "g", "prixCentimes": 3135 },
+          { "valeur": 1, "unite": "kg", "prixCentimes": 6220 }
+        ],
+        "lignes": [
+          { "nom": "Alpha", "valeur": "12,8", "unite": "%" },
+          { "nom": "Récolte", "valeur": "2025" },
+          { "nom": "Forme", "valeur": "Pellets" },
+          { "nom": "Origine", "valeur": "États-Unis" },
+          { "nom": "Arômes et saveurs", "valeur": "agrumes, pamplemousse, fruits tropicaux" }
+        ]
+      },
+      {
+        "id": "M1", "nom": "CITRA® (US)", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock",
+        "prixCentimes": 372, "devise": "EUR", "taxe": "ttc",
+        "change": { "taux": 0.918, "date": "2026-11-24", "source": "BCE" },
+        "conditionnement": { "valeur": 50, "unite": "g" },
+        "offres": [
+          { "valeur": 50, "unite": "g", "prixCentimes": 372 },
+          { "valeur": 250, "unite": "g", "prixCentimes": 1406 },
+          { "valeur": 500, "unite": "g", "prixCentimes": 2497 },
+          { "valeur": 1, "unite": "kg", "prixCentimes": 4069 }
+        ],
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,2", "unite": "%" },
+          { "nom": "Récolte", "valeur": "2025" },
+          { "nom": "Forme", "valeur": "Pellets" },
+          { "nom": "Origine", "valeur": "États-Unis" },
+          { "nom": "Arômes et saveurs", "valeur": "agrumes, pamplemousse, fruits tropicaux" }
+        ]
+      },
+      {
+        "id": "B1", "nom": "Citra 13.6%", "vendeur": "Brau- und Rauchshop", "pays": "CH", "dispo": "sur commande",
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,6", "unite": "%" },
+          { "nom": "Origine", "valeur": "États-Unis" }
+        ]
+      }
+    ]
+  },
+  "lienSimple": {
+    "titre": "ZZ TEST — lien MotlerHops (c66)",
+    "articles": [
+      {
+        "id": "M1", "nom": "CITRA® (US)", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock",
+        "prixCentimes": 372, "devise": "EUR", "taxe": "ttc",
+        "change": { "taux": 0.918, "date": "2026-11-24", "source": "BCE" },
+        "conditionnement": { "valeur": 50, "unite": "g" },
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,2", "unite": "%" },
+          { "nom": "Origine", "valeur": "États-Unis" }
+        ]
+      },
+      {
+        "id": "X1", "nom": "Citra 13.6% bio", "vendeur": "Houblons Exemple", "pays": "CH", "dispo": "en stock",
+        "lignes": [
+          { "nom": "Alpha", "valeur": "13,6", "unite": "%" },
+          { "nom": "Origine", "valeur": "États-Unis" }
+        ]
+      }
+    ]
+  },
+  "doublons": {
+    "titre": "ZZ TEST — fiche hopfenmarkt (c66)",
+    "articles": [
+      {
+        "id": "HM", "nom": "Citra Hopfenpellets", "vendeur": "Hopfenmarkt", "pays": "CH", "dispo": "en stock",
+        "prixCentimes": 670, "devise": "CHF", "taxe": "ttc",
+        "conditionnement": { "valeur": 100, "unite": "g" },
+        "lignes": [
+          { "nom": "Année de récolte", "valeur": "2025" },
+          { "nom": "Récolte", "valeur": "2025" },
+          { "nom": "Ernte", "valeur": "2025" },
+          { "nom": "Alpha", "valeur": "12,8", "unite": "%" },
+          { "nom": "Acides alpha", "valeur": "12,8", "unite": "%" },
+          { "nom": "Bêta", "valeur": "4", "unite": "%" },
+          { "nom": "Acides bêta", "valeur": "4", "unite": "%" },
+          { "nom": "Forme", "valeur": "Pellets" },
+          { "nom": "Forme de houblon", "valeur": "Pellets" },
+          { "nom": "Pays de la récolte", "valeur": "USA" },
+          { "nom": "Pays de récolte", "valeur": "USA" },
+          { "nom": "Conditionnement", "valeur": "100", "unite": "g" },
+          { "nom": "Taille de l'emballage", "valeur": "100", "unite": "g" }
+        ]
+      }
+    ]
+  }
+}

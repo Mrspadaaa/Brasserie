@@ -21,7 +21,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { estLienSeul } from '../../domain/carnets/modele';
-import { CalendarCheck, ChevronLeft, ChevronRight, Ellipsis, FileText, GitFork, Pencil, Target } from 'lucide-react';
+import { CalendarCheck, Check, ChevronLeft, ChevronRight, Ellipsis, FileText, GitFork, Pencil, Target } from 'lucide-react';
+import { filDe as filDuCarnet } from '../../domain/carnets/fil';
+import { etatDe, genreDe, jourLocal as jourDeIso } from '../../domain/carnets/suivi';
+import type { CarnetDoc, GenreCarnet } from '../../domain/carnets/modele';
+import { BarreEtat } from './BarreEtat';
+import { ChipGenre, PastilleCategorie } from './EnTeteGenre';
+import { FilCarnetVue } from './FilCarnet';
+import { OptionsProbleme, RangeeJetons } from './OptionsProbleme';
+import { QuestionPourquoi } from './QuestionPourquoi';
+import { CarteFermerParAchat, ResoluProbleme } from './ResoluProbleme';
+import { achatConstate, resumeJetons } from './filRegles';
 import { Bandeau } from './Bandeau';
 import { dateCourte, texteSortie, type ArticleV, type CritereV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
@@ -91,6 +101,22 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const enDouble = new Set(p.aides.doublon ? p.doublons ?? [] : []);
   const question = k.facons.length === 2 ? `${k.facons[0].nom} ou ${k.facons[1].nom} ?` : null;
   const neuf = !!p.vientDEtreCree && c.status === 'idea';
+  /* D451 : le carnet vu comme son document (le contrat des vues est ce document tel quel), son genre posé, son état, son fil */
+  const doc = c as unknown as CarnetDoc;
+  const genrePose = doc.carnet.genre?.valeur;
+  const genre: GenreCarnet = genreDe(doc);
+  /* l'en-tête du genre seulement pour un carnet dont le genre est posé (par l'IA ou par lui), hors achat ; un carnet ancien garde son en-tête (règle n° 1 : rien de plus) */
+  const enteteGenre = !neuf && !!genrePose && genrePose !== 'achat';
+  const etatSuivi = etatDe(doc);
+  const messages = p.messages ?? [];
+  const annee = Number((p.aujourdhui ?? jourDeIso(new Date().toISOString())).slice(0, 4));
+  const rap = p.rappels;
+  const filVu = neuf ? null : filDuCarnet(doc, messages);
+  const problemeResolu = enteteGenre && genre === 'probleme' && etatSuivi === 'resolu';
+  const [achatEcarte, setAchatEcarte] = useState(false);
+  const achat = enteteGenre && genre === 'probleme' && etatSuivi === 'decide' && !achatEcarte
+    ? achatConstate(doc, messages, k.sortie?.etat === 'realise') : null;
+  const titreCarnet = (id: string) => p.carnetsVers?.find(x => x.id === id)?.titre;
   /* CRN-21 (critique carnet 21.11) : la note qui arrive (carnet neuf, ou note ajoutée) vient au-dessus du champ du bas ; sinon
      « Notes 1 » touche le champ et la note est dessous. 'nearest' : un défilement minimal, rien si elle se voit déjà ;
      scroll-margin (carnets.css, `.cn-notes > *`) lit --cn-champ-h et --cn-clavier, comme le bandeau. */
@@ -142,7 +168,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
      rangée la cite déjà. */
   const phraseCitee = k.phrase && !duPlanning && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
     ? <p className="cn-cite" data-en-titre>votre phrase en titre</p>
-    : <p className="cn-cite">{estLienSeul(k.phrase) ? 'votre lien' : 'votre phrase'} : « {k.phrase} »</p>) : null; /* f5d n° 11 */
+    /* D451 disparaît n° 5 : « votre lien : « https://… » » ne se dit plus ; la barre de lecture du lien montre déjà le lien. Une phrase reste citée (R25). */
+    : estLienSeul(k.phrase) ? null : <p className="cn-cite">votre phrase : « {k.phrase} »</p>) : null; /* f5d n° 11 */
 
   const articleRange = r?.cible === 'article' ? k.articles.find(a => a.id === r.id) : undefined;
   const faconRange = articleRange?.faconId ? k.facons.find(f => f.id === articleRange.faconId) : undefined;
@@ -160,31 +187,43 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {/* Tour 3, f13 tour 2 (critique n° 5, g5:v04-4) : tout juste créé, en-tête, titre et encadré sur la bande teintée de sa maquette,
           fermée par un filet ; ailleurs, rien ne les enveloppe. */}
       <Bande active={neuf}>
-      <div className="cn-tete">
-        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
-        <span className="cn-sp" />
+      <div className={`cn-tete${enteteGenre ? ' cnp-tete' : ''}`}>
+        <button type="button" className="cn-retour" aria-label="Carnets" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden />{!enteteGenre && ' Carnets'}</button>
+        {/* D451 (maquettes2/v01) : un genre posé met le titre dans la barre, avec la pastille de sa catégorie */}
+        {enteteGenre ? <h2 className="cn-titre cn-sp">{liesParNbsp(titreAffiche(c.title))}</h2> : <span className="cn-sp" />}
+        {enteteGenre && <PastilleCategorie c={doc} onDomaine={p.onDomaine} />}
         {/* critique 6, n° 32 : ailleurs, l'état n'a qu'une forme, la pastille (g05-1 « Idée », h05-3 : la ligne d'état la remplace quand elle
             dit « 2 façons à comparer »). Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, l'en-tête de sa maquette g5:v04-4,
             « ●○○○ idée » ; la date est dans l'encadré dessous, pas en pastille. */}
         {neuf
           ? <span className="cn-etapes" aria-label="Étape : idée"><span className="cn-etape-on" /><span /><span /><span /><span className="cn-lien-texte">idée</span></span>
-          : !(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
+          : !enteteGenre && !(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
         <button type="button" className="cn-ico" aria-label="Plus" aria-expanded={menu} onClick={() => setMenu(m => !m)}><Ellipsis size={22} aria-hidden /></button>
         {/* tour 3, PCN-154 : le menu flotte sous ···, hors du flux (le titre ne descend plus) */}
         {menu && (
           <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
             <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
+            {rap?.onGenre && (['probleme', 'memo', 'recolte', 'idee'] as const).map(g => (
+              <button key={g} type="button" role="menuitemradio" aria-checked={genrePose === g} className="cn-feuille-item cnp-menu-genre" onClick={() => { setMenu(false); if (genrePose !== g) rap.onGenre!(g); }}>
+                {genrePose === g ? <Check size={18} aria-hidden /> : <span className="cnp-menu-vide" aria-hidden />} {{ probleme: 'Problème', memo: 'Mémo', recolte: 'Récolte', idee: 'Idée' }[g]}</button>
+            ))}
             <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>
               {/* L-22 (23.11, M2-18, glossaire) : le même mot dans chaque état ; un carnet choisi n'est plus une idée (PCN-189) */}
               Supprimer le carnet</button>
           </div>
         )}
       </div>
-      <div className="cn-titre-ligne">
-        {/* f13 tour 2 (n° 4) : « Embouteillage », sa majuscule ; le titre stocké ne change pas */}
-        <h2 className="cn-titre">{liesParNbsp(titreAffiche(c.title))}</h2>
-        <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
-      </div>
+      {/* D451 disparaît n° 6 : le crayon visible du titre ne se montre plus ; « Renommer » reste au menu ⋯ (aucun geste perdu) */}
+      {!enteteGenre && (
+        <div className="cn-titre-ligne">
+          {/* f13 tour 2 (n° 4) : « Embouteillage », sa majuscule ; le titre stocké ne change pas */}
+          <h2 className="cn-titre">{liesParNbsp(titreAffiche(c.title))}</h2>
+        </div>
+      )}
+      {/* D451 : la barre d'état d'un problème (Noté, Je cherche, Décidé, Résolu), ou la puce du genre (mémo, récolte, idée) */}
+      {enteteGenre && (genre === 'probleme'
+        ? <BarreEtat etat={etatSuivi} onEtat={rap?.onEtat} />
+        : <ChipGenre c={doc} annee={annee} />)}
       {/* Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, sa maquette g5:v04-4 telle quelle : l'encadré « Idée · 17 nov. / Ensuite :
           l'IA cherche les façons » entre le titre et le bandeau « ✓ Carnet créé · ↺ Annuler » (la critique 6, n° 16, l'avait retiré contre
           la maquette). Sans IA, la suite ne promet rien d'elle (n° 24) : « Ensuite : collez un lien » ; hors ligne, la ligne « au retour du
@@ -200,9 +239,20 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           à 390 ils doivent être à l'écran quand on les touche */}
       {p.bandeau}
       {p.cadre}
-      {ligneEtat}
+      {!enteteGenre && ligneEtat}
+      {/* D451 : un problème. Je cherche : les jetons du diagnostic sur une rangée ; les options en deux colonnes ; Décidé : « Fermer grâce à l'achat ? »
+          si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
+      {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note') && <RangeeJetons resume={resumeJetons(messages, c.id)} />}
+      {enteteGenre && !problemeResolu && <OptionsProbleme c={doc} onOption={rap?.onOption} />}
+      {achat && <CarteFermerParAchat option={achat.nom} onOui={() => rap?.onFermerParAchat?.(achat.id)} onAnnuler={() => setAchatEcarte(true)} />}
+      {enteteGenre && !problemeResolu && genre === 'probleme' && etatSuivi === 'decide' && <QuestionPourquoi c={doc} messages={messages} onEcrire={rap?.onEcrire} />}
+      {problemeResolu && (
+        <ResoluProbleme c={doc} carnets={p.carnetsDocs ?? [doc]} messages={messages} rappels={rap} liens={p.liens} annee={annee} onRelecture={p.onRelecture}
+          nbFil={filVu?.total}
+          fil={filVu && <FilCarnetVue c={doc} fil={filVu} messages={messages} annee={annee} rappels={rap} titreCarnet={titreCarnet} onNote={p.onNote} fait />} />
+      )}
       {/* h05-3 : la ligne Critère juste sous la ligne d'état, puis le tableau (n° 1) */}
-      {!neuf && ligneCritere}
+      {!neuf && !problemeResolu && ligneCritere}
       {/* L4-5 : titre = phrase (normalisé) → « votre phrase en titre », une fois ; tout juste créé, le bandeau le dit déjà (g5:v04-4).
           Sinon la phrase citée (R25) : sous le titre tant qu'il n'y a pas de tableau ; avec le tableau, sous lui (le tableau monte). */}
       {!p.tableau && phraseCitee}
@@ -260,7 +310,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* Sans tableau : les façons en cartes (i06-4). Avec tableau : elles sont dans le tableau, avec leur pastille (h05-3). */}
-      {!enAttente && !p.tableau && k.facons.length > 0 && (
+      {!enAttente && !p.tableau && !enteteGenre && k.facons.length > 0 && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Façons">
           {k.facons.length === 0 ? (
             <p className="cn-rubrique-tete"><GitFork size={picto} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
@@ -289,15 +339,20 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         </section>
       )}
 
-      {!enAttente && rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion,
+      {/* D451 disparaît n° 4 : « Articles · collez un lien » ne paraît que s'il sert (un article, un choix, un carnet d'achat, ou le carnet tout juste créé) */}
+      {!enAttente && !problemeResolu && (neuf || k.articles.length > 0 || !!k.choix || genrePose === 'achat' || (!enteteGenre && !!p.tableau)) && rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion,
         gerer: gererArticles, setGerer: setGererArticles, vers: versArticle, setVers: setVersArticle })}
 
       {/* tour 3, v1-neuf 6 : sous le tableau, « votre phrase en titre » flotterait seul, loin du titre : il ne se dit que sous le titre */}
       {p.tableau && !phraseEnTitre(c.title, k.phrase ?? '') && phraseCitee}
 
-      {enAttente || k.photos.length === 0 ? null : <Photos photos={k.photos} />}
+      {/* D451 : une photo rangée avec un message est dans sa bulle du fil ; seules celles que le fil ne montre pas restent en galerie */}
+      {enAttente || problemeResolu ? null : (() => {
+        const horsFil = neuf ? k.photos : k.photos.filter(ph => !ph.messageId || !messages.some(m => m.id === ph.messageId));
+        return horsFil.length === 0 ? null : <Photos photos={horsFil} />;
+      })()}
 
-      {!enAttente && (k.notes.length > 0 || p.noteSupprimee || notesVues.current.vu) && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
+      {!enAttente && neuf && (k.notes.length > 0 || p.noteSupprimee || notesVues.current.vu) && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
         {k.notes.length === 0 && !p.noteSupprimee ? (
           <p className="cn-rubrique-tete"><FileText size={picto} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
         ) : (
@@ -318,7 +373,27 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         )}
       </section>}
 
-      {!enAttente && p.onDater && <RubriqueQuand date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+      {/* D451 disparaît n° 4 et 8 : « Notes n » en cartes, et la carte « À faire du … au … (Planning, …) », deviennent le fil : le jour en pastille, ses bulles, les
+          jetons dessous. L'idée de L-21 reste : un fil vu dans ce carnet ne disparaît pas quand sa dernière note est rangée ailleurs, il dit « aucune note ». */}
+      {!enAttente && !neuf && !problemeResolu && filVu && (filVu.total > 0 || p.noteSupprimee || notesVues.current.vu) && (
+        <section className="cnp-fil-zone" aria-label="Fil">
+          {filVu.total === 0 && !p.noteSupprimee
+            ? <p className="cn-rubrique-tete"><FileText size={picto} aria-hidden /> <b>Fil</b> <span className="cn-mut">· aucune note</span></p>
+            : <FilCarnetVue c={doc} fil={filVu} messages={messages} annee={annee} rappels={rap} titreCarnet={titreCarnet} onNote={p.onNote} doublons={enDouble} fait={!!c.carnet.archive}
+              entourer={(noteId, noeud) => (
+                <React.Fragment key={noteId}>
+                  {p.noteSupprimee && !p.noteSupprimee.apres && noteId === k.notes[0]?.id && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
+                  {encadre('note', noteId, noeud)}
+                  {p.feuille?.noteId === noteId && p.feuille.contenu}
+                  {p.noteSupprimee?.apres === noteId && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
+                </React.Fragment>
+              )} />}
+          {p.noteSupprimee && k.notes.length === 0 && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
+        </section>
+      )}
+
+      {/* D451 disparaît n° 4 : « Quand » ne paraît que s'il sert : une date posée, un achat, une idée ; pas pour un problème, un mémo ou une récolte sans date */}
+      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
         onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}

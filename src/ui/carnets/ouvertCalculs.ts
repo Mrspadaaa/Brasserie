@@ -12,7 +12,8 @@ export const sansEcarte = (r: string) => r.trim().replace(/^écartée?s*:s*/i, '
 export function etiquetteStatut(c: CarnetV): string {
   /* CRN-8 (vision au doigt, 21.11) : un projet fait au Planning n'est pas une « Idée » ; la date d'archivage est celle de la migration,
      elle ne se dit pas comme la date du fait */
-  if (c.carnet.archive) return /planning/i.test(c.carnet.archive.raison) ? 'Fait au Planning' : `Archivé${dateCourte(c.carnet.archive.le) ? ` le ${dateCourte(c.carnet.archive.le)}` : ''}`;
+  /* D451 disparaît n° 6 : la pastille « Archivé le … » ; un carnet archivé est résolu (le mot de la barre d'état), avec son jour */
+  if (c.carnet.archive) return /planning/i.test(c.carnet.archive.raison) ? 'Fait au Planning' : `Résolu${dateCourte(c.carnet.archive.le) ? ` · ${dateCourte(c.carnet.archive.le)}` : ''}`;
   if (c.status === 'idea') { const d = dateCourte(c.carnet.creeLe); return d ? `Idée · ${d}` : 'Idée'; }
   /* tour 3, PCN-151 : réalisé (plan payé), la pastille le dit comme la ligne de sortie */
   if (c.status === 'validated' && c.carnet.sortie?.etat === 'realise') { const d = dateCourte(c.carnet.sortie.realiseLe); return d ? `Réalisé le ${d}` : 'Réalisé'; }

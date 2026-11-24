@@ -121,3 +121,189 @@
 
 /* g5:v01-15, v01-16 : « › Texte d’origine », la flèche en tête */
 .cnf-origine-fleche { margin-right: 6px; }
+
+/* ==========================================================================================================================================
+   D451 (voie probleme, 25.11) : le suivi d'un problème. Classes préfixées `cnp-` (L26). Couleurs d'état de maquettes3/v01 (atomes.mjs, `ST` et `TG`) ;
+   clair par défaut, sombre sous [data-theme='cave']. Le carnet ouvert force 14 px sur tout (carnets.css, « V4 fiche ») : les rares tailles
+   plus grandes passent par `.cn-ouvert .cnp-… { … !important }`. Aucun texte sous 14 px.
+   ========================================================================================================================================== */
+.cn-page {
+  --p-note-bg: #EFEFEF; --p-note-fg: #4A4A4A; --p-cherche-bg: #DCE7F3; --p-cherche-fg: #1F64A3; --p-decide-bg: #FBEFD9; --p-decide-fg: #8A5212;
+  --p-resolu-bg: #E4EEDA; --p-resolu-fg: #3F6B2E; --p-resolu-bord: #567F45; --p-retenu-bg: #4C6B2A; --p-retenu-fg: #FFFFFF;
+  --p-vous-bg: #EEF3E8; --p-vous-bord: #D5E3C8; --p-ia-bg: #F4F0FB; --p-ia-bord: #DDD3EF; --p-ia-fg: #5A3F9E;
+  --p-pas-bg: #F6E0D6; --p-pas-fg: #9A4F1E; --p-contact-bg: #E7E0F4; --p-contact-fg: #5A3F9E; --p-ecart-bg: #EFEFEF; --p-ecart-fg: #6A6A6A;
+  --p-trait: #DDDDDD;
+}
+[data-theme='cave'] .cn-page {
+  --p-note-bg: rgb(255 255 255 / .09); --p-note-fg: #C9CFD4; --p-cherche-bg: rgb(79 140 205 / .24); --p-cherche-fg: #93C2EE;
+  --p-decide-bg: rgb(214 150 70 / .22); --p-decide-fg: #E8B873; --p-resolu-bg: rgb(110 160 90 / .24); --p-resolu-fg: #A3D091; --p-resolu-bord: #6FA05A;
+  --p-retenu-bg: #5E8A36; --p-retenu-fg: #FFFFFF; --p-vous-bg: rgb(110 160 90 / .13); --p-vous-bord: rgb(110 160 90 / .34);
+  --p-ia-bg: rgb(140 110 210 / .18); --p-ia-bord: rgb(140 110 210 / .42); --p-ia-fg: #C2B1EE; --p-pas-bg: rgb(214 120 70 / .22); --p-pas-fg: #F0A77C;
+  --p-contact-bg: rgb(140 110 210 / .22); --p-contact-fg: #C2B1EE; --p-ecart-bg: rgb(255 255 255 / .09); --p-ecart-fg: #A9B1B8; --p-trait: rgb(255 255 255 / .22);
+}
+
+/* la barre de titre d'un carnet dont le genre est posé : ‹ Titre · catégorie ▾ · ⋯ */
+.cnp-tete { gap: 6px; }
+.cnp-tete .cn-titre { margin: 0; min-width: 0; overflow-wrap: anywhere; line-height: 1.2; font-weight: 800; }
+.cnp-tete .cn-retour { padding-right: 2px; }
+.cnp-tete .cnd-pastille-boite { flex: none; }
+.cnp-tete .cnd-menu { right: 0; left: auto; }
+
+.cnp-genre { padding: 4px 0 6px; }
+.cnp-genre-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; background: var(--c-s1); border: 1px solid var(--c-line); color: var(--c-ink); font-weight: 700; }
+.cnp-genre-chip svg { color: var(--c-zonet); flex: none; }
+
+/* la barre d'état : la jauge, les quatre mots ; l'actif coloré. La jauge ne dit pas « étape n sur m » : le mot de l'état reste écrit à côté (K4). */
+.cnp-etat { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; padding: 6px 0; border-bottom: 1px solid var(--c-line); }
+.cnp-jauge { display: inline-flex; gap: 3px; align-items: center; margin-right: 4px; }
+.cnp-jauge i { width: 9px; height: 9px; border-radius: 50%; background: var(--p-trait); display: block; }
+.cnp-etat[data-etat='note'] .cnp-jauge i[data-on] { background: var(--p-note-fg); }
+.cnp-etat[data-etat='cherche'] .cnp-jauge i[data-on] { background: var(--p-cherche-fg); }
+.cnp-etat[data-etat='decide'] .cnp-jauge i[data-on] { background: var(--p-decide-fg); }
+.cnp-etat[data-etat='resolu'] .cnp-jauge i[data-on] { background: var(--p-resolu-fg); }
+.cnp-etat-mot { min-height: 32px; padding: 0 8px; border-radius: 999px; background: transparent; border: 0; color: var(--c-ink2); display: inline-flex; align-items: center; white-space: nowrap; }
+button.cnp-etat-mot { cursor: pointer; min-height: 36px; }
+.cnp-etat-mot[aria-pressed='true'], .cnp-etat-mot[aria-current='true'] { font-weight: 700; }
+.cnp-etat-mot[aria-pressed='true'][data-k='note'], .cnp-etat-mot[aria-current='true'][data-k='note'] { background: var(--p-note-bg); color: var(--p-note-fg); }
+.cnp-etat-mot[aria-pressed='true'][data-k='cherche'], .cnp-etat-mot[aria-current='true'][data-k='cherche'] { background: var(--p-cherche-bg); color: var(--p-cherche-fg); }
+.cnp-etat-mot[aria-pressed='true'][data-k='decide'], .cnp-etat-mot[aria-current='true'][data-k='decide'] { background: var(--p-decide-bg); color: var(--p-decide-fg); }
+.cnp-etat-mot[aria-pressed='true'][data-k='resolu'], .cnp-etat-mot[aria-current='true'][data-k='resolu'] { background: var(--p-resolu-bg); color: var(--p-resolu-fg); }
+
+/* jetons : sous une bulle, dans la rangée du diagnostic, dans la grille des options */
+.cnp-jeton { display: inline-flex; align-items: center; gap: 3px; min-height: 24px; padding: 0 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; line-height: 1.1; background: var(--p-note-bg); color: var(--p-note-fg); max-width: 100%; }
+.cnp-jeton[data-j='piste'], .cnp-jeton[data-j='devis'], .cnp-jeton[data-j='cout'] { background: var(--p-cherche-bg); color: var(--p-cherche-fg); }
+.cnp-jeton[data-j='veille'], .cnp-jeton[data-j='achat'], .cnp-jeton[data-j='trouve'] { background: var(--p-resolu-bg); color: var(--p-resolu-fg); }
+.cnp-jeton[data-j='retenu'] { background: var(--p-retenu-bg); color: var(--p-retenu-fg); }
+.cnp-jeton[data-j='ecart'], .cnp-jeton[data-j='constat'] { background: var(--p-ecart-bg); color: var(--p-ecart-fg); }
+.cnp-jeton[data-j='contact'] { background: var(--p-contact-bg); color: var(--p-contact-fg); }
+.cnp-jeton[data-j='cause'], .cnp-jeton[data-j='pas'] { background: var(--p-pas-bg); color: var(--p-pas-fg); }
+.cnp-jeton[data-j='afaire'] { background: var(--p-decide-bg); color: var(--p-decide-fg); }
+.cnp-jeton[data-j='cause'] { background: var(--p-resolu-bg); color: var(--p-resolu-fg); }
+.cnp-jeton-x { display: inline-flex; align-items: center; justify-content: center; gap: 2px; min-height: 32px; margin: 0 -6px 0 2px; padding: 0 6px; border: 0; border-left: 1px solid currentColor; background: transparent; color: inherit; font-weight: 700; }
+.cnp-jeton-bouton { border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+.cnp-jeton-bouton:focus-visible { outline: 2px solid var(--c-zone); outline-offset: 1px; }
+.cnp-jetons { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 6px 0; }
+/* à 390 : « trouvé · pas trouvé · devis » et le total tiennent sur une rangée (maquette v01 « fuite ») */
+.cnp-jetons > .cnp-jeton { padding: 0 6px; gap: 2px; }
+.cnp-jetons > .cn-sp { flex: 1 1 0; min-width: 0; }
+.cn-ouvert .cnp-jetons .cnp-total { font-size: 15px !important; letter-spacing: -.04em; }
+.cnp-total { font-family: var(--c-mono); font-weight: 600; color: var(--c-ink); }
+.cn-ouvert .cnp-total { font-size: 16px !important; }
+
+/* les options : deux colonnes à 50 %, le nom entier (VERDICT § Retouches) */
+.cnp-options { padding: 6px 0 4px; }
+.cnp-opt-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.cnp-opt-grille > li { min-width: 0; }
+.cnp-opt { width: 100%; height: 100%; display: grid; grid-template-columns: 30px minmax(0, 1fr); grid-template-areas: 'v n' 'v j'; column-gap: 8px; row-gap: 2px; align-items: center; text-align: left; padding: 6px 8px; border: 1px solid var(--c-line); border-radius: 12px; background: transparent; color: var(--c-ink); font: inherit; }
+button.cnp-opt { cursor: pointer; }
+.cnp-opt > :nth-child(1) { grid-area: v; }
+.cnp-opt-nom { grid-area: n; font-weight: 600; overflow-wrap: anywhere; line-height: 1.2; }
+.cnp-opt > .cnp-jeton { grid-area: j; justify-self: start; }
+.cnp-opt-vignette { width: 30px !important; height: 30px !important; border-radius: 6px !important; flex: none; }
+li[data-etat='retenue'] > .cnp-opt { border-color: var(--p-resolu-bord); background: var(--p-vous-bg); }
+li[data-ouverte] > .cnp-opt { outline: 2px solid var(--c-zone); outline-offset: 1px; }
+.cnp-barre { text-decoration: line-through; color: var(--c-mut); font-weight: 400; }
+.cnp-opt-gestes { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px; }
+.cnp-raison { display: flex; gap: 6px; width: 100%; align-items: center; }
+.cnp-raison-champ { flex: 1 1 auto; min-width: 0; min-height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; }
+
+.cnp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.cnp-btn[aria-pressed='true'] { background: var(--p-resolu-bg); border-color: var(--p-resolu-bord); color: var(--p-resolu-fg); }
+.cnp-btn:disabled { opacity: .75; cursor: default; }
+.cnp-btn-plein { background: var(--p-retenu-bg); border-color: var(--p-retenu-bg); color: var(--p-retenu-fg); }
+.cnp-lien { display: inline-flex; align-items: center; gap: 2px; min-height: 36px; padding: 0 6px; border: 0; background: transparent; color: var(--c-lien); font-weight: 700; cursor: pointer; }
+.cnp-ico { position: absolute; top: 0; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 32px; padding: 0; border: 0; background: transparent; color: var(--c-mut); cursor: pointer; }
+.cnp-b:has(> .cnp-ico), .cnp-b:has(.cnp-pd > .cnp-ico) { position: relative; }
+.cnp-b:has(.cnp-ico) > p:first-of-type { padding-right: 22px; }
+/* le défilement vers la dernière bulle (CRN-21) lit les mêmes marges que la liste des notes d'avant */
+.cnp-fil > * { scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+[data-carnets] > .cn-defile .cnp-fil > * { scroll-margin-bottom: 12px; }
+.cnp-x { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; background: transparent; color: var(--c-mut); cursor: pointer; }
+
+/* le fil : bulles à droite (lui), bulle de l'IA à gauche, le jour en pastille */
+.cnp-fil { display: flex; flex-direction: column; padding: 4px 0 0; }
+.cnp-j { text-align: center; margin: 6px 0 4px; }
+.cnp-j span { color: var(--c-mut); background: var(--c-s1); border-radius: 10px; padding: 2px 10px; }
+.cnp-replie { align-self: center; min-height: 36px; padding: 0 10px; border: 0; background: transparent; color: var(--c-ink2); cursor: pointer; }
+.cnp-b { max-width: min(86%, 560px); border-radius: 16px; padding: 7px 10px; margin-bottom: 5px; border: 1px solid transparent; }
+.cnp-b > p { margin: 0; overflow-wrap: anywhere; }
+.cn-ouvert .cnp-b > p { font-size: 15px !important; line-height: 1.35; }
+.cnp-b-vous { align-self: flex-end; background: var(--p-vous-bg); border-color: var(--p-vous-bord); border-radius: 16px 16px 4px 16px; }
+.cnp-b-ia { align-self: flex-start; background: var(--p-ia-bg); border-color: var(--p-ia-bord); border-radius: 16px 16px 16px 4px; }
+.cnp-ia-tete { display: flex; align-items: center; gap: 4px; color: var(--p-ia-fg); font-weight: 600; }
+.cnp-ia-tete svg { flex: none; }
+.cnp-photo { display: block; width: 100%; max-width: 280px; max-height: 190px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; background: var(--c-s1); }
+.cnp-pd { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.cnp-heure { font-family: var(--c-mono); color: var(--c-mut); }
+.cnp-rattache { margin-top: 2px; }
+.cnp-carte-gestes { display: flex; gap: 6px; margin-top: 6px; }
+.cnp-carte-gestes .cnp-btn { min-height: 36px; }
+.cnp-ev { align-self: center; display: inline-flex; align-items: center; gap: 4px; color: var(--c-mut); padding: 2px 8px; }
+.cnp-ev-case { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
+.cnp-fil .cn-note-picto { display: none; }
+.cnp-fil-zone { padding-top: 2px; }
+
+/* les questions honnêtes et la carte « Fermer grâce à l'achat ? » */
+.cnp-question { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; padding: 7px 10px; border-radius: 12px; background: var(--p-decide-bg); color: var(--c-ink); }
+.cnp-question > svg { flex: none; color: var(--p-decide-fg); }
+.cnp-question .cnp-lien { color: var(--p-decide-fg); }
+.cnp-fermer { background: var(--p-resolu-bg); flex-wrap: wrap; }
+.cnp-fermer > svg { color: var(--p-resolu-fg); }
+.cnp-relu { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; padding: 7px 10px; border-radius: 12px; background: var(--c-s1); }
+
+/* Résolu : avant / après, tampon, tuiles, bas */
+.cnp-resolu { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.cnp-avap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cnp-avap figure { position: relative; margin: 0; overflow: hidden; border-radius: 14px; background: var(--c-s1); aspect-ratio: 4 / 3; }
+.cnp-avap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cnp-avap-l { position: absolute; left: 6px; top: 6px; padding: 2px 8px; border-radius: 8px; background: var(--c-bg); color: var(--c-ink); font-weight: 700; max-width: calc(100% - 12px); }
+.cnp-avap-apres { background: var(--p-retenu-bg); color: var(--p-retenu-fg); }
+.cnp-avap-changer { position: absolute; right: 6px; bottom: 6px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 8px; background: var(--c-bg); color: var(--c-lien); font-weight: 700; cursor: pointer; }
+.cnp-choix-photo { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0; }
+.cnp-choix-vign { flex: none; width: 72px; height: 54px; padding: 0; border: 2px solid var(--c-line2); border-radius: 10px; overflow: hidden; background: var(--c-s1); cursor: pointer; }
+.cnp-choix-vign img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cnp-tampon { border: 2px solid var(--p-resolu-bord); border-radius: 16px; padding: 10px 12px; background: var(--p-resolu-bg); display: flex; flex-direction: column; gap: 6px; }
+.cnp-tampon-tete { display: flex; align-items: center; gap: 8px; color: var(--p-resolu-fg); font-weight: 700; }
+.cnp-coche { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--p-resolu-bord); color: #fff; flex: none; }
+.cn-ouvert .cnp-tampon-titre { font-size: 22px !important; line-height: 1.15; }
+.cn-ouvert .cnp-tampon-duree { font-size: 16px !important; font-weight: 400 !important; }
+.cnp-fermeture { margin: 0; }
+.cnp-fermees { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cnp-fermees li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cnp-fermees .cnp-opt-vignette { width: 28px !important; height: 28px !important; }
+.cnp-range { margin: 0; display: flex; align-items: center; gap: 6px; padding-top: 6px; border-top: 1px solid var(--p-vous-bord); }
+.cnp-range svg { flex: none; color: var(--p-ia-fg); }
+.cnp-tuiles { border: 1px solid var(--c-line); border-radius: 14px; padding: 8px 12px; }
+.cnp-tuiles-tete { display: flex; align-items: center; gap: 8px; }
+.cnp-tuiles-rang { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; padding: 3px; }
+.cnp-tuile { flex: none; width: 58px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 10px; background: var(--c-s1); overflow: hidden; cursor: pointer; }
+span.cnp-tuile { cursor: default; }
+.cnp-tuile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cnp-tuile[data-dernier] { box-shadow: 0 0 0 3px var(--p-resolu-bord); }
+.cnp-bas { display: flex; align-items: center; gap: 8px; }
+.cnp-btn-rouvrir { margin-left: auto; }
+.cnp-fil-replie { padding-top: 2px; }
+.cnp-fil-bouton { min-height: 40px; }
+
+/* Relecture */
+.cnp-relecture { padding-top: 6px; }
+.cnp-recherche { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--c-line2); border-radius: 22px; background: var(--c-bg); }
+.cnp-recherche input { flex: 1 1 auto; min-width: 0; border: 0; background: transparent; color: var(--c-ink); font-size: 16px; min-height: 40px; outline: none; }
+.cnp-fiche { margin-top: 8px; border: 2px solid var(--p-vous-bord); border-radius: 16px; padding: 10px 12px; background: var(--c-bg); }
+.cnp-fiche-tete { display: flex; align-items: center; gap: 8px; }
+.cn-ouvert .cnp-fiche-titre { font-size: 17px !important; }
+.cnp-q { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 4px 10px; margin: 8px 0 0; }
+.cnp-q dt { color: var(--c-mut); font-weight: 600; }
+.cnp-q dd { margin: 0; overflow-wrap: anywhere; }
+.cnp-fiche-av { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.cnp-fiche-av img { width: 72px; height: 48px; object-fit: cover; border-radius: 6px; }
+.cnp-h { margin: 12px 0 4px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; }
+.cnp-ligne { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 6px 4px; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--c-line); color: var(--c-ink); cursor: pointer; }
+.cnp-ligne .cn-sp { display: flex; flex-direction: column; min-width: 0; }
+.cnp-vide { padding: 12px 0; }
+.cnp-menu-vide { display: inline-block; width: 18px; }
+
+@media (min-width: 900px) {
+  .cnp-b { max-width: 480px; }
+  .cnp-photo { max-width: 360px; }
+}

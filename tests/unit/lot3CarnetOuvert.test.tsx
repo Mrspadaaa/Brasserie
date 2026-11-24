@@ -41,16 +41,16 @@ describe('L-21 : la mise en page ne change pas sous les yeux après le rangement
   it('la note rangée ailleurs (en critère) : la rubrique Notes reste, « aucune »', () => {
     const note = { id: 'NOTE-1', texte: 'prévoir 2 buses de rinçage', genre: 'note' as const, le: '2026-11-23' };
     const { rerender } = render(<CarnetOuvert {...props(carnet({ notes: [note] }))} />);
-    expect(screen.getByRole('region', { name: 'Notes' })).toBeTruthy();
+    expect(screen.getByRole('log', { name: 'Fil du carnet' })).toBeTruthy(); // D451 disparaît n° 4 : « Notes n » en cartes devient le fil
     const crit = { id: 'CRIT-9', texte: '2 buses de rinçage', origine: 'ia' as const };
     rerender(<CarnetOuvert {...props(carnet({ criteres: [crit] as never }), { rangee: { cible: 'critere', id: 'CRIT-9', phrase: 'prévoir 2 buses de rinçage', onAnnuler: vi.fn() } })} />);
-    const notes = screen.getByRole('region', { name: 'Notes' });
+    const notes = screen.getByRole('region', { name: 'Fil' }); // D451 disparaît n° 4 : la région « Notes » devient « Fil »
     expect(notes.textContent).toMatch(/aucune/);
   });
 
   it('un carnet ouvert sans note n’affiche pas de rubrique Notes vide', () => {
     render(<CarnetOuvert {...props(carnet({ criteres: CRIT as never }))} />);
-    expect(screen.queryByRole('region', { name: 'Notes' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Fil' })).toBeNull(); // D451 disparaît n° 4 : « Notes » devient « Fil »
   });
 });
 

@@ -2,6 +2,7 @@
 import type React from 'react';
 import type { TableauV } from './Comparer';
 import type { AidesV, CarnetV } from './EtatIA';
+import type { CarnetDoc, EtatOption, EtatSuivi, GenreCarnet, MessageDoc } from '../../domain/carnets/modele';
 
 /** Lien « lié à » (R47), calculé par `liensDe` (lot A) : jamais de montant. */
 export interface LienV { sorte: 'a-venir' | 'realise'; id: string; libelle: string; etat: 'present' | 'supprime'; le?: string }
@@ -23,8 +24,42 @@ export interface RangeeV {
   versSuggere?: { titre: string; onDeplacer: () => void };
 }
 
+/**
+ * D451 : les gestes du suivi d'un problème, que l'écran branche sur les intentions du domaine (`changerEtat`, `rouvrir`, `changerOption`,
+ * `retenirOption`, `fermerParAchat`, `repondreRelu`, `poserAvantApres`, `accepterPropositionSuivi` / `refuserPropositionSuivi`). Un rappel absent :
+ * le geste n'est pas proposé (rien qui ne fasse rien). Chacun s'annule par le Annuler du bandeau (l'inverse vient du domaine).
+ */
+export interface RappelsSuivi {
+  onEtat?: (vers: EtatSuivi) => void;
+  onRouvrir?: () => void;
+  /** Une option change d'état : piste, veille, retenue, ou écartée avec sa raison (facultative). */
+  onOption?: (faconId: string, vers: EtatOption, raison?: string) => void;
+  /** « Fermer grâce à l'achat ? Oui » : l'option qui a été achetée. */
+  onFermerParAchat?: (optionId: string) => void;
+  onRelu?: (reponse: 'oui' | 'pas-sur') => void;
+  /** L'avant et l'après : l'id d'une photo du carnet ; `null` retire le choix posé. */
+  onAvantApres?: (avantPhotoId?: string | null, apresPhotoId?: string | null) => void;
+  /** Une carte « OK · Non » : `ok`, `non`, ou `plus-tard` (une tâche sans date). `index` : la place de la proposition dans le message. */
+  onProposition?: (messageId: string, index: number, geste: 'ok' | 'non' | 'plus-tard') => void;
+  /** « Pourquoi B plutôt que A ? · Ajouter » : amorce le champ du bas, le message reste dans ce carnet. */
+  onEcrire?: (amorce: string) => void;
+  /** Le menu ⋯ : lui qui pose le genre du carnet (problème, mémo, récolte, idée) ; son choix passe avant celui de l'IA. */
+  onGenre?: (genre: GenreCarnet) => void;
+  /** Retirer un jeton que l'IA a posé sous une bulle (`index` : sa place dans les étiquettes du message). Un jeton écrit par lui ne se retire pas ici. */
+  onRetirerEtiquette?: (messageId: string, index: number) => void;
+  /** Cocher une tâche du carnet (la carte « tâche proposée » acceptée devient une tâche à cocher). */
+  onCocherTache?: (tacheId: string, faite: boolean) => void;
+}
+
 export interface CarnetOuvertProps {
   carnet: CarnetV;
+  /** D451 : les messages du fil (`useDonneesCarnets`) ; absents, le fil ne montre que les notes. */
+  messages?: readonly MessageDoc[];
+  rappels?: RappelsSuivi;
+  /** D451 : tous les carnets (les tuiles des résolus de l'année) ; absent, pas de tuiles. */
+  carnetsDocs?: readonly CarnetDoc[];
+  /** D451 : ouvre la Relecture des résolus (route `relecture` de la vue) ; absent, pas de lien. */
+  onRelecture?: () => void;
   aides: AidesV;
   liens: LienV[];
   /** Le tableau de `comparer.ts` : `null` à 0 ou 1 article (R26). */
