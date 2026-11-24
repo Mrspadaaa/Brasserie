@@ -20,9 +20,9 @@ import { quantiteArticle } from './prixUnitaire';
 import { douteDePage } from './manques';
 import { critereMesurable, jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
-  lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
+  lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, ajouterEvenement, PHOTOS_CARNET_MAX, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
-  type GenreNote, type MessageDoc, type Note, type Origine, type PropositionCritere, type Rangement, type Valeur
+  type Etiquette, type GenreNote, type MessageDoc, type Note, type Origine, type PropositionCritere, type PropositionSuivi, type Rangement, type Rattache, type Valeur
 } from './modele';
 
 export type EcritureCarnet = { op: 'put'; doc: CreativeItem } | { op: 'remove'; id: string };
@@ -35,11 +35,12 @@ export type Resultat =
 
 export type Etat = readonly CreativeItem[];
 
-const copie = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
-const refus = (raison: string): Resultat => ({ ok: false, raison });
+/* D451 : `copie`, `refus`, `Brouillon` et `poser` sont partagés avec `suivi.ts` (les intentions du suivi, même patron). */
+export const copie = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
+export const refus = (raison: string): Resultat => ({ ok: false, raison });
 
 /** Un brouillon de changements : documents lus, modifiés, créés, retirés ; produit écritures et inverse. */
-class Brouillon {
+export class Brouillon {
   private readonly origine = new Map<string, CreativeItem | undefined>();
   private readonly courant = new Map<string, CreativeItem | null>();
   constructor(private readonly etat: Etat) {}
@@ -75,7 +76,7 @@ class Brouillon {
 }
 
 /** Met le statut d'après le contenu (Choisi reste Choisi) et écrit. */
-function poser(b: Brouillon, c: CarnetDoc) {
+export function poser(b: Brouillon, c: CarnetDoc) {
   c.status = statutApres(c.status, c);
   b.ecrire(c);
 }
@@ -112,7 +113,14 @@ export type LigneARanger = Destination & (
   | { sorte: 'idee' }
 );
 
-export interface MessageARanger { id: string; texte: string; le: string; depuis: 'liste' | string; rangement: Rangement; titrePropose?: { carnetId: string; titre: string } }
+/**
+ * `etiquettes`, `rattache`, `propositionsSuivi` (D451) : ce que l'IA ou le repli local pose sur le message ; rien n'est appliqué à un carnet
+ * par eux (les propositions restent à son geste). `rattache.citation` doit être une sous-chaîne exacte du texte, sinon le rangement est refusé.
+ */
+export interface MessageARanger {
+  id: string; texte: string; le: string; depuis: 'liste' | string; rangement: Rangement; titrePropose?: { carnetId: string; titre: string };
+  etiquettes?: readonly Etiquette[]; rattache?: Rattache; propositionsSuivi?: readonly PropositionSuivi[];
+}
 
 /** Ajoute une ligne dans son carnet (déjà lu dans le brouillon) ; rend l'effet. L'article naît sans veille (R31). */
 function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMessage | null {
@@ -293,6 +301,8 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
       c = b.carnet(l.carnetId);
       if (!c) return 'Ce carnet n’existe plus.';
     }
+    /* D451 (PLAN § Risques 2) : un document Firestore tient 1 Mio ; les photos y sont en ligne (≤ 150 ko) : la 13e est refusée, et l'écran le dit */
+    if (l.sorte === 'photo' && c.carnet.photos.length >= PHOTOS_CARNET_MAX) return `Ce carnet garde ${PHOTOS_CARNET_MAX} photos au plus.`;
     const e = ajouterLigne(c, l, message.id);
     if (e) effets.push(e);
     carnets.add(c.id);
@@ -313,6 +323,7 @@ function avisRangement(lignes: number, carnets: number, crees: number): string {
 export function ranger(etat: Etat, args: { message: MessageARanger; lignes: readonly LigneARanger[] }): Resultat {
   if (!args.message.texte.trim()) return refus('Le message est vide.');
   if (lireMessage(etat.find(d => d.id === args.message.id))) return refus('Ce message est déjà rangé.');
+  if (args.message.rattache && !args.message.texte.includes(args.message.rattache.citation)) return refus('La citation n’est pas dans le message.');
   const b = new Brouillon(etat);
   const r = rangerDans(b, args.message, args.lignes);
   if (typeof r === 'string') return refus(r);
@@ -321,7 +332,9 @@ export function ranger(etat: Etat, args: { message: MessageARanger; lignes: read
     id: m.id, type: 'carnet-message', title: m.texte, status: 'done',
     carnetMessage: sansIndefinis({
       texte: m.texte, le: m.le, depuis: m.depuis, rangement: m.rangement, effets: r.effets, titrePropose: m.titrePropose ? { ...m.titrePropose } : undefined,
-      propositions: r.propositions.length ? r.propositions : undefined
+      propositions: r.propositions.length ? r.propositions : undefined,
+      propositionsSuivi: m.propositionsSuivi?.length ? copie([...m.propositionsSuivi]) : undefined, etiquettes: m.etiquettes?.length ? copie([...m.etiquettes]) : undefined,
+      rattache: m.rattache ? { ...m.rattache } : undefined
     })
   };
   b.ecrire(doc);
@@ -724,6 +737,11 @@ export function choisir(etat: Etat, args: { carnetId: string; articleId: string;
   if (typeof a.prixCentimes === 'number' && a.prixCentimes > 0 && (a.devise ?? 'CHF') === 'CHF') c.estimatedCost = a.prixCentimes / 100;
   const f = faconId ? d.facons.find(x => x.id === faconId) : undefined;
   if (f && f.etat !== 'retenue') f.etat = 'retenue';
+  /* D451 : un carnet déjà suivi passe à Décidé avec son choix (sinon son état écrit resterait « je cherche » face à un choix posé) ; sans `suivi`, l'état se dérive. */
+  if (d.suivi && (d.suivi.etat === 'note' || d.suivi.etat === 'cherche') && !d.archive) {
+    ajouterEvenement(d.suivi, { id: nouvelIdCarnet('EVT'), le: args.le, sorte: 'etat', de: d.suivi.etat, vers: 'decide', origine: 'vous' });
+    d.suivi.etat = 'decide';
+  }
   c.status = 'validated';
   b.ecrire(c);
   return b.resultat(ancien ? '✓ Choix revu' : '✓ Choisi');

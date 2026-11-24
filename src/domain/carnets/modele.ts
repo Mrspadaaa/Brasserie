@@ -40,8 +40,64 @@ export interface Critere { id: string; texte: string; raison?: string; caracteri
 export const sourceDuCritere = (k: Pick<Critere, 'origine' | 'source'>): 'phrase' | 'ia' => k.source ?? (k.origine === 'ia' ? 'ia' : 'phrase');
 
 export type EtatFacon = 'ouverte' | 'retenue' | 'ecartee';
-/** Une façon de faire (D-16) : ouverte, retenue ou écartée, avec sa raison. */
-export interface Facon { id: string; nom: string; etat: EtatFacon; raison?: string; origine: Origine; messageId?: string }
+/**
+ * Une façon de faire (D-16) : ouverte, retenue ou écartée, avec sa raison. D451 : `suivi` est l'état fin de l'option (piste, veille, écartée,
+ * retenue) et son historique ; `etat` reste écrit comme avant pour les vieux clients (veille → `ouverte`).
+ */
+export interface Facon { id: string; nom: string; etat: EtatFacon; raison?: string; origine: Origine; messageId?: string; suivi?: SuiviFacon }
+
+/* ---------- D451 : le suivi d'un problème (PLAN § Modèle de données) ---------- */
+
+/** Le genre d'un carnet : posé par l'IA au rangement ou par lui (menu ⋯). Absent : `genreDe` le déduit. */
+export type GenreCarnet = 'probleme' | 'memo' | 'recolte' | 'idee' | 'achat';
+export const GENRES_CARNET: readonly GenreCarnet[] = ['probleme', 'memo', 'recolte', 'idee', 'achat'];
+export type OrigineVousIA = 'vous' | 'ia';
+export interface GenrePose { valeur: GenreCarnet; origine: OrigineVousIA }
+/** La catégorie sous le domaine : 1 à 2 niveaux (chemin matérialisé), 30 caractères au plus chacun. */
+export interface CategoriePosee { chemin: string[]; origine: OrigineVousIA }
+
+/** Les 4 états d'un problème, libres dans les deux sens (CADRAGE : pas d'« étape n sur m »). */
+export type EtatSuivi = 'note' | 'cherche' | 'decide' | 'resolu';
+export const ETATS_SUIVI: readonly EtatSuivi[] = ['note', 'cherche', 'decide', 'resolu'];
+/** L'état d'une option : piste, en veille, écartée (avec sa raison), retenue. */
+export type EtatOption = 'piste' | 'veille' | 'ecartee' | 'retenue';
+export const ETATS_OPTION: readonly EtatOption[] = ['piste', 'veille', 'ecartee', 'retenue'];
+/** `le` absent : la date du premier état d'une option née avant le suivi est inconnue, jamais inventée. */
+export interface PasOption { etat: EtatOption; le?: string; raison?: string; origine: Origine }
+export interface SuiviFacon { etat: EtatOption; historique: PasOption[] }
+
+export type SorteEvenement = 'etat' | 'option' | 'veille' | 'tache' | 'resolu' | 'rouvert' | 'pourquoi' | 'relu';
+export const SORTES_EVENEMENT: readonly SorteEvenement[] = ['etat', 'option', 'veille', 'tache', 'resolu', 'rouvert', 'pourquoi', 'relu'];
+/** Un événement du journal, en ajout seul. `fusionnes` : des changements d'état consécutifs repliés (au-delà de 200 événements). */
+export interface EvenementSuivi {
+  id: string; le: string; sorte: SorteEvenement; de?: string; vers?: string; optionId?: string; tacheId?: string; messageId?: string; raison?: string; origine: Origine; fusionnes?: number;
+}
+export type SorteResolution = 'achat' | 'reparation' | 'texte';
+export interface ResoluSuivi { le: string; par?: { sorte: SorteResolution; optionId?: string; articleId?: string; planId?: string; texte?: string } }
+export interface AvantApres { avantPhotoId?: string; apresPhotoId?: string }
+export interface ReluSuivi { le: string; reponse: 'oui' | 'pas-sur' }
+export interface SuiviCarnet { etat: EtatSuivi; evenements: EvenementSuivi[]; resolu?: ResoluSuivi; avantApres?: AvantApres; relu?: ReluSuivi }
+
+export type PrecisionTache = 'semaine' | 'mois';
+/** Une tâche du carnet. `echeance` : un lundi (ISO) ; `precision: 'mois'` : le lundi de la dernière semaine du mois. Sans échéance : « Un jour ». */
+export interface Tache {
+  id: string; texte: string; echeance?: string; precision?: PrecisionTache; coutCentimes?: number; devise?: string; coutEstime?: true; faiteLe?: string;
+  optionId?: string; planId?: string; messageId?: string; origine: Origine; creeeLe: string;
+}
+
+export type SorteEtiquette = 'constat' | 'piste' | 'ecart' | 'retenu' | 'trouve' | 'pas-trouve' | 'contact' | 'devis' | 'cout' | 'achat' | 'cause' | 'veille' | 'pourquoi';
+export const SORTES_ETIQUETTE: readonly SorteEtiquette[] = ['constat', 'piste', 'ecart', 'retenu', 'trouve', 'pas-trouve', 'contact', 'devis', 'cout', 'achat', 'cause', 'veille', 'pourquoi'];
+/** Un jeton sous une bulle du fil. Montant absent = inconnu (jamais 0) ; `estime` : « ≈ ». */
+export interface Etiquette { carnetId: string; sorte: SorteEtiquette; texte?: string; montantCentimes?: number; devise?: string; estime?: true; optionId?: string; origine: Origine }
+/** « rattaché : « … » » : la citation est une sous-chaîne exacte du message. */
+export interface Rattache { carnetId: string; citation: string }
+export type SorteProposition = 'tache' | 'retenir' | 'dater' | 'resoudre' | 'veiller' | 'deplacer';
+export const SORTES_PROPOSITION: readonly SorteProposition[] = ['tache', 'retenir', 'dater', 'resoudre', 'veiller', 'deplacer'];
+/** Ce que l'IA propose sans l'écrire (carte « OK · Non ») : la tâche, retenir, dater, résoudre, veiller, écrire dans un autre carnet. */
+export interface PropositionSuivi {
+  sorte: SorteProposition; carnetId: string; texte?: string; optionId?: string; echeance?: string; precision?: PrecisionTache; coutCentimes?: number; devise?: string;
+  versCarnetId?: string; origine: Origine;
+}
 
 /** Une valeur lue pour une caractéristique (clé = son nom). `luLe` : date de lecture, si elle a été lue. */
 export interface Valeur { valeur: number | string | boolean; unite?: string; origine: Origine; luLe?: string }
@@ -148,6 +204,11 @@ export interface DonneesCarnet {
   archive?: { le: string; raison: string };
   /** D437 : le domaine posé (par lui, ou par l'IA au rangement) ; absent, il se déduit (domaines.ts). */
   domaine?: DomainePose;
+  /** D451, tout facultatif : absent = dérivé à la lecture (`suiviDe`, `genreDe`), jamais réécrit en masse. */
+  genre?: GenrePose;
+  categorie?: CategoriePosee;
+  suivi?: SuiviCarnet;
+  taches?: Tache[];
 }
 
 export type CibleEffet = 'carnet' | 'critere' | 'facon' | 'article' | 'note' | 'photo';
@@ -184,6 +245,15 @@ export interface DonneesMessage {
   gardeAPart?: true;
   /** P10, P23 : les critères proposés par l'IA, pas encore acceptés. */
   propositions?: PropositionCritere[];
+  /**
+   * D451 : ce que l'IA propose pour le suivi (tâche, retenir, dater, résoudre, veiller, rattacher), pas encore accepté. Champ voisin de
+   * `propositions` (PLAN : « étendu ») : les critères proposés ont leurs lecteurs (`pucesDuCarnet`), qui ne doivent pas rencontrer une tâche.
+   */
+  propositionsSuivi?: PropositionSuivi[];
+  /** D451 : les jetons sous la bulle (constat, piste, coût…), posés par l'IA ou le repli local, annulables d'un toucher. */
+  etiquettes?: Etiquette[];
+  /** D451 : « rattaché : « … » » de la carte « rangé pour toi ». */
+  rattache?: Rattache;
 }
 
 export type StatutCarnet = 'idea' | 'research' | 'validated';
@@ -235,11 +305,11 @@ function lireCritere(v: unknown): Critere | null {
   };
 }
 
-const CLES_FACON = ['id', 'nom', 'etat', 'raison', 'origine', 'messageId'];
+const CLES_FACON = ['id', 'nom', 'etat', 'raison', 'origine', 'messageId', 'suivi'];
 function lireFacon(v: unknown): Facon | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.nom)) return null;
   const etat: EtatFacon = v.etat === 'retenue' || v.etat === 'ecartee' ? v.etat : 'ouverte';
-  return { ...inconnues(v, CLES_FACON), ...sansIndefinis({ id: v.id, nom: v.nom, etat, raison: optTexte(v.raison), origine: origineLue(v.origine), messageId: optTexte(v.messageId) }) };
+  return { ...inconnues(v, CLES_FACON), ...sansIndefinis({ id: v.id, nom: v.nom, etat, raison: optTexte(v.raison), origine: origineLue(v.origine), messageId: optTexte(v.messageId), suivi: lireSuiviFacon(v.suivi) }) };
 }
 
 const CLES_VALEUR = ['valeur', 'unite', 'origine', 'luLe'];
@@ -420,7 +490,136 @@ const liste = <T>(v: unknown, lire: (x: unknown) => T | null): T[] | null => {
   return v.map(lire).filter((x): x is T => x !== null);
 };
 
-const CLES_CARNET = ['version', 'creeLe', 'phrase', 'criteres', 'facons', 'articles', 'notes', 'photos', 'choix', 'sortie', 'archive', 'domaine'];
+export const EVENEMENTS_MAX = 200;
+/** Les photos d'un carnet, en ligne dans son document (limite de 1 Mio de Firestore) : 12 au plus, ≤ 150 ko chacune. */
+export const PHOTOS_CARNET_MAX = 12;
+
+/**
+ * Journal en ajout seul, plafonné à 200 (PLAN § Risques 2, limite de 1 Mio du document) : au-delà, les deux plus anciens changements d'état
+ * consécutifs se fusionnent (le premier « de », le dernier « vers », leur nombre dans `fusionnes`). Sans paire d'états à fusionner : le plus
+ * ancien événement part (dernier recours ; la limite se dit à l'écran, pas ici). Modifie `suivi` en place (appelé sur une copie de brouillon).
+ */
+export function ajouterEvenement(suivi: SuiviCarnet, ev: EvenementSuivi): void {
+  const l = suivi.evenements;
+  l.push(ev);
+  while (l.length > EVENEMENTS_MAX) {
+    const i = l.findIndex((e, k) => e.sorte === 'etat' && l[k + 1]?.sorte === 'etat');
+    if (i < 0) { l.shift(); continue; }
+    const a = l[i], b = l[i + 1];
+    l.splice(i, 2, sansIndefinis({ ...b, de: a.de, fusionnes: (a.fusionnes ?? 1) + (b.fusionnes ?? 1) }));
+  }
+}
+
+/* ---------- D451 : lecteurs du suivi (tous tolérants : une forme inconnue est absente, jamais inventée) ---------- */
+
+const origineVousIA = (v: unknown): OrigineVousIA | undefined => (v === 'vous' || v === 'ia' ? v : undefined);
+const dateJour = (v: unknown): string | undefined => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined);
+const centimesLus = (v: unknown): number | undefined => (nombreFini(v) && v >= 0 ? Math.round(v) : undefined);
+const precisionLue = (v: unknown): PrecisionTache | undefined => (v === 'semaine' || v === 'mois' ? v : undefined);
+
+function lireGenre(v: unknown): GenrePose | undefined {
+  const o = estObjet(v) ? origineVousIA(v.origine) : undefined;
+  return estObjet(v) && o && GENRES_CARNET.includes(v.valeur as GenreCarnet) ? { ...inconnues(v, ['valeur', 'origine']), valeur: v.valeur as GenreCarnet, origine: o } : undefined;
+}
+
+function lireCategorie(v: unknown): CategoriePosee | undefined {
+  const o = estObjet(v) ? origineVousIA(v.origine) : undefined;
+  if (!estObjet(v) || !o || !Array.isArray(v.chemin)) return undefined;
+  const chemin = v.chemin.filter(texteNonVide).map(s => s.trim()).slice(0, 2);
+  return chemin.length ? { ...inconnues(v, ['chemin', 'origine']), chemin, origine: o } : undefined;
+}
+
+function lirePasOption(v: unknown): PasOption | null {
+  if (!estObjet(v) || !ETATS_OPTION.includes(v.etat as EtatOption)) return null;
+  return { ...inconnues(v, ['etat', 'le', 'raison', 'origine']), ...sansIndefinis({ etat: v.etat as EtatOption, le: optTexte(v.le), raison: optTexte(v.raison), origine: origineLue(v.origine) }) };
+}
+
+function lireSuiviFacon(v: unknown): SuiviFacon | undefined {
+  if (!estObjet(v) || !ETATS_OPTION.includes(v.etat as EtatOption)) return undefined;
+  return { ...inconnues(v, ['etat', 'historique']), etat: v.etat as EtatOption, historique: Array.isArray(v.historique) ? v.historique.map(lirePasOption).filter((p): p is PasOption => !!p) : [] };
+}
+
+const CLES_EVENEMENT = ['id', 'le', 'sorte', 'de', 'vers', 'optionId', 'tacheId', 'messageId', 'raison', 'origine', 'fusionnes'];
+function lireEvenement(v: unknown): EvenementSuivi | null {
+  if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.le) || !SORTES_EVENEMENT.includes(v.sorte as SorteEvenement)) return null;
+  return {
+    ...inconnues(v, CLES_EVENEMENT),
+    ...sansIndefinis({
+      id: v.id, le: v.le, sorte: v.sorte as SorteEvenement, de: optTexte(v.de), vers: optTexte(v.vers), optionId: optTexte(v.optionId), tacheId: optTexte(v.tacheId), messageId: optTexte(v.messageId),
+      raison: optTexte(v.raison), origine: origineLue(v.origine), fusionnes: nombreFini(v.fusionnes) && v.fusionnes > 0 ? Math.round(v.fusionnes) : undefined
+    })
+  };
+}
+
+function lireResolu(v: unknown): ResoluSuivi | undefined {
+  if (!estObjet(v) || !texteNonVide(v.le)) return undefined;
+  const p = v.par;
+  const par = estObjet(p) && (p.sorte === 'achat' || p.sorte === 'reparation' || p.sorte === 'texte')
+    ? { ...inconnues(p, ['sorte', 'optionId', 'articleId', 'planId', 'texte']), ...sansIndefinis({ sorte: p.sorte as SorteResolution, optionId: optTexte(p.optionId), articleId: optTexte(p.articleId), planId: optTexte(p.planId), texte: optTexte(p.texte) }) } : undefined;
+  return { ...inconnues(v, ['le', 'par']), ...sansIndefinis({ le: v.le, par }) };
+}
+
+function lireAvantApres(v: unknown): AvantApres | undefined {
+  if (!estObjet(v)) return undefined;
+  const r = { ...inconnues(v, ['avantPhotoId', 'apresPhotoId']), ...sansIndefinis({ avantPhotoId: optTexte(v.avantPhotoId), apresPhotoId: optTexte(v.apresPhotoId) }) };
+  return r.avantPhotoId || r.apresPhotoId ? r : undefined;
+}
+
+function lireRelu(v: unknown): ReluSuivi | undefined {
+  return estObjet(v) && texteNonVide(v.le) && (v.reponse === 'oui' || v.reponse === 'pas-sur') ? { ...inconnues(v, ['le', 'reponse']), le: v.le, reponse: v.reponse } : undefined;
+}
+
+function lireSuivi(v: unknown): SuiviCarnet | undefined {
+  if (!estObjet(v) || !ETATS_SUIVI.includes(v.etat as EtatSuivi)) return undefined;
+  const evenements = Array.isArray(v.evenements) ? v.evenements.map(lireEvenement).filter((e): e is EvenementSuivi => !!e) : [];
+  return { ...inconnues(v, ['etat', 'evenements', 'resolu', 'avantApres', 'relu']), ...sansIndefinis({ etat: v.etat as EtatSuivi, evenements, resolu: lireResolu(v.resolu), avantApres: lireAvantApres(v.avantApres), relu: lireRelu(v.relu) }) };
+}
+
+const CLES_TACHE = ['id', 'texte', 'echeance', 'precision', 'coutCentimes', 'devise', 'coutEstime', 'faiteLe', 'optionId', 'planId', 'messageId', 'origine', 'creeeLe'];
+function lireTache(v: unknown): Tache | null {
+  if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.texte) || !texteNonVide(v.creeeLe)) return null;
+  const cout = centimesLus(v.coutCentimes);
+  return {
+    ...inconnues(v, CLES_TACHE),
+    ...sansIndefinis({
+      id: v.id, texte: v.texte, echeance: dateJour(v.echeance), precision: dateJour(v.echeance) ? precisionLue(v.precision) : undefined, coutCentimes: cout, devise: cout !== undefined ? optTexte(v.devise) : undefined,
+      coutEstime: cout !== undefined && v.coutEstime === true ? (true as const) : undefined, faiteLe: optTexte(v.faiteLe), optionId: optTexte(v.optionId), planId: optTexte(v.planId), messageId: optTexte(v.messageId),
+      origine: origineLue(v.origine), creeeLe: v.creeeLe
+    })
+  };
+}
+
+const CLES_ETIQUETTE = ['carnetId', 'sorte', 'texte', 'montantCentimes', 'devise', 'estime', 'optionId', 'origine'];
+function lireEtiquette(v: unknown): Etiquette | null {
+  if (!estObjet(v) || !texteNonVide(v.carnetId) || !SORTES_ETIQUETTE.includes(v.sorte as SorteEtiquette)) return null;
+  const montant = centimesLus(v.montantCentimes);
+  return {
+    ...inconnues(v, CLES_ETIQUETTE),
+    ...sansIndefinis({
+      carnetId: v.carnetId, sorte: v.sorte as SorteEtiquette, texte: optTexte(v.texte), montantCentimes: montant, devise: montant !== undefined ? optTexte(v.devise) : undefined,
+      estime: montant !== undefined && v.estime === true ? (true as const) : undefined, optionId: optTexte(v.optionId), origine: origineLue(v.origine)
+    })
+  };
+}
+
+function lireRattache(v: unknown): Rattache | undefined {
+  return estObjet(v) && texteNonVide(v.carnetId) && texteNonVide(v.citation) ? { ...inconnues(v, ['carnetId', 'citation']), carnetId: v.carnetId, citation: v.citation } : undefined;
+}
+
+const CLES_PROPOSITION_SUIVI = ['sorte', 'carnetId', 'texte', 'optionId', 'echeance', 'precision', 'coutCentimes', 'devise', 'versCarnetId', 'origine'];
+function lirePropositionSuivi(v: unknown): PropositionSuivi | null {
+  if (!estObjet(v) || !SORTES_PROPOSITION.includes(v.sorte as SorteProposition) || !texteNonVide(v.carnetId)) return null;
+  const cout = centimesLus(v.coutCentimes);
+  return {
+    ...inconnues(v, CLES_PROPOSITION_SUIVI),
+    ...sansIndefinis({
+      sorte: v.sorte as SorteProposition, carnetId: v.carnetId, texte: optTexte(v.texte), optionId: optTexte(v.optionId), echeance: dateJour(v.echeance), precision: dateJour(v.echeance) ? precisionLue(v.precision) : undefined,
+      coutCentimes: cout, devise: cout !== undefined ? optTexte(v.devise) : undefined, versCarnetId: optTexte(v.versCarnetId), origine: origineLue(v.origine)
+    })
+  };
+}
+
+const CLES_CARNET = ['version', 'creeLe', 'phrase', 'criteres', 'facons', 'articles', 'notes', 'photos', 'choix', 'sortie', 'archive', 'domaine', 'genre', 'categorie', 'suivi', 'taches'];
 
 /** Le contenu d'une idée, normalisé ; `null` si la forme est inconnue. Les clés inconnues sont gardées (passe-plat, D451). */
 export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
@@ -430,7 +629,14 @@ export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
   if (!criteres || !facons || !articles || !notes || !photos) return null;
   const sortie = estObjet(v.sortie) && texteNonVide(v.sortie.planId) && typeof v.sortie.le === 'string' ? { planId: v.sortie.planId, le: v.sortie.le } : undefined;
   const archive = estObjet(v.archive) && typeof v.archive.le === 'string' && typeof v.archive.raison === 'string' ? { le: v.archive.le, raison: v.archive.raison } : undefined;
-  return { ...inconnues(v, CLES_CARNET), ...sansIndefinis({ version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine) }) };
+  const taches = Array.isArray(v.taches) ? v.taches.map(lireTache).filter((t): t is Tache => !!t) : [];
+  return {
+    ...inconnues(v, CLES_CARNET),
+    ...sansIndefinis({
+      version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine),
+      genre: lireGenre(v.genre), categorie: lireCategorie(v.categorie), suivi: lireSuivi(v.suivi), taches: taches.length ? taches : undefined
+    })
+  };
 }
 
 const STATUTS: readonly StatutCarnet[] = ['idea', 'research', 'validated'];
@@ -448,7 +654,7 @@ const RANGEMENTS: readonly Rangement[] = ['ia', 'locale', 'simulee', 'brut'];
 const CLES_EFFET = ['carnetId', 'cible', 'id', 'carnetSupprime', 'fusion', 'existant'];
 const CLES_TITRE_PROPOSE = ['carnetId', 'titre', 'applique'];
 const CLES_PROPOSITION = ['carnetId', 'texte', 'caracteristique', 'origine'];
-const CLES_MESSAGE = ['texte', 'le', 'depuis', 'rangement', 'effets', 'titrePropose', 'gardeAPart', 'propositions'];
+const CLES_MESSAGE = ['texte', 'le', 'depuis', 'rangement', 'effets', 'titrePropose', 'gardeAPart', 'propositions', 'propositionsSuivi', 'etiquettes', 'rattache'];
 
 /** Un message du fil, normalisé ; `null` si ce n'en est pas un. Un `titrePropose` mal formé est ignoré (R46). */
 export function lireMessage(item: CreativeItem | null | undefined): MessageDoc | null {
@@ -471,11 +677,14 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
     ? m.propositions.filter((p): p is PropositionCritere => estObjet(p) && texteNonVide(p.carnetId) && texteNonVide(p.texte) && typeof p.origine === 'string')
       .map(p => ({ ...inconnues(p as unknown as Record<string, unknown>, CLES_PROPOSITION), ...sansIndefinis({ carnetId: p.carnetId, texte: p.texte, origine: p.origine, caracteristique: estObjet(p.caracteristique) ? { ...p.caracteristique } : undefined }) }))
     : [];
+  const propositionsSuivi = Array.isArray(m.propositionsSuivi) ? m.propositionsSuivi.map(lirePropositionSuivi).filter((p): p is PropositionSuivi => !!p) : [];
+  const etiquettes = Array.isArray(m.etiquettes) ? m.etiquettes.map(lireEtiquette).filter((e): e is Etiquette => !!e) : [];
   const carnetMessage: DonneesMessage = {
     ...inconnues(m, CLES_MESSAGE),
     ...sansIndefinis({
       texte: m.texte, le: m.le, depuis: m.depuis, rangement: RANGEMENTS.includes(m.rangement as Rangement) ? (m.rangement as Rangement) : 'brut', effets, titrePropose,
-      gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined
+      gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined,
+      propositionsSuivi: propositionsSuivi.length ? propositionsSuivi : undefined, etiquettes: etiquettes.length ? etiquettes : undefined, rattache: lireRattache(m.rattache)
     })
   };
   return { ...item, type: 'carnet-message', carnetMessage };

@@ -7,7 +7,7 @@
  */
 import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
-import type { Article, CarnetDoc, DonneesCarnet, MessageDoc, Valeur } from './modele';
+import type { Article, CarnetDoc, DonneesCarnet, EtatOption, Etiquette, EvenementSuivi, Facon, MessageDoc, Note, PasOption, Photo, Tache, Valeur } from './modele';
 
 export const PREFIXE_BANC = 'ZZ TEST — ';
 
@@ -390,4 +390,207 @@ export function fixturePlanRealise(): { items: CreativeItem[]; plans: FinancialP
   } as unknown as FinanceTransaction;
   const paiement: FinancialPayment = { id: 'ZZ-PAY-EMBOUTEILLAGE', transactionId: transaction.id, date: '2026-11-16', amountCents: 1170000, direction: 'out', method: 'bank', recordedAt: '2026-11-16T10:00:00.000Z' };
   return { items, plans: [...fixturePlans(), plan], transactions: [transaction], payments: [paiement] };
+}
+
+/* ---------- D451 : le suivi d'un problème (3 histoires et 3 usages de la maquette, 4 cas neufs) ---------- */
+
+/** « Aujourd'hui » de la fixture du suivi : un mardi ; la semaine va du 23 au 29 nov. 2026. */
+export const MAINTENANT_SUIVI = '2026-11-24T12:00:00.000Z';
+export const ANNEE_SUIVI = 2026;
+/**
+ * Les carnets de la fixture du suivi. Tout est **exemple** (titres « ZZ TEST — », `origine: 'exemple'`, liens `exemple.invalid`) : produits, prix,
+ * dates et entreprises sont inventés pour le banc, aucun ne vient de ses données.
+ * Histoires : vapeur (décidé, 4 options, 2 photos), écoulement (je cherche, devis), CO2 (décidé, cause trouvée). Usages : fusible (inspection,
+ * photo, tâches), malt (options retenue, veille, piste, écartée), moisissure et fenêtre (notés, sans suivi écrit). Cas neufs : fête, assurance,
+ * photo seule, chambre froide sans suivi (ancien carnet, état dérivé). Plus : deux résolus de l'année, un projet du Planning.
+ */
+export const IDS_SUIVI = {
+  vapeur: 'ZZ-SUIVI-VAPEUR', ecoulement: 'ZZ-SUIVI-ECOULEMENT', co2: 'ZZ-SUIVI-CO2', fusible: 'ZZ-SUIVI-FUSIBLE', malt: 'ZZ-SUIVI-MALT', moisissure: 'ZZ-SUIVI-MOISISSURE', fenetre: 'ZZ-SUIVI-FENETRE',
+  fete: 'ZZ-SUIVI-FETE', assurance: 'ZZ-SUIVI-ASSURANCE', photo: 'ZZ-SUIVI-PHOTO', chambreFroide: 'ZZ-SUIVI-CHAMBRE-FROIDE', pompe: 'ZZ-SUIVI-POMPE', joint: 'ZZ-SUIVI-JOINT', planning: 'CARNET-PLANNING-ZZ-SUIVI'
+} as const;
+/** Les options de vapeur (ids stables pour les tests). */
+export const OPTIONS_VAPEUR = { condB: 'ZZ-SUIVI-VAPEUR-FB', condA: 'ZZ-SUIVI-VAPEUR-FA', hotte: 'ZZ-SUIVI-VAPEUR-FH', humid: 'ZZ-SUIVI-VAPEUR-FU' } as const;
+export const OPTIONS_MALT = { autre: 'ZZ-SUIVI-MALT-FA', attendre: 'ZZ-SUIVI-MALT-FT', pale: 'ZZ-SUIVI-MALT-FP', decaler: 'ZZ-SUIVI-MALT-FD' } as const;
+
+const PHOTO_SUIVI = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60" width="80" height="60"><rect width="80" height="60" fill="#d9dee2"/><path d="M10 50 L30 20 L45 40 L55 28 L72 50 Z" fill="#9aa6ad"/></svg>')}`;
+const nov = (jour: number, heure = 12): string => `2026-11-${String(jour).padStart(2, '0')}T${String(heure).padStart(2, '0')}:00:00.000Z`;
+
+interface MsgSuivi { id: string; le: string; texte: string; photo?: true; et?: { sorte: Etiquette['sorte']; texte?: string; montantCentimes?: number; estime?: true; optionId?: string }[] }
+
+/** Les notes, photos et messages d'un carnet : chaque message range une note (et une photo), comme le rangement le fait. */
+function filSuivi(carnetId: string, specs: readonly MsgSuivi[]): { notes: Note[]; photos: Photo[]; messages: MessageDoc[] } {
+  const notes: Note[] = [], photos: Photo[] = [], messages: MessageDoc[] = [];
+  specs.forEach((s, i) => {
+    const noteId = `${s.id}-N`, photoId = `${s.id}-P`;
+    notes.push({ id: noteId, texte: s.texte, genre: 'note', modifieeLe: s.le, messageId: s.id });
+    if (s.photo) photos.push({ id: photoId, jpeg: PHOTO_SUIVI, messageId: s.id });
+    const effets: MessageDoc['carnetMessage']['effets'] = [
+      ...(i === 0 ? [{ carnetId, cible: 'carnet' as const, id: carnetId }] : []), { carnetId, cible: 'note', id: noteId }, ...(s.photo ? [{ carnetId, cible: 'photo' as const, id: photoId }] : [])
+    ];
+    const etiquettes: Etiquette[] = (s.et ?? []).map(e => ({ carnetId, origine: 'exemple' as const, ...e, ...(e.montantCentimes !== undefined ? { devise: 'CHF' } : {}) }));
+    messages.push({
+      id: s.id, type: 'carnet-message', title: s.texte, status: 'done',
+      carnetMessage: { texte: s.texte, le: s.le, depuis: i === 0 ? 'liste' : carnetId, rangement: 'simulee', effets, ...(etiquettes.length ? { etiquettes } : {}) }
+    });
+  });
+  return { notes, photos, messages };
+}
+
+const evSuivi = (id: string, le: string, sorte: EvenementSuivi['sorte'], x: Partial<EvenementSuivi> = {}): EvenementSuivi => ({ id, le, sorte, ...x, origine: 'exemple' });
+const optionSuivi = (id: string, nom: string, etat: EtatOption, historique: PasOption[], raison?: string): Facon => ({
+  id, nom, etat: etat === 'retenue' ? 'retenue' : etat === 'ecartee' ? 'ecartee' : 'ouverte', ...(raison ? { raison } : {}), origine: 'exemple', suivi: { etat, historique }
+});
+const pas = (etat: EtatOption, le: string, raison?: string): PasOption => ({ etat, le, ...(raison ? { raison } : {}), origine: 'exemple' });
+const tacheSuivi = (id: string, texte: string, creeeLe: string, x: Partial<Tache> = {}): Tache => ({ id, texte, ...x, origine: 'exemple', creeeLe });
+
+function problemeSuivi(id: string, titre: string, phrase: string, creeLe: string, f: ReturnType<typeof filSuivi>, plus: Partial<DonneesCarnet>): CarnetDoc {
+  return carnet(id, titre, 'idea', { creeLe, phrase, criteres: [], facons: [], articles: [], notes: f.notes, photos: f.photos, genre: { valeur: 'probleme', origine: 'ia' }, ...plus });
+}
+
+/** Les documents de la fixture du suivi (carnets et messages), copies neuves à chaque appel. */
+export function fixtureSuivi(): CreativeItem[] {
+  const ia = 'ia' as const;
+  /* vapeur : décidé, 4 options, « écarté, 2e fois », une veille sans lien, 2 photos (avant le 3 nov., après le 22 nov.) */
+  const vapeurFil = filSuivi(IDS_SUIVI.vapeur, [
+    { id: 'ZZ-SV-M1', le: nov(3), texte: 'Trop de buée au plafond pendant l’ébullition. Photo du plafond.', photo: true, et: [{ sorte: 'constat' }] },
+    { id: 'ZZ-SV-M2', le: nov(4), texte: 'Humidificateur : peut-être, à voir.', et: [{ sorte: 'piste', optionId: OPTIONS_VAPEUR.humid }] },
+    { id: 'ZZ-SV-M3', le: nov(6), texte: 'Non, l’humidificateur ne suffit pas.', et: [{ sorte: 'ecart', optionId: OPTIONS_VAPEUR.humid }] },
+    { id: 'ZZ-SV-M4', le: nov(8, 9), texte: 'Condenseur A : dispo, adapté à la cuve. 690 CHF.', et: [{ sorte: 'piste', optionId: OPTIONS_VAPEUR.condA }, { sorte: 'cout', montantCentimes: 69000, optionId: OPTIONS_VAPEUR.condA }] },
+    { id: 'ZZ-SV-M5', le: nov(8, 10), texte: 'Le B, 2e meilleur, plus en stock aux États-Unis. Je mets une veille.', et: [{ sorte: 'veille', optionId: OPTIONS_VAPEUR.condB }] },
+    { id: 'ZZ-SV-M6', le: nov(12), texte: 'Autre système : hotte + extracteur au plafond.', et: [{ sorte: 'piste', optionId: OPTIONS_VAPEUR.hotte }] },
+    { id: 'ZZ-SV-M7', le: nov(20, 9), texte: 'Condenseur B de nouveau en stock : 540 CHF.', et: [{ sorte: 'veille', texte: 'de nouveau en stock', optionId: OPTIONS_VAPEUR.condB }, { sorte: 'cout', montantCentimes: 54000, optionId: OPTIONS_VAPEUR.condB }] },
+    { id: 'ZZ-SV-M8', le: nov(20, 10), texte: 'Je le prends fin du mois.', et: [{ sorte: 'retenu', texte: 'Je le prends fin du mois', optionId: OPTIONS_VAPEUR.condB }] },
+    { id: 'ZZ-SV-M9', le: nov(21), texte: 'Les humidificateurs, j’en ai quand même besoin ?', et: [{ sorte: 'piste', optionId: OPTIONS_VAPEUR.humid }] },
+    { id: 'ZZ-SV-M10', le: nov(22), texte: 'Non, en fait. Photo du plafond après la pose provisoire.', photo: true, et: [{ sorte: 'ecart', optionId: OPTIONS_VAPEUR.humid }] }
+  ]);
+  const vapeur = problemeSuivi(IDS_SUIVI.vapeur, 'Trop de vapeur au brassage', 'buée au plafond pendant l’ébullition', nov(3), vapeurFil, {
+    domaine: { valeur: 'brasserie', origine: ia }, categorie: { chemin: ['Brassage', 'Vapeur'], origine: ia },
+    facons: [
+      optionSuivi(OPTIONS_VAPEUR.condB, 'Condenseur B', 'retenue', [pas('piste', nov(5)), pas('veille', nov(8, 10)), pas('piste', nov(20, 9)), pas('retenue', nov(20, 10))]),
+      optionSuivi(OPTIONS_VAPEUR.condA, 'Condenseur A', 'piste', [pas('piste', nov(8, 9))]),
+      optionSuivi(OPTIONS_VAPEUR.hotte, 'Hotte + extracteur', 'piste', [pas('piste', nov(12))]),
+      optionSuivi(OPTIONS_VAPEUR.humid, 'Humidificateur', 'ecartee', [pas('piste', nov(4)), pas('ecartee', nov(6), 'pas assez'), pas('piste', nov(21)), pas('ecartee', nov(22), 'non, en fait')], 'non, en fait')
+    ],
+    articles: [{ id: 'ZZ-SV-A1', url: 'https://exemple.invalid/condenseur-a', domaine: 'exemple.invalid', nom: 'Condenseur A (exemple)', prixCentimes: 69000, devise: 'CHF', faconId: OPTIONS_VAPEUR.condA, valeurs: {}, lecture: 'lue', origine: 'exemple' }],
+    taches: [tacheSuivi('ZZ-SV-T1', 'Acheter le condenseur B', nov(20, 10), { echeance: '2026-11-30', precision: 'mois', coutCentimes: 54000, devise: 'CHF', optionId: OPTIONS_VAPEUR.condB })],
+    suivi: {
+      etat: 'decide', evenements: [
+        evSuivi('ZZ-SV-E1', nov(3), 'etat', { de: 'note', vers: 'cherche' }), evSuivi('ZZ-SV-E2', nov(6), 'option', { optionId: OPTIONS_VAPEUR.humid, de: 'piste', vers: 'ecartee', raison: 'pas assez' }),
+        evSuivi('ZZ-SV-E3', nov(8, 10), 'veille', { optionId: OPTIONS_VAPEUR.condB, de: 'piste', vers: 'veille' }), evSuivi('ZZ-SV-E4', nov(20, 10), 'option', { optionId: OPTIONS_VAPEUR.condB, de: 'piste', vers: 'retenue' }),
+        evSuivi('ZZ-SV-E5', nov(20, 10), 'etat', { de: 'cherche', vers: 'decide' }), evSuivi('ZZ-SV-E6', nov(21), 'option', { optionId: OPTIONS_VAPEUR.humid, de: 'ecartee', vers: 'piste' }),
+        evSuivi('ZZ-SV-E7', nov(22), 'option', { optionId: OPTIONS_VAPEUR.humid, de: 'piste', vers: 'ecartee', raison: 'non, en fait' })
+      ]
+    }
+  });
+  /* écoulement : je cherche, deux pas trouvé, une cause, un devis ; tâches de la semaine */
+  const ecoulFil = filSuivi(IDS_SUIVI.ecoulement, [
+    { id: 'ZZ-SE-M1', le: nov(2), texte: 'L’écoulement fuit sous la grille, flaque côté évier.', photo: true, et: [{ sorte: 'constat' }] },
+    { id: 'ZZ-SE-M2', le: nov(2, 14), texte: 'Siphon propre. Pas ça.', et: [{ sorte: 'pas-trouve' }] },
+    { id: 'ZZ-SE-M3', le: nov(3), texte: 'Joint de la grille : il tient.', et: [{ sorte: 'pas-trouve' }] },
+    { id: 'ZZ-SE-M4', le: nov(9), texte: 'Plans demandés à la gérance. Pas trouvé seul, contacté l’entreprise X.', et: [{ sorte: 'contact', texte: 'gérance' }, { sorte: 'contact', texte: 'entreprise X' }] },
+    { id: 'ZZ-SE-M5', le: nov(18), texte: 'Raccord desserré sous la dalle. Devis 850 CHF, + manchon PVC 110 et colle ≈ 60 CHF.', et: [{ sorte: 'cause' }, { sorte: 'trouve' }, { sorte: 'devis', montantCentimes: 85000 }, { sorte: 'cout', montantCentimes: 6000, estime: true }] }
+  ]);
+  const ecoulement = problemeSuivi(IDS_SUIVI.ecoulement, 'Écoulement qui fuit', 'l’écoulement fuit sous la grille', nov(2), ecoulFil, {
+    domaine: { valeur: 'local', origine: ia }, categorie: { chemin: ['Eau'], origine: ia },
+    taches: [
+      tacheSuivi('ZZ-SE-T1', 'Répondre au devis de l’entreprise X', nov(18), { echeance: '2026-11-23', precision: 'semaine', coutCentimes: 85000, devise: 'CHF' }),
+      tacheSuivi('ZZ-SE-T2', 'Acheter manchon PVC 110 + colle', nov(18), { echeance: '2026-11-23', precision: 'semaine', coutCentimes: 6000, devise: 'CHF', coutEstime: true })
+    ],
+    suivi: { etat: 'cherche', evenements: [evSuivi('ZZ-SE-E1', nov(2), 'etat', { de: 'note', vers: 'cherche' })] }
+  });
+  /* CO2 : décidé (cause trouvée), un coût estimé sans date */
+  const co2Fil = filSuivi(IDS_SUIVI.co2, [
+    { id: 'ZZ-SC-M1', le: nov(10), texte: 'Bouteille de 10 kg vide en 2 semaines au lieu de 6.', photo: true, et: [{ sorte: 'constat' }] },
+    { id: 'ZZ-SC-M2', le: nov(10, 14), texte: 'Eau savonneuse sur les raccords : rien.', et: [{ sorte: 'pas-trouve' }] },
+    { id: 'ZZ-SC-M3', le: nov(12), texte: 'Tête du fût 3 : joint en bon état.', et: [{ sorte: 'pas-trouve' }] },
+    { id: 'ZZ-SC-M4', le: nov(15), texte: 'Le détendeur siffle, l’aiguille basse pression descend la nuit.', et: [{ sorte: 'cause' }, { sorte: 'trouve' }] }
+  ]);
+  const co2 = problemeSuivi(IDS_SUIVI.co2, 'CO2 qui baisse dans un fût', 'bouteille de CO2 vide trop vite', nov(10), co2Fil, {
+    domaine: { valeur: 'brasserie', origine: ia }, categorie: { chemin: ['Fûts'], origine: ia },
+    taches: [tacheSuivi('ZZ-SC-T1', 'Joint de détendeur', nov(15), { coutCentimes: 1200, devise: 'CHF', coutEstime: true })],
+    suivi: { etat: 'decide', evenements: [evSuivi('ZZ-SC-E1', nov(10), 'etat', { de: 'note', vers: 'cherche' }), evSuivi('ZZ-SC-E2', nov(15), 'etat', { de: 'cherche', vers: 'decide' })] }
+  });
+  /* fusible : l'usage « inspection électrique » (photo, constat, tâches de la semaine et de fin de mois) */
+  const fusFil = filSuivi(IDS_SUIVI.fusible, [
+    { id: 'ZZ-SF-M1', le: nov(24, 9), texte: 'Inspection électrique : un fusible du tableau à revoir. Besoin de matériel adapté.', photo: true, et: [{ sorte: 'constat' }] }
+  ]);
+  const fusible = problemeSuivi(IDS_SUIVI.fusible, 'Fusible du tableau', 'un fusible du tableau à revoir', nov(24, 9), fusFil, {
+    domaine: { valeur: 'local', origine: ia }, categorie: { chemin: ['Électricité'], origine: ia },
+    taches: [
+      tacheSuivi('ZZ-SF-T1', 'Acheter un testeur de tension', nov(24, 9), { echeance: '2026-11-23', precision: 'semaine', coutCentimes: 3500, devise: 'CHF', coutEstime: true }),
+      tacheSuivi('ZZ-SF-T2', 'Fusibles de rechange ×5', nov(24, 9), { echeance: '2026-11-30', precision: 'mois', coutCentimes: 2500, devise: 'CHF', coutEstime: true })
+    ],
+    suivi: { etat: 'cherche', evenements: [evSuivi('ZZ-SF-E1', nov(24, 9), 'etat', { de: 'note', vers: 'cherche' })] }
+  });
+  /* malt : options retenue, veille (sans article), piste, écartée */
+  const maltFil = filSuivi(IDS_SUIVI.malt, [
+    { id: 'ZZ-SM-M1', le: nov(18), texte: 'Pils 25 kg en rupture chez le fournisseur. Brassin prévu en S49.', et: [{ sorte: 'constat' }] },
+    { id: 'ZZ-SM-M2', le: nov(18, 14), texte: 'Je mets une veille sur le retour en stock.', et: [{ sorte: 'veille', optionId: OPTIONS_MALT.attendre }] },
+    { id: 'ZZ-SM-M3', le: nov(19), texte: 'Malt pale à la place ? Ça change la couleur et le goût.', et: [{ sorte: 'piste', optionId: OPTIONS_MALT.pale }] },
+    { id: 'ZZ-SM-M4', le: nov(21), texte: 'Décaler le brassin : non, les fûts sont réservés.', et: [{ sorte: 'ecart', optionId: OPTIONS_MALT.decaler }] },
+    { id: 'ZZ-SM-M5', le: nov(22), texte: 'Autre fournisseur, 4 CHF de plus par sac. Je commande le 26.', et: [{ sorte: 'retenu', optionId: OPTIONS_MALT.autre }] }
+  ]);
+  const malt = problemeSuivi(IDS_SUIVI.malt, 'Malt pils en rupture', 'pils 25 kg en rupture', nov(18), maltFil, {
+    domaine: { valeur: 'brasserie', origine: ia }, categorie: { chemin: ['Matières'], origine: ia },
+    facons: [
+      optionSuivi(OPTIONS_MALT.autre, 'Autre fournisseur', 'retenue', [pas('retenue', nov(22))]), optionSuivi(OPTIONS_MALT.attendre, 'Attendre', 'veille', [pas('veille', nov(18, 14))]),
+      optionSuivi(OPTIONS_MALT.pale, 'Malt pale', 'piste', [pas('piste', nov(19))]), optionSuivi(OPTIONS_MALT.decaler, 'Décaler S49', 'ecartee', [pas('ecartee', nov(21), 'les fûts sont réservés')], 'les fûts sont réservés')
+    ],
+    taches: [tacheSuivi('ZZ-SM-T1', 'Commander le pils chez l’autre fournisseur', nov(22), { echeance: '2026-11-23', precision: 'semaine', optionId: OPTIONS_MALT.autre })],
+    suivi: { etat: 'decide', evenements: [evSuivi('ZZ-SM-E1', nov(18), 'etat', { de: 'note', vers: 'cherche' }), evSuivi('ZZ-SM-E2', nov(22), 'etat', { de: 'cherche', vers: 'decide' })] }
+  });
+  /* moisissure et fenêtre : des constats courts, aucun suivi écrit (l'état « noté » se dérive) */
+  const court = (id: string, titre: string, phrase: string, jour: number, chemin: string[]): { carnet: CarnetDoc; messages: MessageDoc[] } => {
+    const f = filSuivi(id, [{ id: `${id}-M1`, le: nov(jour), texte: phrase, et: [{ sorte: 'constat' }] }]);
+    return { carnet: problemeSuivi(id, titre, phrase, nov(jour), f, { domaine: { valeur: 'local', origine: ia }, categorie: { chemin, origine: ia } }), messages: f.messages };
+  };
+  const moisi = court(IDS_SUIVI.moisissure, 'Moisissure dans un coin', 'moisissure dans un coin de la salle', 14, ['Bâtiment']);
+  const fenetre = court(IDS_SUIVI.fenetre, 'Fenêtre qui ferme mal', 'la fenêtre ferme mal', 16, ['Bâtiment']);
+  /* cas neuf : une fête (genre idée, pistes), une assurance (genre mémo, décidée, échéance fin décembre) */
+  const feteFil = filSuivi(IDS_SUIVI.fete, [{ id: 'ZZ-SX-M1', le: nov(19), texte: 'Fête de la brasserie le 14 juin : tireuse, 4 fûts, food truck ?', et: [{ sorte: 'piste', texte: 'tireuse' }, { sorte: 'piste', texte: 'food truck' }] }]);
+  const fete = carnet(IDS_SUIVI.fete, 'Fête de la brasserie, 14 juin', 'idea', {
+    creeLe: nov(19), phrase: 'Fête de la brasserie le 14 juin', criteres: [], articles: [], notes: feteFil.notes, photos: [], genre: { valeur: 'idee', origine: ia }, domaine: { valeur: 'brasserie', origine: ia },
+    categorie: { chemin: ['Événements'], origine: ia },
+    facons: [optionSuivi('ZZ-SX-F1', 'Tireuse', 'piste', [pas('piste', nov(19))]), optionSuivi('ZZ-SX-F2', 'Food truck', 'piste', [pas('piste', nov(19))])],
+    suivi: { etat: 'cherche', evenements: [evSuivi('ZZ-SX-E1', nov(19), 'etat', { de: 'note', vers: 'cherche' })] }
+  });
+  const assurFil = filSuivi(IDS_SUIVI.assurance, [{ id: 'ZZ-SA-M1', le: nov(20), texte: 'Assurance RC à renouveler : je la garde, échéance 31 déc.', et: [{ sorte: 'retenu', texte: 'je la garde' }] }]);
+  const assurance = carnet(IDS_SUIVI.assurance, 'Assurance RC à renouveler', 'idea', {
+    creeLe: nov(20), phrase: 'Assurance RC à renouveler', criteres: [], articles: [], notes: assurFil.notes, photos: [], genre: { valeur: 'memo', origine: ia }, domaine: { valeur: 'papiers', origine: ia },
+    categorie: { chemin: ['Assurances'], origine: ia }, facons: [optionSuivi('ZZ-SA-F1', 'La garder', 'retenue', [pas('retenue', nov(20))])],
+    taches: [tacheSuivi('ZZ-SA-T1', 'Renouveler l’assurance RC', nov(20), { echeance: '2026-12-28', precision: 'mois' })],
+    suivi: { etat: 'decide', evenements: [evSuivi('ZZ-SA-E1', nov(20), 'etat', { de: 'note', vers: 'decide' })] }
+  });
+  /* cas neuf : une photo seule, sans texte : ni domaine, ni genre, ni suivi (reste dans « À ranger », état noté) */
+  const photoSeule = carnet(IDS_SUIVI.photo, 'Photo du 24 nov.', 'idea', {
+    creeLe: nov(24, 11), phrase: '', criteres: [], facons: [], articles: [], notes: [], photos: [{ id: 'ZZ-SP-P1', jpeg: PHOTO_SUIVI, messageId: 'ZZ-SP-M1' }]
+  });
+  const photoMsg: MessageDoc = {
+    id: 'ZZ-SP-M1', type: 'carnet-message', title: 'photo', status: 'done',
+    carnetMessage: { texte: '', le: nov(24, 11), depuis: 'liste', rangement: 'simulee', effets: [{ carnetId: IDS_SUIVI.photo, cible: 'carnet', id: IDS_SUIVI.photo }, { carnetId: IDS_SUIVI.photo, cible: 'photo', id: 'ZZ-SP-P1' }] }
+  };
+  /* cas neuf : une chambre froide d'avant le suivi (articles, aucun suivi, genre ni catégorie : tout se dérive) */
+  const chambreFroide = carnet(IDS_SUIVI.chambreFroide, 'Chambre froide', 'research', {
+    creeLe: '2026-10-20T12:00:00.000Z', phrase: 'une chambre froide pour la cave', criteres: [], notes: [], photos: [], domaine: { valeur: 'brasserie', origine: ia },
+    facons: [{ id: 'ZZ-SCF-F1', nom: 'Modèle 6 m³', etat: 'ouverte', origine: 'exemple' }],
+    articles: [
+      { id: 'ZZ-SCF-A1', url: 'https://exemple.invalid/froid-6', domaine: 'exemple.invalid', nom: 'Chambre froide 6 m³ (exemple)', prixCentimes: 480000, devise: 'CHF', faconId: 'ZZ-SCF-F1', valeurs: {}, lecture: 'lue', origine: 'exemple' },
+      { id: 'ZZ-SCF-A2', url: 'https://exemple.invalid/froid-8', domaine: 'exemple.invalid', nom: 'Chambre froide 8 m³ (exemple)', prixCentimes: 590000, devise: 'CHF', valeurs: {}, lecture: 'lue', origine: 'exemple' }
+    ]
+  });
+  /* deux résolus de l'année (14 oct., 16 nov.) pour « résolus 2026 » */
+  const resolu = (id: string, titre: string, creeLe: string, le: string, texte: string): CarnetDoc => carnet(id, titre, 'idea', {
+    creeLe, phrase: titre, criteres: [], facons: [], articles: [], notes: [], photos: [], genre: { valeur: 'probleme', origine: ia }, domaine: { valeur: 'brasserie', origine: ia }, categorie: { chemin: ['Transfert'], origine: ia },
+    suivi: { etat: 'resolu', evenements: [evSuivi(`${id}-E1`, le, 'resolu', { de: 'cherche', vers: 'resolu' })], resolu: { le, par: { sorte: 'texte', texte } } }
+  });
+  const pompe = resolu(IDS_SUIVI.pompe, 'Pompe qui cavite', '2026-10-02T12:00:00.000Z', '2026-10-14T12:00:00.000Z', 'crépine nettoyée');
+  const joint = resolu(IDS_SUIVI.joint, 'Joint de vanne', '2026-11-04T12:00:00.000Z', nov(16), 'joint changé');
+  /* un projet du Planning : sa note de dates se lit comme une bulle du fil et une tâche dérivée */
+  const planning = carnet(IDS_SUIVI.planning, 'Rangement et étagères inox', 'idea', {
+    creeLe: '2026-11-01T12:00:00.000Z', phrase: 'Rangement et étagères inox', criteres: [], facons: [], articles: [], photos: [],
+    notes: [{ id: 'ZZ-SPL-N1', texte: 'À faire du 01.12.2026 au 15.01.2027 (Planning, Structure)', genre: 'a-faire' }]
+  });
+  const tous = [vapeur, ecoulement, co2, fusible, malt, moisi.carnet, fenetre.carnet, fete, assurance, photoSeule, chambreFroide, pompe, joint, planning];
+  const messages = [...vapeurFil.messages, ...ecoulFil.messages, ...co2Fil.messages, ...fusFil.messages, ...maltFil.messages, ...moisi.messages, ...fenetre.messages, ...feteFil.messages, ...assurFil.messages, photoMsg];
+  return JSON.parse(JSON.stringify([...tous, ...messages])) as CreativeItem[];
 }
