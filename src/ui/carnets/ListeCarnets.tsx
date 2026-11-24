@@ -23,6 +23,7 @@ import { InsecMarque, liesParNbsp } from './insecable';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
+import { articleHonnete, quantiteArticle } from '../../domain/carnets/prixUnitaire';
 import { texteIntention } from '../../domain/horizons';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
@@ -111,19 +112,35 @@ type CarnetListe = CarnetV & { estimatedCost?: number };
  * prix d'article, le prix estimé du carnet (« estimé »), sinon le budget qu'il a écrit (« Budget du Planning : 3 500 CHF », « budget ») ;
  * rien d'inventé sinon. Le prix choisi contre l'estimé (Q-1) n'est pas tranché ici : un article prix reste devant.
  */
-export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: string; sorte?: 'estime' | 'budget' } | null {
+export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: string; quantite?: string; sorte?: 'estime' | 'budget' } | null {
+  /* R43 (C61-1) : la liste dit le prix du carnet ouvert (celui qui classe) avec sa quantité ou son unité, ou rien ; jamais le plancher d'un prix sans quantité (« dès 0,10 CHF », le gramme) */
   if (c.status === 'validated' && c.carnet.choix) {
-    const a = c.carnet.articles.find(x => x.id === c.carnet.choix!.articleId);
+    const a0 = c.carnet.articles.find(x => x.id === c.carnet.choix!.articleId);
+    const a = a0 ? articleHonnete(a0) : undefined;
     const m = montant(a?.prixCentimes);
-    return m ? { des: false, texte: m, devise: a?.devise ?? 'CHF' } : null;
+    const q = a ? quantiteArticle(a as never) : null;
+    return m ? { des: false, texte: m, devise: a?.devise ?? 'CHF', ...(q ? { quantite: `les ${q.texte}` } : {}) } : null;
   }
-  const prix = articlesEnLice(c).filter(a => typeof a.prixCentimes === 'number' && Number.isFinite(a.prixCentimes));
+  const t = calculerTableau(c.carnet as never);
+  const enLice = articlesEnLice(c).map(a => articleHonnete(a));
+  let prix = enLice.filter(a => typeof a.prixCentimes === 'number' && Number.isFinite(a.prixCentimes));
+  if (t) {
+    /* dès 2 articles, seuls les prix que le carnet classe se disent ; un prix seul n'est pas un « dès » */
+    const classes = new Map(t.lignes.filter(l => !l.ecarte && l.prixClasse !== undefined).map(l => [l.articleId, l.prixClasse!]));
+    prix = prix.filter(a => classes.has(a.id));
+    if (t.prixParUnite && classes.size) {
+      const m = montant(Math.min(...classes.values()));
+      return m ? { des: classes.size > 1, texte: m, devise: t.prixParUnite === 'volume' ? 'CHF/L' : 'CHF/kg' } : null;
+    }
+  }
   if (!prix.length) return prixSansArticle(c as CarnetListe);
   const devises = [...new Set(prix.map(a => a.devise ?? 'CHF'))];
   const devise = devises.includes('CHF') ? 'CHF' : devises[0];
-  const memes = prix.filter(a => (a.devise ?? 'CHF') === devise).map(a => a.prixCentimes!);
-  const m = montant(Math.min(...memes));
-  return m ? { des: prix.length > 1, texte: m, devise } : null;
+  const memes = prix.filter(a => (a.devise ?? 'CHF') === devise);
+  const moins = memes.reduce((p, a) => (a.prixCentimes! < p.prixCentimes! ? a : p));
+  const m = montant(moins.prixCentimes);
+  const q = quantiteArticle(moins as never);
+  return m ? { des: prix.length > 1, texte: m, devise, ...(q ? { quantite: `les ${q.texte}` } : {}) } : null;
 }
 
 function prixSansArticle(c: CarnetListe): { des: false; texte: string; devise: string; sorte: 'estime' | 'budget' } | null {
@@ -268,6 +285,7 @@ function CarteCarnet({ c, ajouts, range, fait, trouve, onOuvrir, onVoirAVenir }:
               {prix.sorte && <span className="cn-mut">{prix.sorte === 'estime' ? 'estimé' : 'budget'}</span>}
               <span className="cn-mono cn-prix">{prix.texte}</span>
               <span className="cn-mut">{prix.devise}</span>
+              {prix.quantite && <span className="cn-mut">{prix.quantite}</span>}
             </span>
           )}
         </button>

@@ -35,14 +35,14 @@ type LigneT = Tableau['lignes'][number];
 const unitePrixColonne = (t: Tableau): string => (t.prixParUnite ? (t.prixParUnite === 'volume' ? 'CHF/L' : 'CHF/kg') : 'CHF');
 
 /** Une colonne affichée : les caractéristiques des critères, puis le prix (sens moins, même devise). */
-export interface ColonneVue { cle: string; nom: string; unite?: string; sens: Sens; critere: boolean }
+export interface ColonneVue { cle: string; nom: string; unite?: string; sens: Sens; critere: boolean; /** R46 (C61-5) : la mesure cible du critère (« Marmite de brassage 50 L » : 50) ; le meilleur est le plus proche d'elle */ cible?: number }
 
 /**
  * Les colonnes dans l'ordre de g01-8 : les caractéristiques des critères (la 1re, celle qui classe d'abord, est `critere`), puis le prix,
  * puis les valeurs lues sur au moins 2 articles (débit, °C : P10), montrées sans être classées.
  */
 export function colonnesVue(t: Tableau): ColonneVue[] {
-  const vue = (c: Tableau['colonnes'][number], critere: boolean): ColonneVue => ({ cle: c.nom, nom: c.nom, unite: c.unite, sens: c.sens, critere });
+  const vue = (c: Tableau['colonnes'][number], critere: boolean): ColonneVue => ({ cle: c.nom, nom: c.nom, unite: c.unite, sens: c.sens, critere, ...(c.cible !== undefined ? { cible: c.cible } : {}) });
   const deCriteres = t.colonnes.filter(c => c.critereId);
   const cols: ColonneVue[] = deCriteres.map((c, i) => vue(c, i === 0));
   if (t.lignes.some(l => l.prixCentimes !== undefined)) cols.push({ cle: '__prix', nom: 'prix', unite: unitePrixColonne(t), sens: 'moins', critere: false });
@@ -131,6 +131,11 @@ export function meilleursDe(t: Tableau, c: ColonneVue): Set<string> {
   if (c.sens === 'texte') return new Set();
   const connus = t.lignes.filter(l => !l.ecarte).map(l => ({ id: l.articleId, n: c.cle === '__prix' ? (l.prixCentimes ?? null) : nombre(l.cellules[c.cle]) })).filter((x): x is { id: string; n: number } => x.n !== null);
   if (connus.length < 2) return new Set();
+  /* R46 (C61-5) : un critère à cible (« Marmite de brassage 50 L ») : le vert va au plus proche de la cible, jamais au plus grand */
+  if (c.cible !== undefined && (c.sens === 'plus' || c.sens === 'moins')) {
+    const proche = Math.min(...connus.map(x => Math.abs(x.n - c.cible!)));
+    return new Set(connus.filter(x => Math.abs(x.n - c.cible!) === proche).map(x => x.id));
+  }
   const cible = c.sens === 'moins' ? Math.min(...connus.map(x => x.n)) : Math.max(...connus.map(x => x.n));
   return new Set(connus.filter(x => x.n === cible).map(x => x.id));
 }
@@ -524,7 +529,7 @@ export function Comparer(p: ComparerProps) {
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
                             {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
-                              : <span className="cn-inconnu" aria-label="inconnu">–</span>}
+                              : <span className="cn-inconnu" aria-label="inconnu">?</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}
                           </td>
                         );

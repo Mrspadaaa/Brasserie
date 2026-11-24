@@ -3,10 +3,13 @@
  * « estimé » mais celui de l'article. Une autre devise ou aucun choix : `undefined` (jamais un chiffre inventé).
  */
 import type { CarnetDoc } from './modele';
+import { articleHonnete } from './prixUnitaire';
 
 export function prixChoisiCentimes(c: Pick<CarnetDoc, 'carnet'>): number | undefined {
   const k = c.carnet;
-  const a = k.choix ? k.articles.find(x => x.id === k.choix!.articleId) : undefined;
+  /* R43 (C61-1) : un prix « dès » sans quantité (0,10 CHF le gramme) ne part ni à À venir ni au Calendrier */
+  const brut = k.choix ? k.articles.find(x => x.id === k.choix!.articleId) : undefined;
+  const a = brut ? articleHonnete(brut) : undefined;
   if (!a || typeof a.prixCentimes !== 'number' || !(a.prixCentimes > 0) || (a.devise ?? 'CHF') !== 'CHF') return undefined;
   return a.prixCentimes;
 }

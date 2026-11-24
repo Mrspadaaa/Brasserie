@@ -60,7 +60,13 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** T26-4 : l'inverse du retrait d'un lien mort, par message (« Compléter » rend l'article). */
   const inversesLiens = useRef(new Map<string, EcritureCarnet[]>());
   /** IA-ETAPES-VISIBLES : les lectures lancées, gardées sur l'appareil jusqu'à leur fin (réouverture). Sans IA : rien. */
-  const suivi = useMemo(() => (mode === 'eteint' ? undefined : p.suiviLectures ?? suiviLocal()), [mode, p.suiviLectures]);
+  /* R44 (C61-2) : les jetons des lectures lancées dans CETTE session et pas finies. Une lecture vivante est gardée (le suivi garde le jeton jusqu'à sa fin) mais
+     elle n'est pas interrompue : seule une lecture gardée que rien ne mène (app fermée avant la fin) se propose dans le bandeau « Reprendre ». */
+  const vivantes = useRef(new Set<string>());
+  const suivi = useMemo(() => {
+    const base = mode === 'eteint' ? undefined : p.suiviLectures ?? suiviLocal();
+    return base ? { lister: () => base.lister(), garder: (l: Parameters<typeof base.garder>[0]) => { vivantes.current.add(l.jeton); base.garder(l); }, retirer: (jeton: string) => { vivantes.current.delete(jeton); base.retirer(jeton); } } : undefined;
+  }, [mode, p.suiviLectures]);
   const [retour, setRetourEtat] = useState<Retour | null>(null);
   /* D417 : le carnet que l'IA range depuis la liste (aucune fiche provisoire) ; la ligne dit « L'IA range… » */
   const [rangeEnCours, setRangeEnCours] = useState<string | null>(null);
@@ -170,7 +176,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const lecturesOffertes = useRef(new Set<string>());
   useEffect(() => {
     if (!suivi) return;
-    const neuves = rangement.lecturesEnAttente().filter(l => !lecturesOffertes.current.has(l.messageId));
+    const neuves = rangement.lecturesEnAttente().filter(l => !lecturesOffertes.current.has(l.messageId) && !vivantes.current.has(l.jeton));
     if (!neuves.length) return;
     for (const l of neuves) lecturesOffertes.current.add(l.messageId);
     setAReprendre(a => [...a, ...neuves.filter(l => !a.some(x => x.messageId === l.messageId)).map(l => ({ messageId: l.messageId, texte: l.texte, lecture: true as const }))]);

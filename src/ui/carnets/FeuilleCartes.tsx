@@ -34,7 +34,7 @@ export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, on
           {lignes.map(l => {
             const a = art(l.articleId);
             if (!a) return null;
-            return <CarteClassee key={a.id} article={a} rang={l.ecarte ? null : l.rang} carac={carac} valeur={col ? (l.cellules[col.nom] as never) : undefined} bornes={bornes} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} carnetTitre={titre}
+            return <CarteClassee key={a.id} article={a} rang={l.ecarte ? null : l.rang} carac={carac} valeur={col ? (l.cellules[col.nom] as never) : undefined} bornes={bornes} {...(col?.cible !== undefined ? { cible: col.cible } : {})} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} carnetTitre={titre}
               {...(l.ecarte ? { ecarte: l.ecarte } : {})} onOuvrir={() => onOuvrir(a.id)} onVeille={v => onVeille?.(a.id, v)} taux={taux} onTaux={onTaux} />;
           })}
           {aRelire.map(a => <div key={a.id} className="cn-classee cn-classee-relire"><LigneARelire article={a} /></div>)}

@@ -49,12 +49,16 @@ export function PrixPastille(p: PrixPastilleProps) {
   }
   if (eur && r) {
     const connu = r.totalChf !== undefined;
+    /* R43 (C61-4) : l'euro et son rendu disent leur sachet (« 50 g · 69,20 CHF/kg »), comme le tableau et Comparer : jamais un nombre nu */
+    const conv = convertiChf(a, p.taux);
+    const parU = quantite ? (conv !== undefined ? texteParUnite(a, conv, 'CHF') : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF')) : null;
+    const qte = quantite && parU ? <small className="cn-pastille-qte" data-quantite>{quantite.texte} · {parU}</small> : null;
     return (
       <button type="button" className={`cn-pastille-prix cn-pastille-est${connu ? '' : ' cn-pastille-pd'}`} data-eur aria-expanded={!!p.ouvert} onClick={p.onBascule}
         aria-label={connu ? `Prix rendu estimé, ${prixOrigine(a)}, détail` : `Prix en ${a.devise}, ${a.devise === 'EUR' ? 'taux à poser' : 'cours du jour non lu'}`}>
         {connu
-          ? <><small>{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono">≈{nb(r.totalChf)}</span><small>CHF rendu <ChevronUp size={12} aria-hidden /></small><small className="cn-mono cn-pastille-orig">{prixOrigine(a)}</small></>
-          : <><span className="cn-mono">{prixOrigine(a)}</span><small>{a.devise === 'EUR' ? 'taux ?' : 'cours ?'}</small></>}
+          ? <><small>{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono">≈{nb(r.totalChf)}</span><small>CHF rendu <ChevronUp size={12} aria-hidden /></small><small className="cn-mono cn-pastille-orig">{prixOrigine(a)}</small>{qte}</>
+          : <><span className="cn-mono">{prixOrigine(a)}</span><small>{a.devise === 'EUR' ? 'taux ?' : 'cours ?'}</small>{qte}</>}
       </button>
     );
   }

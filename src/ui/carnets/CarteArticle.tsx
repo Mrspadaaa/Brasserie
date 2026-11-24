@@ -84,6 +84,8 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
     if (!v.unite && /^oui$/i.test(t.trim())) return [nom];
     /* C50-7 : « Induction : non », jamais « pas : Induction » (qui ne se comprend pas) */
     if (!v.unite && /^non$/i.test(t.trim())) return [`${nom} : non`];
+    /* R45 : un « % » seul ne dit pas de quoi (« 13,6 % ») : il garde son nom (« Alpha 13,6 % ») */
+    if (v.unite === '%') return [`${nom} ${t} %`];
     return [v.unite ? `${t} ${v.unite}` : `${nom} ${t}`];
   });
 }
@@ -249,6 +251,8 @@ export interface CarteClasseeProps {
   /** C50-1 : la valeur de la cellule du tableau pour cette caractéristique (convertie, sous le nom du critère) ; sans elle, la valeur lue sous le nom ou son synonyme. */
   valeur?: ValeurV;
   bornes?: { min: number; max: number } | null;
+  /** R46 (C61-5) : la mesure cible du critère ; la jauge dit alors la proximité de la cible (50 L pile = pleine), non « plus grand = mieux » */
+  cible?: number;
   faconNom?: string;
   carnetTitre?: string;
   ecarte?: { raison: string };
@@ -277,6 +281,8 @@ export function CarteClassee(p: CarteClasseeProps) {
   const uniteAjoutee = unite && t !== null && !t.endsWith(unite) ? unite : undefined;
   const n = nombreValeur(v);
   const pos = n !== null && p.bornes ? (p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min)) : null;
+  /* R46 (C61-5) : la jauge garde son sens (petit à gauche, grand à droite : c54 R22) ; la cible du critère s'y repère d'un trait, placé sur sa valeur (jamais « plus grand = mieux » seul) */
+  const posCible = pos !== null && p.bornes && p.cible !== undefined && p.bornes.max !== p.bornes.min ? Math.min(1, Math.max(0, (p.cible - p.bornes.min) / (p.bornes.max - p.bornes.min))) : null;
   const [rendu, setRendu] = React.useState(false);
   const qui = [a.vendeur ?? a.domaine, a.pays].filter(Boolean).join(' · ');
   return (
@@ -306,6 +312,7 @@ export function CarteClassee(p: CarteClasseeProps) {
         {pos !== null && (
           <span className="cn-reglette" aria-hidden>
             <span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} />
+            {posCible !== null && <span className="cn-reglette-cible" data-cible={p.cible} style={{ left: `${Math.round(posCible * 100)}%` }} />}
           </span>
         )}
         {/* C50-8 : « Veiller » et son interrupteur vont ensemble, jamais coupés : le pied passe à la ligne avant de pousser l'interrupteur hors de l'écran */}

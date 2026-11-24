@@ -353,7 +353,7 @@ export interface Rangement<L> {
    * LE-1 (24.11) : regarder n'écrit jamais. Les lectures gardées sur l'appareil (lancées, jamais finies) ; cette liste ne lance rien et n'écrit rien :
    * l'écran les propose d'un toucher. Sans suivi, IA éteinte ou message disparu du fil : aucune.
    */
-  lecturesEnAttente(): { messageId: string; texte: string }[];
+  lecturesEnAttente(): { messageId: string; texte: string; jeton: string }[];
   /**
    * IA-ETAPES-VISIBLES : sur le toucher du brasseur (« Reprendre »), une lecture gardée sur l'appareil est reprise par son jeton (finie : sa page ; en
    * cours : suivie). `seul` : celle de ce message ; sans lui, toutes. Jamais appelée à l'ouverture (LE-1).
@@ -514,7 +514,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     },
     lecturesEnAttente() {
       if (!deps.suivi || deps.mode === 'eteint') return [];
-      return deps.suivi.lister().filter(l => !deps.messageExiste || deps.messageExiste(l.messageId)).map(l => ({ messageId: l.messageId, texte: l.texte }));
+      return deps.suivi.lister().filter(l => !deps.messageExiste || deps.messageExiste(l.messageId)).map(l => ({ messageId: l.messageId, texte: l.texte, jeton: l.jeton }));
     },
     async reprendreLectures(seul) {
       if (!deps.suivi || deps.mode === 'eteint' || !deps.enLigne()) return;

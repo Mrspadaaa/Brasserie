@@ -11,6 +11,9 @@ import { articleAEscalader } from './manques';
 import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { aromesEnFrancais, estLigneAromes } from '../../../functions/src/aromesFrancais';
+import { estLigneStyles, stylesEnFrancais } from '../../../functions/src/stylesFrancais';
+import { ditAlpha, nomAlpha } from './alpha';
+import { estLigneOrigine, paysEnFrancais } from './pays';
 import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
@@ -140,8 +143,10 @@ export function colonnesLues(articles: readonly Article[], deja: readonly Colonn
     comptes.set(cleC, c);
   }
   const sortie: Colonne[] = [];
+  /* R46 (C61-3) : au Comparer de houblons (2 houblons ou plus), l'alpha puis les arômes se lisent côte à côte même quand un seul des deux les publie : l'autre dit « ? » */
+  const houblons = articles.filter(a => ditAlpha(a.nom, a.valeurs)).length >= 2;
   for (const c of comptes.values()) {
-    if (c.n < 2) continue;
+    if (c.n < (houblons && (normaliser(c.nom) === 'alpha' || estLigneAromes(c.nom)) ? 1 : 2)) continue;
     const unite = estLongueur(c.nom) ? uniteDeColonneLongueur(c.unites) : [...c.unites.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
     sortie.push({ nom: c.nom, ...(unite ? { unite } : {}), sens: 'texte', lue: true });
   }
@@ -165,26 +170,12 @@ const LUES = new WeakMap<object, Record<string, Valeur>>();
  * (synonymes réunis, plage de température, unité écrite une fois), dans l'ordre de la page (Comparer garde l'ordre de ses groupes, CRB-14). Les noms ne sont pas retraduits (`lireCarnet` l'a
  * fait) ; ce que le brasseur a écrit (origine « vous ») n'est jamais fusionné. Idempotent, mémorisé par objet : aucun recalcul par cellule.
  */
-/**
- * C59-8 (R38) : sur un houblon vendu « Citra 13.6% », la page donne l'acide alpha sous le NOM DE LA VARIÉTÉ (« Citra : 13,6 % »). C'est l'alpha : le brasseur lit
- * « Alpha 13,6 % », en tête (cerveau/brasseur/penser-brasseur.md : α d'abord). Seulement quand le nom de la caractéristique ouvre le nom de l'article et que sa valeur
- * est le pourcentage écrit dans ce nom ; aucune autre ligne n'est touchée.
- */
-function nomAlpha(nomArticle: string | undefined, nom: string, x: Valeur): string {
-  if (!nomArticle || x.unite !== '%' || normaliser(nom) === 'alpha') return nom;
-  const n = normaliser(nomArticle);
-  const c = normaliser(nom);
-  if (c.length < 3 || !(n === c || n.startsWith(`${c} `))) return nom;
-  const num = String(x.valeur).replace(',', '.').trim();
-  const dansLeNom = /^\d+(?:\.\d+)?$/.test(num) && Number(num) >= 1 && Number(num) <= 30 && nomArticle.replace(/,/g, '.').replace(/\s+%/g, '%').includes(`${num}%`);
-  return dansLeNom ? 'Alpha' : nom;
-}
 export function valeursLuesDe(a: Pick<Article, 'valeurs'> & { nom?: string }): Record<string, Valeur> {
   let v = LUES.get(a.valeurs);
   if (!v) {
     const aAlpha = Object.keys(a.valeurs).some(k => normaliser(k) === 'alpha');
     /* C59-9 : les arômes déjà stockés en allemand ou en anglais se lisent en français (la lecture serveur le fait pour les pages lues dès maintenant) */
-    const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom: aAlpha ? nom : nomAlpha(a.nom, nom, x), ...(estLigneAromes(nom) && typeof x.valeur === 'string' ? { valeur: aromesEnFrancais(x.valeur) } : {}) }));
+    const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom: aAlpha ? nom : nomAlpha(a.nom, nom, x), ...(estLigneAromes(nom) && typeof x.valeur === 'string' ? { valeur: aromesEnFrancais(x.valeur) } : {}), ...(estLigneStyles(nom) && typeof x.valeur === 'string' ? { valeur: stylesEnFrancais(x.valeur) } : {}), ...(x.origine !== 'vous' && estLigneOrigine(nom) && typeof x.valeur === 'string' ? { valeur: paysEnFrancais(x.valeur) } : {}) }));
     const fusion = fusionnerCaracteristiques(entrees.filter(x => x.origine !== 'vous').map(mesureNormalisee));
     v = Object.fromEntries([...fusion, ...entrees.filter(x => x.origine === 'vous')].map(({ nom, ...x }) => [nom, x as Valeur]));
     LUES.set(a.valeurs, v);
