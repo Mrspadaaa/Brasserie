@@ -249,7 +249,8 @@ describe('R4 : un encadré de synthèse (« Compromis ») ne répète aucune val
   /* TEST ADAPTÉ par c48-fix (24.11), décision (b) du pilote (DOSSIER.md) : avec un critère, la phrase du compromis de sa maquette choisie g01-8
      (« la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ») reste telle quelle. L'ancien test exigeait
      qu'elle ne redise aucune valeur du tableau : caduc sur le cas avec critère (la règle « ne recopie pas » ne vaut que sans critère). */
-  it('compromisDe, un critère « Volume » et deux prix : la phrase de la maquette g01-8 reste (la 2e, son prix, l\'écart, la valeur du critère)', () => {
+  /* CADUC (c56-tests, 24.11) : sa réponse « Oui » à C50-5 (« faut-il que le compromis dise ce qu'on gagne et ce qu'on perd ? ») remplace la phrase de la maquette g01-8 pour le cas avec critère ; la règle R30 (c56Regles) la contraint désormais. */
+  it.skip('compromisDe, un critère « Volume » et deux prix : la phrase de la maquette g01-8 reste (la 2e, son prix, l\'écart, la valeur du critère)', () => {
     const c = chambreFroide({ prix: true, volume: true, critere: true });
     const phrase = compromisDe(tableau(c)) ?? '';
     expect(phrase, `« ${phrase} »`).toMatch(/^la 2e, 2\s?495,60 CHF, soit 268,05 CHF de moins que la 1re ; le volume 2,6 m³ au lieu de 4,06 m³$/);

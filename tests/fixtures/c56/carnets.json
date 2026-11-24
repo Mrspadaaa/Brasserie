@@ -1,0 +1,32 @@
+{
+  "_source": "Voie c56-tests (24.11) : articles réécrits à la main (aucun lien réel, aucune donnée personnelle) d'après les captures du tour 56 (voies/critique-56/cap/X-offre.png, A-F1-0.png, M-F1-0.png, M-F2-0.png, Z-comparer-0.png, M-comparer-0.png, H-F1-1.png) et celles du tour 50 (critique-50/cap/Z-comparer-5.png, M-comparer-0.png). Les prix, volumes et écarts sont ceux des captures (2 697,74 et 2 987,51 CHF ; 302 et 520 CHF ; 242 L et 50 L) ; les vendeurs sont des noms fictifs de la même longueur que ceux des captures (« gastro-exemple.com » pour « ggmgastro.com »).",
+  "marmite": {
+    "titre": "ZZ TEST — marmite de brassage 50 L",
+    "critere": { "texte": "Volume utile : 50 L", "nom": "Volume utile", "unite": "L", "sens": "plus" },
+    "articles": [
+      { "id": "M1", "nom": "Marmite ZZ KS240L", "vendeur": "Galaxus-exemple", "pays": "CH", "dispo": "en stock", "prixCentimes": 30200,
+        "lignes": [ { "nom": "Volume utile", "valeur": "242", "unite": "L" }, { "nom": "Tension", "valeur": "400 V" } ] },
+      { "id": "M2", "nom": "Maischekessel ZZ 50 L", "vendeur": "braustore-exemple.ch", "pays": "CH", "dispo": "sur commande", "prixCentimes": 52000,
+        "lignes": [ { "nom": "Volume utile", "valeur": "50", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] }
+    ]
+  },
+  "cellule": {
+    "titre": "ZZ TEST — cellule à 4 °C",
+    "critere": { "texte": "Température à 4 °C", "nom": "Température", "unite": "°C", "sens": "plus" },
+    "articles": [
+      { "id": "C1", "nom": "Chambre froide ZZ 2,6 m³", "vendeur": "gastro-exemple.com", "pays": "DE", "dispo": "en stock", "prixCentimes": 269774,
+        "lignes": [ { "nom": "Volume", "valeur": "2,6", "unite": "m³" }, { "nom": "Température", "valeur": "0 à 8 °C" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "C2", "nom": "Chambre froide ZZ 4,06 m³", "vendeur": "gastro-exemple.com", "pays": "DE", "dispo": "en stock", "prixCentimes": 298751,
+        "lignes": [ { "nom": "Volume", "valeur": "4,06", "unite": "m³" }, { "nom": "Température", "valeur": "0 à 8 °C" }, { "nom": "Tension", "valeur": "230 V" } ] }
+    ]
+  },
+  "houblon": {
+    "titre": "Houblons ZZ",
+    "articles": [
+      { "id": "H1", "nom": "Citra ZZ pellets T90", "vendeur": "hopfen-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 1890,
+        "lignes": [ { "nom": "Variantes", "valeur": "50 g · 100 g (affichée) · 250 g · 500 g · 1 kg" }, { "nom": "Alpha", "valeur": "12,5", "unite": "%" } ] },
+      { "id": "H2", "nom": "Mosaic ZZ pellets T90", "vendeur": "hopfen-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 1650,
+        "lignes": [ { "nom": "Variantes", "valeur": "50 g · 100 g (affichée) · 250 g · 500 g · 1 kg" }, { "nom": "Alpha", "valeur": "11,5", "unite": "%" } ] }
+    ]
+  }
+}
