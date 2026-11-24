@@ -519,7 +519,8 @@ describe('R46 (C61-6) : la valeur d\'une caractéristique de houblon se dit en f
   it('fiche : une valeur déjà gardée en allemand (« amerikanische Ales und IPA\'s ») se lit en français, comme les arômes (C59-9)', () => {
     const t = sans(lu(fiche(carnetDe(F61.citra), 0)));
     expect(t, t.slice(0, 600)).toMatch(/particulierement adapte pour/);
-    expect(t, t.slice(0, 600)).not.toMatch(ALLEMAND);
+    /* le nom du vendeur (« Brau- und Rauchshop ») est un nom propre, pas une valeur à traduire */
+    expect(t.split(sans('Brau- und Rauchshop')).join(' '), t.slice(0, 600)).not.toMatch(ALLEMAND);
   });
   it('fiche : la valeur dite en français est « ales et IPA américaines » (l\'attendu du brasseur, normalisé comme le texte : même `sans` des deux côtés)', () => {
     const t = sans(lu(fiche(carnetDe(F61.citra), 0)));
