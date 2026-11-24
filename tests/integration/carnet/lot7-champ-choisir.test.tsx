@@ -76,7 +76,7 @@ describe('L-44 : Choisir un article au-dessus du budget max', () => {
   it('dit le dépassement avant le choix', () => {
     rendre(249560, 'Budget max 400 CHF');
     const n = screen.getByRole('note');
-    expect(n.textContent).toMatch(/2 495,6 CHF/);
+    expect(n.textContent).toMatch(/2 495,60 CHF/); /* C46-5 : centimes entiers dès qu'il y en a */
     expect(n.textContent).toMatch(/400 CHF/);
   });
   it('rien quand le prix tient dans le budget', () => {
