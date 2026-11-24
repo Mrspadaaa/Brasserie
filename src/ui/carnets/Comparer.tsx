@@ -17,6 +17,7 @@ import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
+import { BoutonRelire } from './BoutonRelire';
 import './carnets-decider.css';
 import './comparer-compact.css';
 
@@ -169,6 +170,8 @@ export interface ComparerProps {
   onRetour: () => void;
   onOuvrirArticle?: (articleId: string) => void;
   onChoisir?: () => void;
+  /** C48-1 : relire la page d'un article lu dont le prix est « ? » (geste du brasseur) ; absent : pas de bouton. */
+  onRelire?: (articleId: string) => void | Promise<void>;
   /** Tour 3, PCN-164 : d'où viennent les valeurs (`mentionValeurs`) ; absent : les vendeurs. */
   mention?: string;
 }
@@ -230,6 +233,28 @@ function texteClassees(t: Tableau, nCriteres: number): string | null {
   if (!t.rangePar) return null;
   if (!nCriteres) return `classées par ${t.rangePar}`;
   return /le prix$/.test(t.rangePar) ? 'à égalité, le moins cher' : null;
+}
+
+/**
+ * C48-3 : le critère en tête, dit PAR UNE SEULE fonction pour Comparer et pour la feuille Articles (« Classés par ce qui compte ») : le 1er
+ * critère qui classe, sinon le prix (« Prix » s'il classe, « Prix ? » quand deux prix ne sont pas lus). Même source que le calcul du rang.
+ */
+export function teteDeClassement(t: Tableau | null, critere?: CritereV): string {
+  const premier = criteresQuiClassent(t, critere)[0];
+  if (premier) return premier.texte;
+  return t?.rangePar && /le prix/.test(t.rangePar) ? 'Prix' : 'Prix ?';
+}
+
+/**
+ * C48-4 : une phrase de synthèse qui redit une valeur du tableau (prix, dimensions, volume : une cellule qui porte un chiffre, lue telle que
+ * le tableau la dit) recopie le tableau. Comparaison sur le texte normalisé, nombre entier (« 2,6 » n'est pas dans « 12,60 »).
+ */
+const nettoyer = (s: string) => s.normalize('NFKC').replace(/[\s  ]+/g, ' ').trim().toLowerCase();
+export function recopieLeTableau(phrase: string, t: Tableau): boolean {
+  const p = nettoyer(phrase);
+  return colonnesComparer(t).flatMap(c => t.lignes.map(l => texteCellule(l, c))).filter((x): x is string => !!x).map(nettoyer)
+    .filter(x => x.length >= 3 && /\d/.test(x))
+    .some(x => { let i = p.indexOf(x); while (i >= 0) { if (!/\d/.test(p[i - 1] ?? ' ') && !/[\d]/.test(p[i + x.length] ?? ' ')) return true; i = p.indexOf(x, i + 1); } return false; });
 }
 
 /** Tour 3, f5c n° 7 : « sous votre minimum de 1 500 m³/h » dit court dans sa cellule (« < min. 1 500 », l'unité est sur la ligne). */
@@ -311,8 +336,9 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 }
 
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
-function CellulePrix({ l, taux }: { l: LigneT; taux?: number }) {
-  if (l.prixCentimes === undefined) return <span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>;
+function CellulePrix({ l, taux, onRelire }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void> }) {
+  /* C48-1 : l'article est lu mais son prix ne l'est pas : « Relire » est un geste du brasseur (rien ne part tout seul) */
+  if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}</>;
   if (estEtranger(l)) {
     const r = renduArticle(l, taux);
     const dev = (l.devise ?? '').toUpperCase();
@@ -341,7 +367,11 @@ export function Comparer(p: ComparerProps) {
   const prixClasse = prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1;
   const aUnEuro = actifs.some(l => estEtranger(l));
   const aUnTaux = actifs.some(l => estEtranger(l) && tauxVersChf(l, p.taux));
-  const compromisLocal = p.compromis ? null : compromisDe(t);
+  /* C48-4 (décision (b)) : sans critère qui classe, un compromis (de l'IA ou calculé) qui recopie les valeurs du tableau n'apprend rien : il
+     n'est pas montré (l'IA récitant, le calcul local prend sa place, qui ne récite jamais). Avec un critère, la phrase de la maquette g01-8 reste. */
+  const recite = (phrase: string) => cqc.length === 0 && !!t && recopieLeTableau(phrase, t);
+  const compromisIA = p.compromis && !recite(p.compromis) ? p.compromis : null;
+  const compromisLocal = compromisIA ? null : (() => { const c = compromisDe(t); return c && !recite(c) ? c : null; })();
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6). L-27 : un seul article lu (le choisi, et des liens non
      lus) a sa colonne ; seul un tableau sans aucun article lu reste à naître */
   const naissant = !t || ordre.length === 0;
@@ -374,8 +404,11 @@ export function Comparer(p: ComparerProps) {
         {!naissant && !seul && (
           <p className="cn-chaine" aria-label="Classé par">
             <span className="cn-mut">Classé par</span>
-            <b className={prixClasse ? 'cn-on' : 'cn-trou'}><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> {prixClasse ? 'Prix' : 'Prix ?'}</b>
-            {cqc.map((x, i) => <React.Fragment key={i}><span aria-hidden>›</span><b className={!prixClasse && i === 0 ? 'cn-on' : undefined}>{x.texte}</b>{!sourceUnique && x.source === 'ia' ? <span className="cn-mut"> (proposé par l'IA)</span> : null}</React.Fragment>)}
+            {/* C48-3 (décision (a) du pilote) : la chaîne dit le VRAI tri, critère d'abord puis le prix (comme `tableau` et la feuille Articles) ;
+                la ligne Prix reste épinglée en haut du tableau, comme dans sa maquette : l'épingle suit celle des deux qui est épinglée. */}
+            {cqc.length === 0 && <b className={prixClasse ? 'cn-on' : 'cn-trou'}><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> {prixClasse ? 'Prix' : 'Prix ?'}</b>}
+            {cqc.map((x, i) => <React.Fragment key={i}>{i > 0 ? <span aria-hidden>›</span> : null}<b className={!prixClasse && i === 0 ? 'cn-on' : undefined}>{!prixClasse && i === 0 ? <><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> </> : null}{x.texte}</b>{!sourceUnique && x.source === 'ia' ? <span className="cn-mut"> (proposé par l'IA)</span> : null}</React.Fragment>)}
+            {cqc.length > 0 && prixClasse && <><span aria-hidden>›</span><b className="cn-on"><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> Prix</b></>}
             {sourceUnique === 'ia' ? <span className="cn-mut cn-cmp-source">proposé par l'IA</span> : null}
           </p>
         )}
@@ -430,7 +463,7 @@ export function Comparer(p: ComparerProps) {
                         const hors = l.horsSeuil?.[c.cle];
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} />
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} />
                               : txt ? (genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>)
                               : <span className="cn-inconnu" aria-label="inconnu">–</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
@@ -453,10 +486,10 @@ export function Comparer(p: ComparerProps) {
             </ul>
           )}
           {/* g01-8 : « Compromis : la 1re, … », de l'IA, sinon calculé sur place avec les valeurs du tableau (picto local, pas le ✻ : Q19). */}
-          {(p.compromis || compromisLocal) && (
-            <p className="cn-encart cn-compromis" data-source={p.compromis ? 'ia' : 'locale'}>
+          {(compromisIA || compromisLocal) && (
+            <p className="cn-encart cn-compromis" data-source={compromisIA ? 'ia' : 'locale'}>
               <Scale size={20} role="img" aria-label="Compromis" className="cn-ok" />
-              <span><b>Compromis :</b> {p.compromis ?? compromisLocal} <Provenance origine={p.compromis ? 'ia' : 'locale'} /></span>
+              <span><b>Compromis :</b> {compromisIA ?? compromisLocal} <Provenance origine={compromisIA ? 'ia' : 'locale'} /></span>
             </p>
           )}
           {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{aUnTaux ? `≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », ${MENTION_FRAIS}, estimé` : 'Euros : le taux se pose dans la liste des articles'}</p>}

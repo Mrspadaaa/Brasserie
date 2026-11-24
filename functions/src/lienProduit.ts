@@ -4,6 +4,10 @@ import { Parser } from 'htmlparser2';
 import { stockStatus } from './brewerSuppliers.js';
 import { bruitDeBoutique, completerValeurs, memeMesure, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
 import { montantDit } from './lienValeurs.js';
+import { libelleFrancais, retenir } from './lienLibelles.js';
+
+/** Ce qu'on LIT d'une page (avant le tri) ; ce qu'on GARDE après le tri de l'essentiel est plafonné à `GARDEES` (C48-5 : le plafond ne se prend jamais dans l'ordre de la page). */
+const LUES = 60, GARDEES = 24;
 
 /**
  * Lecture d'une page produit, sans modèle (D446, 23.11 : « vraiment très mauvais » au banc réel). Remplace la lecture JSON-LD seule.
@@ -246,6 +250,35 @@ function prixSousTitre(visible: string, titre: string): { montant: number; devis
   return undefined;
 }
 
+/**
+ * C48-1 : le prix d'une page dont le bloc d'achat n'est ni sous le titre ni à moins de 700 caractères (bandeau d'achat avant la galerie,
+ * livraison et variantes entre le titre et le prix). Repli de `prixSousTitre`, jamais avant lui : le PREMIER bloc « prix » du document
+ * (classe ou id price / prix / preis, ou itemprop="price") qui écrit un montant avec sa devise. Ni le prix barré, ni les produits liés,
+ * ni le panier, ni la navigation : le prix d'un autre article ne devient jamais celui-ci.
+ */
+const BLOC_PRIX = '[itemprop="price"], [class*="price" i], [class*="prix" i], [class*="preis" i], [id*="price" i], [id*="prix" i], [id*="preis" i]';
+const PAS_CE_PRIX = /(?:^|[\s_-])(?:old|was|regular|strike|strikethrough|crossed|related|upsell|cross|similar|recommend\w*|carousel|slider|suggest\w*|cart|basket|panier|warenkorb|minicart|list-price|listprice|uvp|rrp|msrp|saving|savings|discount|filter|facet|range)(?:$|[\s_-])/i;
+function prixDuBloc($: CheerioAPI): { montant: number; devise: string; des: boolean } | undefined {
+  let trouve: { montant: number; devise: string; des: boolean } | undefined;
+  $(BLOC_PRIX).each((_, e) => {
+    if (trouve) return;
+    const el = $(e);
+    if (el.closest('nav, header, footer, aside, del, s, script, style, noscript, template, .products, [data-is-descendent-of-query-loop], [data-block-name="woocommerce/product-collection"]').length) return;
+    const lignee = [e, ...el.parents().toArray()].map((x) => `${$(x).attr('class') ?? ''} ${$(x).attr('id') ?? ''}`);
+    if (lignee.some((c) => PAS_CE_PRIX.test(c.replace(/\b(?:price|prix|preis)[-_]?/gi, ' ')))) return;
+    /* le bloc ENTIER du prix : un élément interne (« CHF4.00 ») d'une fourchette (« CHF4.00 – CHF285.00 ») n'est pas le prix, c'en est un bout */
+    let bloc = el;
+    while (bloc.parent().is(BLOC_PRIX) && compact(bloc.parent().text()).length <= 160) bloc = bloc.parent();
+    const t = compact(bloc.text());
+    if (t.length > 160 || /(?:statt|UVP|instead of|au lieu de|RRP|PVC|pro\s+(?:kg|100\s?g|l\b)|\/\s?(?:kg|l)\b)/i.test(t)) return;
+    const ms = montantsDe(t), m = ms[0];
+    /* une fourchette (« CHF 4.00 – CHF 15.00 » : le prix dépend de la variante choisie) n'est le prix de personne : rien n'est lu */
+    if (m && /^\D{0,5}\d[\d.,'’]*\s[–—-]\s*\D{0,5}\d/.test(t.slice(m.i))) return;
+    if (m) trouve = { montant: m.montant, devise: m.devise, des: /(?:^|\s)(?:ab|dès|from)\s*$/i.test(t.slice(Math.max(0, m.i - 8), m.i)) };
+  });
+  return trouve;
+}
+
 /** Les écritures possibles d'un montant (1820.9 → « 1.820,90 », « 1'820.90 », « 1820,90 »…), pour le retrouver dans le texte. */
 function ecritures(m: number): string[] {
   const [e, f] = m.toFixed(2).split('.');
@@ -399,7 +432,7 @@ function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeu
   lignes('table, dl');
   // Listes « Nom : valeur » dans une zone de caractéristiques (ggmgastro, gastro-held, description de baldinger.biz).
   $('li').each((_, li) => {
-    if (out.length >= 24) return;
+    if (out.length >= LUES) return;
     const zone = $(li).parents().slice(0, 5).toArray().map((e) => `${$(e).attr('id') ?? ''} ${$(e).attr('class') ?? ''}`).join(' ');
     if (!SECTION_SPECS.test(zone)) return;
     const m = compact($(li).text()).match(/^([^:：]{2,40})\s*[:：]\s*(.{1,100})$/);
@@ -407,18 +440,19 @@ function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeu
   });
   // Puces de description sans deux-points (« Max. Malzmenge 6 kg », « Braumenge 20 l fertiges Bier ») : le nom précède le premier nombre.
   $('li').each((_, li) => {
-    if (out.length >= 24 || $(li).closest('nav, header, footer, aside').length) return;
+    if (out.length >= LUES || $(li).closest('nav, header, footer, aside').length) return;
     const zone = $(li).parents().slice(0, 6).toArray().map((e) => `${$(e).attr('id') ?? ''} ${$(e).attr('class') ?? ''}`).join(' ');
     if (!/descr|beschreib|tab-pane|tab-content|product-?(?:info|detail|text)|highlight/i.test(zone)) return;
     const m = compact($(li).text()).match(/^([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ.\- ]{2,35}?)\s+(\d[\d.,]*\s?(?:kg|g|l|ml|cl|liter|litres?|w|kw|v|mm|cm|m|bar|%|°c|stück|pcs).{0,70})$/i);
-    if (m) ajouter(m[1], m[2]);
+    /* C48-5 : « Température de 0 °C à 8 °C » est la température, pas une ligne nommée « Température de » : la préposition qui lie le nom à sa valeur n'est pas le nom */
+    if (m) ajouter(m[1].replace(/\s+(?:de|du|des|d['’]|von|bis|à)$/i, ''), m[2]);
   });
   const desc =p ? liste(p.description).filter((x) => typeof x === 'string').join('\n') : '';
   for (const l of desc.split(/\r?\n|<br\s*\/?>/i).slice(0, 40)) {
     const m = compact(l).match(/^([A-Za-zÀ-ÿ][^:：]{1,30})\s*[:：]\s*(.{1,80})$/);
     if (m && /\d/.test(m[2])) ajouter(m[1], m[2]);
   }
-  return out.slice(0, 24);
+  return out.slice(0, LUES);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------
@@ -474,15 +508,30 @@ const INDUCTION_OUI = /^(?:induktion(?:s)?(?:geeignet|tauglich)|f[üu]r\s+indukt
  * Induktion geeignet ») sans « Nom : valeur ». Une ligne ENTIÈRE doit dire cela, hors navigation et pied de page : rien n'est déduit d'un mot
  * dans une phrase.
  */
+/**
+ * C48-5 : les puces d'une chambre froide (« Température de 0 °C à 8 °C », « Air pulsé », « 230V », « R290 ») n'ont ni deux-points ni libellé :
+ * ce sont pourtant la température, le refroidissement, la tension et le fluide. Même règle que la matière : une ligne ENTIÈRE qui dit cela ;
+ * un fluide frigorigène se reconnaît à sa désignation normalisée (R290, R600a, R404A…), jamais à « R » suivi d'un nombre quelconque.
+ */
+const TEMPERATURE_LIGNE = /^temp[ée]rature(?:\s+de\s+service)?(?:\s+(?:de|du|d['’])|\s*:)?\s*(-?\d[\d.,]*\s?°\s?C(?:\s*(?:à|a|bis|-|–)\s*[+-]?\d[\d.,]*\s?°\s?C)?)$/i;
+const TENSION_LIGNE = /^(\d{3})\s?V(?:olts?)?(?:\s*[/~-]\s*\d{2}\s?Hz)?$/i;
+const FLUIDE_LIGNE = /^R-?(?:22|32|134a|290|404a|407c|410a|448a|449a|452a|507a?|513a|600a?|717|744|1234yf|1234ze)$/i;
+const REFROIDISSEMENT_LIGNE = /^(?:air pulsé|froid ventilé|refroidissement ventilé|ventilé|froid statique|refroidissement statique|umluftkühlung)$/i;
 function essentielsDeLaPage($: CheerioAPI): Array<{ nom: string; valeur: string }> {
   const out: Array<{ nom: string; valeur: string }> = [];
+  const poser = (nom: string, valeur: string) => { if (!out.some((x) => x.nom === nom)) out.push({ nom, valeur }); };
   $('body *').slice(0, 6000).each((_, e) => {
     const el = $(e);
     if (el.children().length || el.closest('nav, header, footer, script, style, noscript').length) return;
     const t = compact(el.text());
-    if (t.length < 5 || t.length > 70) return;
-    if (!out.some((x) => x.nom === 'Matière') && MATIERE_LIGNE.test(t)) out.push({ nom: 'Matière', valeur: t.replace(/^Edelstahl/i, 'Acier inox').replace(/^Chromstahl/i, 'Acier chromé').replace(/^Kupfer/i, 'Cuivre') });
-    else if (!out.some((x) => x.nom === 'Induction') && (INDUCTION_NON.test(t) || INDUCTION_OUI.test(t))) out.push({ nom: 'Induction', valeur: INDUCTION_NON.test(t) ? 'non' : 'oui' });
+    if (t.length < 4 || t.length > 70) return;
+    let m: RegExpMatchArray | null;
+    if (t.length >= 5 && !out.some((x) => x.nom === 'Matière') && MATIERE_LIGNE.test(t)) out.push({ nom: 'Matière', valeur: t.replace(/^Edelstahl/i, 'Acier inox').replace(/^Chromstahl/i, 'Acier chromé').replace(/^Kupfer/i, 'Cuivre') });
+    else if (t.length >= 5 && !out.some((x) => x.nom === 'Induction') && (INDUCTION_NON.test(t) || INDUCTION_OUI.test(t))) out.push({ nom: 'Induction', valeur: INDUCTION_NON.test(t) ? 'non' : 'oui' });
+    else if ((m = t.match(TEMPERATURE_LIGNE))) poser('Température', compact(m[1]));
+    else if ((m = t.match(TENSION_LIGNE))) poser('Tension', `${m[1]} V${/hz/i.test(t) ? ` ${t.replace(/^\d{3}\s?V(?:olts?)?\s*/i, '')}` : ''}`);
+    else if (FLUIDE_LIGNE.test(t)) poser('Fluide frigorigène', t.toUpperCase().replace(/^R-/, 'R'));
+    else if (REFROIDISSEMENT_LIGNE.test(t)) poser('Refroidissement', t);
   });
   return out;
 }
@@ -501,14 +550,14 @@ const RETIRE = /nicht\s+mehr\s+(?:verfügbar|lieferbar|erhältlich)|plus\s+dispo
 const LISTE_PRIX = /ListPrice|StrikethroughPrice|SRP|MSRP|InvoicePrice|SalePrice_none/i;
 
 /** T28-9 : d'où viennent les prix, dit en mots du brasseur (la fiche produit du site est la source normale, donc muette). */
-const SOURCE_PRIX_DITE: Record<string, string> = { 'Open Graph': ' (annonce du site)', 'bloc d\'achat': ' (bloc d\'achat de la page)', 'page (sous le titre)': ' (lu sous le titre de la page)' };
+const SOURCE_PRIX_DITE: Record<string, string> = { 'Open Graph': ' (annonce du site)', 'bloc d\'achat': ' (bloc d\'achat de la page)', 'page (sous le titre)': ' (lu sous le titre de la page)', 'page (bloc de prix)': ' (lu dans le bloc de prix de la page)' };
 
 /**
  * « 20 caractéristiques » ; « 8 caractéristiques : 5 du tableau de la page, 1 du nom » (T28-9 : ni « HTML » ni « données embarquées » ; T30-9 : en mots
  * du brasseur, jamais « 8 mesures : 8 ailleurs dans la page »). La provenance ne se détaille que si elle varie : tout au même endroit ne se redit pas.
  */
 function detailCaract(total: number, tableau: number, duNom: number): string {
-  const ailleurs = total - tableau - duNom;
+  const ailleurs = Math.max(0, total - tableau - duNom);
   const sources = [tableau, ailleurs, duNom].filter((n) => n > 0).length;
   const d = sources < 2 ? [] : [tableau ? `${tableau} du tableau de la page` : '', ailleurs ? `${ailleurs} ailleurs dans la page` : '', duNom ? `${duNom} du nom` : ''].filter(Boolean);
   return `${total} caractéristique${total > 1 ? 's' : ''}${d.length ? ` : ${d.join(', ')}` : ''}`;
@@ -597,6 +646,10 @@ export function extraireProduit(html: string, url: URL): Extraction {
     const m = prixSousTitre(visible, h1 || nom!);
     if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (sous le titre)'; }
   }
+  if (prix === undefined) {
+    const m = prixDuBloc($);
+    if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (bloc de prix)'; }
+  }
 
   // Contrôle du prix : un prix des données structurées doit se lire sur la page ; sinon il est douteux (jamais retiré en silence).
   let prixDouteux: string | undefined;
@@ -648,11 +701,11 @@ export function extraireProduit(html: string, url: URL): Extraction {
       const epuisee = liste<Json>(v.offers).some((o) => /OutOfStock|SoldOut|Discontinued/i.test(String(o?.availability ?? '')));
       return lib ? `${lib}${v === choisie ? ' (affichée)' : ''}${epuisee ? ' (épuisé)' : ''}` : undefined;
     }).filter((x): x is string => !!x);
-    if (dites.length > 1 && valeurs.length < 24) valeurs.push({ nom: 'Variantes', valeur: couper(dites.join(' · '), VAL_CARACT) });
+    if (dites.length > 1 && valeurs.length < LUES) valeurs.push({ nom: 'Variantes', valeur: couper(dites.join(' · '), VAL_CARACT) });
   }
   if (amazon) $('#productDetails_techSpec_section_1 tr, #productOverview_feature_div tr, #technicalSpecifications_section_1 tr').each((_, tr) => {
     const c = $(tr).children('th, td');
-    if (c.length === 2 && valeurs.length < 24) {
+    if (c.length === 2 && valeurs.length < LUES) {
       const n = compact(c.eq(0).text()), v = compact(c.eq(1).text());
       if (n && v && !valeurs.some((x) => norm(x.nom) === norm(n))) valeurs.push({ nom: couper(n, NOM_CARACT), valeur: couper(v, VAL_CARACT) });
     }
@@ -664,11 +717,14 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const dHtml = valeurs.length;
   const embarquees = valeursDonneesEmbarquees(html);
   const depuisDescriptions = descriptions.flatMap((d) => pairesDeTexte(d));
-  let fusion = completerValeurs(valeurs, [...embarquees, ...depuisDescriptions]);
+  let fusion = completerValeurs(valeurs, [...embarquees, ...depuisDescriptions], LUES);
   let dNom = 0;
-  { const n = completerValeurs(fusion.valeurs, mesuresDuNom(nom)); fusion = n; dNom = n.ajoutees; }
-  fusion = completerValeurs(fusion.valeurs, essentielsDeLaPage($));
-  valeurs.splice(0, valeurs.length, ...(fusion.valeurs as Valeur[]));
+  { const n = completerValeurs(fusion.valeurs, mesuresDuNom(nom), LUES); fusion = n; dNom = n.ajoutees; }
+  fusion = completerValeurs(fusion.valeurs, essentielsDeLaPage($), LUES);
+  /* C48-5 : le plafond se prend APRÈS le tri de l'essentiel (température, volume, matière, énergie, fluide…), jamais dans l'ordre de la page */
+  const lues = fusion.valeurs as Valeur[];
+  const gardees = retenir(lues, GARDEES, (v) => libelleFrancais(v.nom));
+  valeurs.splice(0, valeurs.length, ...gardees);
   etapes.push(valeurs.length
     ? { nom: 'caract', statut: 'trouve', detail: detailCaract(valeurs.length, dHtml, dNom) }
     : { nom: 'caract', statut: 'absent' });

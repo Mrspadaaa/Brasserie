@@ -22,6 +22,7 @@ import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
 import { parsePrix } from '../../domain/finance/upgradeRing';
 import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import { BoutonRelire } from './BoutonRelire';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
@@ -50,6 +51,8 @@ export interface FicheArticleProps {
   onOffre?: (articleId: string) => void;
   /** L-9 : poser ou corriger le prix de l'article (centimes, CHF). */
   onPrix?: (centimes: number) => void;
+  /** C48-1 : relire la page d'un article lu sans prix (geste du brasseur) ; la lecture dit sa fin en rendant la main. */
+  onRelire?: () => void | Promise<void>;
   /** L-16 : l'article suivant ou précédent du carnet (balayer, ou ‹ ›). */
   onSuivant?: () => void;
   onPrecedent?: () => void;
@@ -293,6 +296,8 @@ export function FicheArticle(p: FicheArticleProps) {
                   {moi && p.onPrix && !poserPrix && (p2
                     ? <button type="button" className="cn-ico" aria-label="Modifier le prix" onClick={() => setPoserPrix(true)}><Pencil size={16} aria-hidden /></button>
                     : <button type="button" className="cn-lien cn-poser-prix-ouvrir" onClick={() => setPoserPrix(true)}>Poser le prix</button>)}
+                  {/* C48-1 : un article lu sans prix propose de relire sa page (le geste est le sien, jamais automatique) */}
+                  {moi && !p2 && !poserPrix && p.onRelire && a.url && a.lecture === 'lue' && <BoutonRelire onRelire={p.onRelire} classe="cn-relire-prix" />}
                   {o.url && <a className="cn-lien" href={o.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
                   {d2 && <span className="cn-mut cn-offre-detail">{d2}</span>}
                 </div>

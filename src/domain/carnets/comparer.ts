@@ -696,7 +696,7 @@ export function compromisDe(t: Tableau | null): string | null {
   const p1 = premier.prixCentimes;
   const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
   const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; return v ? `${nombreTexte(v.valeur)}${unite(k)}` : null; };
-  if (p1 !== undefined) {
+  if (p1 !== undefined && criteres.length > 0) {
     /* tour 3, PCN-106 : jamais une proposition sous son minimum (ou au-dessus de son maximum) */
     const candidats = L.slice(1).filter(x => !x.horsSeuil && x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
       && ouiNon.every(k => nombreCellule(x, k) !== null && nombreCellule(x, k) === nombreCellule(premier, k)));
@@ -728,25 +728,25 @@ export function compromisDe(t: Tableau | null): string | null {
     const seuil = !horsTenants.length ? '' : horsTenants.some(x => Object.values(x.horsSeuil!).some(v => /maximum/.test(v))) ? ' et votre maximum' : ' et votre minimum';
     return `la 1re, la seule ${seuls.map(k => aFaire(k.nom)).join(' et ')}${seuil}${tx}`;
   }
-  /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant */
-  const dits: string[] = [];
-  for (const k of criteres) { const v = val(premier, k); if (v) dits.push(k.sens === 'oui-non' ? `${k.nom} : ${v}` : `${avecArticle(k.nom, k.sens)} ${v}`); }
   const prix = prixTexte(p1, premier.devise);
   const deuxieme = L[1];
+  if (!criteres.length) {
+    /* C48-4 (décision du pilote (b), 24.11) : sans critère, le compromis ne recopie pas le tableau (prix, dimensions, valeurs lues y sont déjà,
+       C48 : « il recopie le tableau, on n'apprend rien »). Il ne dit que ce que le tableau ne dit pas : la différence de prix, et qu'aucun
+       critère ne départage. Rien à dire de plus : pas d'encadré. */
+    const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
+    const moinsCher = p1 !== undefined && autres.length > 0 && autres.every(x => x.prixCentimes! >= p1);
+    const ecart = moinsCher && deuxieme.prixCentimes !== undefined && memeDevise(deuxieme) && deuxieme.prixCentimes > p1! ? prixTexte(deuxieme.prixCentimes - p1!, premier.devise) : null;
+    return ecart ? `la 1re, la moins chère : ${ecart} de moins que la 2e ; aucun critère ne les départage` : null;
+  }
+  /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant (g01-8 : la phrase de la maquette choisie reste) */
+  const dits: string[] = [];
+  for (const k of criteres) { const v = val(premier, k); if (v) dits.push(k.sens === 'oui-non' ? `${k.nom} : ${v}` : `${avecArticle(k.nom, k.sens)} ${v}`); }
   if (prix) {
     const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
     const moinsCher = autres.length > 0 && autres.every(x => x.prixCentimes! >= p1!);
     dits.push(moinsCher ? `${prix}, la moins chère` : prix);
   } else dits.push('prix non lu');
-  if (!criteres.length && deuxieme) {
-    /* rangé par le prix seul : la 1re est la moins chère ; les valeurs lues se citent, sans jugement (leur sens n'est dit par aucun critère) */
-    const ecart = p1 !== undefined && deuxieme.prixCentimes !== undefined && memeDevise(deuxieme) ? prixTexte(deuxieme.prixCentimes - p1, premier.devise) : null;
-    if (ecart) dits.push(`${ecart} de moins que la 2e`);
-    for (const k of t.colonnes.filter(x => x.lue)) {
-      const a = val(premier, k), b = val(deuxieme, k);
-      if (a && b && a !== b) dits.push(/^(oui|non)$/.test(a) ? `${k.nom} : ${a} contre ${b}` : `${avecArticle(k.nom)} ${a} contre ${b}`);
-    }
-  }
   return `la 1re, ${dits.join(' ; ')}`;
 }
 

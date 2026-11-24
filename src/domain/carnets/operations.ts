@@ -8,6 +8,7 @@
  * `veille.releveLe` n'est écrit par aucune intention (R31 : relève sous accord).
  */
 import { estDomaine, type DomaineCarnet } from './domaines';
+import type { PageLue as PageLueV } from '../../../functions/src/carnetIA';
 import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
 import { dateFacture, estRealise } from '../finance/upgradeRing';
@@ -635,6 +636,48 @@ export function poserPrixArticle(etat: Etat, args: { carnetId: string; articleId
   poser(b, c);
   return b.resultat('✓ Prix posé');
 }
+
+/**
+ * C48-1 : « Relire » (geste du brasseur) : la page de l'article relue, ce qu'elle dit de plus entre dans l'article ; rien ne part tout seul.
+ * Le prix lu n'entre que si l'article n'a pas le sien (celui que le brasseur a posé ou que la page avait déjà dit ne bouge jamais), avec sa
+ * devise, sa taxe, son TTC et son cours ; les caractéristiques lues sur la page se rafraîchissent, celles du brasseur ne sont jamais touchées ;
+ * photo, disponibilité et port ne se posent que s'ils manquaient. Rien de plus à lire : refus, rien n'est écrit.
+ */
+export function relireArticle(etat: Etat, args: { carnetId: string; articleId: string; page: PageRelue; le: string }): Resultat {
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  const a = c?.carnet.articles.find(x => x.id === args.articleId);
+  if (!c || !a) return refus('Article introuvable.');
+  const p = args.page;
+  if (p.statut !== 'lue') return refus('La page ne se lit pas.');
+  let change = 0;
+  if (a.prixCentimes === undefined && typeof p.prix === 'number' && p.prix > 0 && p.devise) {
+    a.prixCentimes = Math.round(p.prix * 100); a.devise = p.devise; change++;
+    if (p.prixDes) a.prixDes = true;
+    if (p.taxe) { a.taxe = p.taxe; if (p.taxe === 'ht' && typeof p.prixTTC === 'number' && p.prixTTC > 0) a.prixTTCCentimes = Math.round(p.prixTTC * 100); }
+    if (p.change && p.change.taux > 0 && p.devise !== 'CHF') a.change = { taux: p.change.taux, date: p.change.date, source: p.change.source };
+  }
+  const luLe = p.luLe > 0 ? new Date(p.luLe).toISOString() : args.le;
+  for (const v of p.valeurs ?? []) {
+    const deja = a.valeurs[v.nom];
+    if (deja && deja.origine !== 'page') continue;
+    const neuve: Valeur = { valeur: v.valeur, ...(v.unite ? { unite: v.unite } : {}), origine: 'page', luLe };
+    if (!deja || deja.valeur !== neuve.valeur || deja.unite !== neuve.unite) { a.valeurs[v.nom] = neuve; change++; }
+  }
+  if (!a.photo && p.photos?.length) { a.photo = p.photos[0]; a.photos = [...p.photos]; change++; }
+  if (!a.dispo && p.dispo) { a.dispo = p.dispo === 'en-stock' ? 'en stock' : p.dispo === 'retire' ? 'plus disponible' : p.dispo === 'sur-commande' ? ['sur commande', p.dispoDelai].filter(Boolean).join(' · ') : 'rupture'; change++; }
+  if (!a.livraison && p.livraison && (p.livraison.gratuite || p.livraison.refusee || (typeof p.livraison.prix === 'number' && p.livraison.prix >= 0))) {
+    const l = p.livraison;
+    a.livraison = { ...(typeof l.prix === 'number' && l.prix >= 0 && !l.gratuite && !l.refusee ? { prixCentimes: Math.round(l.prix * 100), devise: l.devise ?? p.devise ?? 'CHF' } : {}), ...(l.gratuite ? { gratuite: true as const } : {}), ...(l.refusee ? { refusee: true as const } : {}) };
+    change++;
+  }
+  if (!change) return refus('Rien de plus à lire sur la page.');
+  a.lecture = 'lue';
+  poser(b, c);
+  return b.resultat('✓ Page relue');
+}
+/** Ce que `relireArticle` lit d'une page (un `PageLue` du serveur). */
+export type PageRelue = Pick<PageLueV, 'statut' | 'prix' | 'devise' | 'prixDes' | 'taxe' | 'prixTTC' | 'change' | 'valeurs' | 'photos' | 'dispo' | 'dispoDelai' | 'livraison' | 'luLe'>;
 
 /* ---------- choisir (R07, R34) ---------- */
 

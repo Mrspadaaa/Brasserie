@@ -4,7 +4,7 @@ import { prixPropose } from '../../domain/carnets/prixPropose';
 import type React from 'react';
 import type { CarnetDoc } from '../../domain/carnets/modele';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
-  poserDomaine, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+  poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, type LigneLocale } from '../../domain/carnets/analyseLocale';
 import { carnetProche } from '../../domain/carnets/rattacher';
@@ -13,7 +13,7 @@ import type { AidesCarnet, ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { anciennesNotes, faitsDuPlanning } from '../../domain/carnets/anciens';
 import { prixSemblable, type AchatPasse } from '../../domain/horizons';
-import type { Rangement as Envoi } from './rangement';
+import { appelsReels, appelsSimules, type Rangement as Envoi } from './rangement';
 import { ListeCarnets } from './ListeCarnets';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
 import { CadreArrivee } from './CadreArrivee';
@@ -66,6 +66,22 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
   const pictosDe = (c: { title: string; carnet: { articles: readonly { id: string; nom?: string; faconId?: string; photo?: string }[]; facons: readonly { id: string; nom?: string }[] } }) =>
     Object.fromEntries(c.carnet.articles.map(a => [a.id, pictoArticle(c, a)] as const).filter(([, v]) => v));
 
+  /**
+   * C48-1 : « Relire » la page d'un article lu sans prix. Un geste du brasseur (rien ne part tout seul) : la page est relue, ce qu'elle dit de
+   * plus entre dans l'article (`relireArticle`), jamais un prix posé par le brasseur. Éteinte ou hors ligne : le dit, ne lit rien.
+   */
+  const relire = async (articleId: string): Promise<void> => {
+    const c = ouvert;
+    const a = c?.carnet.articles.find(x => x.id === articleId);
+    if (!c || !a?.url) return;
+    if (mode === 'eteint') { p.onMessage?.('L’IA est éteinte : la page ne se relit pas.'); return; }
+    if (!enLigne) { p.onMessage?.('Hors ligne : la page se relit au retour du réseau.'); return; }
+    const appels = p.appels ?? (mode === 'production' ? appelsReels : appelsSimules());
+    const page = await appels.lire(a.url, new AbortController().signal);
+    const r = appliquer(relireArticle(magasin.lire(), { carnetId: c.id, articleId, page, le: maintenant().toISOString() }));
+    if (r) p.onMessage?.(r.avis);
+  };
+
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
@@ -86,6 +102,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const suivant = voisin(1), precedent = voisin(-1);
     ecran = a ? <FicheArticle key={a.id} taux={tauxEur} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
       {...(suivant ? { onSuivant: suivant } : {})} {...(precedent ? { onPrecedent: precedent } : {})}
+      {...(a.url && a.lecture === 'lue' ? { onRelire: () => relire(a.id) } : {})}
       onPrix={centimes => {
         const r = appliquer(poserPrixArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, centimes }));
         const doc = r?.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined;
@@ -100,7 +117,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
   } else if (vue.sorte === 'comparer') {
     ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
-      nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
+      onRelire={relire} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;

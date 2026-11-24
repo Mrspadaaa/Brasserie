@@ -11,7 +11,7 @@
  */
 import { lireDomainePose, type DomainePose } from './domaines';
 import type { CreativeItem } from '../../types';
-import { traduireValeurs } from '../../../functions/src/lienLibelles';
+import { prioriserValeurs, traduireValeurs } from '../../../functions/src/lienLibelles';
 import { lundiDe } from '../calendrier';
 import { analyserLigne, prixTousDe, urlsDe } from './analyseLocale';
 
@@ -273,7 +273,9 @@ export function valeursEnFrancais(valeurs: Record<string, Valeur>): Record<strin
     sortie[t.nom] = { ...autres, valeur: typeof o.valeur === 'number' ? o.valeur : t.valeur, ...(t.unite ? { unite: t.unite } : {}) };
   }
   for (const [nom, v] of entrees) if (v.origine === 'vous' || typeof v.valeur === 'boolean') sortie[nom] = v;
-  return sortie;
+  /* E47-5 (rouvert en ligne) : l'essentiel (volume, matière, induction, énergie, consommation, température) d'abord, les numéros en dernier, QUEL QUE
+     SOIT l'ordre dans lequel l'article a été gardé (ordre de la page, ou de Firestore) : la fiche et le résumé de la carte lisent cet ordre. */
+  return Object.fromEntries(prioriserValeurs(Object.entries(sortie).map(([nom, v]) => ({ nom, valeur: '', v }))).map(x => [x.nom, x.v]));
 }
 
 /** CRP-2, CRB-9 (à la lecture, rien n'est réécrit) : entités décodées, « Couleur : » sans ses deux-points, nom sans le titre du carnet. */

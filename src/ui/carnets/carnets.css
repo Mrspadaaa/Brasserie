@@ -474,7 +474,8 @@
 .cn-classee-val { display: flex; flex-direction: column; align-items: flex-end; }
 .cn-classee-gros { font-size: 26px; font-weight: 700; line-height: 1.1; }
 .cn-classee-pied { display: flex; align-items: center; gap: 10px; }
-.cn-classee-carac { font-size: 14px; max-width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* C48-2 : le libellé de la caractéristique se replie entre ses mots (jamais « Dimensions inté… ») */
+.cn-classee-carac { font-size: 14px; max-width: 34%; white-space: normal; overflow-wrap: normal; line-height: 1.2; }
 .cn-reglette { position: relative; flex: 1; height: 4px; border-radius: 999px; background: rgb(var(--cave-800)); }
 .cn-reglette-plein { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgb(var(--area-stocks)); }
 .cn-reglette-rond { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 999px; background: rgb(var(--area-stocks)); }
@@ -726,7 +727,9 @@
 /* L-19 (23.11 ; M1-14, M2-4, M4-7, CA12-PW-4) : chaque colonne du tableau prend la largeur de sa plus longue valeur (posée par
    TableauCarnet, --cn-colN) ; une mesure plus longue (« 1800 x 1500 x 2100 mm ») passe à la ligne dans sa colonne au lieu d'être rognée
    au bord de la carte. */
-.cn-tab-ligne:not(.cn-tab-cols) > .cn-tab-num { white-space: normal; overflow-wrap: break-word; line-height: 1.25; }
+.cn-tab-ligne:not(.cn-tab-cols) > .cn-tab-num { white-space: normal; overflow-wrap: normal; line-height: 1.25; }
+/* C48-6 : une mesure à plusieurs termes (« 1640 × 1340 × 1850 mm ») : un terme par ligne, jamais coupée à un espace */
+.cn-tab .cn-terme { display: block; white-space: nowrap; }
 
 /* L-20 (23.11, M3-1) : ⋯ de la ligne Critère, chaque critère avec « Retirer » */
 .cn-critere-une > .cn-critere-actions { flex: none; align-self: center; margin-left: auto; }

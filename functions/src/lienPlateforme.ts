@@ -1,4 +1,5 @@
 import { load } from 'cheerio/slim';
+import { estSupposition } from './lienLibelles.js';
 
 /**
  * Marches « plateforme » de la lecture d'un lien (D446, 23.11), AVANT l'IA : tout ce que la page ou sa boutique publient déjà sous une
@@ -32,7 +33,7 @@ const VALEUR_BOUTIQUE = /\b(?:jours?\s+de\s+retour|retour\s+de\s+\d+|\d+\s*tage\
 const VALEUR_ABSENTE = /^(?:non\s+publi[ée]e?s?|non\s+renseign[ée]e?|k\.?\s?A\.?|n\/?a|nicht\s+(?:angegeben|verf[üu]gbar)|inconnu|unbekannt|—|–|-|\?)$/i;
 export function bruitDeBoutique(nom: string, valeur: string): boolean {
   const n = compact(nom), v = compact(valeur);
-  return NOM_BOUTIQUE.test(n) || (/,/.test(n) && n.length > 24) || n.split(' ').length > 6 || VALEUR_BOUTIQUE.test(v) || VALEUR_ABSENTE.test(v);
+  return estSupposition(n) || NOM_BOUTIQUE.test(n) || (/,/.test(n) && n.length > 24) || n.split(' ').length > 6 || VALEUR_BOUTIQUE.test(v) || VALEUR_ABSENTE.test(v);
 }
 const premierMot = (nom: string) => norm(nom).replace(/\[.*?\]|\(.*?\)/g, ' ').split(/[^a-z0-9]+/).find((m) => m.length >= 4) ?? '';
 /** Même mesure écrite deux fois sous deux noms (« Volume utile [Litres] 429 » et « Volume de réfrigération [Litres] 429 ») : même valeur chiffrée, même premier mot. */
@@ -65,6 +66,8 @@ export function pairesDeTexte(texte: string | undefined): ValeurLue[] {
 }
 
 const MESURES_NOM: Array<{ nom: string; re: RegExp }> = [
+  /* C48-5 : « Chambre froide 1800 x 1500 mm - 4,06 m³ » : le volume d'une chambre froide s'écrit en mètres cubes dans le titre */
+  { nom: 'Volume', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:m³|m3)(?![a-zà-ÿ\d])/i },
   /* T25-8 : un nombre collé à des lettres est une référence (« KS240L », « B40pro »), jamais une mesure : `(?<![A-Za-zÀ-ÿ])` */
   { nom: 'Volume', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:l|lt|liter|litres?|litre)(?![a-zà-ÿ])/i },
   { nom: 'Puissance', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:kw|w)(?![a-zà-ÿ])/i },

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { CarteClassee, estExemple, nombreValeur } from './CarteArticle';
-import type { TableauV } from './Comparer';
+import { teteDeClassement, type TableauV } from './Comparer';
 import { Provenance, type ArticleV, type ContenuCarnetV } from './EtatIA';
 import { colonnesCarnet, LigneARelire, lignesClassees } from './TableauCarnet';
 
@@ -28,7 +28,8 @@ export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, on
           <h3 className="cn-sp"><b>Articles · {k.articles.length}</b> {comptesCarnet(k).facons > 0 && <span className="cn-mut">{pluriel(comptesCarnet(k).facons, 'façon')}</span>}</h3>
           <button type="button" className="cn-lien cn-fermer" onClick={onFermer}><X size={18} aria-hidden /> Fermer</button>
         </div>
-        {carac && <p className="cn-mut">Classés par ce qui compte : <b className="cn-encre">{critere?.texte ?? carac.nom}</b></p>}
+        {/* C48-3 : le même critère en tête que Comparer (`teteDeClassement`, une seule fonction, celle du calcul du rang) */}
+        {carac && <p className="cn-mut">Classés par ce qui compte : <b className="cn-encre">{teteDeClassement(tableau, critere as never)}</b></p>}
         <div className="cn-classees">
           {lignes.map(l => {
             const a = art(l.articleId);

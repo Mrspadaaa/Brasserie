@@ -112,8 +112,11 @@ describe('E47-5 : les caractéristiques dites en premier sont l\'essentiel', () 
     const i = (n: string) => noms.indexOf(n);
     expect(i('Matière')).toBeGreaterThanOrEqual(0);
     expect(i('Induction')).toBeGreaterThanOrEqual(0);
-    for (const essentiel of ['Matière', 'Induction']) for (const second of ['Numéro d\'article', 'Est probablement équipé d\'un adaptateur secteur']) expect(i(essentiel)).toBeLessThan(i(second));
-    expect(noms.slice(-2).sort()).toEqual(['Est probablement équipé d\'un adaptateur secteur', 'Numéro d\'article'].sort());
+    /* TEST ADAPTÉ par c48-fix (24.11), ajout du pilote sur E47-5 rouvert (tour 49, FK-0) : « Est probablement équipé d'un adaptateur secteur : Oui »
+       est une supposition de la page : elle n'est plus gardée du tout (avant : gardée, en dernier). Le numéro d'article reste, en dernier. */
+    for (const essentiel of ['Matière', 'Induction']) expect(i(essentiel)).toBeLessThan(i('Numéro d\'article'));
+    expect(noms.some(n => /probablement/i.test(n))).toBe(false);
+    expect(noms.slice(-1)).toEqual(['Numéro d\'article']);
   });
   it('frigo : consommation et classe énergétique avant les numéros', () => {
     const noms = prioriserValeurs(traduireValeurs([

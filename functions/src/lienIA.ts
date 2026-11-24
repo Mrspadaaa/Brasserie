@@ -3,6 +3,7 @@ import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { PageLue } from './carnetIA.js';
 import { couper, montantsDe, positionsMontant } from './lienProduit.js';
 import { bruitDeBoutique } from './lienPlateforme.js';
+import { retenir } from './lienLibelles.js';
 
 /**
  * Dernière marche de la cascade (D446) : l'IA lit le TEXTE nettoyé de la page, jamais la page brute ni son adresse (décision du 23.11 :
@@ -63,7 +64,7 @@ export const LIEN_IA_CONSIGNE = [
   '- taxe : « ht » si la page dit hors taxe / exkl. MwSt / zzgl. MwSt pour ce prix, « ttc » si elle dit taxe comprise / inkl. MwSt ; sinon null.',
   '- prixDes : true si le prix est « dès / ab / from » (plusieurs tailles ou variantes).',
   '- portSuisse : frais de livraison vers la Suisse seulement s\'ils sont écrits ; portGratuit : true si la livraison gratuite est écrite.',
-  '- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), la valeur avec son unité, recopiée du texte ; le nom court, écrit en français (« Largeur », « Volume », « Puissance ») même si la page est en allemand ou en anglais. Une longueur de câble est « Longueur du câble », jamais « Longueur ».',
+  '- caracteristiques : au plus 12 caractéristiques techniques écrites, en commençant par ce qui décide d\'un achat (température, volume, matière, énergie, tension, fluide, refroidissement) puis volume, dimensions, puissance, poids, capacité…, la valeur avec son unité, recopiée du texte ; le nom court, écrit en français (« Largeur », « Volume », « Puissance ») même si la page est en allemand ou en anglais. Une longueur de câble est « Longueur du câble », jamais « Longueur ».',
   'Un champ absent du texte est null (ou une liste vide). N\'invente rien, ne convertis rien, ne calcule rien.'
 ].join('\n');
 
@@ -200,7 +201,8 @@ function fusion(base: Gardee, plus: Gardee): Gardee {
   if (port.portSuisse !== undefined) out.portSuisse = port.portSuisse;
   if (port.portGratuit) out.portGratuit = true;
   const noms = new Set(base.caracteristiques.map((c) => norm(c.nom)));
-  out.caracteristiques = [...base.caracteristiques, ...plus.caracteristiques.filter((c) => !noms.has(norm(c.nom)))].slice(0, 12);
+  /* C48-5 : l'essentiel d'abord avant le plafond ; une relecture qui trouve la température ne la perd pas derrière 12 lignes secondaires */
+  out.caracteristiques = retenir([...base.caracteristiques, ...plus.caracteristiques.filter((c) => !noms.has(norm(c.nom)))], 12);
   return out;
 }
 
@@ -263,7 +265,8 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   }
   const deja = new Set((out.valeurs ?? []).map((v) => norm(v.nom)));
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
-  if (nouvelles.length) { out.valeurs = [...(out.valeurs ?? []), ...nouvelles].slice(0, 24); ajouts.push(`${nouvelles.length} caract.`); }
+  /* C48-5 : le plafond (24) se prend après le tri de l'essentiel : une température trouvée par l'IA ne tombe pas derrière 24 lignes de la page */
+  if (nouvelles.length) { out.valeurs = retenir([...(out.valeurs ?? []), ...nouvelles], 24); ajouts.push(`${nouvelles.length} caract.`); }
   const contreditFinal = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
   etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {

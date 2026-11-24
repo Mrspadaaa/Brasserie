@@ -246,10 +246,13 @@ describe('R4 : un encadré de synthèse (« Compromis ») ne répète aucune val
     const phrase = compromisDe(tableau(c));
     expect(repete(phrase ?? '', c), `« ${phrase} »`).toEqual([]);
   });
-  it('compromisDe, un critère « Volume » et deux prix : la différence se dit, pas les valeurs du tableau', () => {
+  /* TEST ADAPTÉ par c48-fix (24.11), décision (b) du pilote (DOSSIER.md) : avec un critère, la phrase du compromis de sa maquette choisie g01-8
+     (« la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ») reste telle quelle. L'ancien test exigeait
+     qu'elle ne redise aucune valeur du tableau : caduc sur le cas avec critère (la règle « ne recopie pas » ne vaut que sans critère). */
+  it('compromisDe, un critère « Volume » et deux prix : la phrase de la maquette g01-8 reste (la 2e, son prix, l\'écart, la valeur du critère)', () => {
     const c = chambreFroide({ prix: true, volume: true, critere: true });
-    const phrase = compromisDe(tableau(c));
-    expect(repete(phrase ?? '', c), `« ${phrase} »`).toEqual([]);
+    const phrase = compromisDe(tableau(c)) ?? '';
+    expect(phrase, `« ${phrase} »`).toMatch(/^la 2e, 2\s?495,60 CHF, soit 268,05 CHF de moins que la 1re ; le volume 2,6 m³ au lieu de 4,06 m³$/);
   });
   const IA_RECITE = 'la 1re, prix non lu ; les dimensions intérieures 1640 x 1340 x 1850 mm contre 1340 x 1040 x 1850 mm ; les dimensions du produit 1800 x 1500 x 2010 mm contre 1500 x 1200 x 2010 mm';
   it('Comparer rendu avec un compromis de l\'IA qui récite le tableau : il n\'est pas montré', () => {

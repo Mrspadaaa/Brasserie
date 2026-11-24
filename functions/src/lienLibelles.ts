@@ -241,7 +241,7 @@ export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[]
   const sortie: T[] = [];
   const pris = new Map<string, T>();
   for (const v of valeurs) {
-    if (cleTechnique(v.nom)) continue;
+    if (cleTechnique(v.nom) || estSupposition(v.nom)) continue;
     const cand = enFrancais(v);
     const k = cle(cand.nom);
     const deja = pris.get(k);
@@ -259,7 +259,20 @@ export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[]
     const i = sortie.findIndex((v) => v.nom === POIDS_NET);
     if (i >= 0) sortie[i] = { ...sortie[i], nom: 'Poids' };
   }
-  return sansDoublonDeVolume(sortie);
+  return sansCouleurRepetee(sansDoublonDeVolume(sortie));
+}
+
+/**
+ * E47-5 (rouvert, FK-0) : une ligne que la page SUPPOSE (« Est probablement équipé d'un adaptateur secteur : Oui », texte automatique de la
+ * boutique) n'est pas une caractéristique : l'incertain n'entre pas dans la fiche.
+ */
+export const estSupposition = (nom: string): boolean => /^(?:est\s+|sont\s+)?probablement\b|^wahrscheinlich\b|^vermutlich\b|^peut[- ]être\b/i.test(nom.replace(/[‎‏]/g, '').trim());
+
+/** « Couleur Argent » et « Couleur exacte Argent » (FK-1) : la précision qui répète la valeur n'est qu'une ligne ; qui dit autre chose (« RAL 9006 ») reste. */
+function sansCouleurRepetee<T extends Valeur>(valeurs: T[]): T[] {
+  const couleur = valeurs.find((v) => v.nom === 'Couleur');
+  if (!couleur) return valeurs;
+  return valeurs.filter((v) => v.nom !== 'Couleur exacte' || !memeValeur(couleur, v));
 }
 
 /** Les noms qui disent le volume de l'appareil : la même valeur sous deux d'entre eux n'est qu'une caractéristique (E47-5 : « Capacité 50 L » et « Volume 50 L »). */
@@ -280,9 +293,30 @@ function sansDoublonDeVolume<T extends Valeur>(valeurs: T[]): T[] {
  * température) ; puis le reste dans l'ordre de la page ; en dernier le secondaire (numéros, marque, emballage, adaptateur secteur, expédition).
  * Tri stable : à rang égal, l'ordre de la page est gardé. Rien n'est retiré ni ajouté ici.
  */
-const ESSENTIEL = /^(?:mati[eè]re|mat[eé]riau|induction|compatib|classe d.effic|consommation|volume|capacit[eé]|puissance|moteur|tension|plage de temp[eé]rature|temp[eé]rature)/i;
+const ESSENTIEL = /^(?:mati[eè]re|mat[eé]riau|induction|compatib|classe d.effic|consommation|volume|capacit[eé]|puissance|moteur|tension|plage de temp[eé]rature|temp[eé]rature|mode de fonctionnement|[eé]nergie|fluide|r[eé]frig[eé]rant|refroidissement|type de refroidissement)/i;
 const SECONDAIRE = /(?:adaptateur|^point fort|^marque$|^fabricant$|^cat[eé]gorie$|emballage|^d[eé]lai de livraison|^stock du vendeur|mode d.exp[eé]dition|poids d.exp[eé]dition)/i;
 const rangDe = (nom: string): number => (estIdentifiant(nom) || SECONDAIRE.test(nom) ? 2 : ESSENTIEL.test(nom) && !/^volume utile (?:r[eé]frig|cong)/i.test(nom) ? 0 : 1);
-export function prioriserValeurs<T extends Valeur>(valeurs: T[]): T[] {
-  return valeurs.map((v, i) => ({ v, i, r: rangDe(v.nom) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.v);
+/** `nomDe` : le nom sur lequel le rang se juge (la lecture brute juge sur le libellé français, sans changer le nom écrit). */
+export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) => string = (v) => v.nom): T[] {
+  return valeurs.map((v, i) => ({ v, i, r: rangDe(nomDe(v)) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.v);
+}
+
+/**
+ * C48-5 : le plafond d'une liste (24 lues, 12 de l'IA) ne se prend pas dans l'ordre de la page quand l'essentiel (température, volume, matière,
+ * énergie, fluide, refroidissement) vient plus bas : les `max` premières restent, et chaque ligne essentielle au-delà prend la place de la ligne
+ * la moins utile gardée (les numéros d'abord, puis le reste, en partant de la fin). Rien ne bouge si aucune ligne essentielle n'est coupée :
+ * l'ordre de la page est gardé tel quel. `nomDe` : le nom sur lequel le rang se juge.
+ */
+export function retenir<T extends Valeur>(valeurs: T[], max: number, nomDe: (v: T) => string = (v) => v.nom): T[] {
+  if (valeurs.length <= max) return valeurs;
+  const garde = valeurs.slice(0, max);
+  const sauver = valeurs.slice(max).filter((v) => rangDe(nomDe(v)) === 0);
+  for (const s of sauver) {
+    let pire = -1, rangPire = 0;
+    garde.forEach((g, i) => { const r = rangDe(nomDe(g)); if (r >= rangPire && r > 0) { pire = i; rangPire = r; } });
+    if (pire < 0) break;
+    garde.splice(pire, 1);
+    garde.push(s);
+  }
+  return garde;
 }

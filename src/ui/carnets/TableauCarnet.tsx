@@ -42,7 +42,16 @@ function poserLargeurs(tab: HTMLElement, n: number) {
       /* le raccourci `font` est vide quand font-variant-numeric est posé (.cn-mono) : la police se recompose */
       const cs = getComputedStyle(s);
       ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-      w = Math.max(w, ctx.measureText(s.textContent ?? '').width);
+      /* C48-6 : une mesure à plusieurs termes se dit un terme par ligne : la colonne prend le plus large terme, pas la ligne entière */
+      const termes = s.querySelectorAll('.cn-terme');
+      if (termes.length) termes.forEach(t => { w = Math.max(w, ctx.measureText(t.textContent ?? '').width); });
+      else w = Math.max(w, ctx.measureText(s.textContent ?? '').width);
+    });
+    /* C48-2 : l'en-tête passe à la ligne entre ses mots, jamais au milieu : la colonne est au moins aussi large que son plus long mot */
+    tab.querySelectorAll<HTMLElement>(`[data-tete="${i}"]`).forEach(h => {
+      const cs = getComputedStyle(h);
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      for (const mot of (h.textContent ?? '').split(/\s+/)) w = Math.max(w, ctx.measureText(mot).width);
     });
     tab.style.setProperty(`--cn-col${i}`, `${Math.round(Math.min(104, Math.max(44, w + 4)))}px`);
   }
@@ -58,9 +67,39 @@ export function enteteCourt(c: Pick<ColonneVue, 'nom' | 'unite'>): string {
       .map(m => (m.length > 5 ? `${m.slice(0, 3)}.` : m)).join(' ');
     return quoi ? `${quoi} °C` : '°C';
   }
-  if (c.unite) return c.unite;
-  const mot = c.nom.split(/\s+/)[0] ?? c.nom;
-  return mot.length > 9 ? `${mot.slice(0, 8)}.` : mot;
+  /* E49-1 : « cm » seul ne dit pas de quoi (« 143,5 cm de quoi ? ») : la grandeur et son unité, entières. Seule une unité qui dit déjà la grandeur
+     reste seule (débit en m³/h, prix en CHF : critique 7, n° 4). */
+  if (c.unite && UNITE_QUI_SUFFIT.test(c.unite)) return c.unite;
+  const nom = nomCourt(c.nom);
+  return c.unite ? `${nom} ${c.unite}` : nom;
+}
+const UNITE_QUI_SUFFIT = /^(?:CHF|€|EUR|USD|m³\/h|l\/min|L\/min|dB|kWh|kWh\/an|bar|IBU|EBC)$/;
+
+/**
+ * C48-2 (« Dimensio. » : un mot coupé au milieu à 390 px) : jamais un mot tronqué. Les mots du nom, sans la parenthèse des axes
+ * (« (L x P x H) »), tant qu'ils tiennent en 24 signes sur trois mots au plus (la ligne se replie entre ses mots : « Dimensions /
+ * intérieures ») ; un mot qui tient seul sinon (« fonctionnement ») ; un mot trop long pour une colonne (plus de 14 lettres) ne s'écrit
+ * que par une abréviation à point d'au plus 4 lettres (« Car. »), jamais par son début à moitié.
+ */
+const MOT_LIEN = /^(?:de|du|des|d['’]|la|le|les|l['’]|à|au|aux|en|et|sur|pour)$/i;
+function nomCourt(nom: string): string {
+  const mots = nom.replace(/\([^)]*\)/g, ' ').split(/\s+/).filter(Boolean).map(m => (m.length > 14 && m.includes('/') ? m.split('/')[0] : m)).filter(Boolean);
+  if (!mots.length) return nom.trim();
+  const gardes: string[] = [];
+  for (const m of mots) {
+    if (gardes.length >= 3 || [...gardes, m].join(' ').length > 24) break;
+    gardes.push(m);
+  }
+  while (gardes.length > 1 && MOT_LIEN.test(gardes[gardes.length - 1])) gardes.pop();
+  return gardes.map(m => (m.length > 14 ? `${m.slice(0, 4)}.` : m)).join(' ') || mots[0];
+}
+
+/** C48-6 : une valeur de colonne ne se coupe jamais à ses espaces (« 1640 x 1340 / x 1850 mm ») : espaces insécables, et une mesure à plusieurs termes en dit un par ligne. */
+const insecable = (s: string) => s.replace(/ /g, ' ');
+function ValeurCarnet({ txt }: { txt: string }) {
+  const termes = txt.split(/\s*[x×]\s*/).filter(Boolean);
+  if (termes.length < 2) return <span className="cn-mono cn-nowrap">{insecable(txt)}</span>;
+  return <span className="cn-mono cn-nowrap" aria-label={txt}>{termes.map((s, i) => <span key={i} className="cn-terme" aria-hidden>{insecable(s)}{i < termes.length - 1 ? ' ×' : ''}</span>)}</span>;
 }
 
 /** Les lignes classées sans les liens à relire, rangs recomptés (1, 2, 3… parmi les articles en lice). */
@@ -118,7 +157,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
             {i === 0 && (
               <div className="cn-tab-ligne cn-tab-cols" style={gabarit} role="row">
                 <span className="cn-mut cn-tab-rangart" role="columnheader">rang · article</span>
-                {cols.map(c => <span key={c.cle} className="cn-mut cn-tab-num" role="columnheader" title={c.nom} aria-label={c.unite ? `${c.nom}, ${c.unite}` : c.nom}>{enteteCourt(c)}</span>)}
+                {cols.map((c, ci) => <span key={c.cle} className="cn-mut cn-tab-num" role="columnheader" data-tete={ci} title={c.nom} aria-label={c.unite ? `${c.nom}, ${c.unite}` : c.nom}>{enteteCourt(c)}</span>)}
               </div>
             )}
             {b.lignes.map(l => {
@@ -146,7 +185,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                     const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
                     const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
                     const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
-                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? <span className="cn-mono">{v}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite ? <small className="cn-mut cn-tab-q">{l.quantite}</small> : null}</span>;
+                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite ? <small className="cn-mut cn-tab-q">{l.quantite}</small> : null}</span>;
                   })}
                 </button>
               );
