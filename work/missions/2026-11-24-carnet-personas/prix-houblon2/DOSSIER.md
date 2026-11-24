@@ -1,0 +1,5 @@
+# Dossier prix-houblon2 — reprendre la voie prix-houblon arrêtée au plafond de 120 tours
+
+- Contrat et règles : ../prix-houblon/DOSSIER.md EN ENTIER (R39..R42, ajouts du pilote, décision D450, ajout du pilote 2 : comparer A markdown entier + Flash-Lite et B url_context). Il prime.
+- État : la voie précédente a commité du code en 64cf3f08b (« prix lu porte sa quantité, prix au gramme converti au kilo, IA toujours en accord (D450), Escalader sur manque, en-tête CHF ») mais n'a écrit AUCUN RESULTAT : rien n'est prouvé. Lis `git show --stat 64cf3f08b`, puis vérifie tout depuis zéro.
+- À faire dans l'ordre : (1) tests : tsc racine et functions/, tests touchés, c48..c59Regles, carnets*, proprietes ; (2) cause racine écrite (texte et réponse réellement envoyés à l'IA pour les 2 pages Citra) ; (3) banc 63+2 : actuel contre A contre B (justes par champ, désaccords, coût, durée), budget restant de la voie 0,25 CHF moins le journal déjà dépensé ; (4) corriger ce qui manque ; (5) registre PX-1..3 ; RESULTAT tenu au fil DÈS LE DÉBUT.
