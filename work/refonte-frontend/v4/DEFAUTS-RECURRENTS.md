@@ -539,3 +539,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## LIEN-PAS-PRODUIT (24.11)
 - Ses mots : « un lien peut être ajouté sans que ce soit un produit à comparer, comme par exemple un lien sur les frais d'envoi ».
 - Contrôle : un lien collé qui n'est pas une fiche produit (frais d'envoi, conditions, guide, fiche technique) n'entre jamais dans Articles ni Comparer ; l'IA le range comme information, la rattache au vendeur ou aux articles concernés (ex. frais d'envoi du vendeur appliqués au prix rendu de ses articles) ; échoue sur index-CHXDhK_A.js (tout lien devient un article).
+
+## MESSAGE-RESTE-DANS-SON-CARNET (24.11, constat C64-8)
+- Fait : « Achat prévu fin du mois. », tapé dans le carnet ZZ « trop de vapeur au brassage », a été rangé par l'IA dans SON vrai carnet « Achat brasserie : moulin à malt + bac etc. ».
+- Contrôle : un message tapé dans un carnet ouvert reste dans ce carnet ; l'IA peut PROPOSER un autre carnet, jamais y écrire seule ; échoue sur index-SSQ_J86L.js.
