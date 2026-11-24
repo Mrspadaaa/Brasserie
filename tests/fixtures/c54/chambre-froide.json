@@ -1,0 +1,39 @@
+{
+  "_source": "Caractéristiques réécrites à la main (aucune donnée personnelle, aucun lien) d'après les deux fiches lues le 24.11 pour le tour 54 (voies/critique-54/cap/A-F1-1.png, A-F2-1.png, Z-F1-1.png). « cellule » = chambre froide de grossiste lue en ligne (cellule ZZ) : elle porte « Étape » (le branchement électrique, monophasé avec neutre et terre) et « Quantité de frigorigène », deux noms que l'ordre de décision ne connaissait pas (C54-2). « inconnus » = des noms jamais vus, chacun avec UN mot-clé de groupe (énergie, froid, dimensions) : la règle R21 les range par ce mot, pas par une liste de noms exacts. « sansMotCle » = un nom sans aucun mot-clé : il va après les groupes. L'ordre de la liste est celui de la page ; les tests la permutent.",
+  "cellule": [
+    { "nom": "Performance", "valeur": "550 Watt" },
+    { "nom": "Tension", "valeur": "230 V" },
+    { "nom": "Type de refroidissement", "valeur": "Air pulsé" },
+    { "nom": "Fluide frigorigène", "valeur": "R290" },
+    { "nom": "Mode de fonctionnement", "valeur": "Électricité" },
+    { "nom": "Matériau du produit", "valeur": "Tôle d'acier galvanisée, peinte en plastique" },
+    { "nom": "Dimensions du produit", "valeur": "1800 x 1500 x 2010 mm" },
+    { "nom": "Dimensions intérieures (L x P x H)", "valeur": "1640 x 1340 x 1850 mm" },
+    { "nom": "Hauteur de la porte", "valeur": "1845", "unite": "mm" },
+    { "nom": "Largeur de la porte", "valeur": "700", "unite": "mm" },
+    { "nom": "Étape", "valeur": "1N~/PE" },
+    { "nom": "Exécution/équipement", "valeur": "avec groupe frigorifique" },
+    { "nom": "Quantité de frigorigène", "valeur": "0,13", "unite": "kg" },
+    { "nom": "Densité d'isolation", "valeur": "42", "unite": "kg/m³" },
+    { "nom": "Épaisseur de l'isolation", "valeur": "80", "unite": "mm" },
+    { "nom": "Épaisseur du matériel", "valeur": "0,50", "unite": "mm" },
+    { "nom": "Couleur", "valeur": "RAL 9002" }
+  ],
+  "inconnus": [
+    { "nom": "Tension", "valeur": "230 V" },
+    { "nom": "Fluide frigorigène", "valeur": "R290" },
+    { "nom": "Hauteur de la porte", "valeur": "1845", "unite": "mm" },
+    { "nom": "Largeur de la porte", "valeur": "700", "unite": "mm" },
+    { "nom": "Dimensions du produit", "valeur": "1800 x 1500 x 2010 mm" },
+    { "nom": "Phases d'alimentation", "valeur": "monophasé" },
+    { "nom": "Consommation annuelle", "valeur": "1450 kWh" },
+    { "nom": "Charge de réfrigérant", "valeur": "0,13 kg" },
+    { "nom": "Profondeur utile", "valeur": "1340 mm" },
+    { "nom": "Épaisseur de l'isolation", "valeur": "80", "unite": "mm" },
+    { "nom": "Couleur", "valeur": "RAL 9002" }
+  ],
+  "sansMotCle": [
+    { "nom": "Charnières", "valeur": "à droite" },
+    { "nom": "Éclairage", "valeur": "LED" }
+  ]
+}
