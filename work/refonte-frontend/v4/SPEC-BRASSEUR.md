@@ -2866,3 +2866,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Calendrier, Q-4 vitesse du défilement au bord) : « Trop lente sur le calendrier »
 
 - 24.11 (Carnet, C50-5 : « faut-il que le compromis de Comparer dise ce qu on gagne et ce qu on perd ? ») : « Oui »
+
+- 24.11 (méthode) : « À partir de 23h faire ces round de testing sur toute la vrai app. »

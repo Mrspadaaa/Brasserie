@@ -29,6 +29,7 @@ pause: 2026-11-24T16:08:03.685Z
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
 - [ ] Tour 59 en ligne (index-BoCN8sbd.js : c58-fix) : test critique-59
+- [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
