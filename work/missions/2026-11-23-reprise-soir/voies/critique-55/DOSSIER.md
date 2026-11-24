@@ -1,8 +1,8 @@
-# Dossier — test en ligne du tour 55 (index-DS2r2c1L.js, aiTask à jour), 24.11
+# Dossier — test en ligne du tour 55 (index-Bz-J0D8o.js, aiTask à jour), 24.11
 
 ## Où
 - https://brasserie-l-affinee.web.app dans le Chrome de débug : puppeteer-core connect 127.0.0.1:9222, ton onglet neuf, 390 × 844, deviceScaleFactor 2, toucher. Fin : page.close() de ton onglet, browser.disconnect(). JAMAIS browser.close(). Jamais Claude in Chrome.
-- Paquet : vérifie index-DS2r2c1L.js (curl avec ?v=<horodatage>) ; ancien paquet dans l'onglet → recharge.
+- Paquet : vérifie index-Bz-J0D8o.js (curl avec ?v=<horodatage>) ; ancien paquet dans l'onglet → recharge.
 
 ## Son carnet « chambre froide » et son stock de houblons : regarder seulement (aucun geste qui enregistre, aucun appel IA, aucun Relire validé)
 - Corrigés (voies/c54-fix/RESULTAT.md ; règles : voies/c54-tests/DOSSIER.md) : R19 rien de rogné au bord d'une cellule (prix unitaire passé sous le nom dans le tableau) ; R21 groupes par mots-clés (énergie : puissance, tension, branchement « Étape 1N~/PE » ; froid : fluide et quantité de frigorigène ensemble ; dimensions et porte ensemble) ; R22 jauge dans le même sens partout (petit à gauche), sauf la réglette de Choisir (sa maquette g05-11, gardée).

@@ -10,7 +10,7 @@
 
 ## À faire
 1. Relever avant : son carnet « chambre froide » entier, « CHF à dépenser », soldes, période du Calendrier, nombre de carnets ; après : IDENTIQUES (sinon : bloquant, versé, en tête de RESULTAT).
-2. Jouer le DOSSIER ; verdict « combien et quels problèmes ? » ; chaque corrigé « vérifié — en ligne index-DS2r2c1L.js » ou rouvert ; chaque problème neuf versé (C55-n).
+2. Jouer le DOSSIER ; verdict « combien et quels problèmes ? » ; chaque corrigé « vérifié — en ligne index-Bz-J0D8o.js » ou rouvert ; chaque problème neuf versé (C55-n).
 3. node scripts/agents/controle-bugs.mjs > voies/critique-55/bugs.log → BUGS OK. N'écris dans BUGS.md que des lignes entières à toi (jamais l'en-tête).
 
 ## Tenue

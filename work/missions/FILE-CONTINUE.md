@@ -25,7 +25,7 @@ pause: 2026-11-24T13:02:53.647Z
 - [x] Tour 52 : critique-52, 5 problèmes (0 B), corrigés 9/10
 - [x] Tour 53 : critique-53, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 54 : critique-54, 5 problèmes (0 B), corrigés 4/5
-- [ ] Tour 55 en ligne (index-DS2r2c1L.js : c54-fix, aiTask) : test critique-55
+- [ ] Tour 55 en ligne (index-Bz-J0D8o.js : c54-fix, aiTask) : test critique-55
 - [attente] C50-5 : la phrase du compromis vient de sa maquette g01-8 ; à lui montrer en mini maquettes s'il faut dire gain et perte
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
