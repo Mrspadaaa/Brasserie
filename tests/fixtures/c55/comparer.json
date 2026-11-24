@@ -1,0 +1,37 @@
+{
+  "_source": "Voie c55-tests (24.11) : deux chambres froides de grossiste, réécrites à la main (aucun lien réel, aucune donnée personnelle) d'après les captures du tour 55 (voies/critique-55/cap/A-comparer-0.png, A-comparer-1.png, B-branchement.png, M-comparer-0.png). Les lignes portent les noms de la page tels que la capture les montre (« Étape » est lu « Branchement » par l'app) ; la 2e liste est la même dans l'ordre inverse (l'ordre de la page ne dit rien de la décision). Prix et vendeur fictifs.",
+  "articles": [
+    {
+      "id": "C1", "nom": "Cellule de refroidissement ZZ 2,6 m³", "vendeur": "Grossiste Exemple", "pays": "Suisse", "dispo": "en stock", "prixCentimes": 189000,
+      "lignes": [
+        { "nom": "Volume", "valeur": "2,6", "unite": "m³" },
+        { "nom": "Performance", "valeur": "550 Watt" },
+        { "nom": "Tension", "valeur": "230 V" },
+        { "nom": "Température", "valeur": "0 à 8 °C" },
+        { "nom": "Dimensions du produit", "valeur": "1800 x 1500 x 2010 mm" },
+        { "nom": "Hauteur de la porte", "valeur": "1845", "unite": "mm" },
+        { "nom": "Largeur de la porte", "valeur": "700", "unite": "mm" },
+        { "nom": "Branchement", "valeur": "1N~/PE" },
+        { "nom": "Quantité de frigorigène", "valeur": "0,13", "unite": "kg" },
+        { "nom": "Épaisseur de l'isolation", "valeur": "80", "unite": "mm" },
+        { "nom": "Couleur", "valeur": "RAL 9002" }
+      ]
+    },
+    {
+      "id": "C2", "nom": "Chambre froide ZZ 6 m³", "vendeur": "Froid Exemple SA", "pays": "Suisse", "dispo": "livrable en 2 semaines", "prixCentimes": 245000,
+      "lignes": [
+        { "nom": "Épaisseur de l'isolation", "valeur": "100", "unite": "mm" },
+        { "nom": "Couleur", "valeur": "RAL 9010" },
+        { "nom": "Quantité de frigorigène", "valeur": "0,20", "unite": "kg" },
+        { "nom": "Branchement", "valeur": "3~/N/PE" },
+        { "nom": "Largeur de la porte", "valeur": "800", "unite": "mm" },
+        { "nom": "Hauteur de la porte", "valeur": "1900", "unite": "mm" },
+        { "nom": "Dimensions du produit", "valeur": "2400 x 1800 x 2200 mm" },
+        { "nom": "Température", "valeur": "-2 à 8 °C" },
+        { "nom": "Tension", "valeur": "400 V" },
+        { "nom": "Performance", "valeur": "900 Watt" },
+        { "nom": "Volume", "valeur": "6", "unite": "m³" }
+      ]
+    }
+  ]
+}
