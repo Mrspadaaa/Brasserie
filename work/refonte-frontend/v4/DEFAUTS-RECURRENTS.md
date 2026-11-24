@@ -515,3 +515,15 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 | SAISIE-DATE-DIRECT | 23.11 | « Le slider met pas à jour la date en dynamique » (plaintes/2339-curseur-date.jpg) | Règle : la pastille de date suit le curseur pendant le tirage, pas seulement au lâcher. | Contrôle en ligne : pendant le tirage, texte de la pastille = date sous le curseur ; échoue sur le tour 35. |
 | AVIS-VERSION-RECOUVRE | 23.11 | (même capture 2339 : « Nouvelle version · Recharger » posé sur l'en-tête de la saisie) | Règle : l'avis de nouvelle version ne couvre jamais le contenu. | Contrôle en ligne : boîte de l'avis sans intersection avec les éléments interactifs ; échoue sur le tour 35. |
 | PLUS-PANNEAU-DECALE | 23.11 | « D'ailleurs le + affiche étrangement mtn » (plaintes/2340-plus.jpg) | Panneau du + décalé à droite, voile sur la moitié gauche (régression d'un tour du 23.11). Règle : le panneau du + couvre la largeur prévue sur tous les écrans. | Contrôle en ligne 390 sur Bord, Calendrier, Stocks : panneau x = 0 et largeur = écran (±1 px) ; échoue sur le tour 35. |
+
+## CARNET-DONNEE-PREMIER-PLAN (24.11)
+- Ses mots : « les écrans du carnet sont trop parasité par tout le reste … la donnée réel est à peine 50% de mon écran » ; « C'est pas assez compact ».
+- Contrôle : à 390 × 844, dans un carnet ouvert (fiche, Articles, Comparer), la part verticale de l'écran occupée par la donnée du carnet (hors barres d'onglets, sous-onglets Parc/À venir/Carnets, fil d'Ariane, champ « Ajouter », barre du bas) ≥ 70 % ; échoue sur index-BoCN8sbd.js (≈ 50 %).
+
+## COMPARER-QUI-GAGNE (24.11)
+- Ses mots : « dans les comparaisons on voit pas qui gagne quoi ».
+- Contrôle : chaque ligne de Comparer où les articles diffèrent marque le meilleur (selon le sens du critère ou de la caractéristique) ; échoue sur index-BoCN8sbd.js (aucun marquage par ligne).
+
+## LIEN-PRIX-JUSTE (24.11)
+- Ses mots : « Et le prix... » sur Citra : Brau- und Rauchshop « dès 0,10 », MotlerHops « ≈4 · 3,72 € ».
+- Contrôle : au banc des liens, ces deux pages lues donnent le prix du conditionnement affiché (ou le prix au kilo, dit comme tel) ; échoue sur la lecture du 24.11.
