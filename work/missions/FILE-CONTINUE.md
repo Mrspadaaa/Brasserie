@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T07:00:40Z
+pause: 2026-11-24T07:26:43Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -19,7 +19,7 @@ pause: 2026-11-24T07:00:40Z
 - [x] Tour 45 en ligne (index-Ba6_cMq7.js) : 3 problèmes, 0 B ; E44 vérifiés
 - [ ] Carnet : ses choix portés (carnet-q, tour 46 index-D_XfFyFl.js + aiTask) : test en ligne critique-46, mesure du domaine
 - [ ] Voie ecr7 : E45-1..3, puis tour 47 et test
-- [ ] Lecture des liens fiable : étape IA rejouée au banc avec Flash-Lite, 3.8 Flash, Hydrogen ; meilleur par champ ; 2 prix faux et 4 caractéristiques repris un à un
+- [ ] Lecture des liens fiable (D449) : voie liens-modeles (Escalader = Neon, Hydrogen auto dès qu'un champ manque, banc avant/après), puis aiTask en ligne après critique-46 et test
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
 - [ ] Carnet : lecture d'une photo par l'IA (L-24), une vraie pièce, coût réservé et journalisé
 - [ ] Calendrier : CALP-6, CALP-13, bandeau « Enregistrement sur le serveur… » qui reste, « −1 663 » sous ±, bouton de durée en retard

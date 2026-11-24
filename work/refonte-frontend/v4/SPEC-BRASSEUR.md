@@ -2852,3 +2852,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (23.11 21:34–21:37, captures plaintes/2334-apport.jpg, 2335-apport-fin.jpg, 2336-calendrier-apport.jpg, 2337-vente.jpg) « Plusieurs projets problème la vue apport, d'ailleurs elle s'affiche pas sûr le calendrier... Et elle diffère des autres vue, et il y a pas de coche pour dire que il y a pas de justificatif, c'est normal ??? »
 - (21:39, plaintes/2339-curseur-date.jpg) « Le slider met pas à jour la date en dynamique »
 - (21:40, plaintes/2340-plus.jpg) « D'ailleurs le + affiche étrangement mtn »
+
+- 24.11 (lecture des liens) : « Je pense que escaler devrait utiliser neon plutôt que hydrogen, et hydrogen est dans le workflow automatique du flash lite ne trouve pas toutes les informations »
