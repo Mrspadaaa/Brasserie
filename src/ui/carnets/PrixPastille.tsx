@@ -10,7 +10,7 @@
  */
 import React, { useState } from 'react';
 import { ChevronUp, Link2, Pencil } from 'lucide-react';
-import { quantiteArticle, texteParUnite } from '../../domain/carnets/prixUnitaire';
+import { articleHonnete, quantiteArticle, texteParUnite } from '../../domain/carnets/prixUnitaire';
 import { convertiChf, estEtranger, mentionFrais, portCentimes, renduArticle, tauxLu, tauxVersChf, TVA_IMPORT, type PrixRendu } from '../../domain/carnets/prixRendu';
 import { dateCourte, mentionTaxe, montant, type ArticleV } from './EtatIA';
 
@@ -37,7 +37,7 @@ export function rendu(a: ArticleV, taux?: number): PrixRendu | null {
 }
 
 export function PrixPastille(p: PrixPastilleProps) {
-  const a = p.article;
+  const a = articleHonnete(p.article);
   /* T28-6 : la quantité se dit à côté du prix (« 100 g », « 1 kg ») ; le prix par kilo est dans la ligne de détail */
   const quantite = quantiteArticle(a);
   const parUnite = a.prixCentimes === undefined ? null : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF');

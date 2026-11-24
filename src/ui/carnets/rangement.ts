@@ -64,7 +64,11 @@ export interface SuiviLecture {
 /** L-3 (23.11) : une réponse coupée au plafond de sortie, ou le délai du serveur dépassé, se dit comme un délai. */
 const ERREUR_DELAI = /coup[ée]e au plafond|d[ée]lai|trop de temps/i;
 
+/** C59-2 : Google refuse pour plafond de dépenses (erreur `spend-cap`, functions/src/geminiErrors.ts) : l'IA est en pause, relancer ne sert à rien. */
+const ERREUR_PLAFOND = /plafond de d[ée]penses/i;
+
 export const AVIS = {
+  pause: "IA en pause : plafond de dépenses atteint : rangé sur l'appareil, votre message est gardé.",
   panne: "L'IA n'a pas répondu : rangé sur l'appareil, votre message est gardé.",
   illisible: "Réponse de l'IA illisible : rangé sur l'appareil, votre message est gardé.",
   delai: "L'IA a mis trop de temps : rangé sur l'appareil, votre message est gardé.",
@@ -471,12 +475,14 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
          répondu » 1,5 s après Ajouter, puis Relire a rangé en 3 s). Une REPRISE seule, après un court répit, avant d'annoncer l'échec ; l'abandon
          (✕) et le délai (`TimeoutError`) ne se reprennent pas. Au plus deux appels : le coût et l'attente restent bornés. */
       let r = await course(appels.ranger(contexte, ctrl.signal)).catch((e: unknown) => { if (coupe()) throw e; return { ok: false as const, error: 'panne' } as Awaited<ReturnType<AppelsIA['ranger']>>; });
+      /* C59-2 : sous plafond de dépenses, ni reprise ni boucle (le tour 59 a compté 12 à 15 appels refusés pour un message) : l'IA est en pause, dit comme telle */
+      if (!r.ok && !coupe() && ERREUR_PLAFOND.test(r.error ?? '')) return await echouer(AVIS.pause);
       if (!r.ok && !coupe() && !ERREUR_DELAI.test(r.error ?? '')) {
         await course(new Promise<void>(fini => setTimeout(fini, deps.repitMs ?? 400)));
         if (!coupe()) r = await course(appels.ranger(contexte, ctrl.signal));
       }
       if (coupe()) return sortieCoupee();
-      if (!r.ok) return await echouer(ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
+      if (!r.ok) return await echouer(ERREUR_PLAFOND.test(r.error ?? '') ? AVIS.pause : ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
       const lignes = lireReponse(r.data, { texte, carnets, depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
       if (!lignes) return await echouer(AVIS.illisible);
       if (coupe()) return sortieCoupee();

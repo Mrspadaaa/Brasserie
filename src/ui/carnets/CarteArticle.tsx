@@ -11,6 +11,7 @@
  * Une valeur inconnue n'est jamais rendue 0 : elle est absente, ou dite « non publié ».
  */
 import React from 'react';
+import { articleHonnete } from '../../domain/carnets/prixUnitaire';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { libelleEcarte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
 import { memeCaracteristique } from '../../../functions/src/lienFusion';
@@ -136,7 +137,7 @@ function Vignette({ article, faconNom, carnetTitre, classe }: { article: Article
 }
 
 export function CarteArticle(p: CarteArticleProps) {
-  const a = p.article;
+  const a = articleHonnete(p.article);
   const prix = montant(a.prixCentimes);
   const mesure = mesureCritere(a, p.critere);
   const carac = p.critere?.caracteristique;

@@ -613,7 +613,12 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const deplier = (o: Json, prof = 0) => { if (!o || typeof o !== 'object') return; offres.push(o); if (prof < 2) liste<Json>(o.offers).forEach((x) => deplier(x, prof + 1)); };
   offresBrutes.forEach((o) => deplier(o));
   const montants: Array<{ montant: number; devise?: string; tva?: boolean; agrege?: boolean }> = [];
+  /* C59-6 (R37, LIEN-PRIX-JUSTE) : un prix donné par unité de référence (UnitPriceSpecification + referenceQuantity : 0,1044 CHF le GRAMME) n'est le prix d'aucun
+     conditionnement. Il n'est jamais publié comme le prix de l'article (« 0,10 le Citra ») : sans quantité dite, pas de prix (jamais 0). */
+  const parReference = (o: Json): boolean => liste<Json>(o.priceSpecification).some((x) => x?.referenceQuantity !== undefined);
+  let prixAuPoids = false;
   for (const o of offres) {
+    if (parReference(o)) { prixAuPoids = true; continue; }
     const specs = liste<Json>(o.priceSpecification).filter((x) => !LISTE_PRIX.test(String(x?.priceType ?? '')) && !x?.referenceQuantity);
     const devO = texte(o.priceCurrency, 3) ?? specs.map((x) => texte(x.priceCurrency, 3)).find(Boolean);
     const tva = specs.map((x) => x.valueAddedTaxIncluded).map((v) => v === true || v === 'true' ? true : v === false || v === 'false' ? false : undefined).find((v) => v !== undefined);
@@ -633,20 +638,21 @@ export function extraireProduit(html: string, url: URL): Extraction {
     const plafondPlusHaut = (o: Json) => { const h = prixLocalise(typeof o.highPrice === 'object' ? texte(o.highPrice) : o.highPrice); return h !== undefined && h.montant > min.montant + 0.005; };
     prixDes = new Set(montants.map((m) => m.montant)).size > 1 || (min.agrege === true && offres.some((o) => types(o).includes('AggregateOffer') && o.offers === undefined && (o.highPrice === undefined || plafondPlusHaut(o))));
   } else if (devises.size > 1) doutes.push('plusieurs devises dans les offres');
-  if (prix === undefined) {
+  if (prixAuPoids && prix === undefined) doutes.push('prix donné au poids, sans conditionnement : non retenu');
+  if (prix === undefined && !prixAuPoids) {
     const m = prixLocalise(meta('product:price:amount') ?? meta('og:price:amount')), d = m?.devise ?? meta('product:price:currency') ?? meta('og:price:currency');
     if (m && d) { prix = m.montant; devise = d; sourcePrix = 'Open Graph'; }
   }
-  if (prix === undefined && amazon) {
+  if (prix === undefined && amazon && !prixAuPoids) {
     const j = html.match(/"desktop_buybox_group_1"\s*:\s*\[\s*\{[^}]*?"priceAmount"\s*:\s*([\d.]+)\s*,\s*"currencySymbol"\s*:\s*"([^"]+)"/);
     const m = j ? prixLocalise(`${j[1]} ${j[2]}`) : undefined;
     if (m?.devise) { prix = m.montant; devise = m.devise; sourcePrix = 'bloc d\'achat'; }
   }
-  if (prix === undefined && (h1 || nom)) {
+  if (prix === undefined && !prixAuPoids && (h1 || nom)) {
     const m = prixSousTitre(visible, h1 || nom!);
     if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (sous le titre)'; }
   }
-  if (prix === undefined) {
+  if (prix === undefined && !prixAuPoids) {
     const m = prixDuBloc($);
     if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (bloc de prix)'; }
   }
@@ -732,6 +738,13 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const vendeur = texte(liste<Json>(offres[0]?.seller)[0]?.name, 80) ?? meta('og:site_name');
   etapes.push(doutes.length ? { nom: 'controle', statut: 'douteux', detail: doutes.join(' ; ') } : { nom: 'controle', statut: 'trouve' });
 
+  /* C59-6 : la variante désignée dit son conditionnement (« Citra US - 50 g ») : le prix lu est celui de ce sachet, la quantité se dit à côté (jamais un prix sans base) */
+  const nomVariante = choisie ? texte(choisie.name, 120) : undefined;
+  const QUANTITE = /(?<![\d.,])(\d+(?:[.,]\d+)?)\s?(kg|g|ml|cl|dl|l)(?![a-zA-Z\d])/i;
+  const qVariante = nomVariante ? QUANTITE.exec(nomVariante) : null;
+  if (qVariante && prix !== undefined && !QUANTITE.test(nom ?? '') && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
+    valeurs.push({ nom: 'Conditionnement', valeur: qVariante[1].replace('.', ','), unite: qVariante[2].toLowerCase() === 'l' ? 'L' : qVariante[2].toLowerCase() });
+  }
   return {
     ...(nom ? { nom: couper(nom, 180) } : {}),
     ...(prix !== undefined && devise ? { prix, devise, ...(prixDes ? { prixDes: true as const } : {}) } : {}),

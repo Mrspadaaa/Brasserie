@@ -17,7 +17,7 @@ import { libelleProposee, pucesDuCarnet, rangDuLien } from './lignesRegles';
 import type { Annonce, Appliquer, AReprendre, Attente, Boite, Etat, Proposee, Retour, RetourNeuf, Vue } from './carnetsTypes';
 
 export interface BandeauxV {
-  enLigne: boolean; aReprendre: AReprendre[]; retour: Retour | null; etatR: EtatRangement<LigneLocale>; rangerMaintenant: (seul?: string) => Promise<void>;
+  enLigne: boolean; aReprendre: AReprendre[]; retour: Retour | null; etatR: EtatRangement<LigneLocale>; rangerMaintenant: (seul?: string, ids?: readonly string[]) => Promise<void>;
   ouvert: CarnetDoc | null; vue: Vue; idOuvert: string | null; depuis: string | null; messages: ReturnType<typeof lireMessages>;
   tous: ReturnType<typeof lireCarnets>; carnets: ReturnType<typeof lireCarnets>; tableauV: ReturnType<typeof tableauDe> | null;
   retourRef: Boite<Retour | null>; attente: Boite<Attente | null>; annonces: Boite<Map<string, Annonce>>; neDeListe: Boite<string | null>;
@@ -50,8 +50,8 @@ export function bandeauxCarnet(x: BandeauxV) {
       <div className="cn-bandeau-tete">
         <span className="cn-sp">{toutLecture
           ? `Lecture de lien interrompue : ${nbLectures} à reprendre`
-          : `${toutEchec ? 'L’IA n’a pas répondu' : 'De retour en ligne'} : ${nbMessages} message${nbMessages > 1 ? 's' : ''} rangé${nbMessages > 1 ? 's' : ''} tel quel`}</span>
-        <button type="button" className="cn-puce" data-relire onClick={() => void rangerMaintenant()}>{toutLecture ? 'Reprendre' : toutEchec ? 'Relire' : 'Ranger maintenant'}</button>
+          : `${toutEchec ? (aReprendreVus.some(x => x.pause) ? 'IA en pause : plafond de dépenses atteint' : 'L’IA n’a pas répondu') : 'De retour en ligne'} : ${nbMessages} message${nbMessages > 1 ? 's' : ''} rangé${nbMessages > 1 ? 's' : ''} tel quel`}</span>
+        <button type="button" className="cn-puce" data-relire onClick={() => void rangerMaintenant(undefined, aReprendreVus.map(x => x.messageId))}>{toutLecture ? 'Reprendre' : toutEchec ? 'Relire' : 'Ranger maintenant'}</button>
       </div>
     </div>
   ) : null;

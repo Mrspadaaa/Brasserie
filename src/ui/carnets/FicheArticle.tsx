@@ -14,6 +14,7 @@
  * relevée » : aucune date de relève, aucun prix relevé, aucune baisse.
  */
 import React from 'react';
+import { articleHonnete } from '../../domain/carnets/prixUnitaire';
 import { Camera, Check, ChevronLeft, ChevronRight, ExternalLink, Eye, Pencil } from 'lucide-react';
 import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
 import { dispoDe } from '../../domain/carnets/modele';
@@ -126,7 +127,7 @@ function huilesDites(v: ValeurV): { texte: string; unite: string } | null {
 interface Case { nom: string; texte: string | null; unite?: string; rang?: number; exemple?: boolean }
 
 export function FicheArticle(p: FicheArticleProps) {
-  const a = p.article;
+  const a = articleHonnete(p.article);
   const [, redessiner] = React.useState(0);
   const k = p.carnet;
   const devise = a.devise ?? 'CHF';
@@ -196,7 +197,7 @@ export function FicheArticle(p: FicheArticleProps) {
 
   /* Les offres de la même machine : même nom (normalisé), dans le carnet ; la moins chère d'abord. */
   const offres = k && a.nom
-    ? k.articles.filter(x => x.nom && normaliser(x.nom) === normaliser(a.nom!)).sort((x, y) => (x.prixCentimes ?? Infinity) - (y.prixCentimes ?? Infinity))
+    ? k.articles.filter(x => x.nom && normaliser(x.nom) === normaliser(a.nom!)).map(articleHonnete).sort((x, y) => (x.prixCentimes ?? Infinity) - (y.prixCentimes ?? Infinity))
     : [a];
   const qui = a.vendeur ?? a.domaine;
   const [poserPrix, setPoserPrix] = React.useState(false);

@@ -7,7 +7,7 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
-import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
+import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
@@ -77,7 +77,18 @@ export interface Colonne {
   nom: string; unite?: string; sens: Caracteristique['sens']; critereId?: string; critereTexte?: string; lue?: boolean;
   /** D'où vient le critère de la colonne (`sourceDuCritere`) : « proposé par l'IA » se dit dans Comparer sans relire le carnet. */
   critereSource?: 'phrase' | 'ia';
+  /** C59-4 (R36) : la mesure CIBLE d'un critère qui la dit sans borne (« Marmite de brassage 50 L ») : la colonne classe par proximité à elle, jamais « plus grand d'abord ». */
+  cible?: number;
 }
+/** Un critère qui dit une borne (« au moins », « plus de », « max ») n'est pas une cible : « plus » ou « moins » y gardent leur sens. */
+const BORNE_DITE = /(au moins|au plus|minimum|maximum|pas moins|pas plus|\bmini?\b|\bmaxi?\b|plus de|moins de|plus que|moins que|jusqu|d'au|≥|≤|>|<|sup[ée]rieur|inf[ée]rieur|d[ée]passe)/i;
+/** Valeur ordonnable d'une cellule pour CETTE colonne : la distance à la cible si elle en a une (plus petite = mieux), sinon la valeur. */
+function ordonnableCol(v: Valeur | undefined, k: Colonne): number | null {
+  const n = ordonnable(v, k.sens);
+  return n !== null && k.cible !== undefined && (k.sens === 'plus' || k.sens === 'moins') ? Math.abs(n - k.cible) : n;
+}
+/** Le sens du tri de la colonne : par proximité à une cible, plus petite distance d'abord. */
+const sensCol = (k: Pick<Colonne, 'sens' | 'cible'>): Colonne['sens'] => (k.cible !== undefined && (k.sens === 'plus' || k.sens === 'moins') ? 'moins' : k.sens);
 /** La colonne du prix (sens moins), comparée seulement entre prix connus de même devise. */
 export const COLONNE_PRIX = 'prix';
 
@@ -89,7 +100,8 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
     const car = k.caracteristique;
     if (!car || vues.has(normaliser(car.nom))) continue;
     vues.add(normaliser(car.nom));
-    sortie.push({ nom: car.nom, ...(car.unite ? { unite: uniteCanonique(car.unite) } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k) });
+    const but = (car.sens === 'plus' || car.sens === 'moins') && !BORNE_DITE.test(k.texte) ? seuilDe(k) : null;
+    sortie.push({ nom: car.nom, ...(car.unite ? { unite: uniteCanonique(car.unite) } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k), ...(but ? { cible: but.valeur } : {}) });
   }
   return sortie;
 }
@@ -390,7 +402,7 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
     for (const k of cles) {
       const d = k.sorte === 'prix'
         ? comparerSur(prixDeClassement(a, k.parUnite ?? null), prixDeClassement(b, k.parUnite ?? null), 'moins')
-        : comparerSur(ordonnable(valeurDe(a, k.colonne), k.colonne.sens), ordonnable(valeurDe(b, k.colonne), k.colonne.sens), k.colonne.sens);
+        : comparerSur(ordonnableCol(valeurDe(a, k.colonne), k.colonne), ordonnableCol(valeurDe(b, k.colonne), k.colonne), sensCol(k.colonne));
       if (d !== 0) return d;
     }
     return 0;
@@ -420,9 +432,9 @@ export function domine(a: Article, b: Article, colonnes: readonly Colonne[]): bo
       if (ta && tb && normaliser(`${ta.valeur} ${ta.unite ?? ''}`) !== normaliser(`${tb.valeur} ${tb.unite ?? ''}`)) return false;
       continue;
     }
-    const va = ordonnable(valeurDe(a, k), k.sens), vb = ordonnable(valeurDe(b, k), k.sens);
+    const va = ordonnableCol(valeurDe(a, k), k), vb = ordonnableCol(valeurDe(b, k), k);
     if (va === null || vb === null) continue;
-    ecarts.push(comparerSur(vb, va, k.sens)); /* < 0 : b meilleur */
+    ecarts.push(comparerSur(vb, va, sensCol(k))); /* < 0 : b meilleur */
   }
   if (prixComparable(a, b)) ecarts.push(ecartDePrix(a, b)!);
   return ecarts.length >= 2 && ecarts.every(e => e <= 0) && ecarts.some(e => e < 0);
@@ -504,8 +516,10 @@ export function rangeParDetail(c: CarnetDoc | Donnees): RangeParDetail {
  * et sans valeur n'y entre pas : il va dans `aRelire` (P6).
  */
 export function tableau(c: CarnetDoc | Donnees): Tableau | null {
-  const d0 = donnees(c);
-  if (d0.articles.length < 2) return null;
+  const d00 = donnees(c);
+  if (d00.articles.length < 2) return null;
+  /* C59-6 (R37) : un prix « dès » sans quantité n'est ni classé ni montré */
+  const d0: Donnees = d00.articles.some(a => articleHonnete(a) !== a) ? { ...d00, articles: d00.articles.map(articleHonnete) } : d00;
   const aRelire = aRelireDe(d0);
   const relire = new Set(aRelire.map(a => a.id));
   const criteres = colonnesDe(d0);
@@ -683,20 +697,22 @@ function nombreCellule(l: LigneTableau, k: Colonne): number | null {
   return ordonnable(l.cellules[k.nom], k.sens === 'texte' ? 'plus' : k.sens);
 }
 
-function placeSur(lignes: readonly LigneTableau[], tous: boolean, l: LigneTableau, nom: string, unite: string | undefined, sens: Colonne['sens'], lire: (x: LigneTableau) => number | null, texte: string | null, critere: boolean): Place | null {
+function placeSur(lignes: readonly LigneTableau[], tous: boolean, l: LigneTableau, nom: string, unite: string | undefined, sens: Colonne['sens'], lire: (x: LigneTableau) => number | null, texte: string | null, critere: boolean, cible?: number): Place | null {
   if (texte === null) return null;
   const connues = lignes.map(lire).filter((n): n is number => n !== null);
   const v = lire(l);
   const libelle = nom === 'prix' ? 'prix' : libelleCaracteristique(nom);
   const base: Place = { nom, ...(unite ? { unite } : {}), sens, texte, sur: connues.length, critere, ...(libelle !== nom ? { libelle } : {}) };
   if (v === null || sens === 'texte' || (!tous && l.rang === null)) return base;
-  const mieux = (a: number, b: number) => (sens === 'moins' ? a < b : a > b);
+  const proche = cible !== undefined && (sens === 'plus' || sens === 'moins');
+  const mieux = (a: number, b: number) => (proche ? Math.abs(a - cible!) < Math.abs(b - cible!) : sens === 'moins' ? a < b : a > b);
   const rang = 1 + connues.filter(x => mieux(x, v)).length;
   /* n° 6 : l'ex aequo se compte sur les seuls articles qui partagent la valeur (« 1er sur 2 ex aequo »), jamais sur tous les connus */
   const partage = connues.filter(x => x === v).length;
   const exAequo = partage > 1;
-  const meilleure = sens === 'moins' ? Math.min(...connues) : Math.max(...connues);
-  const pire = sens === 'moins' ? Math.max(...connues) : Math.min(...connues);
+  const parProximite = [...connues].sort((x, y) => Math.abs(x - cible!) - Math.abs(y - cible!));
+  const meilleure = proche ? parProximite[0] : sens === 'moins' ? Math.min(...connues) : Math.max(...connues);
+  const pire = proche ? parProximite[parProximite.length - 1] : sens === 'moins' ? Math.max(...connues) : Math.min(...connues);
   const rangColonne = `${ordinal(rang)}${exAequo ? ' ex aequo' : ''} pour ${nom === 'prix' ? 'le prix' : avecArticle(libelle, sens)}`;
   return { ...base, rang, ...(exAequo ? { exAequo, partage } : {}), rangColonne, valeur: v, meilleure, pire, toutes: connues };
 }
@@ -710,7 +726,7 @@ function placesSelon(t: Tableau, articleId: string, tous: boolean): Place[] {
   const deCol = (k: Colonne) => {
     const v = l.cellules[k.nom];
     const texte = v ? `${nombreTexte(v.valeur)}${v.unite && typeof v.valeur !== 'boolean' ? ` ${v.unite}` : ''}` : null;
-    return placeSur(lignes, tous, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId);
+    return placeSur(lignes, tous, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId, k.cible);
   };
   for (const k of t.colonnes.filter(x => x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
   /* T28-6, T30-4 : le rang du prix se calcule sur le prix qui classe (en francs, au kilo si les quantités sont dites), jamais sur le prix affiché */
@@ -774,7 +790,19 @@ function valeurDite(x: LigneTableau, k: Colonne): string | null {
 }
 
 /** Une colonne chiffrée dont les deux articles ne portent pas la même valeur. */
-const differeEntre = (a: LigneTableau, b: LigneTableau, k: Colonne) => { const x = nombreCellule(a, k), y = nombreCellule(b, k); return x !== null && y !== null && x !== y; };
+/**
+ * C58-4, C50-5, C59-3 : le nombre d'une cellule pour DIRE une différence : le nombre ordonnable, sinon le nombre en tête d'une valeur gardée en une chaîne
+ * avec son unité (« 2,6 m³ ») ; jamais 0, null si rien ne se lit. Le classement n'en use pas (nombreCellule).
+ */
+function nombreDit(l: LigneTableau, k: Colonne): number | null {
+  const n = nombreCellule(l, k);
+  if (n !== null) return n;
+  const v = l.cellules[k.nom]?.valeur;
+  if (typeof v !== 'string') return null;
+  const m = /^\s*(-?\d+(?:[.,]\d+)?)\s*[^\d\s,.]/.exec(v);
+  return m ? Number(m[1].replace(',', '.')) : null;
+}
+const differeEntre = (a: LigneTableau, b: LigneTableau, k: Colonne) => { const x = nombreDit(a, k), y = nombreDit(b, k); return x !== null && y !== null && x !== y; };
 
 /**
  * C58-4 (R32, sa réponse « Oui » : le compromis dit ce qu'on GAGNE et ce qu'on PERD, avec ou sans critère) : ce que l'article voisin par le prix a de
@@ -875,7 +903,7 @@ export function compromisDe(t: Tableau | null): string | null {
   const voisins = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
   const rival = p1 !== undefined ? [...voisins].sort((a, b) => a.prixCentimes! - b.prixCentimes! || a.rang! - b.rang!)[0] : undefined;
   const ecartPrix = rival && p1 !== undefined ? rival.prixCentimes! - p1 : 0;
-  const differe = (k: Colonne) => { if (!rival) return false; const a = nombreCellule(rival, k), b = nombreCellule(premier, k); return a !== null && b !== null && a !== b; };
+  const differe = (k: Colonne) => { if (!rival) return false; return differeEntre(rival, premier, k); };
   const dits: string[] = [];
   for (const k of criteres) {
     const v = val(premier, k);

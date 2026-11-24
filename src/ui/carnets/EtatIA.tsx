@@ -172,7 +172,8 @@ export function EtatIA({ etat, quoi, onAnnuler }: { etat: EtatRangement; quoi?: 
       </div>
     );
   }
-  if (etat === 'echec') return <div ref={ref} className="cn-etat" role="status" data-etat="echec"><Calculator size={16} aria-hidden /><span>L'IA n'a pas répondu : rangé sur place, rien n'est perdu.</span></div>;
+  /* C59-2 : sous plafond de dépenses, la cause est dite (IA en pause), non « n'a pas répondu » */
+  if (etat === 'echec') return <div ref={ref} className="cn-etat" role="status" data-etat="echec"><Calculator size={16} aria-hidden /><span>{quoi && /^IA en pause/.test(quoi) ? 'IA en pause : plafond de dépenses atteint : rangé sur place, rien n\'est perdu.' : 'L\'IA n\'a pas répondu : rangé sur place, rien n\'est perdu.'}</span></div>;
   if (etat === 'hors-ligne') return <div ref={ref} className="cn-etat" role="status" data-etat="hors-ligne"><WifiOff size={16} aria-hidden /><span>Hors ligne : rangé sur place, rien n'est perdu.</span></div>;
   if (etat === 'eteint') return <div className="cn-etat" role="status" data-etat="eteint"><Calculator size={16} aria-hidden /><span>Rangé sur place, sans l'IA.</span></div>;
   return null;

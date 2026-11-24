@@ -8,7 +8,7 @@ import { rattacher } from '../../domain/carnets/rattacher';
 import type { LigneCarnet } from '../../domain/carnets/ia';
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
-import { appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
+import { AVIS, appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
 import { CARNET_NEUF, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
 import { depuisIA, depuisLocale, pourIA, vuesVrac } from './lignesRegles';
 import type { RetourDe } from './retourCarnet';
@@ -17,7 +17,7 @@ import type { Annonce, Appliquer, AReprendre, Attente, AvisIA, Boite, CarnetsVue
 export interface RangementV {
   p: Pick<CarnetsVueProps, 'appels'>; mode: ModeCarnetIA; depuis: string | null; enLigne: boolean; magasin: MagasinCarnets; appliquer: Appliquer;
   maintenant: () => Date; retourDe: RetourDe; setRetour: (r: RetourNeuf | null) => void; poserRetourEtat: (r: Retour | null) => void;
-  poserAvis: (messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null) => void; setEtatR: Etat<EtatRangement<LigneLocale>>;
+  poserAvis: (messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null, texte?: string) => void; setEtatR: Etat<EtatRangement<LigneLocale>>;
   setRangeEnCours: Etat<string | null>; setEnTete: Etat<string | undefined>; setVientDEtreCree: Etat<string | null>; setVue: Etat<Vue>; setAReprendre: Etat<AReprendre[]>;
   attente: Boite<Attente | null>; annonces: Boite<Map<string, Annonce>>; aForcer: Boite<RubriqueVaDans | null>; forcee: Boite<string | null>;
   destEnvoi: Boite<string | null>; titreNeufEnvoi: Boite<string | null>; carnetChoisi: Boite<boolean>; gardeAPartRef: Boite<boolean>;
@@ -52,6 +52,7 @@ export function creerRangementCarnets(x: RangementV) {
     },
     surEtat: e => {
       setEtatR(e);
+      const enPause = e.etape === 'echec' && e.avis === AVIS.pause;
       /* T26-4 : lien mort : rien n'est gardé ; ni retour local, ni avis, ni « Relire » : la carte d'échec des étapes le dit seule */
       if (e.etape === 'echec' && e.lecture?.statut === 'introuvable') {
         if (attente.current?.messageId === e.messageId) attente.current = null;
@@ -68,11 +69,11 @@ export function creerRangementCarnets(x: RangementV) {
         /* PCN-184 : sans réponse de l'IA, l'aperçu local fait foi : le carnet neuf tenu en réserve s'ouvre enfin */
         setRangeEnCours(null);
         if (neuf) { setEnTete(neuf); setVientDEtreCree(neuf); setVue({ sorte: 'carnet', id: neuf }); }
-        if (e.etape === 'echec') poserAvis(e.messageId, 'echec', montre ? null : local);
+        if (e.etape === 'echec') poserAvis(e.messageId, 'echec', montre ? null : local, enPause ? e.avis : undefined);
         else if (!montre) setRetour(local);
-      } else if (e.etape === 'echec') poserAvis(e.messageId, 'echec');
+      } else if (e.etape === 'echec') poserAvis(e.messageId, 'echec', undefined, enPause ? e.avis : undefined);
       /* lot 11 (L-1, hors lot) : un échec garde le message à relire, d'un toucher (« Relire »), comme un message gardé hors ligne */
-      if (e.etape === 'echec' && e.texte?.trim()) setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte, echec: true }]);
+      if (e.etape === 'echec' && e.texte?.trim()) setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte, echec: true, ...(enPause ? { pause: true as const } : {}) }]);
       /* P22 : IA éteinte ou hors ligne : le retour local est déjà affiché ; l'avis s'y ajoute, avec ce qui a été rangé et où */
       if (e.etape === 'hors-ligne') { poserAvis(e.messageId, 'hors-ligne'); setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte }]); }
       /* T28-17 : un lien déjà dans le carnet n'est pas « IA éteinte » : le bandeau « Déjà dans ce carnet » suffit */

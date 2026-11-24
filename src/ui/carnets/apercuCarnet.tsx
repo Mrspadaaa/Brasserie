@@ -8,7 +8,7 @@ import { aucunCarnetNEnParle, nommeLeCarnet, rattacher } from '../../domain/carn
 import { doublonsDe } from '../../domain/carnets/doublons';
 import type { lireCarnets, lireMessages } from '../../domain/carnets/modele';
 import type { AidesCarnet, ModeCarnetIA } from '../../config/carnetIA';
-import { planVrac, type EtatRangement, type Rangement as Envoi } from './rangement';
+import { AVIS, planVrac, type EtatRangement, type Rangement as Envoi } from './rangement';
 import { ChampCarnet } from './ChampCarnet';
 import { CadreArrivee, type CadreV } from './CadreArrivee';
 import { NoteEnVrac } from './NoteEnVrac';
@@ -136,7 +136,7 @@ export function apercuCarnet(x: ApercuV) {
     if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !(etatR.etape === 'echec' && etatR.lecture?.statut === 'introuvable') && !retourDuMessage(etatR.messageId) && !texte.trim()
       /* C56-5 (R28) : UN seul avis d'échec : le bandeau de reprise (« L'IA n'a pas répondu : … [Relire] ») le porte déjà, en ligne */
       && !(etatR.etape === 'echec' && enLigne && aReprendre.some(x => x.echec && x.messageId === etatR.messageId))) {
-      return <EtatIA etat={etatR.etape} quoi={AVIS_IA[etatR.etape]} />;
+      return <EtatIA etat={etatR.etape} quoi={etatR.etape === 'echec' && etatR.avis === AVIS.pause ? etatR.avis : AVIS_IA[etatR.etape]} />;
     }
     if (edition) return null;
     if (!texte.trim()) {

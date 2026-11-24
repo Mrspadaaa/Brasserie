@@ -147,8 +147,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     retourDeMessage(etat ?? magasin.lire(), messageId, txt, depuisM, inverse, lignesIA, titresIA), [magasin]);
 
   /** P22 : l'avis de l'IA (éteinte, hors ligne, en échec) se pose sur le retour de ce message, affiché ou tenu en réserve. */
-  const poserAvis = useCallback((messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null) => {
-    const avis: AvisIA = { sorte, texte: AVIS_IA[sorte] };
+  const poserAvis = useCallback((messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null, texte?: string) => {
+    const avis: AvisIA = { sorte, texte: texte ?? AVIS_IA[sorte] };
     const cur = retourRef.current;
     const vise = cur && cur.messageId === messageId ? cur : enReserve;
     /* n° 24 : le carnet où ce message est rangé sait que l'IA n'y est pas passée (« Ensuite : l'IA cherche… » ne promet plus rien) */
@@ -275,8 +275,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
    * Critique 6, n° 24 (D-113, D-142) : de retour en ligne, « Ranger maintenant » : chaque message gardé hors ligne passe à l'IA, dans le
    * carnet où il est (le carnet ouvert d'alors, ou celui qu'il a créé) ; rien ne bouge sans ce toucher.
    */
-  const rangerMaintenant = async (seul?: string) => {
-    const liste = seul ? aReprendre.filter(x => x.messageId === seul) : aReprendre;
+  const rangerMaintenant = async (seul?: string, ids?: readonly string[]) => {
+    /* C59-1 (R35) : le bouton ne reprend que ce que le bandeau annonce (les messages du carnet ouvert, `ids`) ; jamais ceux d'un autre carnet */
+    const liste = seul ? aReprendre.filter(x => x.messageId === seul) : ids ? aReprendre.filter(x => ids.includes(x.messageId)) : aReprendre;
     setAReprendre(l => l.filter(x => !liste.includes(x)));
     setIaManquee(m => Object.fromEntries(Object.entries(m).filter(([, s]) => s !== 'echec' || !liste.some(x => x.echec))));
     setIaManquee(m => Object.fromEntries(Object.entries(m).filter(([, s]) => s !== 'hors-ligne')));

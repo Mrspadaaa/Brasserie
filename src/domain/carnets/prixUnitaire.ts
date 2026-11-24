@@ -49,6 +49,18 @@ export function quantiteArticle(a: Pick<Article, 'nom'>): QuantiteArticle | null
   return trouvees.every(t => t.dim === premiere.dim && Math.abs(t.base - premiere.base) < 1e-9) ? premiere : null;
 }
 
+/**
+ * C59-6 (R37, LIEN-PRIX-JUSTE, « 0,10 le Citra ??? ») : un prix « dès » (plancher d'une variante, prix du gramme) SANS quantité dite n'est le prix d'aucun
+ * conditionnement : il ne se classe pas et ne se montre pas (« prix ? », à saisir). Avec sa quantité (« 50 g »), il reste un prix honnête. L'article rendu est
+ * une copie sans prix ; la donnée stockée n'est pas touchée.
+ */
+export function articleHonnete<T extends { nom?: string; prixCentimes?: number; prixDes?: true }>(a: T): T {
+  if (!a.prixDes || a.prixCentimes === undefined || quantiteArticle({ nom: a.nom ?? '' })) return a;
+  const { prixCentimes: _p, prixDes: _d, ...reste } = a as T & { devise?: unknown; taxe?: unknown; change?: unknown; prixTTCCentimes?: unknown };
+  const { devise: _v, taxe: _t, change: _c, prixTTCCentimes: _x, ...sansPrix } = reste;
+  return sansPrix as unknown as T;
+}
+
 /** Le prix (centimes de sa devise) pour 1 kg ou 1 L ; `null` : prix ou quantité inconnus. */
 export function prixParUnite(a: PrixArticle): { centimes: number; dim: Dimension } | null {
   const q = quantiteArticle(a);

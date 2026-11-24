@@ -111,6 +111,6 @@ export type Appliquer = (r: Resultat) => (Resultat & { ok: true }) | null;
 export type Attente = { messageId: string; retour: RetourNeuf; montre?: boolean; neuf?: string };
 /** Critique 6, n° 24 : un message rangé tel quel (hors ligne, échec), repris d’un toucher. */
 /** `lecture` (LE-1) : une lecture de lien restée en attente sur l'appareil ; elle ne repart qu'au toucher « Reprendre ». */
-export type AReprendre = { messageId: string; texte: string; echec?: true; lecture?: true };
+export type AReprendre = { messageId: string; texte: string; echec?: true; lecture?: true; /** C59-2 : l'échec vient du plafond de dépenses (IA en pause) */ pause?: true };
 /** Le carnet supprimé, gardé pour Annuler (avec son plan, L-14). */
 export type Supprime = { titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[]; plan?: FinancialPlan };
