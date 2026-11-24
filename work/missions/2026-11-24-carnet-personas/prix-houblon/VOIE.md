@@ -7,7 +7,7 @@
 - Mécanique : le banc des liens (sans IA gratuit ; avec IA : budget 0,10 CHF, journal).
 - Gestes : grep ciblé ; un script par lot ; tests et banc dans des fichiers.
 
-## À faire
+## À faire (lire aussi « Ajouts du pilote » en fin de DOSSIER)
 1. État de l'art en tête de RESULTAT.md (une ligne : prix d'offre schema.org Offer/AggregateOffer + unitPriceSpecification / referenceQuantity, variantes Shopify `product.json`, prix au gramme des boutiques ; décision).
 2. Ajouter au banc permanent les deux pages (capture de la page servie au serveur, vérité écrite depuis le DOSSIER) : https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us et https://www.brauundrauchshop.ch/citra-136-2. Banc avant : rouge sur ces deux liens.
 3. Tests rouges AVANT le correctif (tests-rouge.log), depuis les règles du DOSSIER ; puis correctif dans la lecture serveur (functions/src/lien*) et l'affichage (src/domain/carnets, src/ui/carnets) ; vert.
