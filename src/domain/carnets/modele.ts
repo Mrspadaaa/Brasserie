@@ -206,25 +206,43 @@ export function sansIndefinis<T extends object>(o: T): T {
   return r as T;
 }
 
+/**
+ * Passe-plat (D451, PLAN § Risques 1 ; lecteur tolérant, patron expand/contract) : les clés qu'un lecteur ne connaît pas (écrites par une
+ * version plus récente, un autre appareil) survivent à la lecture et à la réécriture du document ; sans lui, l'ancien client les jette et
+ * efface le travail du neuf. `connues` : tout ce que le lecteur regarde, même s'il écarte une valeur mal formée (comportement d'avant).
+ */
+export function inconnues(brut: Record<string, unknown>, connues: readonly string[]): Record<string, unknown> {
+  const r: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(brut)) if (!connues.includes(k) && v !== undefined) r[k] = v;
+  return r;
+}
+
+const CLES_CARACTERISTIQUE = ['nom', 'unite', 'sens'];
 function lireCaracteristique(v: unknown): Caracteristique | undefined {
   if (!estObjet(v) || !texteNonVide(v.nom) || !SENS.includes(v.sens as Sens)) return undefined;
-  return sansIndefinis({ nom: v.nom, unite: optTexte(v.unite), sens: v.sens as Sens });
+  return { ...inconnues(v, CLES_CARACTERISTIQUE), ...sansIndefinis({ nom: v.nom, unite: optTexte(v.unite), sens: v.sens as Sens }) };
 }
 
+const CLES_CRITERE = ['id', 'texte', 'raison', 'caracteristique', 'origine', 'messageId', 'source'];
 function lireCritere(v: unknown): Critere | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.texte)) return null;
-  return sansIndefinis({
-    id: v.id, texte: v.texte, raison: optTexte(v.raison), caracteristique: lireCaracteristique(v.caracteristique), origine: origineLue(v.origine), messageId: optTexte(v.messageId),
-    source: v.source === 'phrase' || v.source === 'ia' ? v.source : undefined
-  });
+  return {
+    ...inconnues(v, CLES_CRITERE),
+    ...sansIndefinis({
+      id: v.id, texte: v.texte, raison: optTexte(v.raison), caracteristique: lireCaracteristique(v.caracteristique), origine: origineLue(v.origine), messageId: optTexte(v.messageId),
+      source: v.source === 'phrase' || v.source === 'ia' ? v.source : undefined
+    })
+  };
 }
 
+const CLES_FACON = ['id', 'nom', 'etat', 'raison', 'origine', 'messageId'];
 function lireFacon(v: unknown): Facon | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.nom)) return null;
   const etat: EtatFacon = v.etat === 'retenue' || v.etat === 'ecartee' ? v.etat : 'ouverte';
-  return sansIndefinis({ id: v.id, nom: v.nom, etat, raison: optTexte(v.raison), origine: origineLue(v.origine), messageId: optTexte(v.messageId) });
+  return { ...inconnues(v, CLES_FACON), ...sansIndefinis({ id: v.id, nom: v.nom, etat, raison: optTexte(v.raison), origine: origineLue(v.origine), messageId: optTexte(v.messageId) }) };
 }
 
+const CLES_VALEUR = ['valeur', 'unite', 'origine', 'luLe'];
 function lireValeurs(v: unknown): Record<string, Valeur> {
   const sortie: Record<string, Valeur> = {};
   if (!estObjet(v)) return sortie;
@@ -233,14 +251,15 @@ function lireValeurs(v: unknown): Record<string, Valeur> {
     const valeur = brut.valeur;
     /* une valeur inconnue est absente : null, NaN, chaîne vide ne deviennent jamais 0 */
     if (!(nombreFini(valeur) || typeof valeur === 'boolean' || texteNonVide(valeur))) continue;
-    sortie[nom] = sansIndefinis({ valeur, unite: optTexte(brut.unite), origine: origineLue(brut.origine), luLe: optTexte(brut.luLe) });
+    sortie[nom] = { ...inconnues(brut, CLES_VALEUR), ...sansIndefinis({ valeur, unite: optTexte(brut.unite), origine: origineLue(brut.origine), luLe: optTexte(brut.luLe) }) };
   }
   return sortie;
 }
 
+const CLES_VEILLE = ['active', 'depuis', 'releveLe'];
 function lireVeille(v: unknown): Veille | undefined {
   if (!estObjet(v) || typeof v.active !== 'boolean' || !texteNonVide(v.depuis)) return undefined;
-  return sansIndefinis({ active: v.active, depuis: v.depuis, releveLe: optTexte(v.releveLe) });
+  return { ...inconnues(v, CLES_VEILLE), ...sansIndefinis({ active: v.active, depuis: v.depuis, releveLe: optTexte(v.releveLe) }) };
 }
 
 /**
@@ -342,11 +361,18 @@ function lirePhotos(v: unknown): string[] | undefined {
   return l.length ? l : undefined;
 }
 
+const CLES_ARTICLE = [
+  'id', 'url', 'domaine', 'nom', 'prixCentimes', 'prixDes', 'doute', 'conditionnement', 'prixUnite', 'offres', 'taxe', 'prixTTCCentimes', 'livraison', 'change', 'devise', 'vendeur', 'pays',
+  'dispo', 'photo', 'photos', 'faconId', 'valeurs', 'lecture', 'veille', 'messageId', 'origine'
+];
 function lireArticle(v: unknown): Article | null {
   if (!estObjet(v) || !texteNonVide(v.id)) return null;
   const prixOk = nombreFini(v.prixCentimes);
+  return { ...inconnues(v, CLES_ARTICLE), ...lireArticleConnu(v, v.id, prixOk) };
+}
+function lireArticleConnu(v: Record<string, unknown>, id: string, prixOk: boolean): Article {
   return sansIndefinis({
-    id: v.id, url: optTexte(v.url), domaine: optTexte(v.domaine), nom: optTexte(v.nom),
+    id, url: optTexte(v.url), domaine: optTexte(v.domaine), nom: optTexte(v.nom),
     prixCentimes: nombreFini(v.prixCentimes) && v.prixCentimes >= 0 ? Math.round(v.prixCentimes) : undefined,
     prixDes: v.prixDes === true && nombreFini(v.prixCentimes) ? true : undefined,
     doute: optTexte(v.doute),
@@ -360,26 +386,32 @@ function lireArticle(v: unknown): Article | null {
   });
 }
 
+const CLES_NOTE = ['id', 'texte', 'genre', 'modifieeLe', 'messageId', 'groupe', 'fusionDe'];
 function lireNote(v: unknown): Note | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.texte)) return null;
   const groupe = estObjet(v.groupe) && texteNonVide(v.groupe.id) && typeof v.groupe.libelle === 'string' ? { id: v.groupe.id, libelle: v.groupe.libelle } : undefined;
   const fusionDe = Array.isArray(v.fusionDe) ? v.fusionDe.filter(texteNonVide) : undefined;
-  return sansIndefinis({
-    id: v.id, texte: v.texte, genre: GENRES_NOTE.includes(v.genre as GenreNote) ? (v.genre as GenreNote) : 'note', modifieeLe: optTexte(v.modifieeLe),
-    messageId: optTexte(v.messageId), groupe, fusionDe: fusionDe && fusionDe.length ? fusionDe : undefined
-  });
+  return {
+    ...inconnues(v, CLES_NOTE),
+    ...sansIndefinis({
+      id: v.id, texte: v.texte, genre: GENRES_NOTE.includes(v.genre as GenreNote) ? (v.genre as GenreNote) : 'note', modifieeLe: optTexte(v.modifieeLe),
+      messageId: optTexte(v.messageId), groupe, fusionDe: fusionDe && fusionDe.length ? fusionDe : undefined
+    })
+  };
 }
 
+const CLES_PHOTO = ['id', 'jpeg', 'messageId', 'lue'];
 function lirePhoto(v: unknown): Photo | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.jpeg)) return null;
-  return sansIndefinis({ id: v.id, jpeg: v.jpeg, messageId: optTexte(v.messageId), lue: v.lue === true ? (true as const) : undefined });
+  return { ...inconnues(v, CLES_PHOTO), ...sansIndefinis({ id: v.id, jpeg: v.jpeg, messageId: optTexte(v.messageId), lue: v.lue === true ? (true as const) : undefined }) };
 }
 
+const CLES_CHOIX = ['articleId', 'faconId', 'pourquoi', 'ecartes', 'aRevoirSi', 'le', 'remplaces'];
 function lireChoix(v: unknown, profondeur = 0): Choix | undefined {
   if (!estObjet(v) || !texteNonVide(v.articleId) || typeof v.pourquoi !== 'string' || !texteNonVide(v.le) || profondeur > 20) return undefined;
   const ecartes = Array.isArray(v.ecartes) ? v.ecartes.filter((e): e is { articleId: string; raison: string } => estObjet(e) && texteNonVide(e.articleId) && typeof e.raison === 'string').map(e => ({ articleId: e.articleId, raison: e.raison })) : [];
   const remplaces = Array.isArray(v.remplaces) ? v.remplaces.map(r => lireChoix(r, profondeur + 1)).filter((r): r is Choix => !!r) : [];
-  return sansIndefinis({ articleId: v.articleId, faconId: optTexte(v.faconId), pourquoi: v.pourquoi, ecartes, aRevoirSi: optTexte(v.aRevoirSi), le: v.le, remplaces });
+  return { ...inconnues(v, CLES_CHOIX), ...sansIndefinis({ articleId: v.articleId, faconId: optTexte(v.faconId), pourquoi: v.pourquoi, ecartes, aRevoirSi: optTexte(v.aRevoirSi), le: v.le, remplaces }) };
 }
 
 const liste = <T>(v: unknown, lire: (x: unknown) => T | null): T[] | null => {
@@ -388,7 +420,9 @@ const liste = <T>(v: unknown, lire: (x: unknown) => T | null): T[] | null => {
   return v.map(lire).filter((x): x is T => x !== null);
 };
 
-/** Le contenu d'une idée, normalisé ; `null` si la forme est inconnue. */
+const CLES_CARNET = ['version', 'creeLe', 'phrase', 'criteres', 'facons', 'articles', 'notes', 'photos', 'choix', 'sortie', 'archive', 'domaine'];
+
+/** Le contenu d'une idée, normalisé ; `null` si la forme est inconnue. Les clés inconnues sont gardées (passe-plat, D451). */
 export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
   if (!estObjet(v) || v.version !== VERSION_CARNET || typeof v.creeLe !== 'string' || typeof v.phrase !== 'string') return null;
   const criteres = liste(v.criteres, lireCritere), facons = liste(v.facons, lireFacon), articles = liste(v.articles, lireArticle);
@@ -396,7 +430,7 @@ export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
   if (!criteres || !facons || !articles || !notes || !photos) return null;
   const sortie = estObjet(v.sortie) && texteNonVide(v.sortie.planId) && typeof v.sortie.le === 'string' ? { planId: v.sortie.planId, le: v.sortie.le } : undefined;
   const archive = estObjet(v.archive) && typeof v.archive.le === 'string' && typeof v.archive.raison === 'string' ? { le: v.archive.le, raison: v.archive.raison } : undefined;
-  return sansIndefinis({ version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine) });
+  return { ...inconnues(v, CLES_CARNET), ...sansIndefinis({ version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine) }) };
 }
 
 const STATUTS: readonly StatutCarnet[] = ['idea', 'research', 'validated'];
@@ -411,6 +445,10 @@ export function lireCarnet(item: CreativeItem | null | undefined): CarnetDoc | n
 }
 
 const RANGEMENTS: readonly Rangement[] = ['ia', 'locale', 'simulee', 'brut'];
+const CLES_EFFET = ['carnetId', 'cible', 'id', 'carnetSupprime', 'fusion', 'existant'];
+const CLES_TITRE_PROPOSE = ['carnetId', 'titre', 'applique'];
+const CLES_PROPOSITION = ['carnetId', 'texte', 'caracteristique', 'origine'];
+const CLES_MESSAGE = ['texte', 'le', 'depuis', 'rangement', 'effets', 'titrePropose', 'gardeAPart', 'propositions'];
 
 /** Un message du fil, normalisé ; `null` si ce n'en est pas un. Un `titrePropose` mal formé est ignoré (R46). */
 export function lireMessage(item: CreativeItem | null | undefined): MessageDoc | null {
@@ -423,20 +461,23 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
         const f = (e as { fusion?: unknown }).fusion;
         const fusion = estObjet(f) && typeof f.texte === 'string' && typeof f.origine === 'string'
           ? sansIndefinis({ texte: f.texte, origine: f.origine as Origine, messageId: texteNonVide(f.messageId) ? f.messageId : undefined }) : undefined;
-        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion, existant: e.existant === true ? (true as const) : undefined });
+        return { ...inconnues(e as unknown as Record<string, unknown>, CLES_EFFET), ...sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion, existant: e.existant === true ? (true as const) : undefined }) };
       })
     : [];
   const t = m.titrePropose;
   const titrePropose = estObjet(t) && texteNonVide(t.carnetId) && texteNonVide(t.titre)
-    ? sansIndefinis({ carnetId: t.carnetId, titre: t.titre, applique: t.applique === true ? true : undefined }) : undefined;
+    ? { ...inconnues(t, CLES_TITRE_PROPOSE), ...sansIndefinis({ carnetId: t.carnetId, titre: t.titre, applique: t.applique === true ? true : undefined }) } : undefined;
   const propositions = Array.isArray(m.propositions)
     ? m.propositions.filter((p): p is PropositionCritere => estObjet(p) && texteNonVide(p.carnetId) && texteNonVide(p.texte) && typeof p.origine === 'string')
-      .map(p => sansIndefinis({ carnetId: p.carnetId, texte: p.texte, origine: p.origine, caracteristique: estObjet(p.caracteristique) ? { ...p.caracteristique } : undefined }))
+      .map(p => ({ ...inconnues(p as unknown as Record<string, unknown>, CLES_PROPOSITION), ...sansIndefinis({ carnetId: p.carnetId, texte: p.texte, origine: p.origine, caracteristique: estObjet(p.caracteristique) ? { ...p.caracteristique } : undefined }) }))
     : [];
-  const carnetMessage: DonneesMessage = sansIndefinis({
-    texte: m.texte, le: m.le, depuis: m.depuis, rangement: RANGEMENTS.includes(m.rangement as Rangement) ? (m.rangement as Rangement) : 'brut', effets, titrePropose,
-    gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined
-  });
+  const carnetMessage: DonneesMessage = {
+    ...inconnues(m, CLES_MESSAGE),
+    ...sansIndefinis({
+      texte: m.texte, le: m.le, depuis: m.depuis, rangement: RANGEMENTS.includes(m.rangement as Rangement) ? (m.rangement as Rangement) : 'brut', effets, titrePropose,
+      gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined
+    })
+  };
   return { ...item, type: 'carnet-message', carnetMessage };
 }
 
