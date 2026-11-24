@@ -30,6 +30,7 @@ pause: 2026-11-24T16:24:50.484Z
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
 - [ ] Tour 59 en ligne (index-BoCN8sbd.js : c58-fix) : test critique-59
 - [ ] Carnet, sa plainte du 24.11 16:46 : critiques persona brasseur et compact (work/missions/2026-11-24-carnet-personas/), puis synthèse, mini maquettes des écarts à ses choix (skill maquettes, artefact neuf), puis port ; prix des houblons (LIEN-PRIX-JUSTE)
+- [ ] URGENT à vérifier (persona compact, D1) : « Enregistrement sur le serveur… » à la simple OUVERTURE de son carnet Chambre froide (aussi sur sa capture 5) : l app écrit-elle en lisant ? (cause probable : domaine, ordre ou relecture posés à l ouverture) ; trouver l écriture (grep des écritures déclenchées au montage de CarnetOuvert), la supprimer si elle n est pas un geste du brasseur
 - [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
