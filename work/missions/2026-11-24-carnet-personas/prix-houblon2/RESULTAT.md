@@ -1,12 +1,18 @@
-# RESULTAT prix-houblon2
+OK — prix lu avec sa quantité (50 g, 0,1044 CHF/g → 104,40 CHF/kg), comparé au kilo, IA et page d'accord ; PRÊT À METTRE EN LIGNE c303d2223
 
-(état tenu au fil ; dernière mise à jour : démarrage)
+## Synthèse
+- Commit de code : c303d2223 (sur 64cf3f08b de la voie précédente) ; BUGS PX-1 à PX-5 « corrigé en local » ; `controle-bugs.mjs` : BUGS OK. aiTask (functions/) à déployer par le pilote (accepté).
+- Critères : tsc functions/ 0 erreur ; tsc racine : 2 erreurs PRÉEXISTANTES hors voie (src/data/seedData.ts GanttTask, src/services/enregistrerPwa.ts virtual:pwa-register ; tsc-racine2.log) ; tests c48..c59Regles + carnets* + proprietes + px* : 68 fichiers, 1398 verts (tests.log) ; banc 65 liens (63+2) sans IA et avec IA : 64 et 65 justes (prix, nom, conditionnement), 0 invention, aucun champ en recul (comparaison-actuel-A.log : prix 53/58 → 56/58, caractéristiques 36/49 → 38/49, le reste égal) ; capture du vrai Comparer ouverte (390 et 1280).
+- Tests « rouges avant » : ceux du correctif de la voie précédente sont dans ../prix-houblon/tests-rouge.log. Pour mes correctifs de cette reprise, la preuve « rouge avant » est le banc réel et la capture (13 faux « prix douteux », « 4,28 EUR de moins ») ; les tests ont été écrits après le constat et vérifiés verts, sans rejouer le code d'avant : à dire, non fait.
+- Budget IA : journal `prix-houblon2` = A 0,1223 CHF (58 lectures Flash-Lite + 1 Hydrogen sur le n°45) + B 0,0882 CHF (13 liens url_context) = 0,2105 CHF, plus 0,02345 CHF de la voie précédente = 0,234 CHF sur 0,25. Aucun appel hors banc, aucun dans npm test.
+- Non mesuré, dit : la cascade complète sur 65 liens (28 relectures Hydrogen d'après le banc à sec, ≈ 0,29 CHF estimé à 0,0105 CHF l'appel) : hors budget ; Hydrogen n'a été joué que sur n°45 (même lecture que Flash-Lite : 8 € les 100 g). Les relectures refusées par le budget du banc ne sont pas comptées comme faites (correction de l'étape).
+- Relire R42 : test pxPrixEcrans (« la page relue remplace le dès », « refus qui dit pourquoi »), + pxPrixDes (le « dès » précisé par la page entière). En-tête « prix EUR » : test + capture (« prix CHF/kg »).
 
 ## État de l'art (L29)
-Prix d'offre : schema.org `Offer` / `AggregateOffer` (lowPrice/highPrice) + `unitPriceSpecification` (`referenceQuantity`) ; variantes Shopify `product.json` (une variante = un conditionnement, prix de la variante) ; boutiques à prix au gramme (le prix schema.org est alors un prix à l'unité, pas à l'article). Décision : (à écrire après lecture du code) lire d'abord les variantes/offres structurées avec leur quantité, convertir tout prix au poids en CHF/kg pour comparer, ne jamais montrer un nombre sans quantité ni unité.
+Prix d'offre : schema.org `Offer` / `AggregateOffer` (lowPrice/highPrice) + `unitPriceSpecification` avec `referenceQuantity` (UN/CEFACT GRM, KGM, LTR) ; variantes Shopify (`product.json`, une variante = un conditionnement et son prix) ; boutiques à prix au gramme ou à paliers (nopCommerce : « Preis/Gramm », « Staffelpreise »), où le prix schema.org est un prix à l'unité, pas celui de l'article. Lecture « comme un outil web » : page → Markdown entier (node-html-markdown, déjà là, méthode Jina/Firecrawl) puis modèle ; variante B = `url_context` de Gemini. Décision : (1) lire les conditionnements publiés dans le CODE de la page (variantes Shopify, lignes nopCommerce, référence schema.org) et les donner à l'IA en tête du texte ; (2) l'IA lit toujours la page entière (D450), chaque valeur gardée contre le texte ; (3) accord ou désaccord dit, jamais en silence ; (4) tout prix au poids/volume se convertit en CHF/kg ou CHF/L pour comparer ; (5) A (Markdown + Flash-Lite) retenu, B (url_context) seulement pour les pages bloquées (mesure ci-dessous). Aucune bibliothèque nouvelle.
 
-## Journal
-- [démarrage] voie reprise ; rien encore vérifié.
+## Journal (détail, dans l'ordre)
+- [démarrage] voie reprise.
 - [19:50] Vérifié depuis zéro sur HEAD 8f267c189 : tsc functions/ 0 erreur ; tsc racine 2 erreurs PRÉEXISTANTES et hors voie (src/data/seedData.ts GanttTask, src/services/enregistrerPwa.ts virtual:pwa-register) ; tests c48..c59Regles + carnets* + proprietes + pxPrix* : 65 fichiers, 1382 verts (tests.log). Banc sans IA 65 liens (banc-actuel.log) : 64 et 65 justes (prix, nom, conditionnement), 0 invention.
 - Constat : le code de 64cf3f08b (lienIA D450, lienConditionnement, Escalader) est en place ; restent à prouver : IA réelle (budget restant 0,25 - 0,02345 = 0,2266 CHF), cause racine écrite, comparaison A/B, Relire R42, en-tête CHF, registre PX.
 
@@ -32,3 +38,13 @@ Prix d'offre : schema.org `Offer` / `AggregateOffer` (lowPrice/highPrice) + `uni
 - Ce que les captures montrent (1280) : en-tête « prix CHF/kg » (jamais « prix EUR »), MotlerHops « 3,72 € · 50 g · 69,19 CHF/kg », braupartner « 8 € TTC · 100 g · 74,40 CHF/kg » (n°45 précisé), Brau « 104,40 · 1 kg · 104,40 CHF/kg · 0,1044 CHF/g » (jamais « 0,10 »), hopfenshop n°35 « ? » avec Relire ET Escalader (PX-3). À 390 : tableau défilant, mêmes cellules, une colonne cachée derrière « → 2 de plus » (comportement existant).
 - DÉFAUT NEUF vu sur la capture : la phrase « Compromis » disait « la 1re, la moins chère : 4,28 EUR de moins que la 2e » (3,72 € les 50 g contre 8 € les 100 g : deux sachets). Corrigé dans `compromisDe` (comparer.ts) : l'écart se dit au même étalon que le classement (« 5,21 CHF/kg de moins ») ; tests/unit/pxCompromisUnite.test.ts.
 - Doute laissé : la ligne « dès ≈4 » au-dessus de « 3,72 € · 50 g » est le total « rendu chez toi » existant (R37, port non lu), pas le prix du sachet ; il reste lisible mais proche du « ≈4 · 3,72 € » dont il s'est plaint. Je ne l'ai pas touché (hors du prix lu).
+
+## Doutes et limites
+- B jugé sur 13 liens seulement (budget) et sur la page EN LIGNE du jour : l'écart sur n°64 (5,25 € lu, vérité 3,72 €) peut venir de la page elle-même ; n°5 (171,53 au lieu de 172,53) est un vrai chiffre faux. Conclusion prudente : B n'a pas fait mieux qu'A sur ces liens, et il n'a pas de garde.
+- Le banc IA rejoue des réponses déjà payées (ia-reponses, 118 fichiers) : la même page et la même consigne ne coûtent plus rien ; changer la consigne ou le texte envoyé refait payer (~0,11 CHF les 65 liens en Flash-Lite).
+- Pas de déploiement : functions/ (aiTask, lireLien) à déployer par le pilote, puis rejouer en ligne les deux liens Citra sur « ZZ TEST — … » (reste à faire, non fait ici).
+- Le Hydrogen de n°64/65 avec le NOUVEAU texte n'a pas été rejoué (3 relectures refusées par le plafond du banc) ; la mesure d'avant (code ancien) est dans ../prix-houblon/ia-reel-avant.log.
+
+DÉCISION À PRENDRE : garder B (url_context) hors de la cascade des pages lisibles (recommandé : sans garde, 2 faux sur 13 passeraient) ; ou lui donner un budget de banc propre pour trancher sur les 65.
+CONNAISSANCE : une page « dès X » sans quantité ne se résout pas par le seul schema.org ; le texte visible n'a pas non plus les variantes Shopify (dans le JSON du code) : il faut les deux, plus l'IA sur la page entière. Un prix au gramme est arrondi à 0,10 dans l'attribut `content` de nopCommerce : le texte affiché fait foi.
+LEÇON PROPOSÉE : un banc de lecture se relit sur le rendu final (capture du vrai composant) : le « 4,28 EUR de moins » n'apparaissait dans aucun test de lecture ; il n'est sorti qu'en ouvrant la capture (L12).
