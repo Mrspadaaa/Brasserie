@@ -8,3 +8,6 @@ Constats et propositions des deux critiques (à lire, sections propositions) :
 Défauts : work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md § CARNET-DONNEE-PREMIER-PLAN, COMPARER-QUI-GAGNE, LIEN-PRIX-JUSTE.
 Ses choix du Carnet (règle n° 1, ne rien retirer de ce qu'il a choisi sans le montrer comme écart) : work/missions/maquettes-carnet/CHOIX.md ; work/missions/2026-11-23-reprise-soir/voies/carnet-q/decisions-D435-D437.txt ; réglette de Choisir g05-11 gardée.
 Écrans à couvrir : carnet ouvert, feuille Articles, fiche d'article, Comparer (avec et sans critère), liste des carnets avec domaines et sous-domaines.
+
+## Ajout du pilote (24.11) : tableau du carnet
+- Ses mots (capture work/missions/2026-11-23-reprise-soir/plaintes/2026-11-24-tableau-rang.jpg, tableau « rang · article · CHF ») : « Pas juste le prix, 2 ou 3 caractéristiques principales ». Chaque version montre, par ligne du tableau, 2 ou 3 caractéristiques qui décident (houblon : alpha, récolte, prix au kilo ; chambre froide : volume, température, prix), avec qui gagne, sans perdre la compacité.

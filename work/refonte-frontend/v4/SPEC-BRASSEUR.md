@@ -2884,3 +2884,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (lecture des liens) : « Et pourquoi on a pas la même fonctionnalités que toi tu utilises pour lire es liens, les pages web ? »
 
 - 24.11 (lecture des liens, url_context 57/57 réservé aux pages bloquées) : « ????? Bah alors ?? »
+
+- 24.11 (Carnet, tableau « rang · article · CHF », capture plaintes/2026-11-24-tableau-rang.jpg) : « Pas juste le prix, 2 ou 3 caractéristiques principales »
