@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T08:25:18Z
+pause: 2026-11-24T08:45:10Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -20,8 +20,9 @@ pause: 2026-11-24T08:25:18Z
 - [x] Carnet : ses choix portés, en ligne tour 46 ; test critique-46 : 6 problèmes (1 B), domaine 10/10
 - [x] Tour 47 : test critique-47, 6 problèmes (0 B), E45 vérifiés, E47-1..5 versés
 - [x] Tour 48 en ligne (index-DJIfW4-y.js, carnet-c46)
-- [ ] Tour 49 en ligne (index-Bk3VRdwH.js, e47 052e89cb7, aiTask) : test critique-49 avec rejeu des corrigés
-- [ ] Voie c48 : tests rouges par un agent (c48-tests), puis correctif par un autre (c48-fix), tour 50, test en ligne
+- [x] Tour 49 : critique-49, 3 problèmes (0 B), 7/9 corrigés confirmés
+- [ ] Voie frise-centimes (C46-5 rouvert), puis tour 51
+- [ ] Tour 50 en ligne (index-u01CJTAh.js, c48-fix e6a0da57d, aiTask) : test critique-50 (son carnet + ZZ, rejeu des corrigés)
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
 - [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
 - [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
