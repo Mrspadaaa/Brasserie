@@ -330,6 +330,10 @@ export const FirestoreRepo = {
       [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending') && 'ecritures'].filter((x): x is string => Boolean(x));
     return {
       pendingSources,
+      /* BD-1 : une écriture réelle de CET appareil (en file, en route vers le serveur, ou pas encore confirmée). `pending` y ajoute l'écho des
+         instantanés (`hasPendingWrites`), qui reste vrai tant que le flux d'écoute n'a pas livré la version du serveur, parfois des minutes
+         après la confirmation : jamais de quoi dire « Enregistrement sur le serveur… » en ligne. */
+      writing: queuedWrites.length > 0 || inFlight.size > 0 || [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending'),
       pending: queuedWrites.length > 0 || inFlight.size > 0 || pendingDocuments.size > 0 || [...collectionState.values()].some(s => s.pending) || [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending'),
       fromCache: collectionState.size === 0 || [...collectionState.values()].some(s => s.fromCache),
       refreshing: refreshing.size > 0 || financialState.loading,
