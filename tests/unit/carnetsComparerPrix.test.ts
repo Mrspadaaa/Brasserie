@@ -88,11 +88,12 @@ describe('CRB-13 et CRB-14 : dispo, vendeur, pays en lignes, dans l\'ordre de sa
     const sans = tableau(chambre({ dispo: undefined, vendeur: undefined, pays: undefined }, { dispo: undefined, vendeur: undefined, pays: undefined }))!;
     expect(colonnesComparer(sans).map(c => c.cle).filter(c => c.startsWith('__') && c !== '__prix')).toEqual([]);
   });
-  it('un critère qui classe passe avant le volume et les dimensions, après le prix', () => {
+  it('un critère qui classe passe avant le volume et les dimensions, après l\'offre groupée (R29, C56-6)', () => {
     const t = tableau(base)!;
     const cols = colonnesComparer(t);
     expect(cols[0].cle).toBe('__prix');
-    expect(cols[1].critere || t.colonnes.find(c => c.nom === cols[1].nom)?.critereId).toBeTruthy();
+    const premiere = cols.find(c => !c.cle.startsWith('__'))!;
+    expect(premiere.critere || t.colonnes.find(c => c.nom === premiere.nom)?.critereId).toBeTruthy();
   });
   it('groupeDeLigne : la porte n\'est pas une dimension, la couleur est la dernière', () => {
     expect(groupeDeLigne('Hauteur de la porte')).toBeLessThan(groupeDeLigne('Exécution/équipement'));
