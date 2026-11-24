@@ -9,6 +9,7 @@
  * Lecture tolérante : `lireCarnet` et `lireMessage` rendent `null` sur une forme inconnue (autre appareil, version future) ; ils ne cassent rien.
  * Aucun gabarit par objet (C2) : rien ici ne dépend d'une catégorie d'objet.
  */
+import { lireDomainePose, type DomainePose } from './domaines';
 import type { CreativeItem } from '../../types';
 import { traduireValeurs } from '../../../functions/src/lienLibelles';
 import { lundiDe } from '../calendrier';
@@ -128,6 +129,8 @@ export interface DonneesCarnet {
   sortie?: { planId: string; le: string };
   /** Suppression v2 (D-47b) : une idée dont le plan est réalisé s'archive ; elle quitte la liste et garde tout. */
   archive?: { le: string; raison: string };
+  /** D437 : le domaine posé (par lui, ou par l'IA au rangement) ; absent, il se déduit (domaines.ts). */
+  domaine?: DomainePose;
 }
 
 export type CibleEffet = 'carnet' | 'critere' | 'facon' | 'article' | 'note' | 'photo';
@@ -355,7 +358,7 @@ export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
   if (!criteres || !facons || !articles || !notes || !photos) return null;
   const sortie = estObjet(v.sortie) && texteNonVide(v.sortie.planId) && typeof v.sortie.le === 'string' ? { planId: v.sortie.planId, le: v.sortie.le } : undefined;
   const archive = estObjet(v.archive) && typeof v.archive.le === 'string' && typeof v.archive.raison === 'string' ? { le: v.archive.le, raison: v.archive.raison } : undefined;
-  return sansIndefinis({ version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive });
+  return sansIndefinis({ version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine) });
 }
 
 const STATUTS: readonly StatutCarnet[] = ['idea', 'research', 'validated'];

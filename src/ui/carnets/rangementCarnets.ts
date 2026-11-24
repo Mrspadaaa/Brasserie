@@ -177,10 +177,11 @@ export function creerRangementCarnets(x: RangementV) {
        * Les carnets neufs que l'IA nomme portent la marque des données de test du message (L05).
        */
       const neufsIA = new Map<string, Destination>();
-      const versNeufIA = (titre: string): Destination => {
+      /* D437 : le domaine que l'IA pose sur le carnet neuf suit sa destination (posé à la création, ou sur le carnet de l'annonce) */
+      const versNeufIA = (titre: string, domaine?: LigneCarnet['domaine']): Destination => {
         const t = prefixeDe(txt) && !/^\s*ZZ TEST/i.test(titre) ? `${prefixeDe(txt)}${titre}` : titre;
         const cle = normaliser(t);
-        if (!neufsIA.has(cle)) neufsIA.set(cle, { carnetNeuf: { id: nouvelIdCarnet('CARNET'), titre: t } });
+        if (!neufsIA.has(cle)) neufsIA.set(cle, { carnetNeuf: { id: nouvelIdCarnet('CARNET'), titre: t, ...(domaine ? { domaine } : {}) } });
         return neufsIA.get(cle)!;
       };
       const connu = (id: string | undefined) => !!id && lireCarnets(etat, { archives: true }).some(c => c.id === id);
@@ -188,7 +189,8 @@ export function creerRangementCarnets(x: RangementV) {
         /* m390-1, d1280-1, L4-7 : ce qui n'a pas d'autre carnet reste dans SON carnet, sous sa phrase ; un autre titre de l'IA devient un
            titre proposé (G29). Test en ligne 2 (bloquants 3 et 4) : une ligne que l'IA range dans un carnet connu y va ; le carnet créé
            pendant l'attente, resté vide, disparaît. */
-        const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre } };
+        const domIA = lignes.find(l => l.domaine && !connu(l.carnetId))?.domaine;
+        const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre, ...(domIA ? { domaine: domIA } : {}) } };
         const ailleurs = (l: LigneCarnet) => l.sorte !== 'idee' && connu(l.carnetId) && l.carnetId !== an.carnetId;
         const ici = lignes.filter(l => !ailleurs(l));
         /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre ; sauf si elle
@@ -212,7 +214,7 @@ export function creerRangementCarnets(x: RangementV) {
         const brutes = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
         const destParBrute = new Map<number, Destination>();
         aRanger = lignes.flatMap(l => {
-          const dest = connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf) : l.sorte === 'idee' ? null : annonceDe(l);
+          const dest = connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf, l.domaine) : l.sorte === 'idee' ? null : annonceDe(l);
           const i = ligneBrute(`${l.texte} ${l.titre ?? ''}`, brutes);
           if (dest && i >= 0 && !destParBrute.has(i)) destParBrute.set(i, dest);
           return dest ? [depuisIA(l, dest)] : [];
@@ -233,12 +235,12 @@ export function creerRangementCarnets(x: RangementV) {
         /* n° 3 et 6 : écrit dans un carnet ouvert, l'IA met en forme (critère, façon, article lu, note). Test en ligne 2 (bloquant 2) : le
            carnet qu'elle rend fait foi (« doit tenir 80 °C » écrit dans Pompe reste dans Pompe, même si un carnet porte ce titre), et la
            sorte qu'elle donne aussi ; sans carnet rendu, le carnet annoncé. */
-        const dest = (l: LigneCarnet): Destination => (an.choisi ? { carnetId: an.carnetId } : connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf) : { carnetId: an.carnetId });
+        const dest = (l: LigneCarnet): Destination => (an.choisi ? { carnetId: an.carnetId } : connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf, l.domaine) : { carnetId: an.carnetId });
         /* Paquet 1, PCN-183 (test en ligne 3) : une idée que l'IA range dans un carnet neuf (« Réfractomètre », écrit dans le Fermenteur)
            ouvre ce carnet ; elle n'est plus jetée, la phrase brute ne reste pas en note ici (D383). */
         const ideeNeuve = (l: LigneCarnet) => l.sorte === 'idee' && !an.choisi && !connu(l.carnetId) && !!(l.carnetNeuf ?? l.titre);
         aRanger = lignes.filter(l => l.sorte !== 'idee' || ideeNeuve(l))
-          .map(l => depuisIA(an.noteChoisie ? genreSousNote(l, txt) : l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!) : dest(l)));
+          .map(l => depuisIA(an.noteChoisie ? genreSousNote(l, txt) : l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!, l.domaine) : dest(l)));
         const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
         if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
         if (!aRanger.length) {

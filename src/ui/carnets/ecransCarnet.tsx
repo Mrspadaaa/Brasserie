@@ -1,9 +1,10 @@
 /** Les écrans du Carnet (liste, fiche d'article, Comparer, Choisir, carnet ouvert avec ses feuilles : note, modifier, renommer, supprimer) ;
  *  sortis de CarnetsVue.tsx : une fonction de rendu appelée en place, au même moment du rendu. */
+import { prixPropose } from '../../domain/carnets/prixPropose';
 import type React from 'react';
 import type { CarnetDoc } from '../../domain/carnets/modele';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
-  supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+  poserDomaine, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, type LigneLocale } from '../../domain/carnets/analyseLocale';
 import { carnetProche } from '../../domain/carnets/rattacher';
@@ -184,7 +185,8 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
         aujourdhui={jourIso(maintenant())}
         onDater={(lundi, precision) => dater(c, lundi, precision)}
         {...(sortieFinie(c) ? {} : { onAuCalendrier: () => void auCalendrier(c) })}
-        prix={{ centimes: prixDuCarnet(c), semblable: prixSemblable({ nom: c.title }, achatsPasses) }}
+        prix={{ centimes: prixDuCarnet(c), semblable: prixSemblable({ nom: c.title }, achatsPasses), propose: prixPropose(c) }}
+        onDomaine={d => { appliquer(poserDomaine(magasin.lire(), { carnetId: c.id, domaine: d })); }}
         onPrix={x => {
           const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' });
           /* L-11 : le prix posé au carnet est celui de son plan (À venir, Calendrier) ; CA13-3 : archivé aussi */

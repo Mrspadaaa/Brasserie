@@ -67,10 +67,12 @@ export interface CarnetOuvertProps {
    */
   /** `precision` : « semaine » quand la frise a posé une semaine (D431) ; défaut : le mois d'un horizon. */
   onDater?: (lundi: string | null, precision?: 'semaine' | 'mois') => void;
+  /** D437 : un toucher sur la pastille pose le domaine du carnet (son choix passe avant celui de l'IA). */
+  onDomaine?: (d: import('../../domain/carnets/domaines').DomaineCarnet) => void;
   /** K2 (côté Carnet) : « Au calendrier › », la chose posée à aujourd'hui si elle n'a pas de date, puis la bascule au Calendrier. */
   onAuCalendrier?: () => void;
   /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */
-  prix?: { centimes?: number; semblable?: { centimes: number; source: string } | null };
+  prix?: { centimes?: number; semblable?: { centimes: number; source: string } | null; propose?: import('../../domain/carnets/prixPropose').PrixPropose | null };
   onPrix?: (centimes: number) => void;
   /**
    * L-20 (23.11, M3-1) : retirer un critère (`supprimerLigne`, cible `critere`), par ⋯ de la ligne Critère. Absent : pas de ⋯ (rien

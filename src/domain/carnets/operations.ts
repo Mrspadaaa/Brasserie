@@ -7,6 +7,7 @@
  * Aucune écriture hors de `creativeItems` : le type `EcritureCarnet` n'en connaît pas d'autre (D-47, L33 : jamais de cascade).
  * `veille.releveLe` n'est écrit par aucune intention (R31 : relève sous accord).
  */
+import { estDomaine, type DomaineCarnet } from './domaines';
 import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
 import { dateFacture, estRealise } from '../finance/upgradeRing';
@@ -92,7 +93,7 @@ function suivreEffet(b: Brouillon, de: { carnetId: string; cible: CibleEffet; id
 
 /** Où va une ligne : un carnet connu, ou un carnet neuf (créé une fois par id). */
 /** `carnetNeuf.phrase` (critique 6, n° 1) : la phrase du carnet neuf, quand ce n'est pas le message entier (ses lignes d'une note en vrac). */
-export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carnetNeuf: { id: string; titre: string; phrase?: string }; carnetId?: undefined };
+export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carnetNeuf: { id: string; titre: string; phrase?: string; domaine?: DomaineCarnet }; carnetId?: undefined };
 
 export type LigneARanger = Destination & (
   /** `propose` (P10, P23) : un critère que l'IA propose ; `ranger` ne l'écrit pas, il reste sur le message (`propositions`). */
@@ -279,6 +280,9 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
         effets.push({ carnetId: c.id, cible: 'carnet', id: c.id });
         crees += 1;
       }
+      /* D437 : l'IA pose le domaine du carnet neuf (créé ici, ou par l'annonce pendant l'attente), comme son titre ; jamais sur le sien */
+      const dom = l.carnetNeuf.domaine;
+      if (estDomaine(dom) && !c.carnet.domaine) c.carnet.domaine = { valeur: dom, origine: 'ia' };
     } else {
       c = b.carnet(l.carnetId);
       if (!c) return 'Ce carnet n’existe plus.';
@@ -652,11 +656,25 @@ export function choisir(etat: Etat, args: { carnetId: string; articleId: string;
     aRevoirSi: args.aRevoirSi?.trim() || undefined, le: args.le, remplaces: ancien ? [...anciensRemplaces, { ...(ancienSeul as Choix), remplaces: [] }] : []
   });
   d.choix = choix;
+  /* Q-1 A (D435) : le choix fait le prix ; un prix en francs remplace l'estimé (un seul chiffre). En autre devise : rien d'inventé. */
+  if (typeof a.prixCentimes === 'number' && a.prixCentimes > 0 && (a.devise ?? 'CHF') === 'CHF') c.estimatedCost = a.prixCentimes / 100;
   const f = faconId ? d.facons.find(x => x.id === faconId) : undefined;
   if (f && f.etat !== 'retenue') f.etat = 'retenue';
   c.status = 'validated';
   b.ecrire(c);
   return b.resultat(ancien ? '✓ Choix revu' : '✓ Choisi');
+}
+
+/** D437 : un toucher sur la pastille du carnet pose son domaine ; son choix passe avant celui de l'IA. Annuler rend l'ancien. */
+export function poserDomaine(etat: Etat, args: { carnetId: string; domaine: DomaineCarnet }): Resultat {
+  if (!estDomaine(args.domaine)) return refus('Domaine inconnu.');
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  if (!c) return refus('Ce carnet n’existe plus.');
+  if (c.carnet.domaine?.valeur === args.domaine && c.carnet.domaine.origine === 'vous') return b.resultat('Domaine inchangé');
+  c.carnet.domaine = { valeur: args.domaine, origine: 'vous' };
+  b.ecrire(c);
+  return b.resultat('✓ Domaine posé');
 }
 
 /** Revoir un choix : comme choisir, mais seulement s'il en existe un ; l'ancien reste lisible dans `remplaces`. */
@@ -825,23 +843,22 @@ export function planSuitCarnet(plan: FinancialPlan, geste: { date?: string | nul
 }
 
 /**
- * L-10 : le choix d'un article au prix connu (CHF) fait passer le plan à « Prêt à acheter » (le prix est trouvé : plus « à chercher ») et
- * chiffre un plan qui n'avait aucun montant. Un montant déjà posé n'est pas remplacé : le prix du projet, estimé ou choisi, attend son choix
- * (Q-1). Le vendeur manquant est repris. Rien ne change : le même objet.
+ * L-10 : le choix d'un article au prix connu (CHF) fait passer le plan à « Prêt à acheter » (le prix est trouvé : plus « à chercher »).
+ * Q-1 A (D435, « le choix fait le prix ») : le prix de l'article choisi devient le prix d'achat du plan, l'estimé d'avant compris (À venir,
+ * Calendrier et carnet disent le même chiffre) ; livraison et pose restent. Le vendeur manquant est repris. Rien ne change : le même objet.
  */
 export function planSuitChoix(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   if (!a || !plan.upgrade || a.prixCentimes === undefined || !(a.prixCentimes > 0) || (a.devise ?? 'CHF') !== 'CHF') return plan;
   const d = upgradeDetails(plan);
-  const sansMontant = !(plan.amountCents > 0) || d.budgetKnown !== true;
+  const parts = { purchaseCents: a.prixCentimes, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
+  const total = upgradeBudget(parts) ?? a.prixCentimes;
+  const aJour = plan.amountCents === total && d.purchaseCents === a.prixCentimes && d.budgetKnown === true;
   const etape = d.stage === 'idea' || d.stage === 'research' ? 'ready' as const : d.stage;
-  if (!sansMontant && etape === d.stage && (plan.vendor || !a.vendeur)) return plan;
+  if (aJour && etape === d.stage && (plan.vendor || !a.vendeur)) return plan;
   let p: FinancialPlan = { ...plan, ...(!plan.vendor && a.vendeur ? { vendor: a.vendeur } : {}), upgrade: { ...plan.upgrade, stage: etape } };
-  if (sansMontant) {
-    const parts = { purchaseCents: a.prixCentimes, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
-    p = { ...p, amountCents: upgradeBudget(parts) ?? a.prixCentimes, upgrade: { ...p.upgrade!, ...parts, budgetKnown: true } };
-  }
+  if (!aJour) p = { ...p, amountCents: total, upgrade: { ...p.upgrade!, ...parts, budgetKnown: true } };
   return p;
 }
 

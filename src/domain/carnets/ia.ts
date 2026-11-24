@@ -10,6 +10,7 @@
  *  - un champ inconnu est absent, jamais 0 ; textes rognés à 300 caractères ; les achats en tête (D-128).
  * Aucun gabarit par objet : ce fichier ne connaît aucune catégorie (C2, R30).
  */
+import { estDomaine, type DomaineCarnet } from './domaines';
 import {
   CARNETS_MAX, GENRES_CARNET, LIGNES_MAX, PAGES_MAX, SENS_CARNET, SORTES_CARNET,
   type ContexteRangerCarnet, type GenreCarnet, type PageLue, type SensCarnet, type SorteCarnet
@@ -31,6 +32,8 @@ export interface LigneCarnet {
   /** Un carnet connu. Sinon `carnetNeuf` (titre de l'idée à créer) ; ni l'un ni l'autre : l'appelant décide (carnet neuf). */
   carnetId?: string;
   carnetNeuf?: string;
+  /** D437 : le domaine du carnet neuf (local, brasserie, meuble, outils, papiers) ; hors liste, retiré. */
+  domaine?: DomaineCarnet;
   raisonCarnet?: string;
   url?: string;
   prixCentimes?: number;
@@ -315,6 +318,7 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     }
     const raison = chaine(r.raisonCarnet, 120);
     if (raison) ligne.raisonCarnet = raison;
+    if (ligne.carnetNeuf && estDomaine(r.domaine)) ligne.domaine = r.domaine;
 
     // Lien : écrit dans le message, sinon retiré. La page lue de ce lien suit la ligne.
     const url = chaine(r.url, 2000);

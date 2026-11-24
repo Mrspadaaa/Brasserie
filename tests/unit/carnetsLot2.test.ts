@@ -69,9 +69,9 @@ describe('L-10 : le choix monte au plan sans trancher Q-1', () => {
     expect(p.amountCents).toBe(249560);
     expect(anneauDe(p).libelle).toMatch(/prix trouvé/);
   });
-  it('plan déjà chiffré (500) : le montant reste (Q-1), l’étape n’est plus « à chercher »', () => {
+  it('plan déjà chiffré (500) : Q-1 A, le choix fait le prix ; l’étape n’est plus « à chercher »', () => {
     const p = O.planSuitChoix(planFrigo({ amountCents: 50000, upgrade: { ...planFrigo().upgrade!, budgetKnown: true, purchaseCents: 50000, stage: 'research' } }), choisi());
-    expect(p.amountCents).toBe(50000);
+    expect(p.amountCents).toBe(249560);
     expect(anneauDe(p).libelle).not.toMatch(/à chercher/);
   });
 });

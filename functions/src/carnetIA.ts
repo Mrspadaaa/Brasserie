@@ -94,6 +94,8 @@ export interface ContexteRangerCarnet {
  * sautait, et ce qu'il voulait encore dire bouclait dans le dernier champ libre (`vendeur`, 3 985 jetons, coupé au plafond, 9 rejeux sur 9).
  * Les clés sortent dans l'ordre écrit ici : rangement et prix avant le vendeur.
  */
+/** D437 : les domaines d'un carnet (src/domain/carnets/domaines.ts, même liste). */
+export const DOMAINES_CARNET = ['local', 'brasserie', 'meuble', 'outils', 'papiers'] as const;
 const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 'OBJECT', properties, required, propertyOrdering: Object.keys(properties) });
 const str = { type: 'STRING', nullable: true };
 const num = { type: 'NUMBER', nullable: true };
@@ -108,6 +110,7 @@ export const RANGER_CARNET_SCHEMA = S({
       titre: str,
       carnetId: str,
       carnetNeuf: str,
+      domaine: { type: 'STRING', enum: [...DOMAINES_CARNET], nullable: true },
       raisonCarnet: str,
       url: str,
       prix: num,
@@ -172,7 +175,10 @@ Rends « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord
   • aucune phrase recopiée telle quelle quand elle se met en forme.
 
 Rangement : « carnetId » = l'id d'un des « carnets » si la ligne en parle clairement ; sinon « carnetNeuf » = un titre court pour
-une idée nouvelle, et « raisonCarnet » dit en quelques mots pourquoi (« aucun carnet n'en parle »). Depuis un carnet ouvert, une
+une idée nouvelle, et « raisonCarnet » dit en quelques mots pourquoi (« aucun carnet n'en parle »). Avec « carnetNeuf », « domaine »
+range l'idée : "local" (le bâtiment : sol, murs, eau, électricité, sécurité), "brasserie" (le matériel qui fait la bière :
+moulin, froid, cuves, pompes, embouteillage), "meuble" (étagères, armoires), "outils" (ce qui se tient en main) ou "papiers"
+(dossiers, autorisations, assurances) ; nul si rien ne le dit. Depuis un carnet ouvert, une
 ligne qui n'en sort pas va dans « depuis ».
 
 Rien d'inventé : « url », « prix », « quantite » et « vendeur » seulement s'ils sont écrits dans le texte ou lus dans « pages ».
@@ -216,6 +222,7 @@ export function assainirRangerCarnet(data: unknown): { lignes: Array<Record<stri
       // et la page lue se détache (ni photo, ni stock). Même borne que les pages lues : 2 000.
       for (const c of CHAINES) { const v = chaine(r[c], c === 'url' ? 2000 : 300); if (v) out[c] = v; }
       if (out.genre !== undefined && !GENRES.has(out.genre as string)) delete out.genre;
+      if (typeof r.domaine === 'string' && (DOMAINES_CARNET as readonly string[]).includes(r.domaine)) out.domaine = r.domaine;
       for (const c of ['prix', 'quantite'] as const) if (typeof r[c] === 'number' && Number.isFinite(r[c]) && (r[c] as number) > 0) out[c] = r[c];
       const k = r.caracteristique as Record<string, unknown> | null | undefined;
       if (k && typeof k === 'object' && chaine(k.nom, 60) && SENS.has(k.sens as string))

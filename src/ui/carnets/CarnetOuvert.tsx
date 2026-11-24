@@ -14,6 +14,9 @@
  * Toucher « Articles » ouvre la feuille des cartes (P12, figé h03-5) : photo, valeur du critère en gros, réglette, « Veiller ».
  * Avant le 2e article : les façons en cartes et l'article en carte. Notes : chaque note porte son genre et son picto (G22).
  */
+import { domaineParMots } from './domaineMots';
+import { domaineDe, type DomaineCarnet } from '../../domain/carnets/domaines';
+import { PastilleDomaine } from './Domaines';
 import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
@@ -123,9 +126,13 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const etatTete = c.status === 'validated' || neuf ? null
     : p.tableau ? (n.facons >= 2 ? `${pluriel(n.facons, 'façon')} à comparer` : `${pluriel(n.articles, 'article')} à comparer`)
       : n.facons >= 2 ? pluriel(n.facons, 'façon') : null;
-  const ligneEtat = (etatTete || (aFaire && !neuf && c.status !== 'validated'))
-    ? <p className="cn-ligne-etat">{etatTete && <span>{etatTete}</span>}{etatTete && aFaire ? <span className="cn-mut"> · </span> : null}{aFaire && <span className="cn-mut">{aFaire}</span>}</p>
+  const texteEtat = (etatTete || (aFaire && !neuf && c.status !== 'validated'))
+    ? <span>{etatTete && <span>{etatTete}</span>}{etatTete && aFaire ? <span className="cn-mut"> · </span> : null}{aFaire && <span className="cn-mut">{aFaire}</span>}</span>
     : null;
+  /* D437 (carnet-domaine.png) : la pastille du domaine au bout de la ligne d'état ; un toucher ouvre les cinq domaines. Le carnet tout juste
+     créé garde l'en-tête de sa maquette (g5:v04-4). */
+  const pastille = neuf ? null : <PastilleDomaine domaine={domaineDe(c, domaineParMots)} onDomaine={p.onDomaine} />;
+  const ligneEtat = texteEtat || pastille ? <div className="cn-ligne-etat cnd-etat">{texteEtat}{pastille}</div> : null;
   const ia = !p.iaIndisponible;
   /* tour 3, PCN-113 : créé hors ligne, rien n'est encore rangé : une ligne dit que l'IA le range au retour du réseau, sans rubriques vides */
   const enAttente = neuf && p.iaIndisponible === 'hors-ligne' && !k.criteres.length && !k.facons.length && !k.articles.length && !k.notes.length && !k.photos.length;

@@ -743,3 +743,10 @@
 /* D447 : le détail d'une offre (original, HT, port lu, mention des frais) passe sous la ligne, pleine largeur */
 .cn-offre-avec-detail { flex-wrap: wrap; }
 .cn-offre-detail { flex: 1 0 100%; font-size: 14px; }
+
+/* Q-5 A (D435, q5-a.png) : Quand replié au repos, une ligne « Quand · cette semaine · prix ? › » ; ouvert, « Quand » la replie */
+.cn-quand > .cnq-replie { flex-wrap: nowrap; }
+.cnq-replie { width: 100%; background: transparent; border: 0; padding: 0; text-align: left; color: var(--c-ink); }
+.cnq-replie .cn-sp { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnq-chevron { flex: none; color: var(--c-mut); }
+.cnq-replier { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 0; padding: 0; color: inherit; font: inherit; }

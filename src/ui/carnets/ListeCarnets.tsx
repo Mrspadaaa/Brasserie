@@ -11,6 +11,10 @@
  * genre des notes rangées (`ajouts`, ou `messageRecent` : les notes nées de ce message).
  * Le segment « À venir · Carnets · Réalisés » et le + volant appartiennent au conteneur (lot D) ; le champ est ChampCarnet.
  */
+import { domaineParMots } from './domaineMots';
+import { dansDomaine, estDomaine, puceDomaines, type DomaineCarnet } from '../../domain/carnets/domaines';
+import { chercherCarnet, requete, type Trouve } from '../../domain/carnets/recherche';
+import { RangeeDomaines } from './Domaines';
 import React, { useState } from 'react';
 import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye } from 'lucide-react';
 import { Bandeau } from './Bandeau';
@@ -57,6 +61,14 @@ export interface ListeCarnetsProps {
 
 const EXEMPLES = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
 const ORDRE: StatutCarnet[] = ['research', 'idea', 'validated'];
+/** D437 : le domaine filtré reste posé le temps de la session (ouvrir un carnet puis revenir ne le perd pas). */
+const CLE_DOMAINE = 'affinee.carnets.domaine';
+function domaineGarde(): DomaineCarnet | null {
+  try { const v = sessionStorage.getItem(CLE_DOMAINE); return estDomaine(v) ? v : null; } catch { return null; }
+}
+function garderDomaine(d: DomaineCarnet | null) {
+  try { if (d) sessionStorage.setItem(CLE_DOMAINE, d); else sessionStorage.removeItem(CLE_DOMAINE); } catch { /* sans stockage : le temps de l'écran */ }
+}
 /** Ordre des genres dans « +2 · question, à acheter » (g5:v01-16) ; « note » n'est pas un genre à dire. */
 const ORDRE_GENRES: GenreNote[] = ['question', 'a-acheter', 'a-faire', 'conseil'];
 
@@ -199,7 +211,14 @@ function Vignette({ c }: { c: CarnetV }) {
   return <VignetteObjet photo={photo} mots={[c.title, k.phrase, choisi?.nom, ...k.facons.map(f => f.nom), ...k.articles.map(a => a.nom)]} />;
 }
 
-function CarteCarnet({ c, ajouts, range, fait, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean; fait?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
+/** Q-2 C : « article : Chambre froide 1500 x 1200 mm », le mot trouvé en gras. */
+function LigneTrouvee({ t }: { t: Trouve }) {
+  const x = t.texte ?? '';
+  const d = t.debut ?? 0, f = t.fin ?? 0;
+  return <span className="cnd-cite" data-trouve={t.sorte}>{t.sorte === 'article' ? 'article' : 'note'} : {x.slice(0, d)}<b>{x.slice(d, f)}</b>{x.slice(f)}</span>;
+}
+
+function CarteCarnet({ c, ajouts, range, fait, trouve, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean; fait?: boolean; trouve?: Trouve | null } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
   const k = c.carnet;
   const prix = prixDe(c);
   /* L-33 : la date du projet sur la ligne du compte ; un Fait n'en dit pas (sa date est celle du Planning d'alors, CRN-8) */
@@ -218,7 +237,7 @@ function CarteCarnet({ c, ajouts, range, fait, onOuvrir, onVoirAVenir }: { c: Ca
           <Vignette c={c} />
           <span className="cn-carnet-tx">
             <b className="cn-carnet-titre">{titreAffiche(c.title)}</b>
-            {choisi ? (
+            {trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : choisi ? (
               <>
                 {k.choix?.pourquoi && <span className="cn-encre-2">{k.choix.pourquoi}</span>}
                 <span className="cn-mut">{[dateCourte(k.choix?.le) ? `le ${dateCourte(k.choix?.le)}` : null, choisi.vendeur].filter(Boolean).join(' · ')}</span>
@@ -262,16 +281,30 @@ function CarteCarnet({ c, ajouts, range, fait, onOuvrir, onVoirAVenir }: { c: Ca
 }
 
 export function ListeCarnets(p: ListeCarnetsProps) {
-  /* CRN-LISTE : une rangée, recherche par un mot du titre + puces d'état (bascule) ; rien ne se perd, tout revient en les relâchant */
+  /* D437 (variante A) : une rangée, la loupe, « Tous », puis les puces de domaines avec leur nombre ; les puces d'état sont retirées, l'état
+     reste l'ordre des sections. Q-2 C : la recherche fouille titres, articles et notes, Faits compris (à part), la ligne trouvée citée. */
   const [q, setQ] = useState('');
-  const [etats, setEtats] = useState<StatutCarnet[]>([]);
+  const [domaine, setDomaineEtat] = useState<DomaineCarnet | null>(domaineGarde);
+  const setDomaine = (d: DomaineCarnet | null) => { setDomaineEtat(d); garderDomaine(d); };
   const tous = p.carnets.filter(c => !c.carnet.archive);
-  const mot = normaliser(q.trim());
-  const filtre = !!mot || etats.length > 0;
-  const visibles = tous.filter(c => (!mot || normaliser(c.title).includes(mot)) && (!etats.length || etats.includes(c.status)));
-  const faits = p.faits ?? [];
+  const tousFaits = p.faits ?? [];
+  const mot = requete(q);
+  const puces = puceDomaines([...tous, ...tousFaits], domaineParMots);
+  /* un domaine filtré qui n'a plus de carnet (supprimé, changé) ne cache rien : Tous */
+  const dom = domaine && puces.domaines.some(x => x.d === domaine) ? domaine : null;
+  const filtre = !!mot || dom !== null;
+  const trouves = new Map<string, Trouve>();
+  const garde = (c: CarnetV) => {
+    if (!dansDomaine(c, dom, domaineParMots)) return false;
+    if (!mot) return true;
+    const t = chercherCarnet(c, q);
+    if (t) trouves.set(c.id, t);
+    return !!t;
+  };
+  const visibles = tous.filter(garde);
+  const faits = tousFaits.filter(garde);
   const anciennes = p.anciennes ?? [];
-  if (!tous.length && !p.supprime && !faits.length) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={anciennes} />} />;
+  if (!tous.length && !p.supprime && !tousFaits.length) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={anciennes} />} />;
 
   const ajouts = p.ajouts ?? ajoutsDuMessage(visibles, p.messageRecent);
   /* n° 30 et R11 : le carnet tout juste créé reste dans le groupe de son état (une idée dans « Idée »), en tête de ce groupe, et ce
@@ -283,7 +316,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   const exemple = visibles.some(c => c.carnet.articles.some(a => a.origine === 'exemple'));
 
   const rendre = (c: CarnetV) => {
-    const carte = <CarteCarnet key={c.id} c={c} range={p.rangeEnCours === c.id} ajouts={ajouts[c.id]} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />;
+    const carte = <CarteCarnet key={c.id} c={c} range={p.rangeEnCours === c.id} ajouts={ajouts[c.id]} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />;
     if (p.eclaire?.carnetId !== c.id) return carte;
     const e = p.eclaire;
     return (
@@ -301,22 +334,13 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   return (
     <div className="cn-page cn-liste">
       {p.enHaut}
-      <div className="cn-filtre" role="search">
-        <input type="search" className="cn-recherche" placeholder="Chercher un carnet" aria-label="Chercher un carnet" value={q} onChange={e => setQ(e.target.value)} />
-        {ORDRE.map(s => (
-          <button key={s} type="button" className="cn-puce cn-puce-filtre" data-filtre={s} aria-pressed={etats.includes(s)} onClick={() => setEtats(x => (x.includes(s) ? x.filter(y => y !== s) : [...x, s]))}>{STATUT_LIBELLE[s]}</button>
-        ))}
-      </div>
-      {filtre && visibles.length === 0 && <p className="cn-mut">Aucun carnet ne correspond.</p>}
+      <RangeeDomaines tous={puces.tous} domaines={puces.domaines} actif={dom} onDomaine={setDomaine} q={q} onQ={setQ} />
+      {filtre && visibles.length === 0 && faits.length === 0 && (
+        <p className="cn-mut">Aucun carnet ne correspond. <button type="button" className="cn-lien" onClick={() => { setQ(''); setDomaine(null); }}>Tout montrer</button></p>
+      )}
       {groupes.map(({ s, carnets }) => {
         const supp = p.supprime?.statut === s ? p.supprime : null;
-        /* L-34 (CA12-M4-15) : une puce d'état active qui ne trouve rien le dit (« Choisi 0 »), quand d'autres groupes restent */
-        if (!carnets.length && !supp) return etats.includes(s) && visibles.length > 0 ? (
-          <div key={s} className="cn-entete-groupe" data-vide-filtre={s}>
-            <span className={`cn-groupe cn-statut-${s}`}>{STATUT_LIBELLE[s]} <span className="cn-mono">0</span></span>
-            <span className="cn-sp" /><span className="cn-mut">aucun ne correspond</span>
-          </div>
-        ) : null;
+        if (!carnets.length && !supp) return null;
         const droite = s === 'idea' && carnets.every(c => c.carnet.articles.length === 0) ? "pas encore d'article"
           : s === 'validated' && exemple ? <>fournisseurs et prix : <Provenance origine="exemple" /></> : null;
         return (
@@ -356,24 +380,15 @@ export function ListeCarnets(p: ListeCarnetsProps) {
           </div>
         </section>
       )}
-      {!filtre && faits.length > 0 && (
+      {faits.length > 0 && (
         <section className="cn-groupe-bloc" aria-label="Faits">
           <div className="cn-entete-groupe">
             <span className="cn-groupe cn-groupe-faits"><CheckCircle2 size={16} aria-hidden /> Faits <span className="cn-mono">{faits.length}</span></span>
             <span className="cn-sp" /><span className="cn-mut">du Planning</span>
           </div>
           {/* un projet fait ne demande pas de lien : la carte s'ouvre, sans « Coller un lien » */}
-          <div className="cn-cartes">{faits.map(c => <CarteCarnet key={c.id} c={c} fait onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />)}</div>
+          <div className="cn-cartes">{faits.map(c => <CarteCarnet key={c.id} c={c} fait trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />)}</div>
         </section>
-      )}
-      {/* L-35 (CA12-M4-16) : la recherche et les puces laissent les Faits de côté ; elles le disent, et « Tout montrer » les rend. Ce que la
-          recherche devrait couvrir (Faits, articles, notes) attend son choix (Q-2). */}
-      {filtre && faits.length > 0 && (
-        <div className="cn-entete-groupe cnl-faits-caches" data-faits-caches="">
-          <span className="cn-groupe cn-groupe-faits"><CheckCircle2 size={16} aria-hidden /> Faits <span className="cn-mono">{faits.length}</span></span>
-          <span className="cn-sp cn-mut">{mot ? 'hors de la recherche' : 'hors du filtre'}</span>
-          <button type="button" className="cn-lien" onClick={() => { setQ(''); setEtats([]); }}>Tout montrer</button>
-        </div>
       )}
       <AnciennesNotes notes={anciennes} />
     </div>
