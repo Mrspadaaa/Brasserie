@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause:
+pause: 2026-11-24T21:15:37.144Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -32,7 +32,7 @@ pause:
 - [x] Tour 61 : critique-61, 7 problèmes (2 B), corrigés 12/14 ; changement de « Houblons citra » à 18:17Z = son Relire de 19:17 (sa capture)
 - [x] Tour 64 : critique-64, 9 problèmes (3 B : C64-1 prix 100 g lu comme 50 g, C64-2 palier 1 kg Brau, C64-8 message ZZ rangé dans son vrai carnet), corrigés 11/13
 - [ ] C64 : URGENT C64-8 (MESSAGE-RESTE-DANS-SON-CARNET : un message tapé dans un carnet ouvert n y est jamais déplacé seul), puis C64-1, C64-2 (prix par conditionnement et paliers), C61-5, m ; tests puis correctif
-- [attente] Sa note « Achat prévu fin du mois. » ajoutée par erreur dans son carnet « Achat brasserie : moulin à malt + bac etc. » par la voie exemples : à retirer avec son accord ; voie exemples ARRÊTÉE
+- [x] (accord 24.11, retirée par l'app : 3 → 2 notes, vérifié après rechargement, voies/retrait-note) Sa note « Achat prévu fin du mois. » ajoutée par erreur dans son carnet « Achat brasserie : moulin à malt + bac etc. » par la voie exemples : à retirer avec son accord ; voie exemples ARRÊTÉE
 - [attente] Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement
 - [attente] Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
