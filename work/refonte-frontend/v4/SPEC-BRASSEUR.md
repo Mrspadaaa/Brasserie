@@ -2902,3 +2902,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Carnet, genres) : « Ou un problème de matériels lors du brassage Ou même. Une récolte de houblons Trouve et cherche des exemples et réponds au besoin »
 
 - 24.11 soir (Carnet, le workflow d un problème jusqu à sa résolution) : mot pour mot dans work/missions/2026-11-24-carnet-workflow/SES-MOTS.md (trop de vapeur → humidificateur → steam condenser, trigger sur le 2e, achat fin du mois, tâche fermée par l achat, retrouvable et catégorisé ; inspection électrique ; écoulement qui fuit ; notes courtes ; Todo ; « ludique » : « si c est pas facile, visuel, fun, ça résoud pas la problématique »)
+
+- 24.11 soir (Carnet, workflow) : « Créé quelques exemples pour le test aussi »
