@@ -779,3 +779,6 @@
 .cnq-replie .cn-sp { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cnq-chevron { flex: none; color: var(--c-mut); }
 .cnq-replier { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 0; padding: 0; color: inherit; font: inherit; }
+
+/* C59-10 (R38) : le rond de la jauge deborde de 8 px au bout de sa piste ; l ecart jauge / « Veiller » (gap 10) le couvre : 6 px de marge de plus, soit 16 px (8 de rond + 8 de blanc) */
+.cn-classee-pied .cn-reglette { margin-right: 6px; }

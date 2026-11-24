@@ -437,7 +437,7 @@ export function Comparer(p: ComparerProps) {
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
         {/* A1 (D419) : le fil porte le nom du carnet, le titre dit l'écran : « ‹ Chambre froide », « Comparer » */}
-        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> <Insec t={p.titre} /></button>
+        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> <span className="cn-retour-titre"><Insec t={p.titre} /></span></button>
         <span className="cn-sp" />
         <span className={`cn-pastille cn-statut-${p.statut}`}>{STATUT_LIBELLE[p.statut]}</span>
       </div>
