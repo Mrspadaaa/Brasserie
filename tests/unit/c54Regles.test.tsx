@@ -195,7 +195,7 @@ describe('R20 : une marche de courbe se nomme « <nom> + 1 autre <montant> » ; 
         expect(marche, `étiquettes : ${marche.map(x => `${x.nom} ${x.montant}`).join(' | ')}`).toHaveLength(1);
         expect(marche[0].montant).toBe('−159,95');
         expect(marche[0].nom, `étiquette posée : « ${marche[0].nom} ${marche[0].montant} »`).not.toMatch(SEUL_LE_NOMBRE);
-        expect(sans(marche[0].nom), `le nom de l'écriture la plus lourde se lit : « ${marche[0].nom} »`).toContain(sans(noms[0].split(' ')[0]));
+        expect(sans(marche[0].nom), `le nom de l'écriture la plus lourde se lit : « ${marche[0].nom} »`).toContain(sans(noms[1].split(' ')[0]));
       });
     }
   }
@@ -239,7 +239,7 @@ describe('R20 : une marche de courbe se nomme « <nom> + 1 autre <montant> » ; 
       const b = bulles.find(x => /159,95/.test(x));
       expect(b, `bulles : ${bulles.join(' | ')}`).toBeDefined();
       expect(b!, `bulle : « ${b} »`).not.toMatch(SEUL_LE_NOMBRE);
-      expect(sans(b!), `bulle : « ${b} »`).toContain(sans(noms[0].split(' ')[0]));
+      expect(sans(b!), `bulle : « ${b} »`).toContain(sans(noms[1].split(' ')[0]));
     });
   }
 
