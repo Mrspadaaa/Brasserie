@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T14:00:02.125Z
+pause: 2026-11-24T14:28:19.517Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -26,8 +26,8 @@ pause: 2026-11-24T14:00:02.125Z
 - [x] Tour 53 : critique-53, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 54 : critique-54, 5 problèmes (0 B), corrigés 4/5
 - [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
-- [ ] Tour 56 en ligne (index-2b8uLKQZ.js : c55-fix, aiTask) : test critique-56
-- [ ] C50-5 : OUI (24.11) : le compromis de Comparer dit ce qu on gagne et ce qu on perd (écart de prix contre écart sur le critère), même avec critère ; à grouper avec les constats de critique-56
+- [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
+- [ ] C56 + C50-5 : c56-tests (R27..R30) puis c56-fix, tour 58, test en ligne
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
@@ -43,5 +43,5 @@ pause: 2026-11-24T14:00:02.125Z
 
 ## En attente de lui
 - [x] Tags en-ligne tour27..44 retirés de GitHub (24.11, son accord)
-- [ ] Q-4 : « Trop lente sur le calendrier » (24.11) : défilement au bord ×2,5, ajouté à la voie poignees
+- [ ] Tour 57 en ligne (index-JrS2YtfY.js : poignees, Q-4) : test critique-57
 - [x] PR ouverte : https://github.com/Mrspadaaa/Brasserie/pull/204 (branche claude/reprise-soir-24-11, sans captures de l app réelle) ; à remettre à jour après chaque lot
