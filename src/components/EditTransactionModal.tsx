@@ -2,7 +2,7 @@ import React, { useId, useRef, useState } from 'react';
 import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from '../ui/NumberInput';
 import { Input } from '../ui/Input';
-import { ArrowDown, ArrowUp, CalendarDays, Camera, ChevronDown, Copy, Check, Download, FileText, Folder, Lock, Undo2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, CalendarDays, Camera, ChevronDown, Copy, Check, Download, FileText, Folder, Landmark, Lock, Undo2, X } from 'lucide-react';
 import { Transaction, FinanceCategory } from '../types';
 import { StorageService } from '../services/storage';
 import { FinanceService } from '../services/financeService';
@@ -18,7 +18,8 @@ import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
 import { RangeeApercu } from '../ui/finance/modifier/ApercuRangee';
 import { ChoixDate } from '../ui/ChoixDate';
-import { CATEGORIES_ACHAT, GENRES, METHODES, genreDe, jjmm, resumeReglement } from '../ui/saisie/modele';
+import { CATEGORIES_ACHAT, GENRES, METHODES, genreDe, jjmm, resumeReglement, type GenreId } from '../ui/saisie/modele';
+import { planDeplacerPaiement } from '../domain/finance/deplacerPaiement';
 import { Ic, teinteGenre } from '../ui/saisie/SaisieMain';
 import { CategoryTag } from '../ui/finance/CategoryTag';
 import type { FinanceTransaction } from '../domain/finance/types';
@@ -79,6 +80,9 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   /** E40-4 : la frise de la date, ouverte au toucher de la pastille ; `dateTiree` : le jour que le doigt tient, montré en direct. */
   const [dateOuverte, setDateOuverte] = useState(false);
   const [dateTiree, setDateTiree] = useState<string | null>(null);
+  /** E41-4 : « changer » ouvre les sortes voisines (même sens, même nature d'écriture) ; en choisir une change la catégorie et la précision de la pièce. */
+  const [changerOuvert, setChangerOuvert] = useState(false);
+  const [sorteChoisie, setSorteChoisie] = useState<GenreId | null>(null);
   const paiements = useStorageValue(lirePaiements);
   const clotures = useStorageValue(lireClotures);
   const archives = useStorageValue(lireArchives);
@@ -144,7 +148,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const sortant = transactionDirection(transaction, ecritures) === 'out';
   const gauche = groupeDe(category);
   const aFinance = !!transaction.finance;
-  const genreSaisie = GENRES[genreDe(transaction as FinanceTransaction)];
+  const genreBase = GENRES[genreDe(transaction as FinanceTransaction)];
+  const genreSaisie = sorteChoisie ? GENRES[sorteChoisie] : genreBase;
   const reglement = resumeReglement(transaction as FinanceTransaction, paiements);
   const planLie = transaction.finance?.planId ? FinanceService.getPlans().find((p) => p.id === transaction.finance!.planId) : undefined;
   const revient = planLie?.recurrence ? RYTHME_MOTS[planLie.recurrence.frequency] : undefined;
@@ -153,6 +158,19 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const iso = isoDate(date) ?? '';
   const jourVu = dateTiree && /^\d{4}-\d{2}-\d{2}$/.test(dateTiree) ? dateTiree : iso;
   const refund = genreSaisie.id === 'rembt';
+  /* E41-4 : « changer » ne propose que ce qui ne change ni le sens, ni la nature (dépense / recette), ni le grand livre : jamais un apport, un prélèvement ou un remboursement.
+     Une pièce qui revient garde la catégorie de sa prévision : seules les sortes de la même catégorie lui sont proposées. */
+  const cibles: GenreId[] = refund || prive ? [] : (Object.keys(GENRES) as GenreId[]).filter(g => g !== genreSaisie.id && GENRES[g].kind === genreBase.kind
+    && GENRES[g].sens === genreBase.sens && (!planLie || GENRES[g].category === GENRES[genreBase.id].category));
+  /* E41-5 : la date d'une pièce payée change aussi son paiement (celui que la saisie a écrit au même jour) ; sinon Opérations et le Calendrier gardaient l'ancien jour. */
+  const deplacement = !change ? planDeplacerPaiement(transaction, paiements, iso, todayISO()) : [];
+  const dateReglement = deplacement.length ? iso : reglement.date;
+  const choisirSorte = (g: GenreId) => {
+    const G = GENRES[g];
+    setDraft(c => (c?.id === transaction.id ? { ...c, category: g === 'achat' ? (CATEGORIES_ACHAT.some(a => a.id === category) ? category : 'brassage') : G.category, subcategory: g === 'achat' ? '' : G.subcategory } : c));
+    setSorteChoisie(g === genreBase.id ? null : g);
+    setChangerOuvert(false);
+  };
 
   const currentDrivePath = DriveService.generateDrivePath({ ...draft, category, date, amountHT, amountTTC, proofNotes });
 
@@ -212,6 +230,10 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       // Vérifié avant la première écriture : une correction ne s'arrête pas à mi-chemin sur une saisie qu'on pouvait refuser d'emblée.
       if (candidate.finance) validateFinanceTransaction(candidate);
       const etapes = plan ?? [];
+      const ctxEcriture = { ...ctx, maintenant: new Date().toISOString() };
+      // E41-5 : le paiement d'abord (inversé puis réécrit au nouveau jour), la pièce ensuite ; un refus arrête avant l'écriture de la pièce.
+      const deplacer = !etapes.length ? planDeplacerPaiement(transaction, FinanceService.getPayments(), isoDate(candidate.date) ?? '', todayISO()) : [];
+      if (deplacer.length) await executerPlan(deplacer, transaction.id, ctxEcriture, v => v);
       const etapeAvoir = etapes.find((s): s is Extract<EtapeCorrection, { type: 'avoir' }> => s.type === 'avoir');
       if (etapeAvoir) verifierAvoir(candidate, etapeAvoir, { ...ctx, maintenant: new Date().toISOString() }, StorageService.getTransactions(), FinanceService.getPayments());
       if (etapes.some(s => s.type === 'montant')) {
@@ -264,34 +286,18 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <div className="mod-corps">
           {saveError && <p role="alert" className="mod-erreur">{saveError}</p>}
 
-          {/* La pièce en tête */}
-          {rangee ? (
-            <div className="mod-piece">
-              {apercuImage ? <img src={proofUrl} alt="" /> : <span className="mod-piece-ico" aria-hidden="true"><FileText size={20} /></span>}
-              <span className="mod-piece-nom"><b>{proofFileName || (proofUrl ? 'Pièce jointe' : 'Pièce rangée')}</b><small>{proofUrl ? 'Pièce jointe' : 'Rangée dans les documents'}</small></span>
-              {proofUrl && <>
-                <label className="mod-b2 mod-fich"><span>Remplacer</span>
-                  <input type="file" accept="image/*,application/pdf" aria-label="Remplacer la pièce" onChange={(e) => joindre(e.target.files?.[0])} /></label>
-                <button type="button" className="mod-b2" onClick={() => { field('proofUrl', undefined); field('proofFileName', undefined); }}>Retirer</button>
-              </>}
-            </div>
-          ) : (
-            <div className="mod-drop">
-              <p><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray="3 2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z" /></svg>Pas encore de pièce</p>
-              <label className="mod-b1 mod-fich"><Camera size={20} aria-hidden="true" /><span>Photo du ticket</span>
-                <input type="file" accept="image/*" capture="environment" aria-label="Photo du ticket" onChange={(e) => joindre(e.target.files?.[0])} /></label>
-              <label className="mod-b2 mod-fich"><FileText size={18} aria-hidden="true" /><span>Fichier ou PDF</span>
-                <input type="file" accept="image/*,application/pdf" aria-label="Fichier ou PDF" onChange={(e) => joindre(e.target.files?.[0])} /></label>
-            </div>
-          )}
-
           {/* E40-4 : la même feuille que la saisie : la bande « Ça sort / Ça rentre · sorte », la carte (nom, étiquette, date au curseur) et le grand montant.
               `sai` apporte ses jetons (clair / cave) ; la sorte ne se change pas ici (sa nature fixe la TVA, le sens et le grand livre : on annule et on resaisit). */}
           <div className="sai mod-sai" data-modifier-saisie>
             <div className={`sai-sel ${refund ? 'neu' : sortant ? 'out' : 'in'}`} data-modifier-bande>
               {refund ? <Undo2 size={16} aria-hidden="true" /> : sortant ? <ArrowUp size={16} aria-hidden="true" /> : <ArrowDown size={16} aria-hidden="true" />}
               {refund ? 'Remboursement' : <>{sortant ? 'Ça sort' : 'Ça rentre'}<span className="g"><span style={{ color: teinteGenre(genreSaisie.id).seg, display: 'inline-flex' }}><Ic g={genreSaisie.id} size={18} /></span>{genreSaisie.nom}</span></>}
+              {cibles.length > 0 && <button type="button" aria-expanded={changerOuvert} data-modifier-changer onClick={() => setChangerOuvert(o => !o)}>changer</button>}
             </div>
+            {changerOuvert && cibles.length > 0 && <div className="sai-row" role="group" aria-label="Changer de sorte" data-modifier-sortes>
+              {cibles.map(g => <button key={g} type="button" className="sai-chip" data-modifier-sorte={g} onClick={() => choisirSorte(g)}>
+                <span style={{ color: teinteGenre(g).seg, display: 'inline-flex' }}><Ic g={g} size={16} /></span>{g === 'autrei' ? 'Autre entrée' : g === 'autreo' ? 'Autre sortie' : GENRES[g].nom}</button>)}
+            </div>}
             <div className={`sai-card${refund ? '' : sortant ? ' out' : ' in'}`} data-modifier-carte>
               <div className="sai-c1">
                 <input aria-label="Nom" name="tx_edit_label" required value={description} enterKeyHint="done" autoComplete="off" autoCorrect="off" spellCheck={false}
@@ -311,6 +317,14 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 <small>{assujetti ? 'CHF HT' : 'CHF'}</small>
               </label>
               {change && !montantInvalide && <p className="mod-avant">avant <s className="mod-m">{amountOnly(ancienCents)}</s></p>}
+              {aFinance && <div className="sai-row" data-modifier-reglement>
+                <span className={`sai-chip${reglement.etat === 'paye' ? ' on' : ''}`} aria-current={reglement.etat === 'paye' ? 'true' : undefined}>{reglement.etat === 'paye' ? <Check size={14} aria-hidden="true" /> : null}{sortant ? 'Payé' : 'Reçu'}{reglement.etat === 'paye' && dateReglement ? ` le ${jjmm(dateReglement)}` : ''}</span>
+                <span className={`sai-chip${reglement.etat === 'apayer' || reglement.etat === 'partiel' ? ' on' : ''}`} aria-current={reglement.etat === 'apayer' || reglement.etat === 'partiel' ? 'true' : undefined}>{reglement.etat === 'partiel' ? (sortant ? 'Payé en partie' : 'Reçu en partie') : sortant ? 'À payer' : 'À recevoir'}</span>
+                {reglement.moyen && <span className="sai-chip" aria-label="Compte et moyen de paiement"><Landmark size={14} aria-hidden="true" />{METHODES.find((m) => m.id === reglement.moyen)?.nom ?? reglement.moyen}</span>}
+                {reglement.etat === 'inconnu' && <small>Règlement non noté.</small>}
+                {(reglement.etat === 'apayer' || reglement.etat === 'partiel') && <><small>d’ici le</small>
+                  <ChoixDate saisie label="Échéance" valeur={echeanceSaisie ?? transaction.finance?.dueDate ?? ''} vide="Échéance à poser" rangee="achats" onChange={setEcheanceSaisie} /></>}
+              </div>}
             </div>
             {genreSaisie.id === 'achat' && <div className="sai-row" data-modifier-categorie>
               {CATEGORIES_ACHAT.map(c => <button key={c.id} type="button" className="sai-chip" aria-pressed={category === c.id} data-saisie-categorie={c.id} onClick={() => field('category', c.id)}>{c.nom}</button>)}
@@ -382,19 +396,6 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 <Input type="text" name="tx_edit_note" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
                   value={noteSaisie ?? transaction.finance?.notes ?? ''} onChange={(e) => setNoteSaisie(e.target.value)} className="mod-in" data-modifier-note /></label>
             </div>
-            <div className="mod-reg" data-modifier-reglement>
-              <span className="mod-lib">Règlement</span>
-              <div className="mod-reg-l">
-                <span className="mod-reg-c" aria-current={reglement.etat === 'paye' ? 'true' : undefined}>{sortant ? 'Payé' : 'Reçu'}{reglement.etat === 'paye' && reglement.date ? ` le ${jjmm(reglement.date)}` : ''}</span>
-                <span className="mod-reg-c" aria-current={reglement.etat === 'apayer' || reglement.etat === 'partiel' ? 'true' : undefined}>{reglement.etat === 'partiel' ? (sortant ? 'Payé en partie' : 'Reçu en partie') : sortant ? 'À payer' : 'À recevoir'}</span>
-                {reglement.moyen && <span className="mod-reg-c" aria-label="Compte et moyen de paiement">{METHODES.find((m) => m.id === reglement.moyen)?.nom ?? reglement.moyen}</span>}
-                {reglement.etat === 'inconnu' && <span className="mod-pourquoi">Règlement non noté.</span>}
-              </div>
-              {(reglement.etat === 'apayer' || reglement.etat === 'partiel') && (
-                <div className="mod-ech"><small>d’ici le</small>
-                  <ChoixDate saisie label="Échéance" valeur={echeanceSaisie ?? transaction.finance?.dueDate ?? ''} vide="Échéance à poser" rangee="achats" onChange={setEcheanceSaisie} /></div>
-              )}
-            </div>
             {genreSaisie.rythme !== null && (
               <div className="mod-rec" data-modifier-revient>
                 <span className="mod-lib">Revient ?</span>
@@ -413,6 +414,27 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               <Input type="text" name="tx_edit_proof_notes" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
                 value={champTiers} onChange={(e) => setNotesSaisies(e.target.value)} placeholder="Brau-Rauchshop cmd 686863, Bauhaus…" className="mod-in" />
             </label>
+          )}
+
+          {/* E41-4 : la pièce vient après le montant et le règlement, comme la saisie (jamais le bloc « Pas encore de pièce » en tête) */}
+          {rangee ? (
+            <div className="mod-piece">
+              {apercuImage ? <img src={proofUrl} alt="" /> : <span className="mod-piece-ico" aria-hidden="true"><FileText size={20} /></span>}
+              <span className="mod-piece-nom"><b>{proofFileName || (proofUrl ? 'Pièce jointe' : 'Pièce rangée')}</b><small>{proofUrl ? 'Pièce jointe' : 'Rangée dans les documents'}</small></span>
+              {proofUrl && <>
+                <label className="mod-b2 mod-fich"><span>Remplacer</span>
+                  <input type="file" accept="image/*,application/pdf" aria-label="Remplacer la pièce" onChange={(e) => joindre(e.target.files?.[0])} /></label>
+                <button type="button" className="mod-b2" onClick={() => { field('proofUrl', undefined); field('proofFileName', undefined); }}>Retirer</button>
+              </>}
+            </div>
+          ) : (
+            <div className="mod-drop">
+              <p><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray="3 2.4" aria-hidden="true"><path d="M7 3h7l4 4v14H7z" /></svg>Pas encore de pièce</p>
+              <label className="mod-b1 mod-fich"><Camera size={20} aria-hidden="true" /><span>Photo du ticket</span>
+                <input type="file" accept="image/*" capture="environment" aria-label="Photo du ticket" onChange={(e) => joindre(e.target.files?.[0])} /></label>
+              <label className="mod-b2 mod-fich"><FileText size={18} aria-hidden="true" /><span>Fichier ou PDF</span>
+                <input type="file" accept="image/*,application/pdf" aria-label="Fichier ou PDF" onChange={(e) => joindre(e.target.files?.[0])} /></label>
+            </div>
           )}
 
           {category === 'recettes' && (

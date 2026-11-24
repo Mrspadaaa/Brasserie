@@ -25,7 +25,7 @@ import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/f
 import type { CoteBord } from '../../ui/calendrier/frise/usePointeur';
 import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, anneeEnMois, ajouterJours, numeroSemaine, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, peutFacturer, anneeEnMois, ajouterJours, numeroSemaine, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee,
   jourAvecAnnee, semaineAvecAn
 } from '../../domain/calendrier';
@@ -841,7 +841,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         } } : {})}
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
-        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
+        {...(peutFacturer(chose) ? { onFacturer: () => {
           /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
           const id = (chose.source as { id: string }).id;
           const clientId = don.plans.find(p => p.id === id)?.clientId;

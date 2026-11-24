@@ -19,7 +19,7 @@ import type { FinanceTransaction } from '../../domain/finance/types';
 import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
 import { soldeLeVuPlan } from '../finance/soldePrevu';
-import type { FinancialPlan } from '../../domain/finance/types';
+import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import {
   CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
   dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois, METHODES, propositionsTiers, tiersExiste, verbeEnregistrer,
@@ -73,7 +73,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const titreId = useId();
   const aujourdhui = todayISO();
   const [version, setVersion] = useState(0);
-  const donnees = useMemo(() => ({ txs: StorageService.getTransactions() as FinanceTransaction[], plans: FinanceService.getPlans() }), [version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const donnees = useMemo(() => ({ txs: StorageService.getTransactions() as FinanceTransaction[], plans: FinanceService.getPlans(), paiements: FinanceService.getPayments() as FinancialPayment[] }), [version]); // eslint-disable-line react-hooks/exhaustive-deps
   const tvaInscrit = useMemo(() => Boolean(StorageService.getConfig()?.fiscal?.isTvaRegistered || FinanceService.getProfile().vatRegistered), []);
   const [id, setId] = useState(() => idFor('MAIN'));
   const [b, setB] = useState<Brouillon>(() => brouillonNeuf(aujourdhui));
@@ -120,7 +120,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
   const clients = useMemo(() => (choisi && G.qui === 'Client' ? StorageService.getClients() : []), [choisi, G.qui, version]); // eslint-disable-line react-hooks/exhaustive-deps
   const propositionsTiersListe = useMemo(() => (tiersEdit ? propositionsTiers(b.genre, tiersSaisie, { clients, transactions: donnees.txs }) : []), [tiersEdit, b.genre, tiersSaisie, clients, donnees.txs]);
-  const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
+  const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche, 30, true, donnees.paiements) : []), [plateau, recherche, donnees.txs, donnees.paiements]);
   const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
   const prevu = useMemo(() => (choisi ? achatPrevu(b, cents, donnees.plans) : null), [choisi, b, cents, donnees.plans]);
   const soldePrevu = !!prevu && refusPrevu !== prevu.id;

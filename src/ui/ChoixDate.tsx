@@ -3,7 +3,7 @@ import { CalendarDays } from 'lucide-react';
 import { plageDate } from './plageDate';
 import { jourTouche } from './toucherDate';
 import { DureeFenetre } from './calendrier/frise/DureeFenetre';
-import { jourLisible, type Rangee } from '../domain/calendrier';
+import { jourLisible, lundiDe, type Rangee } from '../domain/calendrier';
 
 /**
  * GESTE-DATE-PARTOUT (22.11) : le choix d'un jour, partout dans l'app, au geste de la frise partagée du Calendrier (`DureeFenetre seule pas="jour"`,
@@ -106,7 +106,7 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
             if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); fermer(true); }
             else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fermer(false); }
           }}>
-          <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={plage.dernier}
+          <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={saisie && max && ISO.test(max) && lundiDe(max) < plage.dernier ? lundiDe(max) : plage.dernier} jourMax={saisie && max && ISO.test(max) ? max : undefined}
             onPlage={d => poser(d)} onLacher={ecrire} />
           {saisie && atteinte ? <small className="block text-xs text-cave-300" role="status" data-choix-date-borne={atteinte}>
             {atteinte === 'max' && max ? `Pas de date après le ${jourLisible(max)} : le jour d’aujourd’hui est le dernier.` : min ? `Pas de date avant le ${jourLisible(min)}.` : ''}</small> : null}

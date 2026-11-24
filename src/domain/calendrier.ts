@@ -1004,6 +1004,12 @@ export function fusionnerFacturesLivraisons(
   }
   return choses.flatMap(c => (prises.has(c.id) ? [] : [fusion.get(c.id) ?? c]));
 }
+/**
+ * E41-3 : « Facturer » n'existe que pour une vente prévue à un client : on ne se facture pas un apport de sa poche (`horsVentes`), ni une autre entrée.
+ * Une vente probable (à accepter) ou une pièce se rouvre par « Ouvrir ».
+ */
+export const peutFacturer = (c: Pick<ChoseCalendrier, 'rangee' | 'source' | 'probable' | 'horsVentes'>): boolean =>
+  c.rangee === 'ventes' && c.source.genre === 'plan' && !c.probable && !c.horsVentes;
 const raisonFinances = (quoi: string, ou: string) => `${quoi} se règle dans ${ou}.`;
 
 /**

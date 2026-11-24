@@ -20,10 +20,10 @@ import { isActiveTransaction, isoDate, paidForTransaction, transactionAmount, tr
 export type ChoixPaiement = 'suit' | 'reste' | 'avoir';
 
 export type EtapeCorrection =
-  | { type: 'contre'; paiementId: string }
+  | { type: 'contre'; paiementId: string; note?: string }
   | { type: 'montant'; cents: number }
   /** `date` : celle du dernier paiement inversé pour une baisse, celle du dernier paiement vivant pour une hausse (une correction n'est pas un nouveau virement, E38-3) ; absente sans paiement connu. */
-  | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string }
+  | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string; note?: string }
   /** L'excédent versé, à recevoir (`direction: 'in'` pour une dépense) : un avoir `refund` lié à la pièce, par le mécanisme d'avoir existant, non encore encaissé. */
   | { type: 'avoir'; cents: number; direction: 'in' | 'out' };
 

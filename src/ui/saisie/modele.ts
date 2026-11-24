@@ -5,7 +5,7 @@
 // Pas de TVA à l'AFC (D428, le brasseur : ni champ neuf ni option) : « Impôts » propose l'impôt sur la bière (charge, `divers`) et les impôts privés (Pour moi).
 import type { FinanceCategory } from '../../types';
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
-import { isActiveTransaction, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
+import { isActiveTransaction, paymentState, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
 import { lireDecimal } from '../numericInput';
@@ -323,7 +323,7 @@ export interface PieceRemboursable { id: string; nom: string; sous: string; date
  * faux pour relire une pièce déjà choisie). Une ancienne pièce sans statut de règlement reste proposée : son statut n'est pas « à payer ».
  * E40-7 : chaque pièce dit sa sorte (`genre`, le picto) et une sous-ligne utile : la sorte, le jour, et le libellé seulement s'il diffère du nom.
  */
-export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30, payeesSeulement = true): PieceRemboursable[] {
+export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30, payeesSeulement = true, paiements?: FinancialPayment[]): PieceRemboursable[] {
   const q = recherche.trim().toLowerCase();
   const avoirs = new Map<string, number>();
   for (const t of actives(transactions)) if (transactionKind(t) === 'refund' && t.finance?.refundOfId) avoirs.set(t.finance.refundOfId, (avoirs.get(t.finance.refundOfId) ?? 0) + transactionAmount(t));
@@ -334,7 +334,10 @@ export function piecesRemboursables(transactions: FinanceTransaction[], recherch
     const cents = transactionAmount(t), reste = cents - (avoirs.get(t.id) ?? 0);
     if (reste <= 0) continue;
     const statut = t.finance?.paymentStatus;
-    if (payeesSeulement && statut && statut !== 'paid') continue;
+    /* E41-2 : le registre des paiements dit mieux que l'étiquette de la pièce (les pièces d'avant la saisie à la main portent « à confirmer » ou rien, et un paiement réel) :
+       payée au registre = proposée ; à payer ou payée en partie au registre = écartée ; sans paiement connu, l'étiquette décide comme avant. */
+    const regle = paiements ? paymentState(t, paiements, transactions).state : 'unknown';
+    if (payeesSeulement && regle !== 'paid' && (regle !== 'unknown' || (statut && statut !== 'paid'))) continue;
     const nom = t.finance?.vendor || t.description;
     if (q && !`${nom} ${t.description} ${chf(cents)}`.toLowerCase().includes(q)) continue;
     const genre = genreDe(t);

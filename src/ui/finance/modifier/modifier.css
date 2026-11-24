@@ -135,3 +135,10 @@
 .mod .mod-avant { margin:0 0 2px; font-size:12px; color:var(--sec); }
 .mod .mod-sai .mod-fold { margin:0; }
 .mod .mod-sai .mod-fold summary { color:var(--sec); }
+
+/* E41-4 : le grand montant tient sur téléphone : `Input` y rend un <textarea>, que `.sai-amt input` (saisie.css) ne vise pas. Mêmes règles que la saisie. */
+.mod .mod-sai .sai-amt :is(input, textarea) { field-sizing:content; width:auto; min-width:1ch; min-height:0; height:auto; padding:0 !important; margin:0; border:0 !important; background:transparent; resize:none; overflow:hidden;
+  font-family:var(--mono); font-size:44px; line-height:1.2; font-weight:600; letter-spacing:-.02em; color:inherit; white-space:nowrap; }
+/* le règlement dans la carte : des pastilles qui se lisent (pas des boutons : un règlement se change par « Noter un paiement » dans la fiche) */
+.mod .mod-sai .sai-chip.on { background:var(--val) !important; color:var(--page) !important; border-color:var(--val) !important; }
+.mod .mod-sai .sai-card .sai-row { margin-top:2px; }
