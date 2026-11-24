@@ -22,3 +22,7 @@ Règles :
 ## Sa décision D450 (24.11, prime sur l hypothèse (2) ci-dessus)
 - Ses mots : « Alors ça c était pas une bonne idée, ils doivent d accorder. C est plutôt au les deux sont d accord c est bon,ai non il y a un problème. Mais pourquoi on utilise pas la même manière que toi tu utilises pour lire les pages ? »
 - À faire : chaque lien est TOUJOURS lu aussi par l IA sur la page entière convertie en markdown (comme un outil de lecture web : page complète, pas de troncature avant les prix ; si trop longue, découpe et garde les blocs produit/prix), en plus des données structurées ; comparer champ par champ ; accord → valeur ; désaccord → étape « douteux » visible, avec Escalader (Neon). Retirer la règle « l IA ne remplace jamais un champ trouvé ». Mesurer au banc 63+2 : justes, désaccords, coût et durée par lien (budget 0,15 CHF pour toute la voie).
+
+## Ajout du pilote 2 (24.11) : comparer au banc deux façons « comme Claude lit une page »
+- Ses mots : « Et pourquoi on a pas la même fonctionnalités que toi tu utilises pour lire es liens, les pages web ? »
+- (A) page récupérée par le serveur, convertie en markdown entier (Readability + Turndown ou équivalent maintenu), lue par Flash-Lite avec la question des champs ; (B) url_context de Gemini (Google récupère et lit la page lui-même ; déjà utilisé pour les pages bloquées : prix 57/57 au banc). Mesurer A, B et l actuel sur 63+2 liens (justes par champ, désaccords, coût, durée) ; retenir le meilleur, l autre sert de seconde lecture pour l accord D450. Budget de la voie porté à 0,25 CHF.
