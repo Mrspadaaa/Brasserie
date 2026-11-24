@@ -12,10 +12,14 @@
  */
 import { estDomaine, type DomaineCarnet } from './domaines';
 import {
-  CARNETS_MAX, GENRES_CARNET, LIGNES_MAX, PAGES_MAX, SENS_CARNET, SORTES_CARNET,
-  type ContexteRangerCarnet, type GenreCarnet, type PageLue, type SensCarnet, type SorteCarnet
+  CARNETS_MAX, CHEMIN_NIVEAUX_MAX, DERNIERS_MAX, ETATS_SUIVI_IA, ETIQUETTES_CARNET, GENRES_CARNET, GENRES_SUIVI, LIGNES_MAX, PAGES_MAX, QUAND_TACHE, SENS_CARNET, SORTES_CARNET, cheminLu,
+  type ContexteRangerCarnet, type EtatSuiviIA, type EtiquetteCarnet, type GenreCarnet, type GenreSuivi, type PageLue, type SensCarnet, type SorteCarnet
 } from '../../../functions/src/carnetIA';
-import { jetons } from './analyseLocale';
+import { estimeAutour, jetons, prixTousDe } from './analyseLocale';
+import type { CarnetDoc, Etiquette, MessageDoc, PropositionSuivi, Rattache } from './modele';
+import { rapprocherChemin } from './arbre';
+import { echeanceDe } from './taches';
+import { etatDe, etatOption, genreDe } from './suivi';
 
 export type { PageLue } from '../../../functions/src/carnetIA';
 export type SorteLigne = SorteCarnet;
@@ -73,7 +77,24 @@ export interface LigneCarnet {
    * ses mots (« tiré de votre phrase »), sinon `ia` (« proposé par l'IA »). Absent sur les autres sortes.
    */
   source?: 'phrase' | 'ia';
+  /**
+   * D451 (le suivi) : ce que la ligne dit du fil, déjà gardé. `etiquette` : le jeton sous la bulle (son montant est `prixCentimes`, écrit dans le
+   * message, `estime` si « ≈ ») ; `option` : le nom de la solution visée ; `genreCarnet`, `chemin`, `etatPropose` : d'une idée neuve (le
+   * consommateur ne les applique qu'à un carnet que ce message crée) ; `tachePropose` : une tâche ou la date d'une option (sans `texte`), jamais écrite
+   * seule ; `citation` : une sous-chaîne exacte du message.
+   */
+  etiquette?: EtiquetteCarnet;
+  estime?: true;
+  option?: string;
+  genreCarnet?: GenreSuivi;
+  chemin?: string[];
+  etatPropose?: EtatSuiviIA;
+  tachePropose?: TachePropose;
+  citation?: string;
 }
+
+/** Une tâche proposée : `echeance` est un lundi (précision `semaine` ou `mois`), absente pour « un jour » ; le coût seulement s'il est écrit. */
+export interface TachePropose { texte?: string; echeance?: string; precision?: 'semaine' | 'mois'; coutCentimes?: number; devise?: string; coutEstime?: true }
 
 /** La forme minimale d'une idée pour l'IA ; `CarnetsVue.tsx` (lot D) la tire du modèle du lot A. */
 export interface CarnetPourIA {
@@ -81,6 +102,15 @@ export interface CarnetPourIA {
   titre: string;
   /** Dernière activité (ms) : au plus 30 carnets, les plus récents d'abord. */
   majLe?: number;
+  /** D451, facultatifs : le suivi du carnet (voir `pourIASuivi`). */
+  genre?: GenreSuivi;
+  etat?: EtatSuiviIA;
+  domaine?: DomaineCarnet;
+  chemin?: readonly string[];
+  /** Les options qui ne sont pas de simples pistes (veille, écartée, retenue) ; une option absente est une piste. */
+  options?: ReadonlyArray<{ nom: string; etat: 'piste' | 'veille' | 'ecartee' | 'retenue' }>;
+  taches?: readonly string[];
+  derniers?: readonly string[];
   /** `origine` et `source` (L-6) : un critère de sa phrase compte comme ses mots quand l'IA le reprend. */
   criteres?: ReadonlyArray<{ texte: string; caracteristique?: Caracteristique; origine?: string; source?: string }>;
   facons?: ReadonlyArray<{ nom: string; etat?: string }>;
@@ -147,9 +177,19 @@ export function contexteModele(texte: string, saisie: Date, depuis: string | nul
         const v = Object.entries(a.valeurs ?? {}).flatMap(([k, x]) => x && x.valeur !== undefined && x.valeur !== null ? [[k, `${String(x.valeur)}${x.unite ? ' ' + x.unite : ''}`]] : []);
         return [v.length ? { nom: a.nom, valeurs: Object.fromEntries(v) } : { nom: a.nom }];
       }),
-      notes: (c.notes ?? []).map((n) => ({ id: n.id, texte: n.texte }))
+      notes: (c.notes ?? []).map((n) => ({ id: n.id, texte: n.texte })),
+      /* D451 : le suivi, borné (12 options, 8 tâches, 3 messages de 160 caractères) ; aucune photo n'est jamais envoyée (accord du 17.11) */
+      ...(c.genre ? { genre: c.genre } : {}),
+      ...(c.etat ? { etat: c.etat } : {}),
+      ...(c.domaine ? { domaine: c.domaine } : {}),
+      ...(c.chemin?.length ? { chemin: [...c.chemin] } : {}),
+      ...(c.options?.length ? { options: c.options.slice(0, 12).map((o) => ({ nom: o.nom, etat: o.etat })) } : {}),
+      ...(c.taches?.length ? { taches: c.taches.slice(0, 8).map((t) => t.slice(0, 160)) } : {}),
+      ...(c.derniers?.length ? { derniers: c.derniers.slice(0, DERNIERS_MAX).map((t) => t.slice(0, 160)) } : {})
     }))
   };
+  const chemins = [...new Map(garde.flatMap((c) => (c.chemin?.length ? [[c.chemin.join('\u0000'), [...c.chemin]] as const] : []))).values()];
+  if (chemins.length) ctx.chemins = chemins.slice(0, 40).map((c) => [...c]);
   const lues = pages.filter((p) => p.statut === 'lue').slice(0, PAGES_MAX)
     .map(({ url, domaine, nom, prix, devise, vendeur, valeurs }) => Object.fromEntries(Object.entries({ url, domaine, nom, prix, devise, vendeur, valeurs }).filter(([, v]) => v !== undefined)) as NonNullable<ContexteRangerCarnet['pages']>[number]);
   if (lues.length) ctx.pages = lues;
@@ -217,6 +257,58 @@ export interface ContexteGarde {
   depuis?: string | null;
   pages?: readonly PageLue[];
   origine?: LigneCarnet['origine'];
+  /** Le jour de la saisie : une tâche « cette semaine » ou « ce mois » en prend son lundi. Absent : maintenant. */
+  maintenant?: Date;
+}
+
+/* ---------- D451 : le suivi d'une ligne (étiquette, option, genre, chemin, état, tâche, citation) ---------- */
+
+const ETIQUETTES = new Set<string>(ETIQUETTES_CARNET);
+const GENRES_NEUF = new Set<string>(GENRES_SUIVI);
+const ETATS_IA = new Set<string>(ETATS_SUIVI_IA);
+const QUAND = new Set<string>(QUAND_TACHE);
+const majuscule = (t: string) => `${t.charAt(0).toLocaleUpperCase('fr-CH')}${t.slice(1)}`;
+export const jourDe = (d: Date): string => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/**
+ * D451 : ce que la réponse dit du suivi, gardé ligne par ligne. Une énumération hors liste est ignorée ; un montant (étiquette ou tâche) n'existe
+ * que s'il est écrit dans le message (l'étiquette reprend le prix déjà gardé de la ligne) ; une citation est une sous-chaîne EXACTE du message ;
+ * un chemin a 1 à 2 niveaux de 30 caractères au plus et se rapproche du vocabulaire des carnets (le plus proche, sinon tel quel).
+ */
+function suiviDeLigne(r: Record<string, unknown>, ligne: LigneCarnet, ctx: ContexteGarde, nombresTexte: readonly number[]): void {
+  if (typeof r.etiquette === 'string' && ETIQUETTES.has(r.etiquette)) {
+    ligne.etiquette = r.etiquette as EtiquetteCarnet;
+    if (ligne.prixCentimes !== undefined && ligne.prixSource === 'texte' && estimeAutour(ctx.texte, ligne.prixCentimes / 100)) ligne.estime = true;
+  }
+  const option = chaine(r.option, 80);
+  if (option) ligne.option = option;
+  if (typeof r.genreCarnet === 'string' && GENRES_NEUF.has(r.genreCarnet)) ligne.genreCarnet = r.genreCarnet as GenreSuivi;
+  if (typeof r.etatPropose === 'string' && ETATS_IA.has(r.etatPropose)) ligne.etatPropose = r.etatPropose as EtatSuiviIA;
+  const brut = cheminLu(r.chemin);
+  if (brut) {
+    const vocabulaire = ctx.carnets.flatMap((c) => (c.chemin?.length ? [c.chemin] : []));
+    ligne.chemin = rapprocherChemin(brut.slice(0, CHEMIN_NIVEAUX_MAX).map(majuscule), vocabulaire).map((s) => s.slice(0, 30));
+  }
+  const citation = typeof r.citation === 'string' ? r.citation.trim() : '';
+  if (citation.length >= 3 && ctx.texte.includes(citation)) ligne.citation = citation;
+  const t = r.tachePropose as Record<string, unknown> | null | undefined;
+  if (t && typeof t === 'object' && typeof t.quand === 'string' && QUAND.has(t.quand)) {
+    const texte = chaine(t.texte, 120);
+    // Sans texte, c'est la date d'une option : il faut l'option et une date.
+    if (texte || (option && t.quand !== 'un-jour')) {
+      const precision = t.quand === 'mois' ? 'mois' : t.quand === 'semaine' ? 'semaine' : undefined;
+      const echeance = precision ? echeanceDe(jourDe(ctx.maintenant ?? new Date()), precision) ?? undefined : undefined;
+      const tache: TachePropose = { ...(texte ? { texte } : {}), ...(echeance && precision ? { echeance, precision } : {}) };
+      if (typeof t.prix === 'number' && Number.isFinite(t.prix) && t.prix > 0 && contient(nombresTexte, t.prix)) {
+        const centimes = Math.round(t.prix * 100);
+        tache.coutCentimes = centimes;
+        const lu = prixTousDe(ctx.texte).find((x) => x.centimes === centimes);
+        if (lu) tache.devise = lu.devise;
+        if (estimeAutour(ctx.texte, t.prix)) tache.coutEstime = true;
+      }
+      ligne.tachePropose = tache;
+    }
+  }
 }
 
 /**
@@ -422,6 +514,8 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     if (propose && sorte === 'idee' && connu && propose.length <= TITRE_MAX && !memeTitre(propose, parId.get(idDemande!)!.titre))
       ligne.titrePropose = propose;
 
+    suiviDeLigne(r, ligne, ctx, nombresTexte);
+
     sortie.push(ligne);
   }
   /* L-5 (23.11, M3-7) : écrite dans un carnet ouvert, une note de plusieurs lignes ne perd aucune ligne. Une ligne que l'IA ne reprend pas,
@@ -436,6 +530,118 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
   if (!sortie.length) return null;
   // Les achats en tête, le reste dans l'ordre rendu (tri stable).
   return sortie.map((l, i) => [l, i] as const).sort(([a, i], [b, j]) => Number(ACHAT(b)) - Number(ACHAT(a)) || i - j).map(([l]) => l);
+}
+
+/* ---------- D451 : du contexte à lire, et de la réponse à écrire ---------- */
+
+/**
+ * Ce que le suivi ajoute au contexte d'un carnet (genre, état, domaine, chemin, options hors pistes, tâches ouvertes, 3 derniers messages tronqués à 160
+ * caractères). Une valeur absente est absente, jamais 0 ; aucune photo (accord du 17.11). Rend, par id, les champs à fusionner dans `CarnetPourIA`.
+ */
+export function pourIASuivi(carnets: readonly CarnetDoc[], messages: readonly MessageDoc[]): Map<string, Partial<CarnetPourIA>> {
+  const recents = [...messages].sort((a, b) => b.carnetMessage.le.localeCompare(a.carnetMessage.le));
+  return new Map(carnets.map((c) => {
+    const options = c.carnet.facons.flatMap((f) => { const e = etatOption(f); return e === 'piste' ? [] : [{ nom: f.nom, etat: e }]; });
+    const taches = (c.carnet.taches ?? []).filter((t) => !t.faiteLe).map((t) => t.texte);
+    const derniers = recents.filter((m) => m.carnetMessage.depuis === c.id || m.carnetMessage.effets.some((e) => e.carnetId === c.id))
+      .slice(0, DERNIERS_MAX).map((m) => espaces(m.carnetMessage.texte).slice(0, 160));
+    const domaine = c.carnet.domaine?.valeur;
+    const chemin = c.carnet.categorie?.chemin;
+    return [c.id, {
+      genre: genreDe(c), etat: etatDe(c),
+      ...(domaine ? { domaine } : {}), ...(chemin?.length ? { chemin } : {}),
+      ...(options.length ? { options } : {}), ...(taches.length ? { taches } : {}), ...(derniers.length ? { derniers } : {})
+    }] as const;
+  }));
+}
+
+/** Ce que l'écran doit savoir du rangement pour écrire le suivi : où est rangée chaque ligne, ce que ce message crée, les options d'un carnet. */
+export interface EntreeSuivi {
+  texte: string;
+  /** Le carnet ouvert quand il a écrit ; `null` depuis la liste. */
+  depuis: string | null;
+  /** Le carnet où une ligne est rangée (connu, ou celui que ce message crée) ; `undefined` : on ne sait pas. */
+  cibleDe: (l: LigneCarnet) => string | undefined;
+  /** Les carnets que ce message crée. */
+  crees: ReadonlySet<string>;
+  /** L'id de l'option d'un carnet qui porte ce nom (sans accent ni casse) ; `undefined` : aucune. */
+  optionDe: (carnetId: string, nom: string) => string | undefined;
+  /** L'état d'un carnet (pour ne pas proposer de résoudre un résolu). */
+  etatDe: (carnetId: string) => EtatSuiviIA | undefined;
+}
+export interface SuiviDesLignes {
+  etiquettes: Etiquette[];
+  /** Les cartes « OK · Non » : jamais écrites avant son geste. */
+  propositions: PropositionSuivi[];
+  /** Depuis la liste : « rattaché : « … » », la citation exacte qui a fait choisir le carnet. */
+  rattache?: Rattache;
+  /** Les carnets créés par ce message : genre, chemin, état initial que l'IA leur pose (annulable, jamais sur ce qu'il a posé). */
+  neufs: Array<{ carnetId: string; genre?: GenreSuivi; chemin?: string[]; etat?: EtatSuiviIA }>;
+}
+
+const ETIQUETTES_MONTANT = new Set<string>(['cout', 'devis', 'achat']);
+const ETIQUETTES_MAX = 8;
+const PROPOSITIONS_MAX = 6;
+
+/**
+ * D451 : les lignes gardées deviennent étiquettes (jetons sous la bulle), cartes « OK · Non » et réglages d'un carnet neuf. Rien n'écrit
+ * un état, un choix, une date ni une tâche : retenir, dater, résoudre, veiller, tâche restent des propositions.
+ * MESSAGE-RESTE-DANS-SON-CARNET (C64-8) : une ligne rangée dans le carnet ouvert qui visait un autre carnet (`carnetSuggere`) devient la proposition
+ * « Rattacher à … ? » (`deplacer`), jamais une écriture ailleurs.
+ */
+export function suiviDesLignes(lignes: readonly LigneCarnet[], o: EntreeSuivi): SuiviDesLignes {
+  const etiquettes: Etiquette[] = [];
+  const propositions: PropositionSuivi[] = [];
+  const neufs = new Map<string, { carnetId: string; genre?: GenreSuivi; chemin?: string[]; etat?: EtatSuiviIA }>();
+  let rattache: Rattache | undefined;
+  const vues = new Set<string>();
+  const proposer = (p: PropositionSuivi) => {
+    const cle = JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.texte ?? null, p.versCarnetId ?? null]);
+    if (vues.has(cle) || propositions.length >= PROPOSITIONS_MAX) return;
+    vues.add(cle);
+    propositions.push(p);
+  };
+  const sans = <T extends object>(x: T): T => Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as T;
+
+  for (const l of lignes) {
+    const cid = o.cibleDe(l);
+    if (o.depuis && cid === o.depuis && l.carnetSuggere && l.carnetSuggere !== o.depuis)
+      proposer(sans({ sorte: 'deplacer' as const, carnetId: o.depuis, versCarnetId: l.carnetSuggere, texte: l.citation, origine: l.origine }));
+    if (!cid) continue;
+    const nouveau = o.crees.has(cid);
+    if (nouveau && (l.genreCarnet || l.chemin || l.etatPropose)) {
+      const n = neufs.get(cid) ?? { carnetId: cid };
+      neufs.set(cid, { ...n, genre: n.genre ?? l.genreCarnet, chemin: n.chemin ?? l.chemin, etat: n.etat ?? l.etatPropose });
+    }
+    const optionId = l.option && !nouveau ? o.optionDe(cid, l.option) : undefined;
+    if (l.etiquette && etiquettes.length < ETIQUETTES_MAX) {
+      const montant = ETIQUETTES_MONTANT.has(l.etiquette) && l.prixCentimes !== undefined && l.prixSource === 'texte';
+      const devise = montant ? l.devise ?? prixTousDe(o.texte).find((x) => x.centimes === l.prixCentimes)?.devise : undefined;
+      etiquettes.push(sans({
+        carnetId: cid, sorte: l.etiquette, texte: l.option && !optionId ? l.option : undefined,
+        montantCentimes: montant ? l.prixCentimes : undefined, devise, estime: montant && l.estime ? true as const : undefined,
+        optionId, origine: l.origine
+      }));
+    }
+    if (!o.depuis && !rattache && l.citation && !nouveau) rattache = { carnetId: cid, citation: l.citation };
+    if (nouveau) {
+      // un carnet qui naît n'a ni option ni état à changer : seule une tâche se propose
+      if (l.tachePropose?.texte) proposer(sans({ sorte: 'tache' as const, carnetId: cid, texte: l.tachePropose.texte, echeance: l.tachePropose.echeance, precision: l.tachePropose.precision,
+        coutCentimes: l.tachePropose.coutEstime ? undefined : l.tachePropose.coutCentimes, devise: l.tachePropose.coutEstime ? undefined : l.tachePropose.devise, origine: l.origine }));
+      continue;
+    }
+    if (l.tachePropose) {
+      const t = l.tachePropose;
+      // Un coût « à peu près » n'est pas porté par la proposition (elle n'a pas de drapeau « estimé ») : absent plutôt que faussement ferme.
+      const cout = t.coutEstime ? {} : { coutCentimes: t.coutCentimes, devise: t.devise };
+      if (t.texte) proposer(sans({ sorte: 'tache' as const, carnetId: cid, texte: t.texte, echeance: t.echeance, precision: t.precision, optionId, ...cout, origine: l.origine }));
+      else if (optionId && t.echeance) proposer(sans({ sorte: 'dater' as const, carnetId: cid, optionId, texte: l.option, echeance: t.echeance, precision: t.precision, origine: l.origine }));
+    }
+    if (optionId && (l.etiquette === 'retenu' || l.etatPropose === 'decide')) proposer({ sorte: 'retenir', carnetId: cid, optionId, origine: l.origine });
+    if (optionId && l.etiquette === 'veille') proposer({ sorte: 'veiller', carnetId: cid, optionId, origine: l.origine });
+    if (l.etatPropose === 'resolu' && o.etatDe(cid) !== 'resolu') proposer(sans({ sorte: 'resoudre' as const, carnetId: cid, optionId, origine: l.origine }));
+  }
+  return { etiquettes, propositions, ...(rattache ? { rattache } : {}), neufs: [...neufs.values()].map((n) => sans(n)) };
 }
 
 /** Ce que l'IA a rangé, dit en une ligne (R19, G23) : « 3 lignes · 2 carnets · 1 achat » ; « pas d'achat » quand il n'y en a pas. */

@@ -483,7 +483,8 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       }
       if (coupe()) return sortieCoupee();
       if (!r.ok) return await echouer(ERREUR_PLAFOND.test(r.error ?? '') ? AVIS.pause : ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
-      const lignes = lireReponse(r.data, { texte, carnets, depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
+      /* D451 : `maintenant` donne le lundi d'une tâche « cette semaine » ; une réponse sans les champs du suivi (serveur ancien) passe comme avant */
+      const lignes = lireReponse(r.data, { texte, carnets, depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia', maintenant: deps.maintenant?.() ?? new Date() });
       if (!lignes) return await echouer(AVIS.illisible);
       if (coupe()) return sortieCoupee();
       const rangement = deps.mode === 'simule' ? 'simulee' : 'ia';

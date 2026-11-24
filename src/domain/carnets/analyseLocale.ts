@@ -182,6 +182,18 @@ export function prixTousDe(texte: string): PrixTrouve[] {
   return trouves.sort((a, b) => a.debut - b.debut);
 }
 
+/** « ≈ 400 », « environ 400 », « autour de 400 », « ca. 400 » : le montant est une estimation, jamais un prix ferme. */
+export const ESTIME = /[≈~]|(?<!\p{L})(?:environ|env\.|ca\.|à peu près|autour de)(?!\p{L})/iu;
+
+/** Le montant écrit (en unités) est-il dit « à peu près » juste avant lui ? La fenêtre est celle de ses 14 caractères de tête, pas tout le message. */
+export function estimeAutour(texte: string, valeur: number): boolean {
+  const fenetre = (debut: number, fin: number) => ESTIME.test(texte.slice(Math.max(0, debut - 14), fin));
+  const p = prixTousDe(texte).find(x => x.centimes === Math.round(valeur * 100));
+  if (p) return fenetre(p.debut, p.fin);
+  const m = new RegExp(String.raw`(?<![\d.,])${String(valeur).replace('.', '[.,]')}(?![\d])`).exec(texte);
+  return m ? fenetre(m.index, m.index + m[0].length) : false;
+}
+
 /** Remplace des plages par des espaces (mêmes positions). */
 function masquer(texte: string, plages: readonly { debut: number; fin: number }[]): string {
   let s = texte;
@@ -508,6 +520,34 @@ export function analyserTexte(texte: string): LigneLocale[] {
   const lignes = decouper(texte);
   const analysees = lignes.map(l => analyserLigne(l, lignes.length === 1));
   return analysees.map((l, i) => [l, i] as const).sort(([a, i], [b, j]) => Number(estAchat(b)) - Number(estAchat(a)) || i - j).map(([l]) => l);
+}
+
+/* ---------- D451 : le repli local des étiquettes (sans IA : hors ligne, panne, éteint) ---------- */
+
+export interface EtiquetteLocale { sorte: 'cout' | 'devis' | 'pas-trouve' | 'contact'; montantCentimes?: number; devise?: 'CHF' | 'EUR'; estime?: true }
+const MOT_DEVIS = /\b(?:devis|offre)\b/;
+const MOT_PAS_TROUVE = /\bpas\s+(?:encore\s+)?trouve(?:e|s|es)?\b/;
+const MOT_CONTACTE = /\bcontacte(?:e|s|es)?\b/;
+const ETIQUETTES_LOCALES_MAX = 4;
+
+/**
+ * Les jetons que le repli local sait poser sans IA, et rien d'autre : un montant écrit (« devis » ou « offre » dans le message : devis ; sinon coût),
+ * « pas trouvé », « contacté ». Le montant est celui du texte (jamais 0, jamais inventé) ; « ≈ » ou « environ » le dit estimé. Un lien porte son prix
+ * sur son article, pas sur le fil : aucun montant pour un message à lien. Le message reste tel quel.
+ */
+export function etiquettesLocales(texte: string): EtiquetteLocale[] {
+  const n = normaliser(texte);
+  const sortie: EtiquetteLocale[] = [];
+  if (!urlsDe(texte).length) {
+    const sorte = MOT_DEVIS.test(n) ? 'devis' : 'cout';
+    for (const p of prixTousDe(texte)) {
+      if (p.centimes <= 0) continue;
+      sortie.push({ sorte, montantCentimes: p.centimes, devise: p.devise, ...(estimeAutour(texte, p.centimes / 100) ? { estime: true as const } : {}) });
+    }
+  }
+  if (MOT_PAS_TROUVE.test(n)) sortie.push({ sorte: 'pas-trouve' });
+  if (MOT_CONTACTE.test(n)) sortie.push({ sorte: 'contact' });
+  return sortie.slice(0, ETIQUETTES_LOCALES_MAX);
 }
 
 /** Les nombres écrits dans un texte (pour vérifier qu'aucun nombre n'est inventé). Milliers recollés. */

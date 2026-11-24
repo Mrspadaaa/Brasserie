@@ -19,6 +19,28 @@ export type SorteCarnet = typeof SORTES_CARNET[number];
 export type GenreCarnet = typeof GENRES_CARNET[number];
 export type SensCarnet = typeof SENS_CARNET[number];
 
+/*
+ * D451 (port du suivi) : les champs neufs de chaque ligne. Les listes reprennent celles de `src/domain/carnets/modele.ts` (SORTES_ETIQUETTE,
+ * GenreCarnet, EtatSuivi) : ce fichier n'a aucune dépendance, le test `carnetsIASuivi` compare les deux.
+ */
+export const ETIQUETTES_CARNET = ['constat', 'piste', 'ecart', 'retenu', 'trouve', 'pas-trouve', 'contact', 'devis', 'cout', 'achat', 'cause', 'veille', 'pourquoi'] as const;
+export const GENRES_SUIVI = ['probleme', 'memo', 'recolte', 'idee', 'achat'] as const;
+export const ETATS_SUIVI_IA = ['note', 'cherche', 'decide', 'resolu'] as const;
+export const QUAND_TACHE = ['semaine', 'mois', 'un-jour'] as const;
+export const ETATS_OPTION_IA = ['piste', 'veille', 'ecartee', 'retenue'] as const;
+export type EtiquetteCarnet = typeof ETIQUETTES_CARNET[number];
+export type GenreSuivi = typeof GENRES_SUIVI[number];
+export type EtatSuiviIA = typeof ETATS_SUIVI_IA[number];
+export type QuandTache = typeof QUAND_TACHE[number];
+/** Un chemin : 1 à 2 niveaux, 30 caractères au plus chacun. */
+export const CHEMIN_NIVEAUX_MAX = 2;
+export const CHEMIN_CAR_MAX = 30;
+/** Le contexte compact d'un carnet : 3 derniers messages de 160 caractères au plus ; 12 options, 8 tâches ; 40 chemins employés. */
+export const DERNIERS_MAX = 3;
+const OPTIONS_MAX = 12;
+const TACHES_MAX = 8;
+const CHEMINS_MAX = 40;
+
 /** Au plus 12 lignes rendues par message ; au plus 30 carnets dans le contexte (les plus récents). */
 export const LIGNES_MAX = 12;
 export const CARNETS_MAX = 30;
@@ -82,6 +104,14 @@ export interface CarnetCompact {
   facons: string[];
   articles: Array<{ nom: string; valeurs?: Record<string, string> }>;
   notes: Array<{ id: string; texte: string }>;
+  /** D451, tout facultatif (un client ancien ne les envoie pas) : genre, état, domaine, chemin ; les options qui ne sont pas de simples pistes ; tâches ouvertes ; derniers messages. */
+  genre?: GenreSuivi;
+  etat?: EtatSuiviIA;
+  domaine?: typeof DOMAINES_CARNET[number];
+  chemin?: string[];
+  options?: Array<{ nom: string; etat: typeof ETATS_OPTION_IA[number] }>;
+  taches?: string[];
+  derniers?: string[];
 }
 export interface ContexteRangerCarnet {
   texte: string;
@@ -90,6 +120,8 @@ export interface ContexteRangerCarnet {
   /** Le carnet ouvert quand il a écrit ; `null` depuis la liste. */
   depuis: string | null;
   carnets: CarnetCompact[];
+  /** D451 : les chemins déjà employés (vocabulaire qui grandit). */
+  chemins?: string[][];
   /** Pages lues des liens du message, s'il y en a (prix, vendeur, valeurs). */
   pages?: Array<Pick<PageLue, 'url' | 'domaine' | 'nom' | 'prix' | 'devise' | 'vendeur' | 'valeurs'>>;
 }
@@ -117,6 +149,14 @@ export const RANGER_CARNET_SCHEMA = S({
       carnetId: str,
       carnetNeuf: str,
       domaine: { type: 'STRING', enum: [...DOMAINES_CARNET], nullable: true },
+      /* D451 : le suivi. Champs courts et énumérés d'abord, avant les champs libres (même raison que `propertyOrdering` plus haut). */
+      etiquette: { type: 'STRING', enum: [...ETIQUETTES_CARNET], nullable: true },
+      option: str,
+      genreCarnet: { type: 'STRING', enum: [...GENRES_SUIVI], nullable: true },
+      chemin: { type: 'ARRAY', items: { type: 'STRING' }, nullable: true },
+      etatPropose: { type: 'STRING', enum: [...ETATS_SUIVI_IA], nullable: true },
+      tachePropose: { ...S({ texte: str, quand: { type: 'STRING', enum: [...QUAND_TACHE] }, prix: num }, ['quand']), nullable: true },
+      citation: str,
       raisonCarnet: str,
       url: str,
       prix: num,
@@ -148,8 +188,9 @@ export const RANGER_CARNET: TaskDef = {
 collé, ou une note en vrac copiée de son téléphone. Mets en forme, trie et range, sans rien inventer.
 
 Tu reçois : « texte » (son message, tel quel), « saisie » (AAAA-MM-JJ), « depuis » (l'id du carnet ouvert, ou null depuis la
-liste), « carnets » (ses idées : id, titre, critères, façons, articles, notes avec leur id) et parfois « pages » (ce qui a été lu sur
-la page de chaque lien : nom, prix, devise, vendeur, valeurs).
+liste), « carnets » (ses idées : id, titre, critères, façons, articles, notes avec leur id ; parfois genre, état, domaine, chemin,
+« options » dont l'état n'est pas « piste », « taches » ouvertes, « derniers » messages), « chemins » (les catégories déjà
+employées) et parfois « pages » (ce qui a été lu sur la page de chaque lien : nom, prix, devise, vendeur, valeurs).
 
 Deux règles d'abord :
   • une exigence, un seuil ou une contrainte est un "critere", jamais une "note" : « doit tenir <température> », « <débit> au
@@ -190,6 +231,22 @@ ligne qui n'en sort pas va dans « depuis ».
 Rien d'inventé : « url », « prix », « quantite » et « vendeur » seulement s'ils sont écrits dans le texte ou lus dans « pages ».
 « prix » en unités (690, 1450.5), « devise » ISO (CHF, EUR). Un champ inconnu est nul, jamais 0.
 
+Suivi d'un problème (champs facultatifs : nuls quand le message ne le dit pas ; jamais inventés) :
+  • « etiquette » : ce que ce message apporte au fil du carnet : "constat" (ce qu'il observe), "cause", "piste" (une solution
+    envisagée), "ecart" (une piste écartée), "retenu" (la solution choisie), "trouve" ou "pas-trouve" (une chose cherchée),
+    "contact" (quelqu'un contacté), "devis", "cout" (un montant écrit), "achat", "veille" (à surveiller), "pourquoi" (la raison d'un
+    choix). Le montant d'un devis ou d'un coût va dans « prix », seulement s'il est écrit. « option » = la solution visée, avec
+    son nom tel qu'il figure dans les façons ou « options » du carnet.
+  • « citation » : des mots copiés tels quels du message (jamais reformulés) qui justifient le carnet choisi.
+  • Pour une idée neuve seulement : « genreCarnet » ("probleme" : ce qui ne va pas et se suit jusqu'à sa résolution ; "memo" : une
+    chose à retenir ; "recolte" ; "idee" ; "achat"), « chemin » : 1 ou 2 mots courts (30 caractères au plus chacun) qui rangent
+    l'idée sous son domaine, repris tels quels dans « chemins » quand l'un convient, « etatPropose » ("note", "cherche", "decide",
+    "resolu") : où en est le sujet d'après ses mots.
+  • « tachePropose » : un geste à faire, « texte » à l'infinitif, « quand » ("semaine", "mois" ou "un-jour" quand aucune date n'est
+    dite), « prix » seulement s'il est écrit. Sans « texte » et avec « option » : la date de cette solution.
+Une étiquette se pose et s'annule d'un toucher ; une tâche, un choix, une date, une résolution ne s'écrivent jamais seuls : tu les proposes.
+Exemple neutre (inventé) : « devis reçu de la menuiserie, 480 CHF » → etiquette "devis", prix 480, citation absente.
+
 Aides (seulement quand c'est sûr, sinon nul) :
   • « doublonDe » (sur une note) : l'id d'une note des « carnets » qui dit la même chose.
   • « commeCritere » (sur une note) : true si la note est en fait une exigence pour choisir.
@@ -209,6 +266,33 @@ const GENRES = new Set<string>(GENRES_CARNET);
 const SENS = new Set<string>(SENS_CARNET);
 const CHAINES = ['genre', 'titre', 'carnetId', 'carnetNeuf', 'raisonCarnet', 'url', 'devise', 'unite', 'vendeur', 'consequence', 'doublonDe', 'titrePropose'] as const;
 const chaine = (v: unknown, max = 300): string | undefined => typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : undefined;
+
+/** Un chemin lu : 1 à 2 niveaux (le reste est coupé) ; un niveau de plus de 30 caractères refuse tout le chemin. `undefined` : rien. */
+export function cheminLu(v: unknown): string[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const niveaux = v.filter((x): x is string => typeof x === 'string').map((x) => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, CHEMIN_NIVEAUX_MAX);
+  if (!niveaux.length || niveaux.some((x) => x.length > CHEMIN_CAR_MAX)) return undefined;
+  return niveaux;
+}
+
+/** D451 : les champs du suivi d'une ligne, ramenés à la forme du schéma (énumérations, longueurs). Le sens (citation, montant) est revérifié par le client. */
+function suiviAssaini(r: Record<string, unknown>, out: Record<string, unknown>): void {
+  if ((ETIQUETTES_CARNET as readonly string[]).includes(r.etiquette as string)) out.etiquette = r.etiquette;
+  const option = chaine(r.option, 80);
+  if (option) out.option = option;
+  if ((GENRES_SUIVI as readonly string[]).includes(r.genreCarnet as string)) out.genreCarnet = r.genreCarnet;
+  const chemin = cheminLu(r.chemin);
+  if (chemin) out.chemin = chemin;
+  if ((ETATS_SUIVI_IA as readonly string[]).includes(r.etatPropose as string)) out.etatPropose = r.etatPropose;
+  // La citation n'est ni réécrite ni resserrée : une sous-chaîne exacte du message ou rien (le client la compare telle quelle).
+  if (typeof r.citation === 'string' && r.citation.trim()) out.citation = r.citation.trim().slice(0, 300);
+  const t = r.tachePropose as Record<string, unknown> | null | undefined;
+  if (t && typeof t === 'object' && (QUAND_TACHE as readonly string[]).includes(t.quand as string)) {
+    const texte = chaine(t.texte, 120);
+    const prix = typeof t.prix === 'number' && Number.isFinite(t.prix) && t.prix > 0 ? t.prix : undefined;
+    out.tachePropose = { quand: t.quand, ...(texte ? { texte } : {}), ...(prix !== undefined ? { prix } : {}) };
+  }
+}
 
 /**
  * Garde serveur : ne laisse passer que la forme du schéma (le client revérifie le sens : ids connus, URL, prix, vendeur…).
@@ -235,6 +319,7 @@ export function assainirRangerCarnet(data: unknown): { lignes: Array<Record<stri
         out.caracteristique = { nom: chaine(k.nom, 60), sens: k.sens, ...(chaine(k.unite, 12) ? { unite: chaine(k.unite, 12) } : {}) };
       if (r.commeCritere === true) out.commeCritere = true;
       if (r.propose === true) out.propose = true;
+      suiviAssaini(r, out);
       if (Array.isArray(r.regrouperAvec)) {
         const ids = r.regrouperAvec.filter((x): x is string => typeof x === 'string' && x.trim() !== '').map((x) => x.trim()).slice(0, 12);
         if (ids.length) out.regrouperAvec = ids;
@@ -276,7 +361,24 @@ function carnetCompact(c: unknown): CarnetCompact | null {
     const nid = chaine(o?.id, 120), texte = chaine(o?.texte, COURT);
     return nid && texte ? [{ id: nid, texte }] : [];
   });
-  return { id, titre, criteres, facons, articles, notes };
+  const options = liste(r.options, OPTIONS_MAX).flatMap((x) => {
+    const o = x as Record<string, unknown> | null;
+    const nom = chaine(o?.nom, COURT);
+    return nom && (ETATS_OPTION_IA as readonly string[]).includes(o?.etat as string) ? [{ nom, etat: o!.etat as typeof ETATS_OPTION_IA[number] }] : [];
+  });
+  const taches = liste(r.taches, TACHES_MAX).flatMap((x) => { const t = chaine(x, COURT); return t ? [t] : []; });
+  const derniers = liste(r.derniers, DERNIERS_MAX).flatMap((x) => { const t = chaine(x, COURT); return t ? [t] : []; });
+  const chemin = cheminLu(r.chemin);
+  return sansVide({
+    id, titre, criteres, facons, articles, notes,
+    genre: (GENRES_SUIVI as readonly string[]).includes(r.genre as string) ? r.genre as GenreSuivi : undefined,
+    etat: (ETATS_SUIVI_IA as readonly string[]).includes(r.etat as string) ? r.etat as EtatSuiviIA : undefined,
+    domaine: (DOMAINES_CARNET as readonly string[]).includes(r.domaine as string) ? r.domaine as typeof DOMAINES_CARNET[number] : undefined,
+    chemin,
+    options: options.length ? options : undefined,
+    taches: taches.length ? taches : undefined,
+    derniers: derniers.length ? derniers : undefined
+  }) as CarnetCompact;
 }
 
 /** Le contexte envoyé au modèle : le message et ses idées, compacts ; `null` si la forme est fausse (refusé avant tout appel). */
@@ -303,5 +405,6 @@ export function contexteRangerCarnet(context: unknown): ContexteRangerCarnet | n
       valeurs: valeurs.length ? valeurs : undefined
     })];
   }) : [];
-  return sansVide({ texte: c.texte.trim(), saisie: c.saisie, depuis: typeof c.depuis === 'string' ? c.depuis : null, carnets, pages: pages.length ? pages : undefined }) as ContexteRangerCarnet;
+  const chemins = Array.isArray(c.chemins) ? c.chemins.slice(0, CHEMINS_MAX).flatMap((x) => { const ch = cheminLu(x); return ch ? [ch] : []; }) : [];
+  return sansVide({ texte: c.texte.trim(), saisie: c.saisie, depuis: typeof c.depuis === 'string' ? c.depuis : null, carnets, chemins: chemins.length ? chemins : undefined, pages: pages.length ? pages : undefined }) as ContexteRangerCarnet;
 }

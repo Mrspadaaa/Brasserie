@@ -2,10 +2,14 @@
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
 import type { SuiviLectures } from '../../domain/carnets/lecture';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
-import { appliquerEcritures, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
-import { analyserTexte, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
+import { appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
+import { analyserTexte, etiquettesLocales, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
-import type { LigneCarnet } from '../../domain/carnets/ia';
+import { pourIASuivi, suiviDesLignes, type LigneCarnet } from '../../domain/carnets/ia';
+import { plier } from '../../domain/carnets/domaines';
+import { poserCategorie } from '../../domain/carnets/arbre';
+import { changerEtat, etatDe, etiqueter, genreDe, poserGenre } from '../../domain/carnets/suivi';
+import { lireCarnet, sansIndefinis, type Etiquette } from '../../domain/carnets/modele';
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { AVIS, appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
@@ -26,6 +30,70 @@ export interface RangementV {
   suivi?: SuiviLectures; inversesLiens: Boite<Map<string, EcritureCarnet[]>>;
 }
 
+/** Les jetons que le repli local pose sous une bulle (montant écrit, « pas trouvé », « contacté ») : sans IA, c'est tout, le message reste tel quel. */
+export function etiquettesDuRepli(texte: string, carnetId: string): Etiquette[] {
+  return etiquettesLocales(texte).map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, origine: 'locale' as const }));
+}
+
+export interface ArgsSuiviIA {
+  messageId: string;
+  lignes: readonly LigneCarnet[];
+  /** Le carnet où une ligne a été rangée (celui que l'écran a désigné, ou le carnet neuf qu'il a créé pour elle). */
+  cibleDe: (l: LigneCarnet) => string | undefined;
+  depuis: string | null;
+  le: string;
+}
+
+/**
+ * D451 : après le rangement de l'IA, ce qu'elle dit du suivi : jetons sous la bulle, cartes « OK · Non » (`propositionsSuivi`, jamais appliquées),
+ * « rattaché : « … » » depuis la liste, et pour un carnet que CE message crée : son genre, sa catégorie, l'état d'un problème neuf. Ce qu'il a posé
+ * lui-même ne se laisse pas écraser (les opérations du domaine refusent). Une suite d'opérations du domaine : les écritures et leur inverse, ou `null`
+ * si rien n'est à écrire. Chaque étape lit l'état que les précédentes ont produit.
+ */
+export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: EcritureCarnet[]; inverse: EcritureCarnet[] } | null {
+  const m = lireMessages(etat).find(x => x.id === a.messageId);
+  if (!m) return null;
+  const carnets = lireCarnets(etat, { archives: true });
+  const existe = (id: string | undefined) => (id && carnets.some(c => c.id === id) ? id : undefined);
+  const crees = new Set(m.carnetMessage.effets.filter(e => e.cible === 'carnet').map(e => e.carnetId));
+  const s = suiviDesLignes(a.lignes, {
+    texte: m.carnetMessage.texte, depuis: a.depuis, crees,
+    cibleDe: l => existe(a.cibleDe(l)),
+    optionDe: (id, nom) => carnets.find(c => c.id === id)?.carnet.facons.find(f => plier(f.nom) === plier(nom))?.id,
+    etatDe: id => { const c = carnets.find(x => x.id === id); return c ? etatDe(c) : undefined; }
+  });
+  let courant: EtatDocs = etat;
+  const ecritures: EcritureCarnet[] = [], inverse: EcritureCarnet[] = [];
+  const passer = (r: Resultat) => {
+    if (!r.ok) return;
+    ecritures.push(...r.ecritures); inverse.unshift(...r.inverse);
+    courant = appliquerEcritures(courant, r.ecritures);
+  };
+  for (const n of s.neufs) {
+    if (n.genre) passer(poserGenre(courant, { carnetId: n.carnetId, genre: n.genre, origine: 'ia' }));
+    if (n.chemin?.length) passer(poserCategorie(courant, { carnetId: n.carnetId, chemin: n.chemin, origine: 'ia' }));
+    /* l'état initial d'un problème neuf ; « résolu » reste à lui (carte « Résoudre ») */
+    const poseDeFait = lireCarnet(courant.find(d => d.id === n.carnetId));
+    if (poseDeFait && genreDe(poseDeFait) === 'probleme' && n.genre === 'probleme' && n.etat && n.etat !== 'resolu') passer(changerEtat(courant, { carnetId: n.carnetId, vers: n.etat, le: a.le, origine: 'ia' }));
+  }
+  for (const e of s.etiquettes) passer(etiqueter(courant, { messageId: a.messageId, etiquette: e }));
+  if (s.propositions.length || s.rattache) {
+    const b = new Brouillon(courant);
+    const msg = b.messages().find(x => x.id === a.messageId);
+    if (msg) {
+      const cle = (p: { sorte: string; carnetId: string; optionId?: string; texte?: string; versCarnetId?: string }) => JSON.stringify([p.sorte, p.carnetId, p.optionId ?? null, p.texte ?? null, p.versCarnetId ?? null]);
+      const deja = msg.carnetMessage.propositionsSuivi ?? [];
+      const neuves = s.propositions.filter(p => !deja.some(d => cle(d) === cle(p)));
+      const rattache = !msg.carnetMessage.rattache && s.rattache && msg.carnetMessage.texte.includes(s.rattache.citation) ? s.rattache : undefined;
+      if (neuves.length || rattache) {
+        b.ecrire({ ...msg, carnetMessage: sansIndefinis({ ...msg.carnetMessage, propositionsSuivi: [...deja, ...neuves], ...(rattache ? { rattache } : {}) }) });
+        passer(b.resultat('Propositions posées'));
+      }
+    }
+  }
+  return ecritures.length ? { ecritures, inverse } : null;
+}
+
 /** Appelé dans le `useMemo` du conteneur, avec les mêmes dépendances : le rangement est recréé quand elles changent, jamais autrement. */
 export function creerRangementCarnets(x: RangementV) {
   const { p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR, setRangeEnCours, setEnTete,
@@ -33,7 +101,13 @@ export function creerRangementCarnets(x: RangementV) {
     suivi, inversesLiens } = x;
   return creerRangement<LigneLocale>({
     mode, depuis,
-    carnets: () => pourIA(lireCarnets(magasin.lire())),
+    carnets: () => {
+      /* D451 : le contexte compact porte aussi le suivi (genre, état, chemin, options, tâches, derniers messages) ; `pourIASuivi` le borne */
+      const etat = magasin.lire();
+      const cs = lireCarnets(etat);
+      const plus = pourIASuivi(cs, lireMessages(etat));
+      return pourIA(cs).map(c => ({ ...c, ...plus.get(c.id) }));
+    },
     enLigne: () => enLigne,
     analyseLocale: analyserTexte,
     appels: p.appels ?? (mode === 'simule' ? appelsSimules(comportementSimule()) : undefined),
@@ -93,7 +167,9 @@ export function creerRangementCarnets(x: RangementV) {
     ecrireLocal: (txt, lignes, { iaAttendue: iaPrevue }) => {
       const etat = magasin.lire();
       const le = maintenant().toISOString();
-      const message = { id: nouvelIdCarnet('MSG'), texte: txt, le, depuis: depuis ?? 'liste', rangement: 'locale' as const };
+      const message: MessageARanger = { id: nouvelIdCarnet('MSG'), texte: txt, le, depuis: depuis ?? 'liste', rangement: 'locale' as const };
+      /* D451 : le repli local pose ses jetons (montant écrit, « pas trouvé », « contacté ») sur le message quand il va dans UN carnet ; l'IA les complète */
+      const avecJetons = (carnetId: string): MessageARanger => { const e = etiquettesDuRepli(txt, carnetId); return e.length ? { ...message, etiquettes: e } : message; };
       let r: Resultat;
       let neuf: string | null = null;
       const force = aForcer.current; aForcer.current = null;
@@ -112,14 +188,14 @@ export function creerRangementCarnets(x: RangementV) {
         const ligne: LigneARanger = force === 'critere' ? { carnetId: ici, sorte: 'critere', texte: l0.texte, origine: 'vous' }
           : force === 'facon' ? { carnetId: ici, sorte: 'facon', nom: l0.texte, origine: 'vous' }
           : { carnetId: ici, sorte: 'note', texte: l0.texte, ...(l0.sorte === 'note' ? { genre: l0.genre } : {}) };
-        r = ranger(etat, { message, lignes: [ligne] });
+        r = ranger(etat, { message: avecJetons(ici), lignes: [ligne] });
         forcee.current = message.id;
-      } else if (ici) r = ranger(etat, { message, lignes: lignes.map(l => depuisLocale(l, { carnetId: ici })) });
+      } else if (ici) r = ranger(etat, { message: avecJetons(ici), lignes: lignes.map(l => depuisLocale(l, { carnetId: ici })) });
       if (ici) { /* rangé ci-dessus */ } else if (lignes.length <= 1) {
         neuf = nouvelIdCarnet('CARNET');
         const titre = titreNeuf ?? titreDePhrase(txt);
         /* n° 2 : la phrase entière n'est pas un critère d'elle-même (« Ce qui compte : Moulin à malt… ») ; elle est déjà le titre */
-        r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && estLaPhrase(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
+        r = creerCarnet(etat, { id: neuf, message: avecJetons(neuf), lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && estLaPhrase(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
         if (!estLienSeul(txt)) annonce = { sorte: 'cree', carnetId: neuf, titre, phrase: txt };
       } else {
         /* la découpe annoncée par le cadre (même `planVrac`, mêmes carnets) : chaque ligne là où elle a été annoncée */
@@ -189,6 +265,9 @@ export function creerRangementCarnets(x: RangementV) {
        * Les carnets neufs que l'IA nomme portent la marque des données de test du message (L05).
        */
       const neufsIA = new Map<string, Destination>();
+      /* D451 : où chaque ligne de l'IA a été rangée (carnet connu, ou carnet neuf que ce message crée) : le suivi (jetons, cartes, genre) la suit */
+      const vers = new Map<LigneCarnet, string>();
+      const noter = (l: LigneCarnet, d: Destination): Destination => { vers.set(l, d.carnetId ?? d.carnetNeuf.id); return d; };
       /* D437 : le domaine que l'IA pose sur le carnet neuf suit sa destination (posé à la création, ou sur le carnet de l'annonce) */
       const versNeufIA = (titre: string, domaine?: LigneCarnet['domaine']): Destination => {
         const t = prefixeDe(txt) && !/^\s*ZZ TEST/i.test(titre) ? `${prefixeDe(txt)}${titre}` : titre;
@@ -205,6 +284,7 @@ export function creerRangementCarnets(x: RangementV) {
         const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre, ...(domIA ? { domaine: domIA } : {}) } };
         const ailleurs = (l: LigneCarnet) => l.sorte !== 'idee' && connu(l.carnetId) && l.carnetId !== an.carnetId;
         const ici = lignes.filter(l => !ailleurs(l));
+        for (const l of ici) noter(l, dest);
         /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre ; sauf si elle
            porte une quantité ou un prix (« tuyau silicone 8 mm, 5 m » à acheter : rien n'est perdu) */
         const recopie = (l: LigneCarnet) => l.sorte !== 'article' && memeTexte(l.texte, an.phrase) && l.quantite === undefined && l.prixCentimes === undefined;
@@ -217,7 +297,7 @@ export function creerRangementCarnets(x: RangementV) {
           ...(ici.length || !lignes.some(ailleurs) ? [{ ...dest, sorte: 'idee' } as LigneARanger] : []),
           ...ici.filter(l => l.sorte !== 'idee' && !recopie(l)).map(l => depuisIA(l, dest)),
           ...promis.map(l => depuisLocale(l, dest)),
-          ...lignes.filter(ailleurs).map(l => depuisIA(l, { carnetId: l.carnetId! }))];
+          ...lignes.filter(ailleurs).map(l => depuisIA(l, noter(l, { carnetId: l.carnetId! })))];
         const titreIA = lignes.find(l => l.sorte === 'idee')?.titre ?? lignes.find(l => l.carnetNeuf)?.carnetNeuf ?? lignes.find(l => l.titrePropose)?.titrePropose;
         if (aRanger.some(l => l.sorte === 'idee') && titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };
       } else if (an?.sorte === 'vrac') {
@@ -235,7 +315,7 @@ export function creerRangementCarnets(x: RangementV) {
           const dest = connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf, l.domaine) : l.sorte === 'idee' ? null : annonceDe(l);
           const i = ligneBrute(`${l.texte} ${l.titre ?? ''}`, brutes);
           if (dest && i >= 0 && !destParBrute.has(i)) destParBrute.set(i, dest);
-          return dest ? [depuisIA(l, dest)] : [];
+          return dest ? [depuisIA(l, noter(l, dest))] : [];
         });
         /* PCN-188 (test en ligne 4) : un morceau de la note que l'IA n'a repris nulle part (« voir s'il existe avec double paroi », « 60 L »)
            reste, tel que l'analyse locale le lit, dans le carnet où va sa ligne ; aucune ligne du brasseur ne se perd. */
@@ -258,7 +338,9 @@ export function creerRangementCarnets(x: RangementV) {
            ouvre ce carnet ; elle n'est plus jetée, la phrase brute ne reste pas en note ici (D383). */
         const ideeNeuve = (l: LigneCarnet) => l.sorte === 'idee' && !an.choisi && !connu(l.carnetId) && !!(l.carnetNeuf ?? l.titre);
         aRanger = lignes.filter(l => l.sorte !== 'idee' || ideeNeuve(l))
-          .map(l => depuisIA(an.noteChoisie ? genreSousNote(l, txt) : l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!, l.domaine) : dest(l)));
+          .map(l => depuisIA(an.noteChoisie ? genreSousNote(l, txt) : l, noter(l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!, l.domaine) : dest(l))));
+        /* le suivi d'une ligne que le rangement ne reprend pas (une idée du carnet ouvert) reste dans le carnet ouvert */
+        for (const l of lignes) if (!vers.has(l)) vers.set(l, an.carnetId);
         const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
         if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
         if (!aRanger.length) {
@@ -280,7 +362,7 @@ export function creerRangementCarnets(x: RangementV) {
           if (!neufs.has(titre)) neufs.set(titre, neufs.size === 0 && creePar ? creePar : nouvelIdCarnet('CARNET'));
           return { carnetNeuf: { id: neufs.get(titre)!, titre } };
         };
-        aRanger = lignes.map(l => depuisIA(l, dest(l)));
+        aRanger = lignes.map(l => depuisIA(l, noter(l, dest(l))));
         const p2 = lignes.find(l => l.titrePropose && l.carnetId);
         if (p2) propose = { carnetId: p2.carnetId!, titre: p2.titrePropose! };
       }
@@ -308,6 +390,13 @@ export function creerRangementCarnets(x: RangementV) {
           const fu = appliquer(fusionnerNotes(vu, { carnetId: cid, garderId: l.doublonDe, fusionnerId: eff.id, le: maintenant().toISOString() }));
           if (fu) { fait.inverse.unshift(...fu.inverse); vu = appliquerEcritures(vu, fu.ecritures); }
         }
+      }
+      /* D451 : ce que l'IA dit du suivi (jetons, cartes « OK · Non », catégorie d'une idée neuve) s'écrit dans la même écriture annulable ; elle
+         n'écrit jamais d'état, de choix, de date ni de tâche seule, et MESSAGE-RESTE-DANS-SON-CARNET devient « Rattacher à … ? » */
+      const suiviIA = poserSuiviIA(vu, { messageId, lignes, depuis, le: maintenant().toISOString(), cibleDe: l => vers.get(l) ?? l.carnetId });
+      if (suiviIA) {
+        const g = appliquer({ ok: true, ecritures: suiviIA.ecritures, inverse: suiviIA.inverse, avis: 'Suivi posé' });
+        if (g) { fait.inverse.unshift(...g.inverse); vu = appliquerEcritures(vu, g.ecritures); }
       }
       /* Annuler défait le rangement réel : l'écriture de l'IA, puis l'écriture locale qu'elle a remplacée. */
       /* Seule la branche où l'IA choisit le carnet neuf lui doit son titre ; ailleurs (créer, annoncé) le titre reste celui de la règle locale. */

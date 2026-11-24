@@ -56,7 +56,21 @@ export function morceauxPerdus(txt: string, lignes: readonly LigneCarnet[]): { b
   return perdus;
 }
 
-export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string } {
+export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string };
+/**
+ * D451, MESSAGE-RESTE-DANS-SON-CARNET (C64-8) : avec `{ resterIci: true }`, la phrase tapée dans un carnet ouvert reste dans ce carnet, toujours ; le
+ * carnet existant qu'elle nomme devient `propose` (la carte « Rattacher à … ? », au toucher du brasseur), jamais une écriture. Un objet sans carnet
+ * proche n'a rien à proposer : il reste ici. Sans l'option, l'ancien calcul (le cadre « va atterrir ici » annonce l'autre carnet, qu'il peut corriger).
+ */
+export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[], options: { resterIci: true }): { carnetId: string; titre: string; propose?: { carnetId: string; titre: string } };
+export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[], options?: { resterIci?: boolean }): { carnetId: string; titre: string; propose?: { carnetId: string; titre: string } } {
+  const ici = { carnetId: ouvert.id, titre: ouvert.title };
+  const dest = calculerDestination(texte, ouvert, carnets);
+  if (!options?.resterIci || dest.carnetId === ouvert.id) return dest;
+  return dest.carnetId === CARNET_NEUF ? ici : { ...ici, propose: dest };
+}
+
+function calculerDestination(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string } {
   const ici = { carnetId: ouvert.id, titre: ouvert.title };
   const t = texte.trim();
   if (!t || plusieursLignes(t) || analyserTexte(t).some(l => l.url)) return ici;

@@ -12,7 +12,7 @@ import type { ContexteRangerCarnet, EtapeLien, PageLue } from '../../../function
 import { liensDuTexte, sansAccents } from './ia';
 import { fixtureCarnets } from './fixture';
 import { prixLus, sansLiensNiPrix, titreNeufDe, type CarnetDoc } from './modele';
-import { extraireCriteres, genreDEtiquette, genreLocal, jetons as jetonsLocaux, mettreEnForme, objetDe, parleDuBrassin, phrasesEtiquetees, quantitesDe, sansPrefixeBanc, TITRE_BRASSIN, urlsDe } from './analyseLocale';
+import { etiquettesLocales, extraireCriteres, genreDEtiquette, genreLocal, jetons as jetonsLocaux, mettreEnForme, objetDe, parleDuBrassin, phrasesEtiquetees, quantitesDe, sansPrefixeBanc, TITRE_BRASSIN, urlsDe } from './analyseLocale';
 import { aucunCarnetNEnParle, rattacher } from './rattacher';
 
 type Brut = Record<string, unknown>;
@@ -625,7 +625,8 @@ const ACHAT_D_ABORD = (a: Brut, b: Brut) => Number(b.genre === 'a-acheter') - Nu
 export function reponseSimulee(ctx: ContexteRangerCarnet): ReponseSimulee | null {
   const texte = ctx.texte ?? '';
   if (!texte.trim()) return null;
-  const r = reponseBrute(ctx, texte);
+  const brute = reponseBrute(ctx, texte);
+  const r = brute ? avecSuivi(brute, texte) : brute;
   // L4-7 (vision 2) : les titres proposés (carnet neuf, titre d'idée, titre proposé G29) gardent le préfixe « ZZ TEST — » de la phrase.
   const prefixe = PREFIXE_BANC.test(texte.trim()) ? 'ZZ TEST — ' : '';
   if (!r || !prefixe) return r;
@@ -635,6 +636,43 @@ export function reponseSimulee(ctx: ContexteRangerCarnet): ReponseSimulee | null
     ...(l.sorte === 'idee' && l.titre !== undefined ? { titre: avecPrefixe(prefixe, l.titre) } : {}),
     ...(l.titrePropose !== undefined ? { titrePropose: avecPrefixe(prefixe, l.titrePropose) } : {})
   })));
+}
+
+/** Les mots qui disent qu'un sujet neuf est un problème à suivre (et non une envie ou un achat). Générique : aucun objet nommé. */
+const MOTS_PROBLEME = /\b(?:fuit|fuite|panne|casse|bouche|bouchee|probleme|ne (?:marche|demarre|ferme|tient|chauffe) (?:plus|pas)|trop de|bruit anormal)\b/;
+const QUAND_SEMAINE = /\b(?:cette semaine|semaine prochaine|dans la semaine)\b/;
+const QUAND_MOIS = /\b(?:fin du mois|fin de mois|ce mois|mois prochain)\b/;
+
+/**
+ * D451 : ce que le modèle ajouterait sur le suivi, avec les règles les plus plates (marqué « exemple » comme tout le reste ; le garde `lireReponse` les
+ * vérifie comme pour une vraie réponse) : un jeton « coût », « devis », « pas trouvé » ou « contacté » sur la première note, un geste daté
+ * explicitement (« cette semaine », « fin du mois ») en tâche proposée, et pour une idée neuve qui dit un souci : le genre « problème », l'état « noté ».
+ * Rien quand le message ne le dit pas : la réponse reste celle d'avant.
+ */
+function avecSuivi(r: ReponseSimulee, texte: string): ReponseSimulee {
+  const t = sansAccents(texte);
+  const [jeton] = etiquettesLocales(texte);
+  let jetonPose = false, neufPose = false;
+  const lignes = r.lignes.map((l) => {
+    const sortie: Brut = { ...l };
+    const note = l.sorte === 'note';
+    if (note && jeton && !jetonPose) {
+      jetonPose = true;
+      sortie.etiquette = jeton.sorte;
+      if (jeton.montantCentimes !== undefined && l.prix === undefined) { sortie.prix = jeton.montantCentimes / 100; sortie.devise = jeton.devise; }
+    }
+    if (note && l.genre === 'a-faire') {
+      const quand = QUAND_MOIS.test(t) ? 'mois' : QUAND_SEMAINE.test(t) ? 'semaine' : null;
+      if (quand) sortie.tachePropose = { texte: l.texte, quand };
+    }
+    // le sujet neuf : l'idée, ou la ligne rangée dans un carnet neuf ; une seule ligne porte le genre
+    if (!neufPose && (l.sorte === 'idee' || (l.carnetNeuf !== undefined && l.carnetId === undefined)) && MOTS_PROBLEME.test(t)) {
+      neufPose = true;
+      sortie.genreCarnet = 'probleme'; sortie.etatPropose = 'note';
+    }
+    return sortie;
+  });
+  return { ...r, lignes };
 }
 
 function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee | null {
