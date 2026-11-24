@@ -270,7 +270,9 @@ export function valeursEnFrancais(valeurs: Record<string, Valeur>): Record<strin
   for (const t of traduites) {
     const o = t.orig;
     const { valeur: _v, unite: _u, ...autres } = o;
-    sortie[t.nom] = { ...autres, valeur: typeof o.valeur === 'number' ? o.valeur : t.valeur, ...(t.unite ? { unite: t.unite } : {}) };
+    /* un nombre reste un nombre, sauf quand la fusion en a fait une plage (C50-3 : « 0 à 8 °C » réunit deux bornes) */
+    const plage = typeof o.valeur === 'number' && t.valeur !== String(o.valeur) && / à /.test(t.valeur);
+    sortie[t.nom] = { ...autres, valeur: typeof o.valeur === 'number' && !plage ? o.valeur : t.valeur, ...(t.unite ? { unite: t.unite } : {}) };
   }
   for (const [nom, v] of entrees) if (v.origine === 'vous' || typeof v.valeur === 'boolean') sortie[nom] = v;
   /* E47-5 (rouvert en ligne) : l'essentiel (volume, matière, induction, énergie, consommation, température) d'abord, les numéros en dernier, QUEL QUE

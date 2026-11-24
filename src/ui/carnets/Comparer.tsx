@@ -451,9 +451,13 @@ export function Comparer(p: ComparerProps) {
                   const meilleurs = meilleursDe(t, c);
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
+                  /* C50-6 : l'unité se dit une fois, dans l'en-tête de la ligne (g01-8 « O₂ ppb ») ; une valeur qui la porte déjà (« 0 à 8 °C ») la dit seule, et la cellule qui ne la porte pas la garde pour le lecteur d'écran */
+                  const unite = c.unite && !c.cle.startsWith('__') ? c.unite : undefined;
+                  const porteUnite = (txt: string | null) => !!unite && !!txt && txt.includes(unite);
+                  const uniteEntete = unite && !ordre.some(l => porteUnite(texteCellule(l, c))) ? unite : undefined;
                   return (
                     <tr key={c.cle} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
-                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
+                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.cle.startsWith('__') ? (c.unite ? <span className="cn-mut"> {c.unite}</span> : null) : uniteEntete ? <span className="cn-mut"> {uniteEntete}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
                         const v = c.cle === '__prix' || c.cle.startsWith('__') ? undefined : l.cellules[c.cle];
@@ -464,7 +468,7 @@ export function Comparer(p: ComparerProps) {
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
                             {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} />
-                              : txt ? (genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>)
+                              : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">–</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
                           </td>

@@ -13,6 +13,9 @@
  */
 
 import { nomEtUnite, nombreSeul, valeurFrancaise } from './lienValeurs.js';
+import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, cleDeNom, RANG_INCONNU } from './lienFusion.js';
+
+export { estIdentifiant };
 
 export interface Valeur { nom: string; valeur: string; unite?: string }
 
@@ -197,9 +200,6 @@ export function libelleFrancais(nom: string): string {
 const memeValeur = (a: Valeur, b: Valeur) => cle(`${a.valeur} ${a.unite ?? ''}`) === cle(`${b.valeur} ${b.unite ?? ''}`);
 
 
-/** Un nom qui désigne un identifiant (référence, numéro d'article, EAN…) : sa valeur est recopiée telle quelle, jamais formatée en nombre. */
-const IDENTIFIANT_NOM = /(?:^|[\s(])(?:r[ée]f(?:[ée]rence)?s?\b|num[ée]ro|n°|no\.|nr\.?|artikel(?:nummer)?|sku|ean|gtin|upc|mpn|code[- ]barres?|code article)(?=$|[\s.)])/i;
-export const estIdentifiant = (nom: string): boolean => IDENTIFIANT_NOM.test(nom.normalize('NFC'));
 
 /** Les huiles totales d'un houblon se disent pour 100 g de cônes (« 0.8ml » sur la page, « ml/100 g » dans le métier : T28-14). */
 const HUILES = /^\s*(\d+(?:[.,]\d+)?)\s*ml(?:\s*\/\s*100\s*g)?\s*$/i;
@@ -259,7 +259,8 @@ export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[]
     const i = sortie.findIndex((v) => v.nom === POIDS_NET);
     if (i >= 0) sortie[i] = { ...sortie[i], nom: 'Poids' };
   }
-  return sansCouleurRepetee(sansDoublonDeVolume(sortie));
+  /* C50-1, C50-3, C50-6 : une seule vérité des caractéristiques (synonymes réunis, plage de température, unités écrites une fois) */
+  return fusionnerCaracteristiques(sansCouleurRepetee(sansDoublonDeVolume(sortie)));
 }
 
 /**
@@ -294,11 +295,12 @@ function sansDoublonDeVolume<T extends Valeur>(valeurs: T[]): T[] {
  * Tri stable : à rang égal, l'ordre de la page est gardé. Rien n'est retiré ni ajouté ici.
  */
 const ESSENTIEL = /^(?:mati[eè]re|mat[eé]riau|induction|compatib|classe d.effic|consommation|volume|capacit[eé]|puissance|moteur|tension|plage de temp[eé]rature|temp[eé]rature|mode de fonctionnement|[eé]nergie|fluide|r[eé]frig[eé]rant|refroidissement|type de refroidissement)/i;
-const SECONDAIRE = /(?:adaptateur|^point fort|^marque$|^fabricant$|^cat[eé]gorie$|emballage|^d[eé]lai de livraison|^stock du vendeur|mode d.exp[eé]dition|poids d.exp[eé]dition)/i;
-const rangDe = (nom: string): number => (estIdentifiant(nom) || SECONDAIRE.test(nom) ? 2 : ESSENTIEL.test(nom) && !/^volume utile (?:r[eé]frig|cong)/i.test(nom) ? 0 : 1);
+const rangDe = (nom: string): number => (estSecondaire(nom) ? 2 : ESSENTIEL.test(nom) && !/^volume utile (?:r[eé]frig|cong)/i.test(nom) ? 0 : 1);
 /** `nomDe` : le nom sur lequel le rang se juge (la lecture brute juge sur le libellé français, sans changer le nom écrit). */
 export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) => string = (v) => v.nom): T[] {
-  return valeurs.map((v, i) => ({ v, i, r: rangDe(nomDe(v)) })).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.v);
+  /* C50-4 : à rang égal, l'ordre de la décision (`rangDeDecision`) ; les noms connus se départagent par leur nom, jamais par l'ordre de la page */
+  return valeurs.map((v, i) => ({ v, i, r: rangDe(nomDe(v)), f: rangDeDecision(nomDe(v)), k: cleDeNom(nomDe(v)) }))
+    .sort((a, b) => a.r - b.r || a.f - b.f || (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0) || a.i - b.i).map((x) => x.v);
 }
 
 /**

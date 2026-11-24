@@ -1,0 +1,164 @@
+/**
+ * Une seule vérité des caractéristiques d'un lien (C50-1, C50-3, C50-4, C50-6 ; 24.11). Module pur, sans dépendance : la lecture
+ * (`lienLibelles.ts`) et l'affichage du carnet (`src/domain/carnets/caracteristiques.ts`) s'en servent, pour qu'une valeur « lue » le soit
+ * partout (fiche, Comparer, feuille Articles) et que deux pages du même genre disent leurs caractéristiques dans le même ordre.
+ *
+ * État de l'art (MISSION) : problème d'école = rapprochement de noms (entity resolution à vocabulaire fermé). Méthode standard : une table
+ * de familles de synonymes, clés normalisées (sans accents, minuscules), comparées en entier ; jamais une distance d'édition, qui
+ * confondrait « Température de stockage » et « Température ». Deux membres d'une famille ne fusionnent que s'ils disent la même chose
+ * (même valeur, même unité) : sinon rien ne se perd. Le tri de décision est un tri stable par rang fixe, puis par nom pour les noms connus
+ * (indépendant de l'ordre de la page), puis par ordre de la page pour les noms inconnus.
+ */
+
+export interface Carac { nom: string; valeur: string | number | boolean; unite?: string }
+
+/** Clé de comparaison : sans accents ni casse ni espaces doubles (« Température de » → « temperature de »). */
+export const cleDeNom = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss')
+  .replace(/[‎‏  \s]+/g, ' ').trim();
+
+/* ---------------------------------------------------------------- unités */
+
+const LITRE = new Set(['l', 'litre', 'litres', 'liter', 'liters', 'ltr']);
+/** L'écriture unique d'une unité : « l », « litres », « Liter » deviennent « L » ; « m3 » devient « m³ » ; « °c » devient « °C ». Le reste est gardé. */
+export function uniteCanonique(u: string): string {
+  const k = cleDeNom(u).replace(/\s/g, '');
+  if (LITRE.has(k)) return 'L';
+  if (k === 'm3' || k === 'm³') return 'm³';
+  if (k === '°c' || k === 'c' || k === 'degc') return '°C';
+  return u.trim();
+}
+
+const MESURE_EN_LITRES = /^\s*(\d+(?:[.,]\d+)?)\s*(l|litres?|liters?|ltr)\s*$/i;
+/**
+ * Une valeur lue en texte (« 242 l ») dit son unité à part (« 242 » + « L »), l'unité s'écrit d'une façon : jamais « 242 l L » ni « l ».
+ * À l'AFFICHAGE seulement (`valeursLuesDe`) : la lecture garde ce que la page a dit (« 242 l »), les acquis de T25-8 et T28-13 aussi.
+ */
+export function mesureNormalisee<T extends Carac>(c: T): T {
+  if (typeof c.valeur === 'string' && !c.unite) {
+    const m = MESURE_EN_LITRES.exec(c.valeur);
+    if (m) return { ...c, valeur: m[1], unite: 'L' };
+  }
+  return c.unite && uniteCanonique(c.unite) !== c.unite ? { ...c, unite: uniteCanonique(c.unite) } : c;
+}
+
+/* ---------------------------------------------------------------- familles de synonymes */
+
+interface Famille { canon: string; noms: ReadonlySet<string> }
+const famille = (canon: string, noms: string[]): Famille => ({ canon, noms: new Set(noms) });
+/** Un fait, plusieurs écritures (observées sur les chambres froides, les marmites, les fermenteurs). */
+const FAMILLES: readonly Famille[] = [
+  famille('Température', ['temperature', 'plage de temperature', 'temperature de service', 'temperature de fonctionnement']),
+  famille('Volume', ['volume', 'capacite', 'contenance', 'contenu', 'volume utile', 'volume total', 'volume utile total']),
+  famille('Tension', ['tension', 'branchement electrique', 'raccordement electrique']),
+  famille('Type de refroidissement', ['type de refroidissement', 'refroidissement', 'refrigeration']),
+  famille('Fluide frigorigène', ['fluide frigorigene', 'type de refrigerant', 'refrigerant'])
+];
+const familleDe = (nom: string): Famille | undefined => { const k = cleDeNom(nom); return FAMILLES.find(f => f.noms.has(k)); };
+
+/** Deux noms disent-ils la même caractéristique ? Même nom, ou deux écritures de la même famille (« Capacité » et « Volume »). */
+export function memeCaracteristique(a: string, b: string): boolean {
+  if (cleDeNom(a) === cleDeNom(b)) return true;
+  const f = familleDe(a);
+  return !!f && f === familleDe(b);
+}
+
+/* ---------------------------------------------------------------- plage de température */
+
+const BORNE_BASSE = /^temperature (?:de|von|ab)$/;
+const BORNE_HAUTE = /^temperature (?:a|jusqu'a|jusqu’a|bis)$/;
+const DEGRES = /^([+−-]?\d+(?:[.,]\d+)?)\s*(?:°\s?c|c)?$/i;
+const borne = (c: Carac): string | null => {
+  if (typeof c.valeur === 'boolean') return null;
+  const texte = `${c.valeur}${c.unite ? ` ${c.unite}` : ''}`.trim();
+  if (c.unite && uniteCanonique(c.unite) !== '°C') return null;
+  return DEGRES.exec(texte)?.[1] ?? null;
+};
+
+/** « Température de 0 °C » + « Température jusqu'à 8 °C » : une seule caractéristique, « 0 à 8 °C », à la place de la première. */
+function plageDeTemperature<T extends Carac>(liste: T[]): T[] {
+  const bas = liste.findIndex(c => BORNE_BASSE.test(cleDeNom(c.nom)));
+  const haut = liste.findIndex(c => BORNE_HAUTE.test(cleDeNom(c.nom)));
+  if (bas < 0 || haut < 0) return liste;
+  const a = borne(liste[bas]), b = borne(liste[haut]);
+  if (a === null || b === null) return liste;
+  const plage: T = { ...liste[bas], nom: 'Température', valeur: `${a} à ${b} °C` };
+  delete plage.unite;
+  return liste.flatMap((c, i) => (i === bas ? [plage] : i === haut ? [] : [c]));
+}
+
+/* ---------------------------------------------------------------- fusion */
+
+const memeDit = (a: Carac, b: Carac) => cleDeNom(`${a.valeur} ${a.unite ?? ''}`) === cleDeNom(`${b.valeur} ${b.unite ?? ''}`);
+
+/**
+ * Les caractéristiques d'une page, sans doublon : plage de température, synonymes qui disent la même
+ * chose réunis sous un seul nom (« Type de refroidissement » et « Refroidissement : Air pulsé »). Deux synonymes de valeurs différentes
+ * (« Tension 230 V », « Branchement électrique 400 V ») restent deux, sous leur nom : rien ne se perd. Idempotent, l'ordre est gardé.
+ */
+export function fusionnerCaracteristiques<T extends Carac>(liste: readonly T[]): T[] {
+  const sortie = plageDeTemperature([...liste]);
+  const retirer = new Set<number>();
+  const renommer = new Map<number, string>();
+  for (const f of FAMILLES) {
+    const membres = sortie.map((c, i) => ({ c, i })).filter(x => familleDe(x.c.nom) === f && !retirer.has(x.i));
+    const gardes: Array<{ c: T; i: number }> = [];
+    for (const m of membres) {
+      const meme = gardes.find(g => memeDit(g.c, m.c));
+      if (meme) { retirer.add(m.i); renommer.set(meme.i, f.canon); } else gardes.push(m);
+    }
+  }
+  return sortie.flatMap((c, i) => (retirer.has(i) ? [] : renommer.has(i) ? [{ ...c, nom: renommer.get(i)! }] : [c]));
+}
+
+/* ---------------------------------------------------------------- ordre de la décision */
+
+/** Les numéros, références et le secondaire (marque, emballage, expédition) : toujours en dernier. */
+const IDENTIFIANT_NOM = /(?:^|[\s(])(?:r[ée]f(?:[ée]rence)?s?\b|num[ée]ro|n°|no\.|nr\.?|artikel(?:nummer)?|sku|ean|gtin|upc|mpn|code[- ]barres?|code article)(?=$|[\s.)])/i;
+export const estIdentifiant = (nom: string): boolean => IDENTIFIANT_NOM.test(nom.normalize('NFC'));
+const SECONDAIRE = /(?:adaptateur|^point fort|^marque$|^fabricant$|^cat[eé]gorie$|emballage|^d[eé]lai de livraison|^stock du vendeur|mode d.exp[eé]dition|poids d.exp[eé]dition)/i;
+export const estSecondaire = (nom: string): boolean => estIdentifiant(nom) || SECONDAIRE.test(nom);
+
+/**
+ * L'ordre de la décision d'un achat (C50-4) : ce qui décide d'abord (température, volume, matière, énergie, tension, froid), puis les
+ * dimensions, la performance, la porte, la couleur. Clés normalisées. Un nom absent de la liste vient après les dimensions, dans l'ordre
+ * de la page.
+ */
+const ORDRE: readonly RegExp[] = [
+  /^(?:temperature|plage de temperature)(?! (?:ambiante|de stockage|de congelation))/,
+  /^(?:volume|capacite|contenance|contenu)(?! utile (?:refrig|cong))/,
+  /^(?:matiere|materiau)/,
+  /^(?:induction|compatib)/,
+  /^(?:puissance|consommation|classe d.effic|energie|moteur)/,
+  /^(?:tension|branchement|raccordement)/,
+  /^(?:type de refroidissement|refroidissement|refrigeration$)/,
+  /^(?:fluide|refrigerant|type de refrigerant)/,
+  /^mode de fonctionnement/,
+  /^dimensions int/,
+  /^dimensions/,
+  /^performance/,
+  /^(?:largeur de (?:la )?porte|porte)/,
+  /^couleur/
+];
+export const RANG_INCONNU = 10.5;
+const INCONNU = RANG_INCONNU, DERNIER = 90;
+/** Le rang de décision d'un nom (plus petit = plus tôt) ; le secondaire est rejeté en dernier. */
+export function rangDeDecision(nom: string): number {
+  if (estSecondaire(nom)) return DERNIER;
+  const k = cleDeNom(nom);
+  const i = ORDRE.findIndex(r => r.test(k));
+  return i < 0 ? INCONNU : i;
+}
+
+/**
+ * Trie par ordre de décision, stable. Les noms connus à rang égal se départagent par leur nom (jamais par l'ordre de la page : deux pages du
+ * même vendeur donnent le même ordre) ; les inconnus gardent l'ordre de la page. `premiers` : les noms que le critère du carnet désigne,
+ * toujours en tête (le critère, puis ce qui décide).
+ */
+export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string) => number = rangDeDecision): T[] {
+  const cle = (c: T) => (premiers.some(p => memeCaracteristique(p, c.nom)) ? -1 : rang(c.nom));
+  return liste.map((c, i) => ({ c, i, r: cle(c) })).sort((x, y) => {
+    if (x.r !== y.r) return x.r - y.r;
+    if (x.r >= 0 && x.r < INCONNU) return cleDeNom(x.c.nom) < cleDeNom(y.c.nom) ? -1 : cleDeNom(x.c.nom) > cleDeNom(y.c.nom) ? 1 : x.i - y.i;
+    return x.i - y.i;
+  }).map(x => x.c);
+}

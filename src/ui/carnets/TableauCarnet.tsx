@@ -1,6 +1,7 @@
 /** Le tableau du carnet ouvert (h05-3) et la ligne d'un lien à relire, sortis de CarnetOuvert.tsx. */
 import React, { useLayoutEffect, useRef } from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
+import { trierParDecision } from '../../../functions/src/lienFusion';
 import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../domain/carnets/comparer';
 import { dispoDe } from '../../domain/carnets/modele';
 import { convertiChf, estEtranger } from '../../domain/carnets/prixRendu';
@@ -23,7 +24,10 @@ export function colonnesCarnet(t: TableauV): ColonneVue[] {
   const prix = toutes.find(c => c.cle === '__prix');
   const mesures = toutes.filter(c => c.cle !== '__prix' && c.sens !== 'oui-non' && !(prix && c.unite && DEVISES.has(c.unite))
     && t.lignes.some(l => { const v = texteCellule(l, c); return !!v && estMesure(v); }));
-  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? mesures[0];
+  /* C50-2 : sans critère qui classe, la colonne montre ce qui DISTINGUE les articles (jamais « Tension 230 V » pour tous) ; la 1re seulement si aucune ne distingue */
+  const distingue = (c: ColonneVue) => new Set(t.lignes.filter(l => !l.ecarte).map(l => texteCellule(l, c)).filter(Boolean)).size > 1;
+  /* ... et d'abord celle qui décide le plus (volume avant dimensions : `rangDeDecision`) */
+  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? trierParDecision(mesures.filter(distingue))[0] ?? mesures[0];
   /* L-19 (prix en francs et en euros, « Prix en euros ») : l'en-tête disait « EUR » au-dessus de 3 350 CHF. Monnaies mêlées : l'en-tête
      dit CHF, chaque prix d'une autre monnaie dit la sienne (TableauCarnet). */
   const devises = new Set(t.lignes.filter(l => l.prixCentimes !== undefined).map(l => l.devise ?? 'CHF'));
@@ -96,7 +100,13 @@ function nomCourt(nom: string): string {
 
 /** C48-6 : une valeur de colonne ne se coupe jamais à ses espaces (« 1640 x 1340 / x 1850 mm ») : espaces insécables, et une mesure à plusieurs termes en dit un par ligne. */
 const insecable = (s: string) => s.replace(/ /g, ' ');
-function ValeurCarnet({ txt }: { txt: string }) {
+function ValeurCarnet({ txt, unite }: { txt: string; unite?: string }) {
+  /* C50-6 : l'en-tête dit l'unité ; la cellule la porte aussi pour le lecteur d'écran (« 242 L »), sans la redire à l'œil */
+  const dite = unite && !txt.includes(unite) ? <span className="cn-cache"> {unite}</span> : null;
+  /* l'espace en tête sépare la valeur de la cellule d'à côté pour le lecteur d'écran (« en stock 50 L ») */
+  return <>{' '}<ValeurMesure txt={txt} />{dite}</>;
+}
+function ValeurMesure({ txt }: { txt: string }) {
   const termes = txt.split(/\s*[x×]\s*/).filter(Boolean);
   if (termes.length < 2) return <span className="cn-mono cn-nowrap">{insecable(txt)}</span>;
   return <span className="cn-mono cn-nowrap" aria-label={txt}>{termes.map((s, i) => <span key={i} className="cn-terme" aria-hidden>{insecable(s)}{i < termes.length - 1 ? ' ×' : ''}</span>)}</span>;
@@ -185,7 +195,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                     const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
                     const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
                     const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
-                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite ? <small className="cn-mut cn-tab-q">{l.quantite}</small> : null}</span>;
+                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite ? <small className="cn-mut cn-tab-q">{l.quantite}</small> : null}</span>;
                   })}
                 </button>
               );

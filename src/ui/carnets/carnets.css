@@ -473,10 +473,13 @@
 .cn-classee-tx b { font-size: 17px; font-weight: 600; }
 .cn-classee-val { display: flex; flex-direction: column; align-items: flex-end; }
 .cn-classee-gros { font-size: 26px; font-weight: 700; line-height: 1.1; }
-.cn-classee-pied { display: flex; align-items: center; gap: 10px; }
+/* C50-8 : à 390 px, le libellé long + la valeur + « Veiller » + l'interrupteur de 64 px débordaient : le pied passe à la ligne, « Veiller » reste entier à droite */
+.cn-classee-pied { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.cn-classee-pied .cn-chip-valeur { max-width: 100%; }
+.cn-classee-veille { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; flex: none; }
 /* C48-2 : le libellé de la caractéristique se replie entre ses mots (jamais « Dimensions inté… ») */
 .cn-classee-carac { font-size: 14px; max-width: 34%; white-space: normal; overflow-wrap: normal; line-height: 1.2; }
-.cn-reglette { position: relative; flex: 1; height: 4px; border-radius: 999px; background: rgb(var(--cave-800)); }
+.cn-reglette { position: relative; flex: 1 1 56px; min-width: 56px; height: 4px; border-radius: 999px; background: rgb(var(--cave-800)); }
 .cn-reglette-plein { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgb(var(--area-stocks)); }
 .cn-reglette-rond { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 999px; background: rgb(var(--area-stocks)); }
 .cn-classee.cn-ecarte { background: rgb(var(--cave-900)); }
@@ -493,6 +496,10 @@
 .cn-offres .cn-offre + .cn-offre { border-top: 1px solid var(--c-line); }
 .cn-offre-moi { background: var(--c-s1); }
 .cn-offre-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+/* C50-9 : la ligne Offre passe à la ligne au lieu de tasser quatre colonnes : disponibilité entière, prix, puis les gestes groupés à droite */
+.cn-offres .cn-offre { flex-wrap: wrap; }
+.cn-offres .cn-offre-corps { flex: 1 1 170px; }
+.cn-offre-gestes { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 4px 12px; margin-left: auto; flex: none; max-width: 100%; }
 .cn-offre-corps .cn-sp { display: flex; flex-direction: column; }
 .cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--c-line2); flex: none; }
 .cn-radio-on { border: 6px solid var(--c-ink); }

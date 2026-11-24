@@ -9,6 +9,7 @@ import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
+import { fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -56,7 +57,7 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
     const car = k.caracteristique;
     if (!car || vues.has(normaliser(car.nom))) continue;
     vues.add(normaliser(car.nom));
-    sortie.push({ nom: car.nom, ...(car.unite ? { unite: car.unite } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k) });
+    sortie.push({ nom: car.nom, ...(car.unite ? { unite: uniteCanonique(car.unite) } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k) });
   }
   return sortie;
 }
@@ -68,14 +69,16 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
 export function colonnesLues(articles: readonly Article[], deja: readonly Colonne[]): Colonne[] {
   const vues = new Set(deja.map(k => normaliser(k.nom)));
   const comptes = new Map<string, { nom: string; n: number; unites: Map<string, number> }>();
-  for (const a of articles) for (const [nom, v] of Object.entries(a.valeurs)) {
+  for (const a of articles) for (const [nom, v] of Object.entries(valeursLuesDe(a))) {
     const cle = normaliser(nom);
-    if (!cle || vues.has(cle) || v === undefined || v.valeur === '') continue;
-    const c = comptes.get(cle) ?? { nom, n: 0, unites: new Map<string, number>() };
+    /* C50-1 : une caractéristique que porte déjà un critère, sous un synonyme (« Capacité » et « Volume »), n'est pas une 2e colonne */
+    if (!cle || vues.has(cle) || v === undefined || v.valeur === '' || deja.some(k => memeCaracteristique(k.nom, nom))) continue;
+    const existante = [...comptes.entries()].find(([, c]) => memeCaracteristique(c.nom, nom));
+    const [cleC, c] = existante ?? [cle, { nom, n: 0, unites: new Map<string, number>() }];
     c.n += 1;
     const u = separerUnite(nom, v).unite ?? '';
     c.unites.set(u, (c.unites.get(u) ?? 0) + 1);
-    comptes.set(cle, c);
+    comptes.set(cleC, c);
   }
   const sortie: Colonne[] = [];
   for (const c of comptes.values()) {
@@ -97,13 +100,44 @@ export function aRelireDe(c: CarnetDoc | Donnees): Article[] {
   return d.articles.filter(a => estARelire(a) && raisonEcarte(d, a) === null);
 }
 
-/** La valeur que porte l'article lui-même ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). */
+const LUES = new WeakMap<object, Record<string, Valeur>>();
+/**
+ * C50-1 : LA vérité de « lu » pour la fiche, Comparer et la feuille Articles : les valeurs de l'article telles que le brasseur les lit
+ * (synonymes réunis, plage de température, unité écrite une fois), dans l'ordre de la page (Comparer garde l'ordre de ses groupes, CRB-14). Les noms ne sont pas retraduits (`lireCarnet` l'a
+ * fait) ; ce que le brasseur a écrit (origine « vous ») n'est jamais fusionné. Idempotent, mémorisé par objet : aucun recalcul par cellule.
+ */
+export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeur> {
+  let v = LUES.get(a.valeurs);
+  if (!v) {
+    const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom }));
+    const fusion = fusionnerCaracteristiques(entrees.filter(x => x.origine !== 'vous').map(mesureNormalisee));
+    v = Object.fromEntries([...fusion, ...entrees.filter(x => x.origine === 'vous')].map(({ nom, ...x }) => [nom, x as Valeur]));
+    LUES.set(a.valeurs, v);
+  }
+  return v;
+}
+
+/** La valeur lue sous ce nom, ou sous un synonyme de la même famille (« Capacité » lue « Volume ») ; `undefined` si rien n'est lu. */
+export function trouverValeur(valeurs: Record<string, Valeur>, nom: string): { cle: string; valeur: Valeur } | undefined {
+  const cle = Object.keys(valeurs).find(k => normaliser(k) === normaliser(nom)) ?? Object.keys(valeurs).find(k => memeCaracteristique(k, nom));
+  return cle !== undefined && valeurs[cle] ? { cle, valeur: valeurs[cle] } : undefined;
+}
+
+/** Un volume passé dans l'unité de la colonne (m³, L, dl, cl, ml) ; `null` : pas un volume, unité inconnue ou nombre illisible. */
+const EN_LITRES: Record<string, number> = { L: 1, dl: 0.1, cl: 0.01, ml: 0.001, 'm³': 1000 };
+function convertirVolume(v: Valeur, uniteColonne: string, nombre: number | null): Valeur | null {
+  const de = v.unite ? EN_LITRES[uniteCanonique(v.unite)] : undefined;
+  const vers = EN_LITRES[uniteCanonique(uniteColonne)];
+  if (!de || !vers || nombre === null) return null;
+  return { ...v, valeur: Math.round(((nombre * de) / vers) * 1000) / 1000, unite: uniteCanonique(uniteColonne) };
+}
+
+/** La valeur que porte l'article lui-même ; absente si inconnue ou dans une unité qui ne se convertit pas (jamais devinée, jamais 0). */
 function valeurPropre(a: Article, col: Pick<Colonne, 'nom' | 'unite'>): Valeur | undefined {
-  const cle = Object.keys(a.valeurs).find(k => normaliser(k) === normaliser(col.nom));
-  const brute = cle ? a.valeurs[cle] : undefined;
+  const brute = trouverValeur(valeursLuesDe(a), col.nom)?.valeur;
   if (!brute) return undefined;
   const v = separerUnite(col.nom, brute); /* E47-2 : « 370 mm » écrit d'un bloc rejoint l'unité de la colonne */
-  if (col.unite && v.unite && v.unite !== col.unite) return convertirLongueur(col.nom, col.unite, v, nombreDe(v.valeur)) ?? undefined;
+  if (col.unite && v.unite && uniteCanonique(v.unite) !== uniteCanonique(col.unite)) return convertirLongueur(col.nom, col.unite, v, nombreDe(v.valeur)) ?? convertirVolume(v, col.unite, nombreDe(v.valeur)) ?? undefined;
   if (col.unite && !v.unite) return mmSansUnite(col.nom, col.unite, v, nombreDe(v.valeur)) ?? v;
   return v;
 }
@@ -695,7 +729,8 @@ export function compromisDe(t: Tableau | null): string | null {
   const memeDevise = (x: LigneTableau) => (x.devise ?? 'CHF') === (premier.devise ?? 'CHF');
   const p1 = premier.prixCentimes;
   const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
-  const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; return v ? `${nombreTexte(v.valeur)}${unite(k)}` : null; };
+  /* C50-6 : l'unité se dit une fois (« 242 L », jamais « 242 l L ») */
+  const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; if (!v) return null; const t = nombreTexte(v.valeur); return k.unite && !t.endsWith(k.unite) ? `${t}${unite(k)}` : t; };
   if (p1 !== undefined && criteres.length > 0) {
     /* tour 3, PCN-106 : jamais une proposition sous son minimum (ou au-dessus de son maximum) */
     const candidats = L.slice(1).filter(x => !x.horsSeuil && x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1

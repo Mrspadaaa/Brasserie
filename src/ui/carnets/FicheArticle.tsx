@@ -19,7 +19,8 @@ import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle
 import { dispoDe } from '../../domain/carnets/modele';
 import { detailPrix, prixTexteArticle } from './PrixPastille';
 import { normaliser } from '../../domain/carnets/analyseLocale';
-import { nombreTexte, placesDe, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
+import { nombreTexte, placesDe, tableau as calculerTableau, valeursLuesDe, type Place } from '../../domain/carnets/comparer';
+import { memeCaracteristique, trierParDecision } from '../../../functions/src/lienFusion';
 import { parsePrix } from '../../domain/finance/upgradeRing';
 import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
@@ -170,7 +171,12 @@ export function FicheArticle(p: FicheArticleProps) {
 
   /* La grille (h01-6) : les valeurs de l'article (le héros à part), puis les colonnes du carnet qu'il ne publie pas, puis le délai et
      l'origine ; 4 cases au moins quand il y a de quoi les remplir, jamais une valeur inventée. */
-  const cases: Case[] = ordreHoublon(Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
+  /* C50-1, C50-3, C50-4 : les valeurs telles que le brasseur les lit (synonymes réunis, une unité, ordre de la décision, le même d'une fiche
+     à l'autre) ; la caractéristique du critère d'abord, puis ce qui décide */
+  const criteresNoms = (k?.criteres ?? (p.critere ? [p.critere] : [])).flatMap(c => (c.caracteristique ? [c.caracteristique.nom] : []));
+  const lues = Object.entries(valeursLuesDe(a as never) as Record<string, ValeurV>);
+  const ordonnees = trierParDecision(lues.map(e => ({ nom: e[0], e })), criteresNoms).map(x => x.e);
+  const cases: Case[] = ordreHoublon(ordonnees.filter(([nom]) => !(heros && memeCaracteristique(heros.nom, nom)) && normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
     const huiles = HUILES.test(normaliser(nom)) ? huilesDites(v) : null;
     if (huiles) return { nom, texte: huiles.texte, unite: huiles.unite, rang: rangDe(nom), exemple: v.origine === 'exemple' };
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
@@ -183,7 +189,9 @@ export function FicheArticle(p: FicheArticleProps) {
   const manque: string[] = [];
   const sansVolume = matiereSansVolume(a);
   for (const col of t?.colonnes ?? []) {
-    if (normaliser(col.nom) === 'prix' || dits.has(normaliser(col.nom))) continue;
+    /* C50-1 : « non publié » n'est jamais dit d'une valeur lue, sous un synonyme, une plage ou une autre unité (la cellule du tableau fait foi) */
+    if (normaliser(col.nom) === 'prix' || dits.has(normaliser(col.nom)) || t?.lignes.find(l => l.articleId === a.id)?.cellules[col.nom] !== undefined
+      || cases.some(c => memeCaracteristique(c.nom, col.nom)) || (heros && memeCaracteristique(heros.nom, col.nom))) continue;
     /* T26-2 : « Non publié : Volume » n'a pas de sens pour un houblon, une levure, un malt : la colonne ne se dit que pour un appareil. */
     if (sansVolume && COLONNE_VOLUME.test(normaliser(col.nom))) continue;
     manque.push(col.nom);
@@ -284,21 +292,25 @@ export function FicheArticle(p: FicheArticleProps) {
                   {offres.length > 1 && <span className={`cn-radio${moi ? ' cn-radio-on' : ''}`} aria-hidden />}
                   <span className="cn-sp">
                     <b>{[o.vendeur, o.pays].filter(Boolean).join(' · ') || o.domaine}</b>
-                    {dispoDe(o) && <span className="cn-mut">{dispoDe(o)}</span>}
+                    {/* C50-9 : « en stock » ne se coupe jamais en deux (une disponibilité courte tient sur une ligne) */}
+                    {dispoDe(o) && <span className={`cn-mut${dispoDe(o)!.length <= 16 ? ' cn-nowrap' : ''}`}>{dispoDe(o)}</span>}
                   </span>
                   {p2 && <PrixMono texte={p2} />}
-                  {!p2 && moi && <span className="cn-mut">prix ?</span>}
+                  {!p2 && moi && <span className="cn-mut cn-nowrap">prix ?</span>}
                 </>
               );
               return (
                 <div key={o.id} className={`cn-offre${moi ? ' cn-offre-moi' : ''}${d2 ? ' cn-offre-avec-detail' : ''}`}>
                   {!moi && p.onOffre ? <button type="button" className="cn-offre-corps" onClick={() => p.onOffre!(o.id)}>{corps}</button> : <span className="cn-offre-corps">{corps}</span>}
+                  {/* C50-9 : les gestes de l'offre (Poser le prix, Relire, Ouvrir) vont ensemble, alignés à droite ; la ligne passe à la ligne au lieu de tasser quatre colonnes */}
+                  <span className="cn-offre-gestes">
                   {moi && p.onPrix && !poserPrix && (p2
                     ? <button type="button" className="cn-ico" aria-label="Modifier le prix" onClick={() => setPoserPrix(true)}><Pencil size={16} aria-hidden /></button>
                     : <button type="button" className="cn-lien cn-poser-prix-ouvrir" onClick={() => setPoserPrix(true)}>Poser le prix</button>)}
                   {/* C48-1 : un article lu sans prix propose de relire sa page (le geste est le sien, jamais automatique) */}
                   {moi && !p2 && !poserPrix && p.onRelire && a.url && a.lecture === 'lue' && <BoutonRelire onRelire={p.onRelire} classe="cn-relire-prix" />}
                   {o.url && <a className="cn-lien" href={o.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
+                  </span>
                   {d2 && <span className="cn-mut cn-offre-detail">{d2}</span>}
                 </div>
               );

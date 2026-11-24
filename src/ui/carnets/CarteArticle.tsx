@@ -12,7 +12,8 @@
  */
 import React from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
-import { libelleEcarte } from '../../domain/carnets/comparer';
+import { libelleEcarte, trouverValeur, valeursLuesDe } from '../../domain/carnets/comparer';
+import { memeCaracteristique } from '../../../functions/src/lienFusion';
 import { dispoDe } from '../../domain/carnets/modele';
 import { montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
 import { VignetteObjet } from './pictos';
@@ -41,7 +42,8 @@ export interface CarteArticleProps {
 export function mesureCritere(article: ArticleV, critere?: CritereV): { texte: string; unite?: string } | null {
   const c = critere?.caracteristique;
   if (!c) return null;
-  const v = article.valeurs[c.nom];
+  /* C50-1 : la valeur lue sous ce nom ou son synonyme (« Capacité » lue « Volume »), jamais « non publié » d'une valeur présente */
+  const v = trouverValeur(valeursLuesDe(article as never), c.nom)?.valeur as ValeurV | undefined;
   const t = texteSelonNom(c.nom, valeurTexte(v), v?.valeur);
   if (t === null) return null;
   return { texte: t, unite: v?.unite ?? c.unite };
@@ -70,7 +72,7 @@ function sujetDuVerdict(verdict?: string): string | null {
 /** « 40 L/min · jusqu'à 90 °C » : chaque valeur lue avec son unité ; une valeur sans unité porte son nom ; le sujet du verdict exclu. */
 export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | null): string[] {
   return Object.entries(valeurs).flatMap(([nom, v]) => {
-    if (sauf && nom === sauf) return [];
+    if (sauf && (nom === sauf || memeCaracteristique(nom, sauf))) return [];
     /* un nombre lu en texte (« 2000 ») se dit comme un nombre (« 2 000 ») */
     const n = typeof v.valeur === 'string' ? nombreValeur(v) : null;
     const t = texteSelonNom(nom, valeurTexte(n !== null ? { ...v, valeur: n } : v), v.valeur);
@@ -78,7 +80,8 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
     if (typeof v.valeur === 'boolean') return [`${nom} : ${t}`];
     /* CRN-17 : un critère oui-non lu en texte se dit par son verbe (h05-3 « capte la buée ») : « tient 80 °C », jamais « tient 80 °C oui » */
     if (!v.unite && /^oui$/i.test(t.trim())) return [nom];
-    if (!v.unite && /^non$/i.test(t.trim())) return [`pas : ${nom}`];
+    /* C50-7 : « Induction : non », jamais « pas : Induction » (qui ne se comprend pas) */
+    if (!v.unite && /^non$/i.test(t.trim())) return [`${nom} : non`];
     return [v.unite ? `${t} ${v.unite}` : `${nom} ${t}`];
   });
 }
@@ -159,7 +162,7 @@ export function CarteArticle(p: CarteArticleProps) {
     /* sans `luSurPage` ni `verdict` du geste, ils se lisent sur l'article (critique 5, n° 6 : la carte ne maigrit jamais) */
     const verdict = p.verdict ?? verdictDe(a, p.critere) ?? undefined;
     const sujet = sujetDuVerdict(verdict);
-    const valeurs = valeursLues(a.valeurs, sujet);
+    const valeurs = valeursLues(valeursLuesDe(a as never) as Record<string, ValeurV>, sujet);
     const lu = luEnBref((p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet), a.valeurs);
     const vues = valeurs.slice(0, VALEURS_VUES_MAX), reste = valeurs.length - vues.length;
     const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
@@ -210,7 +213,7 @@ export function CarteArticle(p: CarteArticleProps) {
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
-        {(() => { const autres = valeursLues(a.valeurs, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
+        {(() => { const autres = valeursLues(valeursLuesDe(a as never) as Record<string, ValeurV>, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
         <span className="cn-ligne cn-article-pied">
           {mesure && carac ? (
             <span className="cn-pastille cn-pastille-vert"><span className="cn-mono">{mesure.texte}</span>{mesure.unite ? ` ${mesure.unite}` : ''}{p.rang ? ` · ${rangTexte(p.rang)}` : ''}</span>
@@ -234,6 +237,8 @@ export interface CarteClasseeProps {
   rang?: number | null;
   /** La caractéristique qui classe (nom, unité, sens), et les valeurs connues des articles en lice pour la réglette. */
   carac?: { nom: string; unite?: string; sens: string };
+  /** C50-1 : la valeur de la cellule du tableau pour cette caractéristique (convertie, sous le nom du critère) ; sans elle, la valeur lue sous le nom ou son synonyme. */
+  valeur?: ValeurV;
   bornes?: { min: number; max: number } | null;
   faconNom?: string;
   carnetTitre?: string;
@@ -256,8 +261,11 @@ export function nombreValeur(v?: ValeurV): number | null {
 /** La grande carte de la feuille « Articles » (h03-5) : un toucher l'ouvre ; « Veiller » bascule la veille sans l'ouvrir. */
 export function CarteClassee(p: CarteClasseeProps) {
   const a = p.article;
-  const v = p.carac ? a.valeurs[p.carac.nom] : undefined;
+  const v = p.valeur ?? (p.carac ? (trouverValeur(valeursLuesDe(a as never), p.carac.nom)?.valeur as ValeurV | undefined) : undefined);
+  const unite = v?.unite ?? p.carac?.unite;
+  /* C50-3 : « 0 à 8 °C » dit déjà son unité : elle ne se redit pas (« 0 à 8 °C °C ») */
   const t = valeurTexte(v);
+  const uniteAjoutee = unite && t !== null && !t.endsWith(unite) ? unite : undefined;
   const n = nombreValeur(v);
   const pos = n !== null && p.bornes ? (p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min)) : null;
   const [rendu, setRendu] = React.useState(false);
@@ -281,14 +289,14 @@ export function CarteClassee(p: CarteClasseeProps) {
       <span className="cn-classee-prix"><PrixPastille article={a} taux={p.taux} onTaux={p.onTaux} ouvert={rendu} onBascule={() => setRendu(x => !x)} onOuvrir={p.onOuvrir} /></span>
       {rendu && <PrixRenduDetail article={a} taux={p.taux} onTaux={p.onTaux} />}
       <div className="cn-classee-pied">
-        {t !== null ? <span className="cn-chip-valeur" title={p.carac?.nom}><span className="cn-mono">{t}</span>{(v?.unite ?? p.carac?.unite) ? <span> {v?.unite ?? p.carac?.unite}</span> : null}</span>
+        {t !== null ? <span className="cn-chip-valeur" title={p.carac?.nom}><span className="cn-mono">{t}</span>{uniteAjoutee ? <span> {uniteAjoutee}</span> : null}</span>
           : p.carac ? <span className="cn-mut cn-classee-carac">{p.carac.nom} : non publié</span> : null}
         {t !== null && p.carac && <span className="cn-mut cn-classee-carac">{p.carac.nom}</span>}
         <span className="cn-reglette" aria-hidden>
           {pos !== null && <><span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} /></>}
         </span>
-        <span>Veiller</span>
-        <Bascule active={!!a.veille?.active} onChange={x => p.onVeille?.(x)} etiquette={`Veiller ${a.nom ?? ''}`.trim()} />
+        {/* C50-8 : « Veiller » et son interrupteur vont ensemble, jamais coupés : le pied passe à la ligne avant de pousser l'interrupteur hors de l'écran */}
+        <span className="cn-classee-veille"><span>Veiller</span><Bascule active={!!a.veille?.active} onChange={x => p.onVeille?.(x)} etiquette={`Veiller ${a.nom ?? ''}`.trim()} /></span>
       </div>
     </div>
   );
