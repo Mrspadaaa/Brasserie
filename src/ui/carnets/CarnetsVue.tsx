@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FinancialPlan } from '../../domain/finance/types';
 import type { CreativeItem } from '../../types';
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
-import { liensDe, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
+import { appliquerEcritures, completerLienMort, liensDe, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserTexte, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
@@ -24,6 +24,11 @@ import { useDonneesCarnets } from './useDonneesCarnets';
 import { useNavigationCarnet } from './useNavigationCarnet';
 import { retourDeMessage } from './retourCarnet';
 import { creerRangementCarnets } from './rangementCarnets';
+import { suiviLocal } from '../../domain/carnets/lecture';
+import { sansArticleEnLecture } from '../../domain/carnets/comptes';
+import { avecBon, carnetAOuvrirDepuisBarre, carteEnBarre, garderBons, lectureIci, lireBons, type Bons } from './lectureRegles';
+import type { ArticleV } from './EtatIA';
+import type { LectureUi } from './apercuCarnet';
 import { actionsCarnet } from './actionsCarnet';
 import { bandeauxCarnet } from './bandeauxCarnet';
 import { apercuCarnet } from './apercuCarnet';
@@ -37,12 +42,25 @@ export { autreObjet, CARNET_NEUF, destinationDans, genreSousNote, ligneBrute, mo
 export { AVIS_IA, depuisIA, depuisLocale, detailDe, libelleProposee, pucesDuCarnet, rangDuLien, typerVrac, versRubrique } from './lignesRegles';
 
 export function CarnetsVue(p: CarnetsVueProps) {
-  const { magasin, items, finances, achatsPasses, mode, aides, maintenant, enLigne, carnets, tous, messages, faitsPlanning, anciennes, tauxEur, poserTaux } = useDonneesCarnets(p);
+  const { magasin, items, finances, achatsPasses, mode, aides, maintenant, enLigne, carnets: carnetsBruts, tous: tousBruts, messages, faitsPlanning, anciennes, tauxEur, poserTaux } = useDonneesCarnets(p);
+  const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
+  /* T28-11 : l'article écrit en attendant la lecture d'un lien n'est ni compté ni montré avant qu'elle ait abouti */
+  const enLecture = etatR.etape === 'en-cours' && etatR.lecture ? etatR.messageId : null;
+  const carnets = useMemo(() => sansArticleEnLecture(carnetsBruts, enLecture), [carnetsBruts, enLecture]);
+  const tous = useMemo(() => sansArticleEnLecture(tousBruts, enLecture), [tousBruts, enLecture]);
   const [vue, setVue] = useState<Vue>({ sorte: 'liste' });
   const idOuvert = vue.sorte === 'liste' ? null : vue.id;
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
   const [texte, setTexte] = useState(p.texteInitial ?? '');
-  const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
+  /** D448 : la carte des étapes repliée en barre (v01) ; la carte de fin ou d'échec fermée (par son message). */
+  const [lectureRepliee, setLectureRepliee] = useState(false);
+  const [lectureFermee, setLectureFermee] = useState<string | null>(null);
+  /** T30-5 : « C'est le bon » gardé sur l'appareil, par message de lien. */
+  const [bonsLectures, setBonsLectures] = useState<Bons>(() => lireBons(typeof localStorage === 'undefined' ? undefined : localStorage));
+  /** T26-4 : l'inverse du retrait d'un lien mort, par message (« Compléter » rend l'article). */
+  const inversesLiens = useRef(new Map<string, EcritureCarnet[]>());
+  /** IA-ETAPES-VISIBLES : les lectures lancées, gardées sur l'appareil jusqu'à leur fin (réouverture). Sans IA : rien. */
+  const suivi = useMemo(() => (mode === 'eteint' ? undefined : p.suiviLectures ?? suiviLocal()), [mode, p.suiviLectures]);
   const [retour, setRetourEtat] = useState<Retour | null>(null);
   /* D417 : le carnet que l'IA range depuis la liste (aucune fiche provisoire) ; la ligne dit « L'IA range… » */
   const [rangeEnCours, setRangeEnCours] = useState<string | null>(null);
@@ -144,7 +162,64 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const depuis = ouvert && vue.sorte !== 'liste' ? ouvert.id : null;
   const rangement = useMemo(() => creerRangementCarnets({ p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR,
     setRangeEnCours, setEnTete, setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef,
-    retourRef, vueRef, neDeListe }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis]); // eslint-disable-line react-hooks/exhaustive-deps
+    retourRef, vueRef, neDeListe, suivi, inversesLiens }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis, suivi]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* IA-ETAPES-VISIBLES : à l'ouverture, une lecture lancée avant la fermeture de l'app est reprise par son jeton (une fois) */
+  const lecturesReprises = useRef(false);
+  useEffect(() => {
+    if (lecturesReprises.current || !suivi) return;
+    lecturesReprises.current = true;
+    void rangement.reprendreLectures();
+  }, [rangement, suivi]);
+  /* une lecture neuve (son jeton) se montre dépliée */
+  const jetonLecture = etatR.etape === 'en-cours' ? etatR.lecture?.jeton ?? null : null;
+  useEffect(() => { if (jetonLecture) { setLectureRepliee(false); setLectureFermee(null); } }, [jetonLecture]);
+  const carnetDuMessage = (messageId: string) => {
+    const m = lireMessages(magasin.lire()).find(x => x.id === messageId);
+    return m?.carnetMessage.effets.find(e => e.cible === 'article')?.carnetId ?? m?.carnetMessage.effets[0]?.carnetId;
+  };
+  /* T30-1 : la carte entière n'est que dans la vue du lien ; quitter cette vue la replie en barre (v01) sans toucher « Replier » */
+  const lectureVue = 'lecture' in etatR && 'messageId' in etatR ? etatR : undefined;
+  const lectureIciVue = !lectureVue?.lecture || lectureIci({ carnetDuLien: lectureVue.lecture.carnetId, carnetDuMessage: carnetDuMessage(lectureVue.messageId), idOuvert });
+  useEffect(() => { if (!lectureIciVue) setLectureRepliee(true); }, [lectureIciVue]);
+  const lectureUi: LectureUi = {
+    replie: lectureRepliee, setReplie: setLectureRepliee, ici: lectureIciVue, enBarre: carteEnBarre(lectureRepliee, lectureIciVue), fermee: lectureFermee, setFermee: setLectureFermee, exemple: mode === 'simule',
+    onEscalader: (id, t) => { setLectureFermee(null); void rangement.escalader(id, t); },
+    /* T28-3 : « Compléter » rend l'article du lien mort (marqué « introuvable », jamais « lecture… ») et ouvre sa fiche : nom, prix à saisir */
+    onCompleter: (id, saisie) => {
+      /* T30-2 : le brasseur écrit le nom (et le prix) ; l'article du lien mort est retrouvé (son message, sinon la même adresse) ou créé dans le carnet du lien */
+      const inv = inversesLiens.current.get(id);
+      const avant = magasin.lire();
+      const base = inv ? appliquerEcritures(avant, inv) : avant;
+      const lien = 'lecture' in etatR ? etatR.lecture : undefined;
+      const carnetId = lien?.carnetId ?? carnetDuMessage(id) ?? idOuvert;
+      const r = completerLienMort(base, { messageId: id, url: lien?.url ?? '', carnetId, nom: saisie.nom, ...(saisie.prixCentimes !== undefined ? { prixCentimes: saisie.prixCentimes } : {}) });
+      if (!r.ok) { p.onMessage?.((r as { raison: string }).raison); return; }
+      if (inv) { inversesLiens.current.delete(id); annuler(inv); }
+      appliquer(r);
+      setLectureFermee(id);
+      if (carnetId && carnetId !== idOuvert) setVue({ sorte: 'carnet', id: carnetId });
+    },
+    bons: id => bonsLectures[id] ?? [],
+    marquerBon: (id, cle) => setBonsLectures(b => { const n = avecBon(b, id, cle); if (n !== b) garderBons(typeof localStorage === 'undefined' ? undefined : localStorage, n); return n; }),
+    /* T28-2 : la barre repliée touchée depuis un autre carnet ouvre le carnet du lien (celui où il a été collé) */
+    deplier: id => {
+      const lien = etatR.etape !== 'repos' && etatR.etape !== 'apercu' && 'lecture' in etatR ? etatR.lecture?.carnetId : undefined;
+      const cible = carnetAOuvrirDepuisBarre(carnetDuMessage(id) ?? lien, idOuvert);
+      if (cible && tous.some(c => c.id === cible)) setVue({ sorte: 'carnet', id: cible });
+      setLectureRepliee(false);
+    },
+    onAutreLien: id => { setLectureFermee(id); setTexte(''); champRef.current?.focus(); },
+    articleDe: id => {
+      for (const c of lireCarnets(magasin.lire(), { archives: true })) {
+        const a = c.carnet.articles.find(x => x.messageId === id);
+        if (a) return { article: a as unknown as ArticleV, carnetId: c.id };
+      }
+      return null;
+    },
+    titreDe: id => { const cid = carnetDuMessage(id); return cid ? tous.find(c => c.id === cid)?.title : undefined; },
+    ouvrirArticle: (carnetId, articleId) => { setLectureFermee(null); setVue({ sorte: 'article', id: carnetId, articleId }); }
+  };
 
   /** PCN-178/182 : où déplacer une note : les autres carnets, le plus proche de la note d'abord. */
   const autresPour = (id: string, texte: string) => {
@@ -289,7 +364,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const { cadre, champ } = apercuCarnet({ ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet,
     setCorrigeCarnet, corrige, setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef,
     ajouterEnFacon, aPart, setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse,
-    setPresse });
+    setPresse, lectureUi });
   const ecran = ecranCarnet({ p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci,
     proposeesNode, rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition,
     setEdition, finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree,

@@ -424,6 +424,7 @@
 .cn-tab-cols { min-height: 32px; padding-top: 4px; padding-bottom: 4px; font-size: 14px; }
 .cn-tab-rangart { grid-column: 1 / span 3; padding-left: 4px; }
 .cn-tab-num { text-align: right; white-space: nowrap; }
+.cn-tab-q { display: block; font-size: 14px; line-height: 16px; }
 /* critique 7, n° 4 : « amb. max °C » : l'en-tête d'une température dit ce qu'elle mesure, sur deux lignes au plus */
 .cn-tab-cols .cn-tab-num { white-space: normal; line-height: 1.15; overflow-wrap: normal; }
 .cn-tab-nom > .cn-nom-entier { overflow-wrap: anywhere; }

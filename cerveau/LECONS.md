@@ -37,9 +37,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ## Préparer : briefs, données, architecture
 
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
-- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? » 22.11 : frise au seul Calendrier, « PARTOUT n'a pas été porté ».
+- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? » 22.11 : frise au seul Calendrier, « PARTOUT n'a pas été porté ». 23.11 : « lecture seule ».
 - Cause : contrôle limité à l'écran d'origine, absent des briefs suivants.
-- Faire : contrôle sur tous les écrans dès l'arrivée de l'exigence (geste : grep des équivalents), recopiée dans chaque VOIE.md et brief de test (en ligne, chaque actionneur joué sur « ZZ TEST — … », Enregistrer compris, puis retiré). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté : ses plafonds. ([[maquettes-16-11]])
+- Faire : contrôle sur tous les écrans dès l'arrivée de l'exigence (grep des équivalents), recopiée dans chaque VOIE.md et brief de test (en ligne, chaque actionneur joué sur « ZZ TEST — … », Enregistrer compris, puis retiré). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté : ses plafonds. ([[maquettes-16-11]])
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
 

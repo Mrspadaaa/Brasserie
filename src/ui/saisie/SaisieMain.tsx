@@ -4,11 +4,13 @@
 // le pied (Mon mois + le bouton qui dit le sens) reste au-dessus du clavier ; Entrée = ce bouton. Nom facultatif, gris par défaut, ou une puce des
 // derniers noms ; « Revient ? » en 4 segments ; la date par la frise partagée (ChoixDate). Écrit par les services de Finances : pièce, paiement,
 // prévision récurrente (rien de neuf dans le schéma). Le cas avec document reste la lecture (ExpenseSheet, p3c-3) : l'icône en haut à droite y passe.
+import { IconeCompte } from './IconeCompte';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Briefcase, CalendarDays, Check, ChevronDown, FileText, Home, Landmark, Link2, MoreHorizontal, Pencil, PiggyBank, Percent, Plus, Repeat, Search, ShoppingCart, Tag, Undo2, Wallet, X } from 'lucide-react';
 import { ModalShell } from '../ModalShell';
 import { ChoixDate } from '../ChoixDate';
 import { CategoryTag } from '../finance/CategoryTag';
+import { libelleEcriture } from '../../domain/finance/libelleEcriture';
 import { CATEGORY_LABELS, idFor } from '../finance/FinanceForms';
 import { StorageService } from '../../services/storage';
 import { FinanceService, validateRefundTransaction } from '../../services/financeService';
@@ -18,11 +20,11 @@ import type { FinanceTransaction } from '../../domain/finance/types';
 import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
 import { soldeLeVuPlan } from '../finance/soldePrevu';
-import type { FinancialPlan } from '../../domain/finance/types';
+import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import {
   CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
-  grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
-  type Brouillon, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
+  dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois, METHODES, propositionsTiers, tiersExiste, verbeEnregistrer,
+  type Brouillon, type DateTiree, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
 import '../finance/finance.css';
 import './saisie.css';
@@ -42,10 +44,9 @@ const TEINTE: Record<string, { fond: string; trait: string; seg: string }> = {
   renovation: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' }, impot: { fond: '#4E2A22', trait: '#F4C6B9', seg: '#D27356' },
   divers: { fond: '#2C2521', trait: '#D8CEC5', seg: '#9A8A7E' }
 };
-const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
+export const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
 const RYTHMES: Array<{ id: Rythme; nom: string }> = [{ id: 'une', nom: '1×' }, { id: 'monthly', nom: 'Mois' }, { id: 'quarterly', nom: 'Trim.' }, { id: 'yearly', nom: 'Année' }];
 const RYTHME_LONG: Record<Rythme, string> = { une: 'une fois', monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
-const METHODES: Array<{ id: Methode; nom: string }> = [{ id: 'bank', nom: 'Banque' }, { id: 'cash', nom: 'Espèces' }, { id: 'twint', nom: 'TWINT' }, { id: 'other', nom: 'Autre' }];
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 const moisDe = (iso: string) => MOIS[Number(iso.slice(5, 7)) - 1];
@@ -55,10 +56,17 @@ const TVA = [0, 0.026, 0.038, 0.081];
 function Barres() {
   return <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><rect x="0" y="2" width="4" height="16" rx="1" fill="#6E9B5B" /><rect x="5" y="7" width="4" height="11" rx="1" fill="#9856D2" /><rect x="10" y="10" width="4" height="8" rx="1" fill="#D2B356" /><rect x="15" y="14" width="4" height="4" rx="1" fill="#56C1D2" /></svg>;
 }
-function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
+/** E40-4 : le picto du genre, réemployé par Modifier (la même bande que la saisie). */
+export function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
 
 /** Une pastille de date (« 22.11 ») ; touchée, la frise partagée du Calendrier s'ouvre dessous (GESTE-DATE-PARTOUT). */
-function useDate() { const [ouverte, setOuverte] = useState<string | null>(null); return { ouverte, basculer: (k: string) => setOuverte((o) => (o === k ? null : k)), fermer: () => setOuverte(null) }; }
+function useDate() {
+  const [ouverte, setOuverte] = useState<string | null>(null);
+  /* le jour que le doigt tient dans la frise ouverte : la pastille le dit en direct (23.11), l'écriture reste au lâcher */
+  const [tiree, setTiree] = useState<DateTiree | null>(null);
+  useEffect(() => { setTiree(null); }, [ouverte]);
+  return { ouverte, tiree, tirer: (cle: string, iso: string) => setTiree({ cle, iso }), basculer: (k: string) => setOuverte((o) => (o === k ? null : k)), fermer: () => setOuverte(null) };
+}
 
 export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   onClose: () => void; onDocument: () => void; onArticles: (p: PrefillAchat) => void; onSaved?: (message: string) => void;
@@ -66,7 +74,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const titreId = useId();
   const aujourdhui = todayISO();
   const [version, setVersion] = useState(0);
-  const donnees = useMemo(() => ({ txs: StorageService.getTransactions() as FinanceTransaction[], plans: FinanceService.getPlans() }), [version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const donnees = useMemo(() => ({ txs: StorageService.getTransactions() as FinanceTransaction[], plans: FinanceService.getPlans(), paiements: FinanceService.getPayments() as FinancialPayment[] }), [version]); // eslint-disable-line react-hooks/exhaustive-deps
   const tvaInscrit = useMemo(() => Boolean(StorageService.getConfig()?.fiscal?.isTvaRegistered || FinanceService.getProfile().vatRegistered), []);
   const [id, setId] = useState(() => idFor('MAIN'));
   const [b, setB] = useState<Brouillon>(() => brouillonNeuf(aujourdhui));
@@ -74,6 +82,12 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const [brut, setBrut] = useState('');
   const [nomEdit, setNomEdit] = useState(false);
   const [plateau, setPlateau] = useState(false);
+  /* E35-5 : le choix de la contrepartie (« + autre ») : ouvert ou non, et ce qu'on y tape */
+  const [tiersEdit, setTiersEdit] = useState(false);
+  const [tiersSaisie, setTiersSaisie] = useState('');
+  /* E38-8 : la liste des comptes (Banque, Espèces, TWINT, Autre), ouverte au toucher du compte */
+  const [comptes, setComptes] = useState(false);
+  const tiersRef = useRef<HTMLInputElement | null>(null);
   const [recherche, setRecherche] = useState('');
   const [erreur, setErreur] = useState('');
   const [avis, setAvis] = useState('');
@@ -93,17 +107,21 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   /* Le focus se pose dans le geste (même champ, gardé d'un état à l'autre) ; s'il a été perdu au rendu, on le repose ici. */
   useEffect(() => { if (focusVoulu.current) { focusVoulu.current = false; if (document.activeElement !== montantRef.current) montantRef.current?.focus({ preventScroll: true }); } });
   useEffect(() => { if (nomEdit) nomRef.current?.focus(); }, [nomEdit]);
+  useEffect(() => { if (tiersEdit) tiersRef.current?.focus(); }, [tiersEdit]);
   const mesurerOmbre = () => { const c = corps.current; if (c) setOmbre(c.scrollHeight - c.scrollTop - c.clientHeight > 2); };
   useEffect(mesurerOmbre);
 
   const G = GENRES[b.genre];
+  const jourVu = dateMontree('date', b.date, dates.tiree);
   const cents = lireMontant(brut);
   const sens = choisi ? sensDe(b, donnees.txs) : null;
   const piece = b.pieceId ? donnees.txs.find((t) => t.id === b.pieceId) : undefined;
-  const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
+  const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500, false).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
   const habs = useMemo(() => habituels(donnees.txs, donnees.plans, aujourdhui), [donnees, aujourdhui]);
   const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
-  const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
+  const clients = useMemo(() => (choisi && G.qui === 'Client' ? StorageService.getClients() : []), [choisi, G.qui, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const propositionsTiersListe = useMemo(() => (tiersEdit ? propositionsTiers(b.genre, tiersSaisie, { clients, transactions: donnees.txs }) : []), [tiersEdit, b.genre, tiersSaisie, clients, donnees.txs]);
+  const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche, 30, true, donnees.paiements) : []), [plateau, recherche, donnees.txs, donnees.paiements]);
   const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
   const prevu = useMemo(() => (choisi ? achatPrevu(b, cents, donnees.plans) : null), [choisi, b, cents, donnees.plans]);
   const soldePrevu = !!prevu && refusPrevu !== prevu.id;
@@ -114,18 +132,18 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const garde = (e: React.PointerEvent) => { if (document.activeElement === montantRef.current) e.preventDefault(); };
   const ouvrirMontant = (selection = false) => { focusVoulu.current = true; const m = montantRef.current; if (m) { m.focus({ preventScroll: true }); if (selection) m.select(); } };
   const poserGenre = (g: GenreId) => {
-    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setErreur(''); setAvis(''); setNomEdit(false); setTiersEdit(false); dates.fermer();
     setB((x) => avecGenre(x, g)); setChoisi(true);
     if (g === 'rembt') { setPlateau(true); setRecherche(''); return; }
     ouvrirMontant();
   };
   const poserHabituel = (h: Habituel) => {
-    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setErreur(''); setAvis(''); setNomEdit(false); setTiersEdit(false); dates.fermer();
     setB((x) => ({ ...avecGenre(x, h.genre), nom: h.nom, vendor: h.vendor, solde: h.solde }));
     setChoisi(true); setBrut(chf(h.cents).replace(/ /g, ' '));
     ouvrirMontant(true);
   };
-  const changer = () => { setChoisi(false); setPlateau(false); setNomEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
+  const changer = () => { setComptes(false); setChoisi(false); setPlateau(false); setNomEdit(false); setTiersEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
   const choisirPiece = (pid: string) => {
     /* la pièce donne son nom (« Remboursement Malterie ») ; le montant se tape (« reste » le pose d'un toucher) : rembourser tout n'est pas le cas courant */
     const o = donnees.txs.find((t) => t.id === pid);
@@ -133,8 +151,13 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     ouvrirMontant(true);
   };
   const patch = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
+  /** Choisir ou créer la contrepartie : elle devient « Chez / Client… » ; le nom tapé du titre reste le sien (le titre prend la contrepartie seulement s'il est vide ou était la précédente). */
+  const poserTiers = (n: string) => {
+    setB((x) => ({ ...x, vendor: n, nom: !x.nom.trim() || x.nom === x.vendor ? n : x.nom }));
+    setTiersEdit(false); setTiersSaisie('');
+  };
 
-  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setRefusPrevu(null); setVersion((v) => v + 1); dates.fermer(); };
+  const neuf = (message = '') => { setComptes(false); setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setTiersEdit(false); setTiersSaisie(""); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setRefusPrevu(null); setVersion((v) => v + 1); dates.fermer(); };
 
   const enregistrer = async () => {
     if (occupe || !choisi || !cents) return;
@@ -177,7 +200,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
 
   /* le pied : Mon mois (l'effet de ce mouvement) et le bouton qui dit le sens */
   const mm = !choisi || !cents ? { c: 'vide', t: '—' } : horsResultat(b.genre) ? { c: 'vide', t: 'inchangé' } : apayer ? { c: 'prevu', t: signe(sens!, cents) } : { c: sens!, t: signe(sens!, cents) };
-  const verbe = apayer ? 'À payer' : b.genre === 'prel' ? 'Retiré' : sens === 'out' ? 'Payé' : 'Reçu';
+  const verbe = verbeEnregistrer(apayer, sens, b.genre);
   const bouton = !choisi
     ? { texte: cents ? 'Ça sort ou ça rentre ?' : 'Enregistrer', montant: '', off: true }
     : b.genre === 'rembt' && !b.pieceId ? { texte: 'De quelle pièce ?', montant: '', off: false }
@@ -186,9 +209,12 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const chip = (on: boolean, contenu: React.ReactNode, onClick: () => void, extra: Record<string, string> = {}, cls = '') =>
     <button type="button" className={`sai-chip${cls ? ` ${cls}` : ''}`} aria-pressed={on} onPointerDown={garde} onClick={onClick} {...extra}>{contenu}</button>;
   const dateChip = (cle: string, valeur: string, label: string, an = false, avant = '') =>
-    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(valeur, an)}</button>;
+    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(dateMontree(cle, valeur, dates.tiree), an)}</button>;
   const frise = (cle: string, valeur: string, label: string, onChange: (d: string) => void, o: { min?: string; max?: string; mois?: boolean } = {}) =>
-    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
+    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert saisie valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onBrouillon={(d) => dates.tirer(cle, d)} onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
+
+  const listeComptes = comptes ? <div className="sai-row" role="radiogroup" aria-label="Compte de paiement" data-saisie-comptes>
+    {METHODES.map((m) => <React.Fragment key={m.id}>{chip(b.methode === m.id, <><IconeCompte methode={m.id} />{m.nom}</>, () => { patch({ methode: m.id }); setComptes(false); }, { 'data-saisie-compte': m.id, role: 'radio', 'aria-checked': String(b.methode === m.id) })}</React.Fragment>)}</div> : null;
 
   const tuile = (g: GenreId) => {
     const t = teinteGenre(g);
@@ -220,16 +246,16 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     </div>);
   }
   /* la carte : même nœud au repos et après le genre (le champ montant garde le focus ouvert dans le geste) */
-  const badge = choisi ? (b.genre === 'prel' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={b.genre === 'rembt' ? (piece?.category ?? 'divers') : b.genre === 'achat' ? b.categorie : G.category} />) : null;
+  const badge = choisi ? (b.genre === 'prel' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={b.genre === 'rembt' ? (piece?.category ?? 'divers') : b.genre === 'achat' ? b.categorie : G.category} libelle={b.genre === 'autrei' ? 'Autre entrée' : b.genre === 'impot' ? 'Impôts' : undefined} />) : null;
   enfants.push(<div key="carte" className={`sai-card${choisi && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`} data-saisie-carte>
     <div className="sai-c1">
       {sansPiece ? <span className="sai-nm ph fixe"><span>Remboursement de…</span></span> : !choisi || nomEdit
-        ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(b.date))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
+        ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(jourVu))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
           onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)}
           // L-53 (M3-9) : Entrée valide le nom seul ; sans cela le formulaire partait (« −500,00 payé » sans toucher Payé).
           onKeyDown={(e) => { if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.keyCode === 229) return; e.preventDefault(); e.currentTarget.blur(); }} />
         : <button type="button" className={`sai-nm${b.nom ? '' : ' ph'}`} aria-label="Nom, facultatif" data-saisie-nom onPointerDown={garde} onClick={() => setNomEdit(true)}>
-          <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(b.date)))}</span><Pencil size={14} /></button>}
+          <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(jourVu)))}</span><Pencil size={14} /></button>}
       {sansPiece ? null : badge}
       {sansPiece ? null : dateChip('date', b.date, b.solde ? 'Date du paiement' : 'Date', !choisi)}
     </div>
@@ -242,15 +268,17 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       <small>CHF</small>
     </label>
     {choisi && b.genre !== 'rembt' ? <div className="sai-row">
-      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Payé'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }), { 'data-saisie-reglement': 'paye' })}
+      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Payé'}{b.reglement === 'paye' && jourVu === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }), { 'data-saisie-reglement': 'paye' })}
       {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À payer'}</>, () => patch({ reglement: 'apayer' }), { 'data-saisie-reglement': 'apayer' })}
-      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance', false, 'd’ici le ') : chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
+      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance', false, 'd’ici le ') : chip(comptes, <><IconeCompte methode={b.methode} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
     </div> : null}
+    {choisi && b.genre !== 'rembt' && b.reglement === 'paye' ? listeComptes : null}
     {choisi && b.genre === 'rembt' && b.pieceId ? <div className="sai-row">
-      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Rendu'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }))}
+      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Rendu'}{b.reglement === 'paye' && jourVu === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }))}
       {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À rendre'}</>, () => patch({ reglement: 'apayer' }))}
-      {chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }))}
+      {chip(comptes, <><IconeCompte methode={b.methode} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
     </div> : null}
+    {choisi && b.genre === 'rembt' && b.pieceId ? listeComptes : null}
     {b.reglement === 'apayer' && choisi ? frise('echeance', b.echeance, 'Échéance', (d) => patch({ echeance: d }), { min: b.date }) : null}
     {choisi && b.genre === 'rembt' && pieceInfo ? <div className="sai-lk"><Link2 size={15} /><span className="t">{pieceInfo.sens === 'out' ? 'Facture' : 'Vente'} {pieceInfo.nom} du {jjmm(pieceInfo.date)} · {chf(pieceInfo.cents)}</span>
       {chip(false, <>reste : {chf(pieceInfo.reste)}</>, () => setBrut(chf(pieceInfo.reste).replace(/ /g, ' ')))}</div> : null}
@@ -263,7 +291,17 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       <b className="n">{signe('out', prevu.amountCents)}</b></button>);
     if (G.qui && !b.solde) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
       {noms.map((n) => chip(b.vendor === n, n, () => patch(b.vendor === n ? { vendor: undefined, nom: b.nom === n ? '' : b.nom } : { vendor: n, nom: n }), { 'data-saisie-nom-puce': n }))}
-      {chip(false, <><Plus size={13} />autre</>, () => setNomEdit(true), {}, 'pl')}</div>);
+      {b.vendor && !noms.includes(b.vendor) ? chip(true, b.vendor, () => patch({ vendor: undefined, nom: b.nom === b.vendor ? '' : b.nom }), { 'data-saisie-nom-puce': b.vendor }) : null}
+      {chip(tiersEdit, <><Plus size={13} />autre</>, () => { setTiersEdit((o) => !o); setTiersSaisie(''); }, { 'data-saisie-tiers-autre': '' }, 'pl')}</div>);
+    /* E35-5 : « + autre » ouvre le choix de la contrepartie (le client de l'onglet Clients, le fournisseur déjà écrit, ou un nom neuf), jamais le titre */
+    if (G.qui && !b.solde && tiersEdit) enfants.push(<div key="tiers" className="sai-tiers" data-saisie-tiers>
+      <input ref={tiersRef} className="sai-in" aria-label={`${G.qui}, nom`} placeholder={`${G.qui} : un nom, ou « créer »`} value={tiersSaisie} enterKeyHint="done" autoComplete="off"
+        onChange={(e) => setTiersSaisie(e.target.value)}
+        onKeyDown={(e) => { if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.keyCode === 229) return; e.preventDefault(); if (tiersSaisie.trim()) poserTiers(propositionsTiersListe.find((n) => n.toLowerCase() === tiersSaisie.trim().toLowerCase()) ?? tiersSaisie.trim()); }} />
+      <div className="sai-row">{propositionsTiersListe.map((n) => chip(b.vendor === n, n, () => poserTiers(n), { 'data-saisie-tiers-prop': n }))}
+        {tiersSaisie.trim() && !tiersExiste(tiersSaisie, propositionsTiersListe) ? chip(false, <><Plus size={13} />Créer « {tiersSaisie.trim()} »</>, () => poserTiers(tiersSaisie.trim()), { 'data-saisie-tiers-creer': '' }) : null}
+        {!propositionsTiersListe.length && !tiersSaisie.trim() ? <small className="sai-vide">{G.qui === 'Client' ? 'Aucun client dans l’onglet Clients : tape un nom.' : 'Aucun nom encore écrit : tape un nom.'}</small> : null}</div>
+    </div>);
     if (b.genre === 'achat') enfants.push(<div key="ach" className="sai-blk"><small className="sai-lb"><Tag size={13} /> Catégorie</small>
       <div className="sai-row">{CATEGORIES_ACHAT.map((c) => chip(b.categorie === c.id, c.nom, () => patch({ categorie: c.id }), { 'data-saisie-categorie': c.id }))}</div>
       <button type="button" className="sai-art" onClick={() => onArticles({ amount: cents ? cents / 100 : undefined, description: b.nom.trim(), vendor: b.vendor ?? '', category: b.categorie, date: b.date })}>
@@ -290,9 +328,10 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     }
     if (b.genre !== 'rembt' && !b.solde) enfants.push(<details key="pli" className="sai-fold"><summary>{G.pli}<span>facultatif <ChevronDown size={12} /></span></summary><div className="sai-blk">
       {tvaInscrit && !horsResultat(b.genre) ? <div className="sai-row"><small>TVA</small>{TVA.map((t) => chip(b.tvaRate === t, `${String(Math.round(t * 1000) / 10).replace('.', ',')} %`, () => patch({ tvaRate: t })))}</div> : null}
-      {!horsResultat(b.genre) ? <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} /> : null}
+      <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : horsResultat(b.genre) ? 'Référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} />
       <input className="sai-in" aria-label="Note" placeholder="Note" value={b.note} onChange={(e) => patch({ note: e.target.value })} />
     </div></details>);
+    if (b.genre !== 'rembt') enfants.push(<label key="sj" className="sai-ck" data-saisie-sans-justificatif><input type="checkbox" checked={!!b.sansJustificatif} onPointerDown={garde} onChange={(e) => patch({ sansJustificatif: e.target.checked })} />Sans justificatif, c’est normal</label>);
   }
   if (erreur) enfants.push(<p key="err" className="sai-err" role="alert">{erreur}</p>);
 
@@ -319,8 +358,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
           <label className="sai-q"><Search size={16} /><input inputMode="search" aria-label="Chercher une pièce" placeholder="Chercher un nom, un montant" value={recherche} onChange={(e) => setRecherche(e.target.value)} /></label>
           <div className="sai-pcs">{pieces.length ? pieces.map((p) => {
             const t = TEINTE[p.category] ?? TEINTE.divers;
-            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} onClick={() => choisirPiece(p.id)}>
-              <span className="sai-ic" style={{ background: t.fond, color: t.trait }}>{p.sens === 'out' ? <ShoppingCart size={16} /> : <Tag size={16} />}</span>
+            /* E40-7 : le picto de la sorte de la pièce (maison, mallette, %, flèches…), jamais le chariot d'Achat pour tout ce qui sort */
+            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} data-saisie-piece-genre={p.genre} onClick={() => choisirPiece(p.id)}>
+              <span className="sai-ic" style={{ background: t.fond, color: t.trait }}><Ic g={p.genre} /></span>
               <span><b>{p.nom}</b><small>{p.sous}</small></span><span className="n">{signe(p.sens, p.cents)}</span>
               <span className={`sai-dir ${p.sens === 'out' ? 'in' : 'out'}`}>{p.sens === 'out' ? '↓ rentre' : '↑ sort'}</span></button>;
           }) : <p className="sai-vide">{recherche ? 'Aucune pièce ne correspond.' : 'Aucune pièce à rembourser.'}</p>}</div>
@@ -339,7 +379,6 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
   const rec = fait.plan?.recurrence;
   const fin = rec?.endDate;
   const origine = f.refundOfId ? txs.find((t) => t.id === f.refundOfId) : undefined;
-  const methode = METHODES.find((m) => m.id === fait.paiement?.method)?.nom ?? 'Banque';
   const ech = rec ? echeances(tx.date, rec.frequency, fin, 4) : [];
   const dejaAvoirs = origine ? txs.filter((t) => t.finance?.refundOfId === origine.id && !t.finance?.voidedAt && t.id !== tx.id).reduce((n, t) => n + (t.finance?.amountCents ?? 0), 0) : 0;
   return <>
@@ -347,10 +386,9 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
     <div className="sai-ok" role="dialog" aria-label="Enregistré" data-saisie-ok>
       <div className="sai-ok-h"><span className="sai-okc"><Check size={20} /></span><div>
         <b>{tx.description} · {signe(sens, cents)} {verbe}</b>
-        <span>{f.kind === 'withdrawal' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={tx.category} />} {origine ? `avoir sur ${origine.description} du ${jjmm(origine.date)}` : rec ? `${RYTHME_LONG[rec.frequency]}, dès le ${jjmm(tx.date)}` : `une fois, le ${jjmm(tx.date)}`}</span>
+        <span>{f.kind === 'withdrawal' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={tx.category} libelle={libelleEcriture(tx, CATEGORY_LABELS[tx.category] ?? tx.category)} />} {origine ? `avoir sur ${origine.description} du ${jjmm(origine.date)}` : rec ? `${RYTHME_LONG[rec.frequency]}, dès le ${jjmm(tx.date)}` : `une fois, le ${jjmm(tx.date)}`}</span>
       </div></div>
       {hors ? <>
-        <div className="sai-ok-r"><b><Landmark size={16} /> {methode}</b><span className={`sai-mmv ${sens}`}>{signe(sens, cents)}</span><small>{sens === 'in' ? 'argent dispo' : 'sorti de la caisse'}</small></div>
         <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className="sai-mmv vide">inchangé</span><small>{f.kind === 'contribution' ? 'un apport n’est ni une vente ni une recette' : 'un prélèvement n’est pas une charge'}</small></div>
       </> : <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className={`sai-mmv ${apayer ? 'prevu' : sens}`}>{signe(sens, cents)}</span><small>{origine ? `${CATEGORY_LABELS[origine.category] ?? origine.category} réduit de ${chf(cents)}` : apayer ? `prévu, échéance ${f.dueDate ? jjmm(f.dueDate) : ''}` : moisDe(tx.date)}</small></div>}
       {origine ? <div className="sai-ok-r"><b><Link2 size={16} /> Pièce</b><span className="sai-pv">{origine.finance?.vendor || origine.description} {jjmm(origine.date)} · {chf(origine.finance?.amountCents ?? 0)} → net {chf((origine.finance?.amountCents ?? 0) - dejaAvoirs - cents)}</span></div> : null}

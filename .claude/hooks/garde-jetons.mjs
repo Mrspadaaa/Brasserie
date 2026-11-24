@@ -4,7 +4,8 @@
 //  1. SendMessage : au plus 2 relances d'un même agent par session. La 3e est refusée : regrouper les retouches en un
 //     message, ou réécrire le contrat (VOIE.md) et le dire en commençant le message par « [CONTRAT RÉÉCRIT] ».
 //  2. Agent : une voie ne part pas sans brief complet. Le VOIE.md qu'elle cite doit dire RESULTAT.md tenu au fil,
-//     la ligne « Tests » écrite dans un fichier, et, pour une voie qui touche un écran, les captures ouvertes.
+//     la ligne « Tests » écrite dans un fichier, et, pour une voie qui touche un écran, les captures ouvertes. Depuis le 23.11 :
+//     un DOSSIER.md (≤ 2 000 mots) à côté, lu à la place des sources brutes ; les lignes « Mécanique : » et « Gestes : ».
 // Sortie 2 = l'appel est refusé, le message (stderr) revient au pilote. Toute erreur de lecture laisse passer (sortie 0).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -52,6 +53,16 @@ if (outil === 'Agent') {
   const i = voie.search(/Possède/);
   const ecran = i >= 0 && /(src[\\/]ui|src[\\/]pages|src[\\/]components|\.css)/i.test(voie.slice(i, i + 900));
   if (ecran && !/captures?/i.test(voie)) manque.push('les captures 390 et 1280, ouvertes (voie qui touche un écran)');
+  // 23.11 (« 2,3,4 à mettre en place ») : un dossier préparé à la place des sources brutes, le mécanique à Haiku, les gestes groupés.
+  const dossierVoie = path.join(path.dirname(chemin), 'DOSSIER.md');
+  if (!/DOSSIER\.md/.test(voie)) manque.push('le DOSSIER.md de la voie (extraits utiles, 2 000 mots au plus) cité à lire à la place des sources brutes');
+  else {
+    let d = null;
+    try { d = fs.readFileSync(dossierVoie, 'utf8'); } catch { manque.push(`le DOSSIER.md cité est absent (${path.relative(racine, dossierVoie)})`); }
+    if (d !== null && d.split(/\s+/).filter(Boolean).length > 2000) manque.push(`DOSSIER.md trop long (${d.split(/\s+/).filter(Boolean).length} mots > 2 000)`);
+  }
+  if (!/^\s*-?\s*Mécanique\s*:/im.test(voie)) manque.push('la ligne « Mécanique : » (ce qui part en voie executant Haiku, ou « aucune » avec la raison)');
+  if (!/^\s*-?\s*Gestes\s*:/im.test(voie)) manque.push('la ligne « Gestes : » (gestes et contrôles groupés en un script par lot, captures à demi-échelle sauf jugement de détail)');
   if (manque.length) refuser(`brief incomplet (${path.relative(racine, chemin)}), il manque : ${manque.join(' ; ')}. Complète le VOIE.md avant de lancer : chaque oubli coûte une relance.`);
   process.exit(0);
 }

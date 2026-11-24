@@ -58,7 +58,7 @@ export const LIEN_IA_CONSIGNE = [
   '- taxe : « ht » si la page dit hors taxe / exkl. MwSt / zzgl. MwSt pour ce prix, « ttc » si elle dit taxe comprise / inkl. MwSt ; sinon null.',
   '- prixDes : true si le prix est « dès / ab / from » (plusieurs tailles ou variantes).',
   '- portSuisse : frais de livraison vers la Suisse seulement s\'ils sont écrits ; portGratuit : true si la livraison gratuite est écrite.',
-  '- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), nom court et valeur avec son unité, recopiés du texte.',
+  '- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), la valeur avec son unité, recopiée du texte ; le nom court, écrit en français (« Largeur », « Volume », « Puissance ») même si la page est en allemand ou en anglais. Une longueur de câble est « Longueur du câble », jamais « Longueur ».',
   'Un champ absent du texte est null (ou une liste vide). N\'invente rien, ne convertis rien, ne calcule rien.'
 ].join('\n');
 
@@ -68,6 +68,18 @@ export type AppelIA = (modele: 'lite' | 'fort', consigne: string, texte: string)
 
 const norm = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[\s  ]+/g, ' ').trim();
 const nombres = (t: string) => (norm(t).replace(/(\d)['’.](?=\d{3}\b)/g, '$1').match(/\d+(?:[.,]\d+)?/g) ?? []).map((x) => x.replace(',', '.').replace(/\.0+$/, ''));
+
+/**
+ * T28-8 : une dimension (largeur, hauteur, profondeur, longueur…) dont le nombre n'est écrit nulle part avec une unité de longueur, ni dans une
+ * suite « 180 × 160 × 60 », n'est pas lue : « Largeur 61 cm · Longueur 162 cm · Hauteur 6 cm » sur une page qui dit « 180 × 160 × 60 cm »
+ * passait la garde parce que 61, 162 et 6 figuraient ailleurs dans le texte (un numéro de filiale, un nombre de clients).
+ */
+const DIMENSION = /^(?:largeur|hauteur|profondeur|longueur|diametre|epaisseur|breite|hohe|tiefe|lange|durchmesser|width|height|depth|length|diameter)\b/;
+function nombreAvecUnite(texte: string, n: string): boolean {
+  // « 2010 » s'écrit aussi « 2.010 », « 2 010 » ou « 2'010 » : le séparateur de milliers est facultatif
+  const e = n.includes('.') ? n.replace(/\./g, '[.,]') : n.replace(/\B(?=(\d{3})+(?!\d))/g, '[.\' \\u00a0]?');
+  return new RegExp(`(?<![\\d.,])${e}(?:[.,]0+)?\\s*(?:cm|mm|dm|m)(?![a-z])|(?<![\\d.,])${e}\\s*[x×]\\s*\\d|\\d\\s*[x×]\\s*${e}(?![\\d.,])`).test(texte);
+}
 
 /** La garde : ne garde que ce qui est écrit dans le texte envoyé. Rend aussi ce qui a été retiré (pour le statut `douteux`). */
 export interface Gardee { nom?: string; prix?: number; devise?: string; taxe?: 'ht' | 'ttc'; prixDes?: true; portSuisse?: number; portGratuit?: true; caracteristiques: Array<{ nom: string; valeur: string }> }
@@ -93,7 +105,7 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
     /* T25-7 : « non publié », « k. A. » ou un argument de vente n'est pas une valeur : la ligne n'existe pas (l'inconnu n'est jamais écrit) */
     if (bruitDeBoutique(c.nom, c.valeur)) continue;
     const ns = nombres(c.valeur);
-    const ecrit = ns.length ? ns.every((n) => nb.has(n)) : nt.includes(norm(c.valeur));
+    const ecrit = (ns.length ? ns.every((n) => nb.has(n)) : nt.includes(norm(c.valeur))) && (!DIMENSION.test(norm(c.nom)) || ns.every((n) => nombreAvecUnite(nt, n)));
     if (ecrit) g.caracteristiques.push({ nom: couper(c.nom, 60), valeur: couper(c.valeur, 100) }); else retire.push(`caract ${c.nom}`);
   }
   return { gardee: g, retire };
@@ -119,21 +131,24 @@ export function caracteristiquesTechniques(p: PageLue): number {
  * Complète la page lue par l'IA : Flash-Lite d'abord ; escalade vers le modèle fort (Hydrogen) seulement si le prix manque encore ou
  * si Flash-Lite contredit le prix publié. Les données structurées restent prioritaires ; chaque ajout est gardé contre le texte.
  */
-export async function completerParIA(p: PageLue, html: string, appel: AppelIA): Promise<PageLue> {
+export async function completerParIA(p: PageLue, html: string, appel: AppelIA, options: { escalade?: boolean } = {}): Promise<PageLue> {
   const texte = markdownProduit(html, p.nom);
   if (texte.length < 200) return p;
   const etapes = [...(p.etapes ?? [])];
   let panne: string | undefined;
   const demander = (m: 'lite' | 'fort') => appel(m, LIEN_IA_CONSIGNE, texte).catch((e: unknown) => { panne = String((e as { message?: unknown })?.message ?? e).slice(0, 120); return null; });
-  let r = await demander('lite');
+  /* `escalade` (lecture refaite à la demande du brasseur) : directement le modèle fort, sans Flash-Lite ; une panne ne se rejoue pas. */
+  const direct = options.escalade === true;
+  let r = await demander(direct ? 'fort' : 'lite');
   let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: [] as string[] };
-  const modeles: string[] = ['lite'];
+  /* T30-11 : ce que l'étape dit est pour le brasseur : jamais « lite », « fort » ni un nom de modèle */
+  const modeles: string[] = [direct ? 'IA plus forte' : ''];
   const contredit = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
   /* Escalade (Hydrogen) seulement si un champ qui compte reste absent ou douteux après Flash-Lite : le prix manque encore, ou il est
      retiré par la garde, ou il contredit le prix publié. Une panne (budget, délai) ne s'escalade pas : elle se répéterait et coûterait. */
-  if (!panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
+  if (!direct && !panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
     const fort = await demander('fort');
-    modeles.push('fort');
+    modeles.push('relu par une IA plus forte');
     if (fort) { const g2 = garder(fort, texte); if (g2.gardee.prix !== undefined || !r) { r = fort; gardee = { ...g2.gardee, caracteristiques: g2.gardee.caracteristiques.length ? g2.gardee.caracteristiques : gardee.caracteristiques }; retire = g2.retire; } }
   }
   // Un nom que l'IA écrit autrement ne gêne pas quand la page a déjà le sien (il ne remplace jamais) : ce n'est pas un doute.
@@ -158,7 +173,7 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA): 
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
   if (nouvelles.length) { out.valeurs = [...(out.valeurs ?? []), ...nouvelles].slice(0, 24); ajouts.push(`${nouvelles.length} caract.`); }
   const contreditFinal = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
-  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
+  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {
     const i = etapes.findIndex((e) => e.nom === 'controle');
     const d = `prix : l'IA lit ${gardee.prix}, les données ${p.prix}`;

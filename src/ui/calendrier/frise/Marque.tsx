@@ -1,5 +1,5 @@
 import React from 'react';
-import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, PartyPopper, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, MoreHorizontal, PartyPopper, PiggyBank, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
@@ -136,9 +136,12 @@ export const ICONE_RANGEE: Record<Rangee, typeof Beer> = {
  * titre ne dit rien du format garde la flèche générique : jamais un format deviné. La consigne (ou une vente d'un plan récurrent) prend les flèches
  * en boucle, comme la maquette.
  */
-export function iconeChose(c: Pick<ChoseCalendrier, 'rangee' | 'titre' | 'source' | 'brassinLie'>): typeof Beer {
+export function iconeChose(c: Pick<ChoseCalendrier, 'rangee' | 'titre' | 'source' | 'brassinLie'> & { horsVentes?: ChoseCalendrier['horsVentes'] }): typeof Beer {
   if (c.brassinLie) return ShoppingCart;
   if (c.rangee !== 'ventes') return ICONE_RANGEE[c.rangee];
+  /* C38-3 (tour 38) : un apport garde sa tirelire de la saisie, une autre entrée ses trois points : ce ne sont pas des ventes (flèche montante) */
+  if (c.horsVentes === 'apport') return PiggyBank;
+  if (c.horsVentes === 'autre-entree') return MoreHorizontal;
   if (/\bf[uû]ts?\b/i.test(c.titre)) return Barrel;
   if (/\b(bouteilles?|cartons?|caisses?|packs?)\b/i.test(c.titre)) return BottleWine;
   if (/\bconsignes?\b/i.test(c.titre) || (c.source.genre === 'plan' && c.source.origine === 'recurring')) return Repeat;
@@ -156,7 +159,8 @@ export const CLASSE_TEINTE: Record<Rangee, string> = {
  */
 export function nomAccessible(chose: ChoseCalendrier): string {
   const jour = chose.debut ? `${jourLisible(chose.debut)}, ${etiquetteS(chose.debut)}` : 'sans date';
-  const etat = chose.proposition === 'echeance' ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
+  /* E40-1 : une échéance qui revient est dite selon son sens, jamais « à payer » pour un apport ou une rentrée (un prélèvement privé : « prévu ») */
+  const etat = chose.proposition === 'echeance' ? (chose.prive ? ', prévu' : chose.horsVentes || (chose.centimes ?? 0) > 0 ? ', à recevoir' : ', à payer') : chose.prevue === 'recevoir' ? ', à recevoir' : chose.prevue ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
   return `${chose.titre}${etat}, ${jour}`;
 }
 
@@ -276,16 +280,17 @@ export const Marque: React.FC<MarqueProps> = props => {
     refuseGlisse: () => (glissable && chose.deplacable !== true ? chose.deplacable.raison : glissable ? null : 'marque'),
     onRefus: raison => { if (glissable) props.onRefus?.(chose, raison); },
     onToucher: () => cible.current && props.onToucher(chose, cible.current),
+    /* T29-3 (23.11, test en ligne : « tenir ou glisser une barre ne change jamais l'échelle ») : tenue, une marque n'ouvre plus les 6 semaines
+       (E27, D-199) : la fenêtre changeait sous le doigt et le glisser se posait une semaine plus tôt. Elle ouvre son menu, comme une barre. */
     onAppuiLong: () => {
       if (avecMenu && cible.current && props.onAppuiLong) props.onAppuiLong(chose, cible.current);
-      else props.onSixSemaines?.(chose);
     },
     onGlisse: k => props.onGlisse?.(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse?.(chose, k, annule)
   });
   /* T2-2 : le nom posé à côté de la vignette s'ouvre au toucher comme elle */
   const toucheNom = useToucherNom(() => { if (cible.current) props.onToucher(chose, cible.current); });
-  const proposee = !!(chose.proposition || chose.probable);
+  const proposee = !!(chose.proposition || chose.probable || chose.prevue);
   /* PC-151 : une facture dont l'échéance est passée (Hopfen) porte sa marque de retard sur la frise, comme « En retard » de la Liste */
   const enRetard = champ(chose, 'enRetard') === true;
   const montant = montantDe(chose);

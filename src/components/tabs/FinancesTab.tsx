@@ -18,6 +18,7 @@ import type { OuvertureInventaire } from '../../ui/finance/annuel/ctx';
 import { BrewBudgetDialog } from '../../ui/finance/BrewBudgetDialog';
 import { TransactionDetails } from '../../ui/finance/TransactionDetails';
 import { MovementSheet } from '../../ui/finance/MovementSheet';
+import { nomDeLaChose } from '../../ui/finance/nomDeLaChose';
 import { ArchiveManagerSheet } from '../../ui/finance/ArchiveManagerSheet';
 import { TransactionJournal, createJournalState, type JournalRequest } from '../../ui/finance/TransactionJournal';
 import { TransactionRow } from '../../ui/finance/TransactionRow';
@@ -72,7 +73,10 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
   const handledOpenRequest=useRef<string>('');
   /* CT4-A-12 : une fiche ouverte DEPUIS le calendrier (un jalon de Papiers touché) y ramène une fois fermée ; ouverte ici, elle reste ici. */
   const retourVers=useRef<'calendrier'|null>(null);
-  const fermerFiche=()=>{const vers=retourVers.current;retourVers.current=null;setSelected(null);if(vers)onRetour?.(vers);};
+  /* E35-12 : la recherche posée par l'ouverture d'une pièce (son NOM, jamais son identifiant) se lève quand on quitte la fiche, si on ne l'a pas changée */
+  const rechercheOuverture=useRef<{cle:string;query:string}|null>(null);
+  const leverRecherche=()=>{const r=rechercheOuverture.current;rechercheOuverture.current=null;if(r)setJournalState(s=>s.requestKey===r.cle&&s.query===r.query?{...s,query:''}:s);};
+  const fermerFiche=()=>{const vers=retourVers.current;retourVers.current=null;leverRecherche();setSelected(null);if(vers)onRetour?.(vers);};
   const [view,setView]=useState<FinanceView>(initialView);
   const projetsRef=useRef(StorageService.getUiState<string>('finances_workspace','overview')==='projects'),[cible,setCible]=useState<CiblePrevoir|null>(null);
   /* m3r-a : une seule période. Sans réglage venu de l'app (aperçus, tests), l'écran garde la dernière choisie ici, rien de plus. */
@@ -127,7 +131,8 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
     retourVers.current=openTransactionRequest.retour??null;
     setSelected(transaction);
     setView('journal');StorageService.setUiState('finances_workspace','journal');
-    setJournalRequest({key,scope:'all',query:transaction.id,allDates:true});
+    const query=nomDeLaChose(transaction);rechercheOuverture.current={cle:key,query};
+    setJournalRequest({key,scope:'all',query,allDates:true});
   },[openTransactionRequest,transactions]);
   const ongletTraite=useRef(0);
   useEffect(()=>{
@@ -170,7 +175,7 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
     {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} remplace={remplace??undefined} seule onClose={()=>{setPaying(null);setRemplace(null);}}/>}
     {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
     {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}
-    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={fermerFiche} onEdit={()=>{retourVers.current=null;setEditing(selected);setSelected(null);}} onPay={()=>{retourVers.current=null;setRemplace(null);setPaying(selected);setSelected(null);}} onRefund={()=>{retourVers.current=null;setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{retourVers.current=null;setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{retourVers.current=null;setSelected(null);onOpenRecipe(id);})} onOpenTransaction={t=>setSelected(t)}/>}
+    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={fermerFiche} onEdit={()=>{retourVers.current=null;leverRecherche();setEditing(selected);setSelected(null);}} onPay={()=>{retourVers.current=null;leverRecherche();setRemplace(null);setPaying(selected);setSelected(null);}} onRefund={()=>{retourVers.current=null;leverRecherche();setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{retourVers.current=null;setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{retourVers.current=null;setSelected(null);onOpenRecipe(id);})} onOpenTransaction={t=>setSelected(t)}/>}
     {budgetPicker&&<Sheet open title="Quel brassin veux-tu estimer ?" onClose={()=>setBudgetPicker(false)} className="finance-sheet"><ChoixBrassin batches={batches} recipes={recipes} onBatch={b=>{setBudget({batch:b});setBudgetPicker(false);}} onRecipe={r=>{setBudget({recipe:r});setBudgetPicker(false);}}/></Sheet>}
     {budget&&<BrewBudgetDialog {...budget} onClose={()=>setBudget(null)} onOpenForecast={target=>{setBudget(null);selectView('forecast');setCible({...target,at:Date.now()});}}/>}
   </div>;

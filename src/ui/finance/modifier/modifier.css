@@ -105,3 +105,40 @@
 .mod-corps::after { content:''; display:block; height:14px; }
 .mod-ch-sous button { padding:6px 8px; }
 .mod-ch-sous button + button { border-left:1px solid var(--mod-bord); }
+/* E35-11 : les blocs de la saisie à la main dans Modifier (règlement, échéance, sans justificatif) */
+.mod-reg { margin-top:10px; }
+.mod-reg-l { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.mod-reg-c { display:inline-flex; align-items:center; height:32px; padding:0 10px; border-radius:99px; border:1px solid var(--mod-bord); font-size:13px; font-weight:600; color:var(--mod-t2); }
+.mod-reg-c[aria-current="true"] { background:var(--mod-t1); color:rgb(var(--cave-950)); border-color:var(--mod-t1); }
+.mod-ech { display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.mod-ech > small { font-size:13px; color:var(--mod-t2); }
+.mod-ck { display:flex; align-items:center; gap:8px; margin-top:10px; min-height:36px; font-size:13px; color:var(--mod-t2); }
+
+/* E38-4 : Modifier reprend les blocs de la saisie — catégorie repliée, date en pastille et frise, « Revient ? » en segments */
+.mod-fold { margin-top:10px; border:1px solid var(--mod-bord); border-radius:12px; padding:0 10px 10px; }
+.mod-fold > summary { list-style:none; display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:36px; font-size:13px; font-weight:600; color:var(--mod-t1); cursor:pointer; }
+.mod-fold > summary::-webkit-details-marker { display:none; }
+.mod-fold > summary > span { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:500; color:var(--mod-t2); }
+.mod-rec { margin-top:10px; }
+.mod-rec > .mod-lib { display:flex; font-size:13px; font-weight:600; color:var(--mod-t2); margin-bottom:4px; }
+.mod-seg { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--mod-bord); border-radius:10px; overflow:hidden; }
+.mod-seg button { height:36px; font-size:13px; font-weight:600; color:var(--mod-t2); border-left:1px solid var(--mod-bord); background:transparent; }
+.mod-seg button:first-child { border-left:0; }
+.mod-seg button[aria-pressed="true"] { background:var(--mod-t1); color:rgb(var(--cave-950)); }
+.mod-seg button:disabled { cursor:default; }
+
+/* E40-4 : la feuille de la saisie dans Modifier (bande « Ça sort / Ça rentre », carte, grand montant) ; `.sai` apporte ses jetons, ici seulement l'ancrage dans la feuille. */
+.mod .mod-sai { flex:none; width:auto; min-height:0; background:transparent; gap:10px; margin-top:6px; }
+.mod .mod-sai .sai-card { border-radius:14px; }
+.mod .mod-sai .sai-amt[data-verrou] { opacity:.7; }
+.mod .mod-sai .sai-amt input { width:auto; }
+.mod .mod-avant { margin:0 0 2px; font-size:12px; color:var(--sec); }
+.mod .mod-sai .mod-fold { margin:0; }
+.mod .mod-sai .mod-fold summary { color:var(--sec); }
+
+/* E41-4 : le grand montant tient sur téléphone : `Input` y rend un <textarea>, que `.sai-amt input` (saisie.css) ne vise pas. Mêmes règles que la saisie. */
+.mod .mod-sai .sai-amt :is(input, textarea) { field-sizing:content; width:auto; min-width:1ch; min-height:0; height:auto; padding:0 !important; margin:0; border:0 !important; background:transparent; resize:none; overflow:hidden;
+  font-family:var(--mono); font-size:44px; line-height:1.2; font-weight:600; letter-spacing:-.02em; color:inherit; white-space:nowrap; }
+/* le règlement dans la carte : des pastilles qui se lisent (pas des boutons : un règlement se change par « Noter un paiement » dans la fiche) */
+.mod .mod-sai .sai-chip.on { background:var(--val) !important; color:var(--page) !important; border-color:var(--val) !important; }
+.mod .mod-sai .sai-card .sai-row { margin-top:2px; }

@@ -66,3 +66,16 @@ export function texteComptes(c: ComptesCarnet): string[] {
   if (c.articles) parts.push(pluriel(c.articles, 'article'));
   return parts;
 }
+
+/**
+ * T28-11 (test en ligne du tour 28 : « 5 articles à comparer dès le collage, avant toute lecture ; pour le lien mort le compte retombe à 4 ») :
+ * l'article écrit en attendant la lecture (`messageId` du message dont la lecture tourne) n'est ni compté ni montré tant que la lecture n'a pas
+ * abouti ; il paraît à son rangement. Les carnets sans cet article sont rendus tels quels (même référence).
+ */
+export function sansArticleEnLecture<C extends { carnet: { articles: readonly { messageId?: string; lecture: string }[] } }>(carnets: readonly C[], messageId: string | null): C[] {
+  if (!messageId) return carnets as C[];
+  return carnets.map(c => {
+    const garde = c.carnet.articles.filter(a => !(a.messageId === messageId && (a.lecture === 'a-lire' || a.lecture === 'en-cours')));
+    return garde.length === c.carnet.articles.length ? c : { ...c, carnet: { ...c.carnet, articles: garde } };
+  });
+}

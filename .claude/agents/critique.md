@@ -4,7 +4,7 @@ description: Critique d'interface de L'Affinée (Fable), calibré sur le brasseu
 tools: Read, Glob, Grep, Bash, Write
 model: opus
 effort: high
-maxTurns: 60
+maxTurns: 100
 ---
 # Critique calibré sur le brasseur
 

@@ -1,5 +1,7 @@
 /** Le fil : un champ, l'IA met en forme et range. L'écriture locale, l'avis, puis l'écriture de l'IA ; sorti de CarnetsVue.tsx (code tel quel). */
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
+import type { SuiviLectures } from '../../domain/carnets/lecture';
+import type { EcritureCarnet } from '../../domain/carnets/operations';
 import { appliquerEcritures, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, normaliser, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
@@ -20,12 +22,15 @@ export interface RangementV {
   attente: Boite<Attente | null>; annonces: Boite<Map<string, Annonce>>; aForcer: Boite<RubriqueVaDans | null>; forcee: Boite<string | null>;
   destEnvoi: Boite<string | null>; titreNeufEnvoi: Boite<string | null>; carnetChoisi: Boite<boolean>; gardeAPartRef: Boite<boolean>;
   aidesRef: Boite<AidesCarnet>; retourRef: Boite<Retour | null>; vueRef: Boite<Vue>; neDeListe: Boite<string | null>;
+  /** IA-ETAPES-VISIBLES : les lectures gardées sur l'appareil ; T26-4 : l'inverse du retrait d'un lien mort (« Compléter » le rend). */
+  suivi?: SuiviLectures; inversesLiens: Boite<Map<string, EcritureCarnet[]>>;
 }
 
 /** Appelé dans le `useMemo` du conteneur, avec les mêmes dépendances : le rangement est recréé quand elles changent, jamais autrement. */
 export function creerRangementCarnets(x: RangementV) {
   const { p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR, setRangeEnCours, setEnTete,
-    setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef, retourRef, vueRef, neDeListe } = x;
+    setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef, retourRef, vueRef, neDeListe,
+    suivi, inversesLiens } = x;
   return creerRangement<LigneLocale>({
     mode, depuis,
     carnets: () => pourIA(lireCarnets(magasin.lire())),
@@ -33,8 +38,28 @@ export function creerRangementCarnets(x: RangementV) {
     analyseLocale: analyserTexte,
     appels: p.appels ?? (mode === 'simule' ? appelsSimules(comportementSimule()) : undefined),
     maintenant,
+    ...(suivi ? { suivi } : {}),
+    /* T26-4 : le lien mort retiré comme l'IA remplacerait le rangement local, sans aucune ligne ; son inverse est gardé pour « Compléter » */
+    retirerLien: messageId => {
+      const r = appliquer(remplacerRangement(magasin.lire(), { messageId, lignes: [], rangement: 'locale' }));
+      if (r) inversesLiens.current?.set(messageId, r.inverse);
+    },
+    messageExiste: messageId => lireMessages(magasin.lire()).some(m => m.id === messageId),
+    /* T28-1 : le carnet où ce message a été écrit, lu sur le message lui-même (rouvert l'app ailleurs, le lien y revient) */
+    depuisDuMessage: messageId => {
+      const m = lireMessages(magasin.lire()).find(x => x.id === messageId);
+      return m ? (m.carnetMessage.depuis === 'liste' ? null : m.carnetMessage.depuis) : undefined;
+    },
     surEtat: e => {
       setEtatR(e);
+      /* T26-4 : lien mort : rien n'est gardé ; ni retour local, ni avis, ni « Relire » : la carte d'échec des étapes le dit seule */
+      if (e.etape === 'echec' && e.lecture?.statut === 'introuvable') {
+        if (attente.current?.messageId === e.messageId) attente.current = null;
+        annonces.current.delete(e.messageId);
+        setRangeEnCours(null);
+        if (retourRef.current?.messageId === e.messageId) setRetour(null);
+        return;
+      }
       /* l'IA a échoué ou a été coupée : l'écriture locale reste, son retour paraît enfin (avec son Annuler) ; un échec le dit (P36) */
       if ((e.etape === 'echec' || e.etape === 'annule') && attente.current?.messageId === e.messageId) {
         const { retour: local, montre, neuf } = attente.current;
@@ -50,9 +75,10 @@ export function creerRangementCarnets(x: RangementV) {
       if (e.etape === 'echec' && e.texte?.trim()) setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte, echec: true }]);
       /* P22 : IA éteinte ou hors ligne : le retour local est déjà affiché ; l'avis s'y ajoute, avec ce qui a été rangé et où */
       if (e.etape === 'hors-ligne') { poserAvis(e.messageId, 'hors-ligne'); setAReprendre(l => [...l.filter(x => x.messageId !== e.messageId), { messageId: e.messageId, texte: e.texte }]); }
-      if (e.etape === 'range' && e.rangement === 'locale') poserAvis(e.messageId, 'eteint');
+      /* T28-17 : un lien déjà dans le carnet n'est pas « IA éteinte » : le bandeau « Déjà dans ce carnet » suffit */
+      if (e.etape === 'range' && e.rangement === 'locale' && !e.dejaRange) poserAvis(e.messageId, 'eteint');
     },
-    ecrireLocal: (txt, lignes, { iaAttendue }) => {
+    ecrireLocal: (txt, lignes, { iaAttendue: iaPrevue }) => {
       const etat = magasin.lire();
       const le = maintenant().toISOString();
       const message = { id: nouvelIdCarnet('MSG'), texte: txt, le, depuis: depuis ?? 'liste', rangement: 'locale' as const };
@@ -104,6 +130,10 @@ export function creerRangementCarnets(x: RangementV) {
         const g = appliquer(garderAPart(vu, { messageId: message.id }));
         if (g) { fait.inverse.unshift(...g.inverse); vu = appliquerEcritures(vu, g.ecritures); }
       }
+      /* T28-17 : tout ce que ce message « range » est déjà là (même adresse canonique, même carnet) : l'IA ne passe pas, aucune lecture */
+      const effetsMsg = lireMessages(vu).find(m => m.id === message.id)?.carnetMessage.effets ?? [];
+      const dejaRange = effetsMsg.length > 0 && effetsMsg.every(e => e.cible === 'article' && e.existant === true);
+      const iaAttendue = iaPrevue && !dejaRange;
       const local = retourDe(message.id, txt, depuis, fait.inverse, undefined, undefined, vu) ?? { bandeau: { sorte: 'range' }, inverse: fait.inverse, messageId: message.id };
       /* L'IA va tourner : son rangement peut remplacer celui-ci (P1, P2) ; le retour attend la fin, rien n'est annoncé qui pourrait mentir.
          Sauf à la création, où la cible est tenue : l'IA ne fait que mettre en forme, « Carnet créé » paraît tout de suite. La note en vrac
@@ -118,9 +148,9 @@ export function creerRangementCarnets(x: RangementV) {
       if (neuf && !depuis && iaAttendue) setRangeEnCours(neuf);
       if (!iaAttendue || definitif) setRetour(local);
       if (neuf && !(depuis && iaAttendue)) { setEnTete(neuf); setVientDEtreCree(neuf); if (!iaAttendue) setVue({ sorte: 'carnet', id: neuf }); }
-      return { messageId: message.id };
+      return { messageId: message.id, ...(dejaRange ? { dejaRange: true } : {}) };
     },
-    ecrireIA: (messageId, lignes, mode2) => {
+    ecrireIA: (messageId, lignes, mode2, depuisPasse) => ((depuis: string | null) => {
       setRangeEnCours(null);
       if (forcee.current === messageId) {
         /* sa correction « Va dans » est un choix : l'IA ne la défait pas ; le retour local, tenu en réserve, paraît */
@@ -133,7 +163,8 @@ export function creerRangementCarnets(x: RangementV) {
       const etat = magasin.lire();
       const msg = lireMessages(etat).find(m => m.id === messageId);
       const creePar = msg?.carnetMessage.effets.find(e => e.cible === 'carnet')?.carnetId;
-      const an = annonces.current.get(messageId);
+      /* T28-1 : à la réouverture, l'annonce de l'envoi est perdue ; un lien collé dans un carnet y reste (comme l'annonce « ici » l'aurait dit) */
+      const an = annonces.current.get(messageId) ?? (depuisPasse !== undefined && depuis ? ({ sorte: 'ici', carnetId: depuis } as Annonce) : undefined);
       annonces.current.delete(messageId);
       const txt = msg?.carnetMessage.texte ?? '';
       /* Test en ligne 2 (bloquant 5) : un prix écrit dans le message que l'IA n'a pas rendu reste sur son article */
@@ -292,6 +323,6 @@ export function creerRangementCarnets(x: RangementV) {
         if (enAttente?.neuf && final.carnetId && connu(final.carnetId) && vueRef.current.sorte === 'liste') setVue({ sorte: 'carnet', id: final.carnetId });
         else setVue({ sorte: 'liste' });
       }
-    }
+    })(depuisPasse === undefined ? depuis : depuisPasse)
   });
 }

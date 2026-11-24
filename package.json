@@ -34,6 +34,8 @@
     "@noble/hashes": "2.4.0",
     "canvas-confetti": "^1.9.4",
     "cmdk": "^1.1.1",
+    "d3-scale": "^4.0.2",
+    "d3-time": "^3.1.0",
     "dexie": "^4.0.11",
     "fflate": "^0.8.3",
     "firebase": "^11.4.0",

@@ -1,0 +1,14 @@
+  /* D448 (étapes visibles, banc) : un prix étranger sans douane ni TVA d'import (étape douteuse, v03-2) ; une page que le site refuse au
+     robot, lue par Google (« page bloquée, lue par Google »). */
+  'exemple.invalid/hotte-douteuse': {
+    statut: 'lue', nom: 'Hotte murale inox 140 cm + moteur (exemple)', prix: 1690, devise: 'EUR', vendeur: 'Lüftung Nord', dispo: 'en-stock',
+    livraison: { prix: 95, devise: 'EUR' }, change: { taux: 0.93, date: '2026-11-23', source: 'BCE' },
+    valeurs: [{ nom: 'débit', valeur: '1200', unite: 'm³/h' }, { nom: 'bruit', valeur: '58', unite: 'dB' }, { nom: 'gaine', valeur: '200', unite: 'mm' }]
+  },
+  'exemple.invalid/hotte-bloquee': {
+    statut: 'lue', nom: 'Hotte inox 120 cm (exemple)', prix: 1450, devise: 'CHF', vendeur: 'Gastro Exemple',
+    valeurs: [{ nom: 'débit', valeur: '1000', unite: 'm³/h' }],
+    etapes: [{ nom: 'page', statut: 'absent', detail: 'bloquee' }, { nom: 'bloquee', statut: 'trouve', detail: 'lue par Google : nom, prix' },
+      { nom: 'prix', statut: 'trouve', detail: '1450 CHF (lu par Google)' }, { nom: 'photos', statut: 'absent', detail: 'photo non lue : Google ne rend pas la photo' },
+      { nom: 'caract', statut: 'trouve', detail: '1 (lues par Google)' }]
+  },

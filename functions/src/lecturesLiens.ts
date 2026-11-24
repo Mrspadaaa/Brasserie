@@ -79,7 +79,8 @@ export interface SortieLecture { ok: true; data: PageLue | VueLecture; model: 'l
 export async function lireLienTache(e: EntreeLecture): Promise<SortieLecture> {
   const now = e.maintenant ?? Date.now, debut = now();
   const sortie = (data: PageLue | VueLecture): SortieLecture => ({ ok: true, data, model: 'lecture', tier: 'fast', elapsedMs: now() - debut });
-  const ctx = (e.context && typeof e.context === 'object' ? e.context : {}) as { jeton?: unknown; reprise?: unknown };
+  const ctx = (e.context && typeof e.context === 'object' ? e.context : {}) as { jeton?: unknown; reprise?: unknown; escalade?: unknown };
+  const escalade = ctx.escalade === true; // lecture neuve, étape IA directement au modèle fort (jamais la page gardée du jeton)
   const avertir = e.avertir ?? (() => undefined);
   let jeton = jetonValide(ctx.jeton);
 
@@ -94,7 +95,7 @@ export async function lireLienTache(e: EntreeLecture): Promise<SortieLecture> {
   if (jeton) {
     const d = await e.magasin.lire(jeton).catch(() => undefined);
     if (d && d.uid !== e.uid) jeton = undefined;
-    else if (d?.statut === 'fini' && d.page && d.url === url) return sortie(d.page);
+    else if (d?.statut === 'fini' && d.page && d.url === url && !escalade) return sortie(d.page);
     else if (d?.statut === 'en-cours' && now() - d.majLe <= LECTURE_PERIMEE_MS) return sortie(vueDe(jeton, d, e.uid, now()));
   }
   jeton ??= (e.nouveauJeton ?? randomUUID)();
@@ -115,6 +116,7 @@ export async function lireLienTache(e: EntreeLecture): Promise<SortieLecture> {
 
   const opts: OptionsLecture = {
     ...(e.appelIA ? { ia: e.appelIA } : {}),
+    ...(escalade ? { escalade } : {}),
     ...(e.appelBloquee ? { pageBloquee: e.appelBloquee } : {}),
     onEtape: (etape) => {
       doc = { ...doc, etapes: cumuler(doc.etapes, etape), majLe: now() };

@@ -27,7 +27,9 @@
    sa ligne. En paysage, le titre y reprend sa place dans le flux. */
 /* CAL-SECTIONS-VIDES-COMPACTES (23.11) : les rangées vides ou toutes cachées, en lignes basses ; le groupe cache la grille et la colonne
    d'aujourd'hui (rien à y situer), il ne laisse qu'une ligne d'en-tête par rangée */
-.cal-vides { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; position: relative; z-index: 1; background: rgb(var(--cave-950)); }
+/* CAL-BORDS-ET-LIGNES (23.11, « une donné que je cache brise les lignes ») : le groupe n'a plus de fond : il masquait l'axe (traits des graduations,
+   zone hors cadre, colonne d'aujourd'hui) et faisait une bande blanche qui coupait les traits ; ils traversent toutes les rangées, vides ou cachées. */
+.cal-vides { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; position: relative; z-index: 1; }
 .cal-vides > .cal-rangee { flex: none; min-width: 0; }
 .cal-vides .cal-rh { gap: 4px; }
 .cal-vides .cal-rangee-l .cal-rh { position: static; padding-right: 0; background: none; }
@@ -384,3 +386,18 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-auj-bord { position: absolute; top: 0; bottom: 0; width: 22px; z-index: 0; pointer-events: none; }
 .cal-auj-bord--gauche { left: 0; background: linear-gradient(to right, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0)); }
 .cal-auj-bord--droite { right: 0; background: linear-gradient(to left, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0)); }
+
+/* CAL-BORDS-ET-LIGNES (23.11, « il y a des bords tout autour du calendrier » : 12 px blancs à gauche et à droite, du blanc sous la dernière rangée) :
+   hors paysage, au téléphone et à la tablette (la page y met 8 px de gouttière, 12 px dès 375 px : `px-2 xs:px-3` de <main>), le calendrier
+   (courbe, bande, frise : un seul axe, tous gagnent la gouttière ensemble, les graduations restent alignées) va d'un bord de l'écran à l'autre et
+   jusqu'à la barre du bas (la réserve de 12 px de la barre et l'espace de fin sont repris). Ce qui se lit (chiffre du creux, boutons de
+   l'en-tête, titre de rangée : +, nom, œil) garde un retrait interne égal à la gouttière : lisible, jamais collé au bord. */
+@media (max-width: 1023.98px) {
+  .cal-tab:not(.cal-tab-paysage) { --cal-gouttiere: 0.5rem; margin-inline: calc(-1 * var(--cal-gouttiere)); margin-bottom: -0.75rem; }
+  .cal-tab:not(.cal-tab-paysage) .cal-tab-fin { display: none; }
+  .cal-tab:not(.cal-tab-paysage) .cal-rh { padding-inline: var(--cal-gouttiere); }
+  .cal-tab:not(.cal-tab-paysage) .ent-t { padding-inline: calc(var(--cal-gouttiere) + 4px); }
+}
+@media (max-width: 1023.98px) and (min-width: 375px) {
+  .cal-tab:not(.cal-tab-paysage) { --cal-gouttiere: 0.75rem; }
+}

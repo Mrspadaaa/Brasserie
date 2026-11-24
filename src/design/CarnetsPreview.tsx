@@ -43,7 +43,9 @@ import { magasinMemoire, type MagasinCarnets } from '../services/carnetsStore';
 import PLANNING_PORTE from '../../scripts/planning-vers-carnet/fixture-planning.json';
 import { planMigration, type TachePlanning } from '../../scripts/planning-vers-carnet/correspondance';
 import { fixtureCarnets, fixturePlanRealise, fixturePlans, NOTE_EN_VRAC_BANC, ID_DENSIMETRE, ID_EMBOUTEILLAGE, ID_EVIER, ID_EXTRACTION, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
-import { DELAI_LECTURE_BANC, lireLienSimule } from '../domain/carnets/iaSimulee';
+import { DELAI_LECTURE_BANC, lireLienSimule, poserLectureBanc } from '../domain/carnets/iaSimulee';
+import { ranger } from '../domain/carnets/operations';
+import { suiviLocal } from '../domain/carnets/lecture';
 import { aidesCarnet, comportementSimule, type AidesCarnet, type ComportementSimule, type ModeCarnetIA } from '../config/carnetIA';
 import { appelsSimules, type AppelsIA } from '../ui/carnets/rangement';
 import { CarnetsVue, type FinancesCarnet } from '../ui/carnets/CarnetsVue';
@@ -123,6 +125,23 @@ export const ETATS_BANC: readonly { d: string; capture: string; adresse: string;
     gestes: ['le Frigo ouvert : ligne « Dans À venir depuis le … · Voir › » sous le titre (CRN-9)', 'la toucher : Matériel › À venir'] }
 ];
 
+/**
+ * D448, réouverture (`&reouverture=fin` ou `&reouverture=en-cours`, avec `&ouvrir=ventilation`) : un lien collé dans Ventilation avant que
+ * « l'app se ferme » ; sa lecture, lancée il y a 34 s (finie) ou 10 s (en cours, 24 s en tout), est gardée sur l'appareil et dans le serveur
+ * simulé. À l'ouverture, le carnet la reprend par son jeton : fin retrouvée, ou étapes en cours.
+ */
+function poserReouvertureBanc(m: MagasinCarnets, quoi: string | null): void {
+  if (quoi !== 'fin' && quoi !== 'en-cours') return;
+  const url = 'https://exemple.invalid/hotte-douteuse';
+  const jeton = quoi === 'fin' ? 'bancReouvertureFin0001' : 'bancReouvertureCours0001';
+  const messageId = `MSG-BANC-REOUV-${quoi}`;
+  const r = ranger(m.lire(), { message: { id: messageId, texte: url, le: new Date().toISOString(), depuis: ID_VENTILATION, rangement: 'locale' }, lignes: [] });
+  if (r.ok) m.appliquer(r.ecritures);
+  const debut = Date.now() - (quoi === 'fin' ? 34_000 : 10_000);
+  poserLectureBanc(jeton, url, debut, quoi === 'fin' ? 34_000 : 24_000);
+  suiviLocal().garder({ jeton, url, messageId, texte: url, debut });
+}
+
 /** Lit l'adresse du banc (voir l'en-tête) : quel jeu de données, quel carnet ouvert, quel segment. */
 export function lireParametresBanc(search: string): ParametresBanc {
   const q = new URLSearchParams(search);
@@ -168,7 +187,8 @@ export function departBanc(o: { vide?: boolean; realise?: boolean; articles?: nu
 /** Les appels du banc : le rangement simulé de l'app, et `lireLien` simulé lent (1,5 s ; 4 s en `&ia=lent`) pour voir le squelette. */
 export function appelsBanc(comportement: ComportementSimule, delaiLecture = comportement === 'lent' ? 4000 : DELAI_LECTURE_BANC): AppelsIA {
   const base = appelsSimules(comportement);
-  return { ranger: base.ranger, lire: (url, signal) => lireLienSimule(url, { delaiMs: delaiLecture, signal }) };
+  /* D448 : les étapes dites une à une, comme le flux du serveur ; le jeton rend la lecture retrouvable après un rechargement (réouverture) */
+  return { ranger: base.ranger, lire: (url, signal, suivi) => lireLienSimule(url, { delaiMs: delaiLecture, signal, ...(suivi?.jeton ? { jeton: suivi.jeton } : {}), ...(suivi?.surEtapes ? { surEtapes: suivi.surEtapes } : {}) }) };
 }
 
 /* ───── Le cache mémoire de l'app (`dev-local`), pour l'UpgradeWorkspace d'À venir et de Réalisés ───── */
@@ -280,14 +300,15 @@ export function CarnetsPreview() {
   const taches = param('taches') === '1';
   const prm = useMemo(() => lireParametresBanc(typeof location === 'undefined' ? '' : location.search), []);
   const depart = useMemo(() => departBanc(prm), [prm]);
-  const magasin = useMemo(() => magasinMemoire(depart.items), [depart]);
+  const magasin = useMemo(() => { const m = magasinMemoire(depart.items); poserReouvertureBanc(m, param('reouverture')); return m; }, [depart]);
   // Le cache est semé avant le premier rendu de l'UpgradeWorkspace (idempotent : StrictMode rejoue l'initialiseur).
   const [cache] = useState(() => semerCache(depart));
   const financesCache = useStorageValue(lireFinancesCache);
   const comptes = useStorageValue(lireComptes);
   const [segment, setSegment] = useState<SegmentBanc>(prm.segment);
   const [ouvrir, setOuvrir] = useState<{ id: string; at: number } | null>(prm.ouvrir ? { id: prm.ouvrir, at: 1 } : null);
-  const appels = useMemo(() => appelsBanc(comportementSimule()), []);
+  /* D448 : `&lecture=lente` : la lecture d'un lien dure 24 s (voir la barre repliée, fermer puis rouvrir l'app) */
+  const appels = useMemo(() => appelsBanc(comportementSimule(), param('lecture') === 'lente' ? 24_000 : undefined), []);
   const ecrirePlan = useCallback((plan: FinancialPlan) => poserBanc('financialPlans', plan.id, plan), []);
 
   useEffect(() => {

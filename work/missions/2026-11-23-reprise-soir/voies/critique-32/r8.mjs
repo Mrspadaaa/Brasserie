@@ -1,0 +1,23 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou } from './outil.mjs';
+import { etat } from './lire.mjs';
+import { outils, court, periode } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+page.on('framenavigated', (f) => { if (f === page.mainFrame()) log('NAVIGATION', f.url()); });
+const { tap } = outils(page, cdp);
+const agenda = () => page.evaluate(() => { const t = document.body.innerText; const i = t.indexOf('Agenda'); return i < 0 ? '(pas d’agenda)' : t.slice(i, i + 330).replace(/\n+/g, ' | '); });
+const zz = () => page.evaluate(() => { const x = [...document.querySelectorAll('body *')].find((x) => x.childElementCount === 0 && x.textContent.trim() === 'ZZ TEST — barre' && x.getBoundingClientRect().width > 0); if (!x) return null; x.scrollIntoView({ block: 'center' }); const r = x.getBoundingClientRect(); const row = x.closest('li,div'); const cb = [...document.querySelectorAll('input[type=checkbox],[role=checkbox]')].find((c) => (c.getAttribute('aria-label') || '') === 'Fait : ZZ TEST — barre'); const cr = cb.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, cb: { x: cr.left + cr.width / 2, y: cr.top + cr.height / 2, checked: cb.checked } }; });
+await tap('Bord', 'nav button, nav a'); await sleep(2200);
+log('agenda avant', await agenda());
+let z = await zz(); await sleep(400); z = await zz(); log('zz', z);
+await toucher(cdp, z.x, z.y); await sleep(2500);
+await photo(page, 'R11-01-nom-zz', false); log('après nom', page.url(), court(await etat(page)), (await page.evaluate(() => document.body.innerText.slice(0, 300))).replace(/\n+/g, ' | '));
+await tap('Bord', 'nav button, nav a'); await sleep(2200);
+log('agenda après nom', await agenda());
+z = await zz(); await sleep(400); z = await zz();
+await toucher(cdp, z.cb.x, z.cb.y); await sleep(1500); await photo(page, 'R11-02-case-zz', false);
+log('agenda après case', await agenda(), (await zz())?.cb);
+z = await zz(); await toucher(cdp, z.cb.x, z.cb.y); await sleep(1500);
+log('agenda après décoche', await agenda(), (await zz())?.cb); await photo(page, 'R11-03-decoche', true);
+const cs = await ou(page, 'Cette semaine au calendrier', 'button,a,[role=button]'); log('cette semaine', cs?.t ?? cs?.txt);
+if (cs) { await toucher(cdp, cs.x, cs.y); await sleep(2500); await photo(page, 'R11-04-cette-semaine', false); log('cette semaine →', court(await etat(page)), (await etat(page)).periode); }
+lacher();

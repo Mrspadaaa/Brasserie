@@ -151,7 +151,7 @@ describe('marche plateforme (Shopify) : appelée quand la page laisse un manque,
     expect(demandes).toEqual([robots, URL_PAGE, json]);
     expect(p).toMatchObject({ statut: 'lue', prix: 120, photo: 'https://cdn.shopify.com/s/cuve.jpg' });
     expect(p.valeurs?.map((v) => v.nom)).toEqual(expect.arrayContaining(['Volume', 'Puissance', 'Hauteur', 'Poids']));
-    expect(p.etapes?.find((x) => x.nom === 'caract')).toMatchObject({ statut: 'trouve', detail: expect.stringContaining('shopify') });
+    expect(p.etapes?.find((x) => x.nom === 'caract')).toMatchObject({ statut: 'trouve', detail: expect.stringContaining('fiche de la boutique') });
     // l'écran reçoit la correction de l'étape (même nom, nouveau détail)
     expect(vues.filter((x) => x.nom === 'caract').length).toBe(2);
   });

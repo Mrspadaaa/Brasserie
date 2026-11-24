@@ -9,7 +9,8 @@ import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrie
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
 import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
-import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type AxeCourbe, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
+import { useCadre } from '../../ui/calendrier/cadre/useCadre';
+import { libelleDuree, SEMAINES_ANNEE, type AxeCourbe, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
 import { isoDate } from '../../domain/finance/ledger';
@@ -22,9 +23,9 @@ import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import type { CoteBord } from '../../ui/calendrier/frise/usePointeur';
-import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, anneeEnMois, ajouterJours, numeroSemaine, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, peutFacturer, anneeEnMois, ajouterJours, numeroSemaine, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee,
   jourAvecAnnee, semaineAvecAn
 } from '../../domain/calendrier';
@@ -37,6 +38,8 @@ import {
   accepterVente, alignerCourbe, allonger, allongerDebut, corrigerBrassage, deplacer, deplacerJours, dupliquer, dureeAllongee, dureeDebutTiree, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
   courbeDuGlisse, jourDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
+import { CATEGORIE_DE_RANGEE, CRITERES_TRI, DUREES_MENU, NOM_CRITERE, etendueDuBrouillon, ordreSelon, phraseSemaine, resumeSansSemaine, sansPointDouble, textePromesse, type CritereTri } from '../../ui/calendrier/onglet/textes';
+export { CATEGORIE_DE_RANGEE, etendueDuBrouillon, ordreSelon, resumeSansSemaine, sansPointDouble, textePromesse } from '../../ui/calendrier/onglet/textes';
 
 /**
  * L'onglet Calendrier (6e de la barre, entre Finances et Brassins ; E41). Le port du calendrier retenu le 16.11 et 17.11 : l'en-tête z2s (w3s en
@@ -98,15 +101,6 @@ const RANGEES_SECTION: Record<NonNullable<CalendrierTabProps['section']>, readon
   finances: ['ventes', 'achats', 'travaux', 'papiers'], brassins: ['brassins', 'ventes'], materiel: ['travaux', 'achats', 'activites'], stocks: ['brassins', 'achats'], agenda: ['fetes', 'activites', 'brassins']
 };
 
-/** CAL-PERIODE-APP-FIXE : la fenêtre locale du calendrier, gardée par appareil (hors du cache d'état d'écran : un test qui vide le stockage la vide). */
-const CLE_FENETRE_LOCALE = 'laffinee.calendrier.fenetre-locale';
-function lireFenetreLocale(): { app: string; locale: Periode | null } | null {
-  try { const brut = localStorage.getItem(CLE_FENETRE_LOCALE); return brut ? JSON.parse(brut) : null; } catch { return null; }
-}
-function ecrireFenetreLocale(app: string, locale: Periode | undefined): void {
-  try { localStorage.setItem(CLE_FENETRE_LOCALE, JSON.stringify({ app, locale: locale ?? null })); } catch { /* stockage plein ou refusé : la fenêtre ne se garde pas */ }
-}
-
 /** Un état d'écran gardé par appareil (épingles, étoiles, rangées masquées, ordre : E39). */
 function useEtatGarde<T>(cle: string, defaut: T): [T, (valeur: T) => void] {
   const [valeur, setValeur] = useState<T>(() => StorageService.getUiState<T>(cle, defaut));
@@ -116,86 +110,6 @@ function useEtatGarde<T>(cle: string, defaut: T): [T, (valeur: T) => void] {
 
 const LIBELLE_LIEN: Partial<Record<CibleOuverture['ecran'], string>> = { finances: 'Finances ›', plan: 'Finances ›', brassin: 'Ouvrir le brassin ›', piece: 'Ouvrir la pièce ›', courses: 'Les courses ›', solde: 'Finances ›' };
 
-/** « déc.. » et « nov. . » deviennent « déc. » et « nov. » : une abréviation qui finit une phrase ne double pas son point (CRITIQUE-3 n° 37). */
-/**
- * CRITIQUE-6 n° 3 (D-68, E34, E38) : la catégorie d'une prévision ouverte par « Plus de détails › » depuis une rangée. Un achat de matières
- * est « Brassage » (le domaine le range dans Achats), jamais « Charges fixes » (rangé dans Papiers). Clés de `CATEGORY_LABELS`.
- */
-export const CATEGORIE_DE_RANGEE: Partial<Record<IdRangee, FinanceCategory>> = { achats: 'brassage', travaux: 'renovation', papiers: 'chargesFixes' };
-
-export function sansPointDouble(texte: string): string {
-  return texte.replace(/\.(?:\s*\.)+/g, () => '.');
-}
-
-/**
- * CRITIQUE-7 (A6) : le résumé d'une pose (« 3 fûts La Cigogne · S47 ») suivi de l'effet sur la caisse (« S47 : 3 268 → 4 168 ») disait deux fois
- * la semaine. Quand l'effet commence par une semaine que le résumé porte déjà en segment « · Snn », ce segment part ; le reste du résumé
- * (« vente confirmée ») est gardé. Assemblé par segments, sans remplacement de chaîne (L26).
- */
-export function resumeSansSemaine(resume: string, effet: string): string {
-  const semaine = /^S\d{1,2}\b/.exec(effet)?.[0];
-  if (!semaine) return resume;
-  const segments = resume.split(' · ');
-  /* « S2 ’27 » (une semaine de l'an prochain) est la même semaine que l'effet « S2 : … » */
-  const i = segments.findIndex((s, k) => k > 0 && (s === semaine || s.startsWith(`${semaine} `)));
-  return i < 0 ? resume : segments.filter((_, k) => k !== i).join(' · ');
-}
-
-/** Une semaine dite en phrase : « S52, 21 – 27 déc. » suivi d'une phrase, sans « déc.. ». */
-const phraseSemaine = (lundi: string, suite: string) => sansPointDouble(`${dateDeSemaine(lundi)}. ${suite}`);
-
-/**
- * f6-b (E32, CRITIQUE-3 n° 20) : « 3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv. », composé depuis la promesse du domaine. Le client
- * vient de `clientId` ; s'il manque ou est inconnu, la phrase du domaine reste (« 3 fûts La Cigogne promis le … »), sans rien inventer.
- */
-export function textePromesse(p: Promesse, clients: ReadonlyArray<{ id: string; name: string }>): string {
-  const client = p.clientId ? clients.find(c => c.id === p.clientId)?.name?.trim() : undefined;
-  if (!client) return sansPointDouble(p.texte);
-  const titre = p.titre.trim();
-  const i = titre.toLocaleLowerCase('fr').indexOf(client.toLocaleLowerCase('fr'));
-  const quoi = (i >= 0 ? `${titre.slice(0, i)} ${titre.slice(i + client.length)}` : titre).replace(/\s+/g, ' ').replace(/[\s,·–-]+$/, '').trim() || titre;
-  return sansPointDouble(`${quoi} promis à ${client} le ${jourLisible(p.jourPromis)} · prête le ${jourLisible(p.preteLe)}`);
-}
-
-/** Les durées du menu période (E07), en semaines : « Voir S20 › » prend la plus petite qui contient la chose posée (CRITIQUE-10 n° 2). */
-const DUREES_MENU: readonly number[] = [6, 13, 26, SEMAINES_ANNEE];
-
-/** L'étendue d'une chose posée par la feuille, du lundi de son début au dimanche de sa fin ; un brassin court jusqu'à « prête ». */
-export function etendueDuBrouillon(b: BrouillonAjout): { du: string; au: string } | null {
-  if (!b.debut) return null;
-  const du = lundiDe(b.debut);
-  const finBrassin = b.rangee === 'brassins' && b.tempsEnCuve ? ajouterJours(du, b.tempsEnCuve) : null;
-  const fin = finBrassin ?? (b.fin && b.fin > du ? b.fin : du);
-  return { du, au: ajouterJours(lundiDe(fin), 6) };
-}
-
-type CritereTri = 'urgent' | 'date' | 'montant';
-const CRITERES_TRI: readonly CritereTri[] = ['urgent', 'date', 'montant'];
-const NOM_CRITERE: Record<CritereTri, string> = { urgent: 'Urgent', date: 'Date', montant: 'Montant' };
-
-/**
- * « Trier les rangées » (k15 du jouable, `k15Ordre`) : sans critère, l'ordre par genre ; « Urgent » met d'abord les rangées en retard, puis
- * celle dont la prochaine chose de la fenêtre arrive le plus tôt ; « Date » la première chose qui commence ; « Montant » la plus grosse somme,
- * les rangées sans montant en dernier. Égalité : l'ordre par genre.
- */
-export function ordreSelon(critere: CritereTri | null, choses: readonly ChoseCalendrier[], retards: ReadonlyArray<{ id: string }>, du: string, au: string): IdRangee[] {
-  const base = RANGEES.map(r => r.id);
-  if (!critere) return base;
-  const enRetard = new Set(retards.map(r => r.id));
-  const score = new Map<IdRangee, number>();
-  base.forEach(r => {
-    const dans = choses.filter(c => c.rangee === r && !c.sansDate && !c.fait && c.debut && c.debut <= au && (c.fin || c.debut) >= du);
-    const jour = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 86400000;
-    let v: number;
-    if (critere === 'urgent') {
-      v = dans.reduce((m, c) => Math.min(m, jour(c.debut > du ? c.debut : du)), 1e9);
-      if (choses.some(c => c.rangee === r && (enRetard.has(c.id) || enRetard.has((c.source as { id?: string }).id ?? '')))) v = -1e9;
-    } else if (critere === 'date') v = dans.reduce((m, c) => Math.min(m, jour(c.debut)), 1e9);
-    else v = dans.some(c => c.centimes != null) ? -dans.reduce((m, c) => Math.max(m, Math.abs(c.centimes ?? 0)), 0) : 1e12;
-    score.set(r, v);
-  });
-  return [...base].sort((a, b) => (score.get(a)! - score.get(b)!) || base.indexOf(a) - base.indexOf(b));
-}
 
 interface FeuilleEtat { mode: 'ajouter' | 'modifier'; initial: BrouillonAjout; chose?: ChoseCalendrier; sansPlusDeDetails?: boolean; cle: number }
 type Panneau = 'tri' | 'filtre' | null;
@@ -203,7 +117,7 @@ type Panneau = 'tri' | 'filtre' | null;
 export function CalendrierTab(props: CalendrierTabProps) {
   const { transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda, onOpenCarnet, onOpenCourses, onPoserBrassin, onPoserFete, onPoserDepense, onOuvrirBudget, onOpenPiece, section, centrerSur } = props;
   const port = useMemo(() => props.port ?? portParDefaut(), [props.port]);
-  const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui });
+  const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui, periode: props.periode });
   const don = props.donnees ?? lues;
   const { modele: modeleLu, aujourdhui } = don;
   /* les choses prêtes pour la frise : budget de chaque brassin, courses d'un brassin en un caddie relié, pastilles « lié à » ; la courbe
@@ -223,57 +137,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const lundiAuj = lundiDe(aujourdhui);
 
   /* ---------- l'état de l'écran ---------- */
-  /* L-10 (T10-10) : une fenêtre gardée de 52 semaines revient en An (« nov. 2026 – nov. 2027 », bande en mois), comme choisie au menu ; elle revenait
-     en semaines (« S47 – S45 2027 ») : la même fenêtre avait deux étiquettes selon qu'on la choisit ou qu'on recharge */
-  const [vue, setVueEtat] = useState<VueCalendrier>(() => {
-    if (centrerSur) return 'semaines';
-    const gardee = lireFenetreLocale();
-    const f = gardee && gardee.app === JSON.stringify(props.periode ?? null) && gardee.locale ? fenetreDePeriode(gardee.locale, premierLundi, modele.semaines.length || SEMAINES_ANNEE) : null;
-    return f && f.semaines >= SEMAINES_ANNEE ? 'annee' : 'semaines';
-  });
+  /* D444 (CAL-ETAT-COHERENT) : la période du cadre, la vue et l'échelle voulue sont UN état (`useCadre`, réducteur pur `ui/calendrier/cadre/etat.ts`) ;
+     la fenêtre de semaines, l'An, l'échelle montrée et le libellé en dérivent. La fenêtre est locale (CAL-PERIODE-APP-FIXE), gardée par appareil
+     avec la période de l'app qu'elle accompagnait ; un saut vers une chose (CHN-6) ne la garde pas. */
   const [ancreListe, setAncreListe] = useState<'sans-date' | undefined>(undefined);
-  const [fenetre, setFenetre] = useState<FenetreSemaines>(() => {
-    const du = centrerSur ? (lundiDe(ajouterJours(centrerSur, -14)) < premierLundi ? premierLundi : lundiDe(ajouterJours(centrerSur, -14))) : lundiAuj;
-    return { du, semaines: 6 };
-  });
-  /* CHN-6 : un saut vers une chose (centrerSur) ne change pas la période de l'app : la fenêtre se pose sur la chose, la période locale se lit
-     dans cette fenêtre, et celle de l'app (« Nov. ») reste ce qu'elle était, au retour aussi. Elle ne se rejoint qu'au premier changement venu d'ailleurs. */
-  const clePeriode = JSON.stringify(props.periode ?? null);
-  /* CAL-PERIODE-APP-FIXE : la fenêtre locale se garde par appareil, avec la période de l'app qu'elle accompagnait ; au rechargement elle revient telle
-     quelle, sauf si la période de l'app a changé entre-temps (alors celle-ci l'emporte). */
-  const [periodeLocale, setPeriodeLocaleEtat] = useState<Periode | undefined>(() => {
-    if (centrerSur) return undefined;
-    const gardee = lireFenetreLocale();
-    return gardee && gardee.app === clePeriode && gardee.locale ? gardee.locale : props.periode;
-  });
-  /* L-6 (T10-6) : la clé lue au moment d'écrire, jamais celle du rendu où le rappel est né (`onPeriode` et les gestes gardent leur premier
-     rappel : après › puis ‹, la fenêtre locale s'écrivait sous la période d'origine et revenait avec elle) */
-  const clePeriodeRef = useRef(clePeriode);
-  clePeriodeRef.current = clePeriode;
-  const setPeriodeLocale = useCallback((p: Periode | undefined) => {
-    setPeriodeLocaleEtat(p);
-    ecrireFenetreLocale(clePeriodeRef.current, p);
-  }, []);
-  const clePeriodeVue = useRef(clePeriode);
-  useEffect(() => {
-    if (clePeriode === clePeriodeVue.current) return;
-    clePeriodeVue.current = clePeriode;
-    /* la période de l'app peut n'arriver qu'après le montage (état d'écran lu en différé) : la fenêtre gardée pour CETTE période se retrouve alors */
-    const gardee = lireFenetreLocale();
-    if (gardee && gardee.app === clePeriode && gardee.locale) { setPeriodeLocaleEtat(gardee.locale); return; }
-    setPeriodeLocaleEtat(props.periode);
-    ecrireFenetreLocale(clePeriode, props.periode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clePeriode]);
-  /* CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : la période de l'app EST celle du calendrier, dans les deux sens. Une plage, un mois, un
-     trimestre ou une année réglés dans la barre de l'app ou dans Finances règlent la fenêtre (l'en-tête la suit : « Nov. » dans la barre,
-     « Nov. » au calendrier, les semaines de novembre dans l'horizon). Seuls « Tout » (sans bornes) et une période tout entière passée ne
-     se lisent pas en semaines : la fenêtre reste la sienne. */
-  const periodeEnTete: Periode = periodeLocale && fenetreDePeriode(periodeLocale, premierLundi, modele.semaines.length || SEMAINES_ANNEE) ? periodeLocale : periodeDeFenetre(fenetre);
-  /* CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : la fenêtre du Calendrier est locale. Ses gestes (cadre,
-     poignées, durée, ‹ ›, glisser la frise) règlent `periodeLocale`, jamais la période de l'app : celle-ci ne change que par ses propres ‹ › (la barre
-     de l'app, Finances), et la fenêtre la suit alors (effet ci-dessus). */
-  const onPeriode = useCallback((p: Periode) => { setPeriodeLocale(p); }, []);
+  const horizon = useMemo(() => ({ premier: premierLundi, total: modele.semaines.length || SEMAINES_ANNEE, lundiAuj }), [premierLundi, modele.semaines.length, lundiAuj]);
+  const cadre = useCadre({ app: props.periode, centrerSur, paysage, horizon });
+  const { fenetre, vue, agir: agirCadre } = cadre;
   /* CHN-9 : le réglage ± se garde au rechargement, comme la courbe cachée et la rangée masquée */
   const [mouvements, setMouvements] = useEtatGarde<boolean>('calendrier_mouvements', false);
   const [epingles, setEpingles] = useEtatGarde<string[]>('calendrier_epingles', []);
@@ -311,7 +181,6 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [axeCourbe, setAxeCourbe] = useState<AxeCourbe | null>(null);
   /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine par défaut (« semaine par default », #202) ; la semaine dépliée (C).
      Paquet F n° 3 (PC-139) : l'échelle choisie se garde par appareil, comme la plage : au rechargement, « 3 mois » en Mois reste en Mois */
-  const [echelleVoulue, setEchelleVoulue] = useEtatGarde<Echelle>('calendrier_echelle', 'semaine');
   const [deplie, setDeplie] = useState<string | null>(null);
   const compteur = useRef(0);
 
@@ -331,9 +200,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   /* ---------- les colonnes de la frise : des semaines, ou les douze mois de l'année ---------- */
   const annee = vue === 'annee';
-  /* D385 (D, C, B ensemble) : l'échelle voulue, si la période la permet (Jour jusqu'à 3 semaines, Mois dès 3 mois) ; une semaine se déplie en
-     Semaine, si ses jours gardent 16 px au moins et si elle est dans la fenêtre */
-  const echelleBrute = echelleEffective(echelleVoulue, fenetre.semaines, annee);
+  /* D385 (D, C, B ensemble) : l'échelle voulue, si la période la permet (Jour jusqu'à 3 semaines, Mois dès 3 mois), dérivée par le cœur ; une
+     semaine se déplie en Semaine, si ses jours gardent 16 px au moins et si elle est dans la fenêtre */
+  const echelleBrute = cadre.echelle;
   const axeVu = !paysage ? axeCourbe : null;
   /* D441 : sur l'axe de la courbe, les rangées ont des colonnes d'un jour (vue de moins de 5 semaines) ou d'une semaine, à toute durée (An compris) */
   const echelle: Echelle = axeVu ? (axeVu.unite === 'jour' ? 'jour' : 'semaine') : echelleBrute;
@@ -358,18 +227,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   colonnesRef.current = colonnes;
   const echelleRef = useRef(echelle);
   echelleRef.current = echelle;
-  /* une période réglée ailleurs (menu, Finances, cadre de la courbe) que l'échelle voulue ne permet pas la ramène à celle montrée ; jamais en
-     paysage (13 semaines le temps de la rotation : l'échelle revient au retour) */
-  /* paquet F n° 3 : pas avant que la fenêtre ait rejoint la période de l'app (au montage, 6 semaines le temps que l'en-tête lise « 3 mois ») ;
-     sinon l'échelle gardée retomberait à Semaine à chaque rechargement */
-  const semainesDeLaPeriode = useMemo(() => {
-    const total = modele.semaines.length;
-    return periodeLocale && total ? fenetreDePeriode(periodeLocale, modele.semaines[0].debut, total)?.semaines ?? null : null;
-  }, [periodeLocale, modele.semaines]);
-  const fenetreSurLaPeriode = !periodeLocale || (modele.semaines.length > 0 && (semainesDeLaPeriode === null || semainesDeLaPeriode === fenetre.semaines));
-  useEffect(() => {
-    if (!paysage && !annee && fenetreSurLaPeriode && echelleVoulue !== echelleBrute) setEchelleVoulue(echelleBrute);
-  }, [paysage, annee, fenetreSurLaPeriode, echelleVoulue, echelleBrute, setEchelleVoulue]);
+  /* une période réglée ailleurs que l'échelle voulue ne permet pas la ramène à celle montrée : le réducteur le fait à chaque cadre posé (jamais
+     en paysage ni dans l'An), plus d'effet qui rattrape */
 
   /* ---------- le message : UN canal pour tout l'onglet (E33, D-200, CRITIQUE-3 n° 7) ----------
      Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
@@ -418,7 +277,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [idMessage]);
   /* l'en-tête (« Tire jusqu'au bout : l'année », « Tourne le téléphone : 13 semaines ») parle par ce canal ; son retrait ne chasse que lui */
   const surMessageEnTete = useCallback((m: MessageEnTete | null) => {
-    if (m) montrer({ role: 'status', texte: m.texte, origine: 'entete' });
+    if (m) montrer({ role: 'status', texte: m.texte, origine: 'entete', ...(m.annuler ? { annuler: () => { setMessage(null); m.annuler!(); } } : {}) });
     else setMessage(cur => (cur?.origine === 'entete' ? null : cur));
   }, [montrer]);
 
@@ -455,7 +314,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   const lienDe = useCallback((lien: MessageGeste['lien']): MessageCal['lien'] => {
     if (!lien) return undefined;
-    if (lien.ancre === 'sans-date') return { texte: lien.texte, agir: () => { setMessage(null); setAncreListe('sans-date'); setVueEtat('liste'); } };
+    if (lien.ancre === 'sans-date') return { texte: lien.texte, agir: () => { setMessage(null); setAncreListe('sans-date'); agirCadre({ type: 'vue', vue: 'liste' }); } };
     if (lien.ancre === 'brassin') return { texte: lien.texte, agir: () => lien.cible && ouvrir(lien.cible) };
     return { texte: lien.texte, agir: () => ouvrir(lien.cible ?? { ecran: 'finances' }) };
   }, [ouvrir]);
@@ -560,15 +419,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
   /* CHG-5 : la fenêtre d'avant le premier défilement du geste ; un geste annulé la rend (rien n'est écrit, la fenêtre non plus) */
-  const fenetreAvant = useRef<{ fenetre: FenetreSemaines; periode: Periode | undefined } | null>(null);
-  const periodeLocaleRef = useRef(periodeLocale);
-  periodeLocaleRef.current = periodeLocale;
-  const rendreFenetre = (annule: boolean) => {
-    const avant = fenetreAvant.current;
-    fenetreAvant.current = null;
-    if (annule && avant) { fenetreRef.current = avant.fenetre; setFenetre(avant.fenetre); setPeriodeLocale(avant.periode); }
-  };
-  const finGeste = useCallback(() => { parJourRef.current = null; fenetreAvant.current = null; setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
+  const rendreFenetre = (annule: boolean) => { agirCadre({ type: 'finGeste', annule }); };
+  const finGeste = useCallback(() => { parJourRef.current = null; agirCadre({ type: 'finGeste', annule: false }); setDrag(null); setIci(null); setApercu(null); setDuree(null); }, [agirCadre]);
   /*
    * Paquet E n° 4 (PC-NOTE-11, décision du pilote) : une fête ou une activité glissée n'emmène pas seuls ses achats et ventes d'un jour liés (une
    * date réelle d'achat ne bouge pas toute seule). Le message le dit (« 1 achat lié reste au 4 déc. ») et offre « Le déplacer aussi », qui les
@@ -624,7 +476,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
     /* E47, CRITIQUE-2 n° 38 : toucher une proposition l'accepte */
-    if (chose.proposition === 'echeance') { onOpenFinances(); return; }
+    /* E40-5 : toucher la bande d'une écriture qui revient (Apport, Pour moi, Loyer) ouvre SA fiche (Ouvrir, Lier…), comme la Vente ; « Ouvrir » mène aux Prévisions */
     if (chose.proposition === 'brassin-habituel') {
       const b = brouillonDepuisProposition(chose);
       if (b) { setMessage(null); setFeuille({ mode: 'ajouter', initial: b, sansPlusDeDetails: true, cle: ++compteur.current }); }
@@ -649,11 +501,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const debut = lundiDe(ajouterJours(chose.debut, -14));
     const fen: FenetreSemaines = { du: debut < premierLundi ? premierLundi : debut, semaines: 6 };
     setMessage(null); setMenu(null);
-    setVueEtat('semaines'); setAncreListe(undefined);
-    setFenetre(fen);
-    onPeriode(periodeDeFenetre(fen));
+    setAncreListe(undefined);
+    agirCadre({ type: 'poser', fenetre: fen, vue: 'semaines' });
     setSelectionId(chose.id);
-  }, [premierLundi, onPeriode]);
+  }, [premierLundi, agirCadre]);
   const surRefus = useCallback((chose: ChoseCalendrier, raison: string, jalon?: unknown) => { refuser(raison, chose, !!jalon); }, [refuser]);
   /*
    * D385 : changer d'échelle règle la période de l'app (comme le menu) : Jour = 2 semaines, Semaine = 6, Mois = 6 mois (maquette D, ses crans).
@@ -670,25 +521,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const i0 = Math.max(0, lundis.findIndex(l => l >= depart));
     const i = Math.min(i0, Math.max(0, total - n));
     const fen: FenetreSemaines = { du: lundis[i] ?? depart, semaines: n };
+    /* PC-144 (paquet F n° 2) : quand l'échelle change la période, le message le dit, et Annuler remet l'état d'avant (échelle, période, vue) */
+    const avant = cadre.instantane();
+    const avantAnnee = vue === 'annee';
     setMessage(null); setMenu(null); setAncreListe(undefined);
-    setEchelleVoulue(e); setDeplie(null);
-    setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
-    /* PC-144 (paquet F n° 2) : l'échelle règle la période de toute l'app (D385, ses crans) ; quand elle la change, le message le dit, avec
-       Finances qui suit, et Annuler remet l'échelle et la période d'avant */
-    const avant = { fenetre, annee: vue === 'annee', echelle: echelleVoulue, periode: periodeLocale };
-    if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
+    setDeplie(null);
+    agirCadre({ type: 'echelle', echelle: e, fenetre: fen });
+    if (avantAnnee || fenetre.semaines !== fen.semaines) {
       const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
       montrer({
-        role: 'status', texte: `Échelle ${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}`, /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre est locale, Finances ne suit plus : le message ne le dit plus */
-        annuler: () => {
-          setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
-          setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre);
-          /* rejeu en ligne (20.11) : Finances retrouve sa période d'avant (« Tout l'historique » compris), pas la fenêtre du calendrier */
-          onPeriode(avant.periode ?? periodeDeFenetre(avant.fenetre));
-        }
+        role: 'status', texte: `Échelle ${nom} : période ${libelleDuree(fenetre.semaines, avantAnnee)} → ${libelleDuree(fen.semaines, false)}`, /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre est locale, Finances ne suit plus : le message ne le dit plus */
+        annuler: () => { setMessage(null); setDeplie(null); agirCadre({ type: 'restaurer', avant }); }
       });
     }
-  }, [modele.semaines, fenetre, vue, echelleVoulue, periodeLocale, premierLundi, lundiAuj, onPeriode, montrer]);
+  }, [modele.semaines, fenetre, vue, cadre, agirCadre, premierLundi, lundiAuj, montrer]);
   /* D385 (variante B) : écarter les doigts ouvre l'échelle plus fine, les pincer la plus large ; un cran par geste, autour du jour visé */
   const surPincer = useCallback((sens: SensPincement, x: number) => {
     const suivante = echelleApres(echelleRef.current, sens);
@@ -718,14 +564,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (n >= SEMAINES_ANNEE || n >= total) {
       const iAn = Math.min(Math.max(0, lundis.findIndex(l => l >= depart)), Math.max(0, total - SEMAINES_ANNEE));
       const fen: FenetreSemaines = { du: lundis[iAn] ?? premierLundi, semaines: Math.min(SEMAINES_ANNEE, total) };
-      setVueEtat('annee'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
+      agirCadre({ type: 'poser', fenetre: fen, vue: 'annee' });
       return;
     }
     const i0 = Math.max(0, lundis.findIndex(l => l >= depart));
     const i = Math.min(i0, Math.max(0, total - n));
     const fen: FenetreSemaines = { du: lundis[i] ?? depart, semaines: n };
-    setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
-  }, [modele.semaines, premierLundi, onPeriode, fenetre.semaines]);
+    agirCadre({ type: 'poser', fenetre: fen, vue: 'semaines' });
+  }, [modele.semaines, premierLundi, agirCadre, fenetre.semaines]);
 
   /* ---------- masquer, épingler, étoiler, filtrer, trier (E22, E31, E39) ---------- */
   const basculerMasque = useCallback((r: IdRangee) => setMasquees(masquees.includes(r) ? masquees.filter(x => x !== r) : [...masquees, r]), [masquees, setMasquees]);
@@ -775,8 +621,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const cle = `${centrerSur ?? ''}|${props.viser?.at ?? ''}`;
     if (!centrerSur || cle === centreMonte.current) return;
     centreMonte.current = cle;
-    const du = lundiDe(ajouterJours(centrerSur, -14));
-    setVueEtat('semaines'); setFenetre(f => ({ du: du < premierLundi ? premierLundi : du, semaines: f.semaines })); setPeriodeLocale(undefined);
+    agirCadre({ type: 'centrer', fenetre: { du: lundiDe(ajouterJours(centrerSur, -14)), semaines: fenetre.semaines } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centrerSur, props.viser?.at, premierLundi]);
   useEffect(() => {
     const v = props.viser;
@@ -832,7 +678,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const m = versModification(b, etat.chose, ctxAjout.aujourdhui);
       if (m.ok === false) return { ok: false, raison: m.raison };
       const ok = await ecrire({ ok: true, ecritures: m.ecritures, message: { texte: `${b.titre.trim() || etat.chose.titre} : ${etiquetteS(b.debut as string)}`, action: 'Annuler', lecture: '' }, effet: null, promesse: null, courbeApres: null });
-      if (ok) { setFeuille(null); if (etat.chose.sansDate) setVueEtat('semaines'); }
+      if (ok) { setFeuille(null); if (etat.chose.sansDate) agirCadre({ type: 'vue', vue: 'semaines' }); }
       return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
     }
     const conv = versEnregistrement(b, ctxAjout);
@@ -995,7 +841,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         } } : {})}
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
-        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
+        {...(peutFacturer(chose) ? { onFacturer: () => {
           /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
           const id = (chose.source as { id: string }).id;
           const clientId = don.plans.find(p => p.id === id)?.clientId;
@@ -1025,7 +871,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   /* ---------- l'en-tête (lot B) : tout vient du modèle ---------- */
 
-  const surVue = useCallback((v: VueCalendrier, ancre?: 'sans-date') => { setMessage(null); setVueEtat(v); setAncreListe(v === 'liste' ? ancre : undefined); setSelectionId(null); setMenu(null); }, []);
+  const surVue = useCallback((v: VueCalendrier, ancre?: 'sans-date') => { setMessage(null); agirCadre({ type: 'vue', vue: v }); setAncreListe(v === 'liste' ? ancre : undefined); setSelectionId(null); setMenu(null); }, [agirCadre]);
 
   /* ---------- le tri des rangées (k15 du jouable) et le filtre par type (menu période, E07, E39) ----------
      « Trier les rangées » : chaque toucher passe au critère suivant (genre → Urgent → Date → Montant → genre), les rangées se rangent, et le
@@ -1068,6 +914,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const marge: [number, number] = defilable ? [Math.max(0, ecartJours(premierLundi, fenetre.du) / 7), Math.max(0, ecartJours(finFenetre, derniereSemaine) / 7)] : [0, 0];
   const parJourVu = glisseAuJour(colonnes, mesure.largeurColonne);
   parJourVuRef.current = parJourVu;
+  /* la fenêtre lue par les gestes entre deux rendus (une barre tenue au bord en pose plusieurs de suite) */
   const fenetreRef = useRef(fenetre);
   fenetreRef.current = fenetre;
   /* CAL-BARRE-BORD : un bord se tire aussi sur l'axe en jours (2 sem.) ; un glisser y garde ses bornes */
@@ -1081,7 +928,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const defilerFenetre = useCallback((sens: -1 | 1, mode: 'glisse' | 'bord' = 'glisse', garder = false): false | number => {
     const f = fenetreRef.current;
     if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
-    if (!fenetreAvant.current) fenetreAvant.current = { fenetre: f, periode: periodeLocaleRef.current };
+    agirCadre({ type: 'debutGeste' });
     const n = f.semaines + 1;
     /* VISION-tour9 n° 2 (CAL-BARRE-BORD, « ça doit agrandir l'échelle ») : une chose glissée au jour faisait GLISSER la fenêtre dès qu'un jour
        passait sous 8 px (390, 6 sem. : S47–S52 devenait S49–S1). Elle grandit comme un bord tiré ; le pas reste celui figé à l'appui. */
@@ -1101,17 +948,17 @@ export function CalendrierTab(props: CalendrierTabProps) {
     fenetreRef.current = fen;
     /* B8 (WFP-4, 21.11) : « Nov. » devenu « 16 nov. → 27 déc. » après un glisser, et resté au rechargement. Le défilement au bord est celui du
        geste : la fenêtre suit la barre (elle reste où le doigt l'a lâchée), la période de l'app et de Finances ne bouge que par le brasseur. */
-    setFenetre(fen);
+    agirCadre({ type: 'poser', fenetre: fen });
     return recul;
-  }, [premierLundi, derniereSemaine]);
+  }, [premierLundi, derniereSemaine, agirCadre]);
   /* CAL-JOUR : `parJour` passe par `{...props.barre}` de Rangee jusqu'à Barre (une variable : le Pick de Rangee ne le nomme pas encore, voie V7) */
   const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(bordDefilable ? { defile: defilerFenetre } : {}), ...(defilable ? { marge } : {}), ...(parJourVu ? { parJour: true } : {}) };
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
   const surRenvoi = (c: ChoseCalendrier) => {
     const n = Math.max(2, fenetre.semaines);
     const du = lundiDe(ajouterJours(c.debut, -7 * (n - 2)));
-    setVueEtat('semaines'); setMenu(null); setMessage(null);
-    setFenetre({ du: du < premierLundi ? premierLundi : du, semaines: fenetre.semaines });
+    setMenu(null); setMessage(null);
+    agirCadre({ type: 'poser', fenetre: { du: du < premierLundi ? premierLundi : du, semaines: fenetre.semaines }, vue: 'semaines' });
     setSelectionId(c.id);
   };
   const liste = vue === 'liste';
@@ -1144,9 +991,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
         <EnTeteCalendrier
           modele={modele}
           fenetre={fenetre}
-          onFenetre={setFenetre}
-          periode={periodeEnTete}
-          onPeriode={onPeriode}
+          periode={cadre.periode}
+          agir={agirCadre}
+          instantane={cadre.instantane}
           vue={vue}
           onVue={surVue}
           mouvements={mouvements}

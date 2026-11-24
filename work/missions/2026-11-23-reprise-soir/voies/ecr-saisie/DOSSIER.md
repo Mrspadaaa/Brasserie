@@ -1,0 +1,18 @@
+# Dossier ecr-saisie
+
+## Sa demande (23.11, mot pour mot)
+« Mais revoir la partie écriture sur la vrai app, et voir si tout est bien dynamique et bien voir si tout s'affiche sur le calendrier »
+
+## Constats du test en ligne (BUGS.md, mot pour mot)
+ E35-4 | Test en ligne, tour 35 (écritures) | Saisir à la main, curseur de date (Vente, À recevoir) (390 px, en ligne index-r1awkHAF.js) | Glisser lentement le curseur vers le passé → observé : au dernier pas, curseur « 8 oct. » et titre « Vente du 08.10 » ; au lâcher, enregistré 06.10 (sur index-CG1fQ0aV.js : 05.10) ; attendu : la date lâchée est celle montrée | B | ouvert — présent 
+ E35-5 | Test en ligne, tour 35 (écritures) | Saisir à la main › Vente « Client + autre », Achat « Chez + autre », Loyer « Bailleur », Abonnement « Service » (390 px, en ligne index-r1awkHAF.js) | Toucher « + autre » puis taper « ZZ » → observé : rien ne s’ouvre, le curseur va dans le titre et « ZZ » remplace « Vente du 23.11 » ; aucun des 4 clients de l’onglet Clients n’est proposé ; attendu : choisir ou créer le client / fournisseur | B | ouvert — présent 
+ E35-7 | Test en ligne, tour 35 (écritures) | Saisir à la main, Vente « À recevoir » (390 px, en ligne index-r1awkHAF.js) | Toucher « À recevoir » → observé : bouton d’enregistrement « À payer +4,80 » (la carte de fin dit bien « à recevoir ») ; attendu : « À recevoir +4,80 » | m | ouvert — présent 
+ E35-8 | Test en ligne, tour 35 (écritures) | Saisir à la main, curseur de date vers l’avant (Payé/Reçu et À payer/À recevoir) (390 px, en ligne index-r1awkHAF.js) | Glisser le curseur à droite → observé : pendant le glisser la pastille et le titre suivent (30.11, « Vente du 08.12 ») ; au lâcher tout revient au 23.11, sans un mot ; attendu : la date suit, ou le curseur s’arrête à aujourd’hui et le dit | m | ouvert — présent 
+ E35-11 | Test en ligne, tour 35 (écritures) | Finances › Opérations › écriture › Modifier (390 px, en ligne index-r1awkHAF.js) | Ouvrir Modifier sur ZZ TEST — Achat → observé : autre fiche que la saisie (Nom, Catégorie, Précision, Date, Montant « sans TVA », « Fournisseur, n° de pièce ») ; ni compte, ni Payé / À payer, ni Revient, ni note ; la référence « ZZ-REF » y devient « Fournisseur, n° de pièce » ; attendu : la même fiche que la saisie | m | ouvert — présent 
+ E35-12 | Test en ligne, tour 35 (écritures) | Calendrier › chose › Ouvrir, puis Finances › Opérations (390 px, en ligne index-r1awkHAF.js) | Ouvrir ZZ TEST — Vente depuis le Calendrier → observé : la recherche des Opérations porte « MAIN-545e015f-abfd-… » (identifiant technique) et reste posée en revenant : une seule ligne, graphe non filtré ; attendu : le nom de la chose, filtre levé en quittant | m | ouvert — présent 
+ E35-14 | Test en ligne, tour 35 (écritures) | Saisir à la main, curseur de date (390 px, en ligne index-r1awkHAF.js) | Toucher la piste à droite du curseur → observé : rien ne bouge ; attendu : la date va où l’on touche | D | ouvert — présent 
+
+## Où lire
+- Rapport complet et captures : voies/critique-ecritures/RESULTAT.md et cap/ (ouvre seulement les captures de tes constats).
+- Voie saisie précédente (307577f47) : voies/saisie/RESULTAT.md (où vivent la coche, le curseur, l'apport au Calendrier).
+- Règles : la date enregistrée = la date montrée au lâcher ; aller vers l'avenir est permis (ou refusé avec un mot), jamais un retour silencieux ; toucher la piste pose la date ; « + autre » ouvre la saisie d'un client et propose les clients existants ; le bouton dit « À recevoir » quand c'est à recevoir ; Modifier ouvre la même feuille que la saisie (mêmes blocs) ; jamais un identifiant technique à l'écran.

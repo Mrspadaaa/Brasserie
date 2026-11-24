@@ -23,7 +23,7 @@ export interface ContexteExecution {
 
 /** Le paiement qu'écrit une étape « paiement » : même sens et même mode que le dernier paiement ; daté du paiement inversé pour une baisse (M2), d'aujourd'hui pour une hausse. */
 export function paiementDeEtape(etape: Extract<EtapeCorrection, { type: 'paiement' }>, transactionId: string, ctx: ContexteExecution, id: string): FinancialPayment {
-  return { id, transactionId, date: etape.date || ctx.aujourdhui, amountCents: etape.cents, direction: etape.direction, method: etape.method, note: NOTE_COMPLEMENT, recordedAt: ctx.maintenant };
+  return { id, transactionId, date: etape.date || ctx.aujourdhui, amountCents: etape.cents, direction: etape.direction, method: etape.method, note: etape.note ?? NOTE_COMPLEMENT, recordedAt: ctx.maintenant };
 }
 
 /**
@@ -79,7 +79,7 @@ export async function executerPlan(etapes: EtapeCorrection[], pieceId: string, c
       if (etape.type === 'contre') {
         const original = FinanceService.getPayments().find(p => p.id === etape.paiementId);
         if (!original) throw new Error('Paiement à inverser introuvable.');
-        FinanceService.recordPayment({ ...contrePaiement(original, ctx.maintenant), note: NOTE_CONTRE });
+        FinanceService.recordPayment({ ...contrePaiement(original, ctx.maintenant), note: etape.note ?? NOTE_CONTRE });
         inverses.push(original);
         faites.push('paiement inversé');
       } else if (etape.type === 'montant') {

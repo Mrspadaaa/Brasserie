@@ -66,17 +66,30 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   /* PLUS-MENU-COUPE (22.11, téléphone, 13 lignes au Calendrier : « Vente » et « Recette » coupés sous le haut de l'écran) : la pile ne dépasse
      jamais la hauteur libre au-dessus du + (écran − barre d'onglets − le + et son vide − l'en-tête de l'app) ; au-delà elle défile au doigt.
      `column-reverse` : le défilement part du bas, la ligne contre le + reste là et le haut se découvre en tirant vers le bas. Le × (le +) reste hors de la pile. */
+}
+/* PLUS-VOILE-ROGNE (23.11, « le + affiche étrangement » : panneau décalé, voile sur la moitié gauche, cartes de Bord lisibles à gauche) : ce défilement
+   (PLUS-MENU-COUPE, ci-dessus) vit sur `.plus-pile-defile`, le conteneur intérieur de PlusSheet, et non sur la pile : un `overflow` sur la pile rognait
+   son voile propre (`.plus-pile::before`, qui déborde de 78 px à gauche et de 120 px en haut) au cadre de la pile. La pile n'a plus d'overflow. */
+.plus-pile-defile {
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 6px;
   max-height: calc(100dvh - var(--main-navigation-height, 2.5rem) - 76px - var(--plus-voile-haut, 37px) - 8px);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
 }
-.plus-pile::-webkit-scrollbar { display: none; }
+.plus-pile-defile::-webkit-scrollbar { display: none; }
 /* Posé sous un + docké en haut d'écran : la pile descend, l'action de l'écran reste contre le +. */
 .plus-pile[data-sens='bas'] {
   bottom: auto;
   top: 100%;
   margin: 8px 0 0;
+  flex-direction: column;
+}
+.plus-pile[data-sens='bas'] .plus-pile-defile {
   flex-direction: column;
   max-height: calc(100dvh - 120px);
 }
@@ -361,6 +374,8 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
   .floating-actions[data-floating-actions-anchor='nav'] .plus-pile {
     width: 460px;
     margin-bottom: 12px;
+  }
+  .floating-actions[data-floating-actions-anchor='nav'] .plus-pile-defile {
     /* le + du 1280 : 24 px du bas, 56 px, puis 12 px de vide ; pas de barre d'onglets */
     max-height: calc(100dvh - 92px - var(--plus-voile-haut, 37px) - 8px);
   }
@@ -377,7 +392,7 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
 
 /* Téléphone à l'horizontale (844 × 390) : la pile ne sort plus de l'écran. Elle défile (la ligne contre le + reste visible, `column-reverse`), ses lignes sont plus basses. */
 @media (orientation: landscape) and (max-height: 520px) {
-  .plus-pile { padding-right: 2px; }
+  .plus-pile-defile { padding-right: 2px; }
   .plus-pile .plus-pp--ps { height: 40px; }
   .plus-pile .plus-pp--pi { height: 46px; }
   .plus-pile .plus-pp-i { transform: scale(0.92); }

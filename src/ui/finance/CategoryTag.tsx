@@ -33,8 +33,8 @@ import { CATEGORY_LABELS } from './FinanceForms';
  * Le libellé est toujours écrit. La couleur accompagne le mot, elle ne le
  * remplace jamais — un daltonien lit la même chose que les autres.
  */
-export function CategoryTag({ category, className = '' }: { category: string; className?: string }) {
+export function CategoryTag({ category, className = '', libelle }: { category: string; className?: string; libelle?: string }) {
   const known = Object.prototype.hasOwnProperty.call(CATEGORY_LABELS, category);
-  const label = known ? CATEGORY_LABELS[category as FinanceCategory] : category;
+  const label = libelle ?? (known ? CATEGORY_LABELS[category as FinanceCategory] : category);
   return <span className={`finance-tag finance-tag-${known ? category : 'divers'}${className ? ` ${className}` : ''}`}>{label}</span>;
 }

@@ -5,7 +5,7 @@
 // Pas de TVA à l'AFC (D428, le brasseur : ni champ neuf ni option) : « Impôts » propose l'impôt sur la bière (charge, `divers`) et les impôts privés (Pour moi).
 import type { FinanceCategory } from '../../types';
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
-import { isActiveTransaction, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, paymentState, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
 import { lireDecimal } from '../numericInput';
@@ -17,7 +17,7 @@ export type Methode = FinancialPayment['method'];
 
 export interface Genre {
   id: GenreId; nom: string; sous?: string; sens: 'out' | 'in'; kind: FinanceKind; category: FinanceCategory; subcategory: string;
-  /** Le rythme posé au toucher du genre ; `null` : pas de « Revient ? » (apport, prélèvement, impôt, remboursement). */
+  /** Le rythme posé au toucher du genre ; `null` : pas de « Revient ? » (impôt, remboursement). E35-13 : un apport (« Versement mensuel ») et un prélèvement (« ta paie ») reviennent aussi, comme une vente ou un achat. */
   rythme: Rythme | null;
   /** L'étiquette de la rangée des derniers noms (« Chez », « Client »…) ; absente : pas de rangée. */
   qui?: string;
@@ -33,11 +33,11 @@ export const GENRES: Record<GenreId, Genre> = {
   abo: { id: 'abo', nom: 'Abonnement', sens: 'out', kind: 'expense', category: 'chargesFixes', subcategory: 'Abonnement', rythme: 'monthly', qui: 'Service', nomDefaut: (d) => `Abonnement du ${d}`, pli: 'Référence, note' },
   salaire: { id: 'salaire', nom: 'Salaire', sous: 'employé', sens: 'out', kind: 'expense', category: 'chargesFixes', subcategory: 'Salaire', rythme: 'monthly', qui: 'Employé', nomDefaut: (d) => `Salaire du ${d}`, pli: 'Référence, note' },
   impot: { id: 'impot', nom: 'Impôts', sens: 'out', kind: 'expense', category: 'divers', subcategory: 'Impôt sur la bière', rythme: null, nomDefaut: (d) => `Impôt sur la bière du ${d}`, pli: 'Période, référence' },
-  prel: { id: 'prel', nom: 'Pour moi', sous: 'ta paie', sens: 'out', kind: 'withdrawal', category: 'apports', subcategory: 'Prélèvement privé', rythme: null, nomDefaut: (d) => `Pour moi du ${d}`, pli: 'Note' },
+  prel: { id: 'prel', nom: 'Pour moi', sous: 'ta paie', sens: 'out', kind: 'withdrawal', category: 'apports', subcategory: 'Prélèvement privé', rythme: 'une', nomDefaut: (d) => `Pour moi du ${d}`, pli: 'Référence, note' },
   autreo: { id: 'autreo', nom: 'Autre', sens: 'out', kind: 'expense', category: 'divers', subcategory: 'Autre', rythme: 'une', nomDefaut: (d) => `Autre du ${d}`, pli: 'TVA, référence' },
   vente: { id: 'vente', nom: 'Vente', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Vente', rythme: 'une', qui: 'Client', nomDefaut: (d) => `Vente du ${d}`, pli: 'TVA, référence' },
-  apport: { id: 'apport', nom: 'Apport', sous: 'de ma poche', sens: 'in', kind: 'contribution', category: 'apports', subcategory: 'Apport privé', rythme: null, nomDefaut: () => 'De ma poche', pli: 'Note' },
-  autrei: { id: 'autrei', nom: 'Autre', sous: 'pas un prêt', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Autre recette', rythme: 'une', nomDefaut: (d) => `Recette du ${d}`, pli: 'TVA, référence' },
+  apport: { id: 'apport', nom: 'Apport', sous: 'de ma poche', sens: 'in', kind: 'contribution', category: 'apports', subcategory: 'Apport privé', rythme: 'une', nomDefaut: () => 'De ma poche', pli: 'Référence, note' },
+  autrei: { id: 'autrei', nom: 'Autre', sous: 'pas un prêt', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Autre recette', rythme: 'une', nomDefaut: (d) => `Autre entrée du ${d}`, pli: 'TVA, référence' },
   rembt: { id: 'rembt', nom: 'Remboursement', sens: 'in', kind: 'refund', category: 'divers', subcategory: 'Avoir', rythme: null, nomDefaut: () => 'Remboursement', pli: 'Note' }
 };
 export const SORT: GenreId[] = ['achat', 'loyer', 'abo', 'salaire', 'impot', 'prel', 'autreo'];
@@ -117,6 +117,8 @@ export interface Brouillon {
   categorie: FinanceCategory;
   reference: string;
   note: string;
+  /** « Sans justificatif, c'est normal » (18.11) : la même coche que la fiche et la dépense avec document ; absente = on ne sait pas, la pièce reste signalée. */
+  sansJustificatif?: boolean;
   tvaRate: number;
   /** Remboursement : la pièce d'origine. */
   pieceId?: string;
@@ -133,6 +135,21 @@ export function avecGenre(b: Brouillon, g: GenreId): Brouillon {
   const G = GENRES[g];
   return { ...b, genre: g, rythme: G.rythme ?? 'une', fin: 'sans', finDate: undefined, categorie: G.category, nom: '', vendor: undefined, pieceId: undefined, solde: undefined };
 }
+/** Le jour tiré au doigt dans une frise ouverte (`cle` : la pastille qui l'a ouverte). */
+export interface DateTiree { cle: string; iso: string }
+/** Ce que dit la pastille `cle` : le jour que le doigt tient en ce moment, sinon la valeur écrite. Un jour tiré illisible n'écrase rien. */
+export function dateMontree(cle: string, valeur: string, tiree: DateTiree | null): string {
+  return tiree && tiree.cle === cle && /^\d{4}-\d{2}-\d{2}$/.test(tiree.iso) ? tiree.iso : valeur;
+}
+/**
+ * Ce que dit le bouton d'enregistrement (E35-7) : le sens se lit sur la carte de fin, le bouton dit la même chose.
+ * Réglé : « Payé » (sortie), « Reçu » (entrée), « Retiré » (prélèvement) ; pas encore réglé : « À payer » (sortie) ou « À recevoir » (entrée).
+ */
+export function verbeEnregistrer(apayer: boolean, sens: 'in' | 'out' | null, genre: GenreId): string {
+  if (apayer) return sens === 'in' ? 'À recevoir' : 'À payer';
+  return genre === 'prel' ? 'Retiré' : sens === 'out' ? 'Payé' : 'Reçu';
+}
+export const METHODES: Array<{ id: Methode; nom: string }> = [{ id: 'bank', nom: 'Banque' }, { id: 'cash', nom: 'Espèces' }, { id: 'twint', nom: 'TWINT' }, { id: 'other', nom: 'Autre' }];
 export const nomFinal = (b: Brouillon) => b.nom.trim() || GENRES[b.genre].nomDefaut(jjmm(b.date));
 
 /** Le sens réel : celui du genre, ou l'inverse de la pièce d'un remboursement. */
@@ -167,7 +184,7 @@ export function preparer(b: Brouillon, ctx: { id: string; maintenant: string; tr
       amountHT: Math.round((ttc - tva) * 100) / 100, amountTTC: ttc, tvaRate: taux, tvaAmount: tva,
       finance: { version: 1, kind: G.kind, amountCents: cents, lines: [], paymentStatus: paye ? 'paid' : 'unpaid', recordedAt: ctx.maintenant,
         ...(b.vendor?.trim() ? { vendor: b.vendor.trim() } : {}), ...(b.reference.trim() ? { invoiceNumber: b.reference.trim() } : {}),
-        ...(!paye ? { dueDate: b.echeance } : {}), ...(notes ? { notes } : {}) } };
+        ...(!paye ? { dueDate: b.echeance } : {}), ...(notes ? { notes } : {}), ...(b.sansJustificatif ? { proofNotNeeded: true } : {}) } };
   }
   const paiement: FinancialPayment | undefined = paye ? { id: `PAI-${ctx.id}`, transactionId: ctx.id, date: b.date, amountCents: cents, direction: sens, method: b.methode, recordedAt: ctx.maintenant } : undefined;
   let plan: FinancialPlan | undefined;
@@ -214,8 +231,11 @@ export function genreDe(tx: FinanceTransaction): GenreId {
   if (tx.category === 'divers') return 'autreo';
   return 'achat';
 }
-const parDateDesc = (a: FinanceTransaction, b: FinanceTransaction) => (b.date || '').localeCompare(a.date || '') || (b.finance?.recordedAt ?? '').localeCompare(a.finance?.recordedAt ?? '');
-const actives = (txs: FinanceTransaction[]) => txs.filter((t) => isActiveTransaction(t) && /^\d{4}-\d{2}-\d{2}$/.test(t.date));
+/* E41-2 : les pièces d'avant la saisie à la main écrivent leur jour « 19.11.2026 » : un test sur la seule forme aaaa-mm-jj les écartait toutes
+   (« De quelle pièce ? » et les habituels ne voyaient que les écritures neuves). Le jour se lit par `isoDate`, qui connaît les deux formes. */
+const jourDe = (t: FinanceTransaction) => isoDate(t.date) ?? '';
+const parDateDesc = (a: FinanceTransaction, b: FinanceTransaction) => jourDe(b).localeCompare(jourDe(a)) || (b.finance?.recordedAt ?? '').localeCompare(a.finance?.recordedAt ?? '');
+const actives = (txs: FinanceTransaction[]) => txs.filter((t) => isActiveTransaction(t) && isoDate(t.date));
 
 export interface Habituel { cle: string; genre: GenreId; nom: string; sous: string; cents: number; sens: 'in' | 'out'; vendor?: string; solde?: Brouillon['solde'] }
 /**
@@ -226,12 +246,13 @@ export function habituels(transactions: FinanceTransaction[], plans: FinancialPl
   const txs = actives(transactions).sort(parDateDesc);
   const out: Habituel[] = [];
   for (const p of plans) {
+    if (out.length >= max - 1) break; // E43-3 : une place au moins reste aux derniers mouvements réels (« De ma poche »), jamais toutes aux prévisions
     if (p.status !== 'active' || p.source !== 'recurring' || !p.recurrence) continue;
     const liees = txs.filter((t) => t.finance?.planId === p.id);
     const prochaine = planOccurrences(p, `${aujourdhui.slice(0, 7)}-01`, plusMois(aujourdhui, 3)).find((o) => !liees.some((t) => t.finance?.occurrenceId === o.id));
     if (!prochaine) continue;
     const g = liees[0] ? genreDe(liees[0]) : p.direction === 'in' ? 'vente' : /loyer/i.test(p.title) ? 'loyer' : 'abo';
-    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `prévu le ${jjmm(prochaine.date)} · le solde`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
+    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `échéance le ${jjmm(prochaine.date)} · à enregistrer`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
       solde: { planId: p.id, occurrenceId: prochaine.id, date: prochaine.date } });
   }
   const vus = new Set(out.map((h) => h.nom.toLowerCase()));
@@ -243,7 +264,7 @@ export function habituels(transactions: FinanceTransaction[], plans: FinancialPl
     if (!cle || vus.has(cle)) continue;
     vus.add(cle);
     const sens = transactionDirection(t, transactions);
-    out.push({ cle: `tx:${t.id}`, genre: g, nom: t.description.trim(), sous: `${GENRES[g].nom.toLowerCase()} · dernier le ${jjmm(t.date)}`, cents: transactionAmount(t), sens, vendor: t.finance?.vendor });
+    out.push({ cle: `tx:${t.id}`, genre: g, nom: t.description.trim(), sous: `${GENRES[g].nom.toLowerCase()} · dernier le ${jjmm(jourDe(t))}`, cents: transactionAmount(t), sens, vendor: t.finance?.vendor });
   }
   return out.slice(0, max);
 }
@@ -260,9 +281,53 @@ export function derniersNoms(transactions: FinanceTransaction[], g: GenreId, max
   return noms;
 }
 
-export interface PieceRemboursable { id: string; nom: string; sous: string; date: string; cents: number; reste: number; sens: 'in' | 'out'; category: FinanceCategory }
-/** Les pièces qu'un remboursement peut viser (achats et ventes actifs), de la plus récente à la plus ancienne ; « reste » = montant moins ses avoirs. */
-export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30): PieceRemboursable[] {
+/** Un client de l'onglet Clients, réduit à ce que la saisie lit. */
+export interface ClientConnu { name: string; favorite?: boolean; archivedAt?: string | null }
+const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+/**
+ * E35-5 : les noms que « + autre » propose pour la contrepartie du genre, qu'on tape ou non (la saisie filtre, « ZZ » ne trouve rien et « Créer » apparaît).
+ * Vente et autre recette : les clients de l'onglet Clients (épinglés d'abord, archivés exclus), puis les clients déjà écrits sur des ventes.
+ * Les autres genres : les fournisseurs, bailleurs, services déjà écrits sur des pièces du même genre. Sans doublon (casse et accents ignorés).
+ * Rien d'inventé : sans historique ni client, la liste est vide et seul « Créer » reste.
+ */
+export function propositionsTiers(g: GenreId, saisie: string, src: { clients: ClientConnu[]; transactions: FinanceTransaction[] }, max = 8): string[] {
+  const out: string[] = [], vus = new Set<string>();
+  const ajouter = (n: string) => { const c = sansAccent(n); if (c && !vus.has(c)) { vus.add(c); out.push(n.trim()); } };
+  if (GENRES[g].qui === 'Client') {
+    const actifs = src.clients.filter((c) => !c.archivedAt && c.name?.trim());
+    [...actifs.filter((c) => c.favorite), ...actifs.filter((c) => !c.favorite).sort((a, b) => a.name.localeCompare(b.name, 'fr'))].forEach((c) => ajouter(c.name));
+  }
+  derniersNoms(src.transactions, g, 60).forEach(ajouter);
+  const q = sansAccent(saisie);
+  return (q ? out.filter((n) => sansAccent(n).includes(q)) : out).slice(0, max);
+}
+/** Le nom tapé existe-t-il déjà tel quel dans la liste (le bouton « Créer » ne s'affiche alors pas) ? */
+export const tiersExiste = (saisie: string, noms: string[]) => noms.some((n) => sansAccent(n) === sansAccent(saisie));
+
+/**
+ * Le règlement d'une écriture déjà posée, en mots (la fiche Modifier le montre comme la saisie : Payé / À payer, le moyen, l'échéance).
+ * Les paiements annulés (contre-passations) ne comptent pas ; sans paiement ni statut, rien n'est affirmé (l'inconnu n'est pas « payé »).
+ */
+export function resumeReglement(tx: FinanceTransaction, paiements: FinancialPayment[]): { etat: 'paye' | 'apayer' | 'partiel' | 'inconnu'; moyen?: Methode; date?: string; echeance?: string } {
+  const f = tx.finance;
+  const annules = new Set(paiements.filter((p) => p.reversalOfId).map((p) => p.reversalOfId as string));
+  const siens = paiements.filter((p) => p.transactionId === tx.id && !p.reversalOfId && !annules.has(p.id)).sort((a, b) => b.date.localeCompare(a.date));
+  const dernier = siens[0];
+  const statut = f?.paymentStatus;
+  if (statut === 'paid' || (!statut && dernier)) return { etat: 'paye', moyen: dernier?.method, date: dernier?.date };
+  if (statut === 'partial') return { etat: 'partiel', moyen: dernier?.method, date: dernier?.date, echeance: f?.dueDate };
+  if (statut === 'unpaid') return { etat: 'apayer', echeance: f?.dueDate };
+  return { etat: 'inconnu' };
+}
+
+export interface PieceRemboursable { id: string; nom: string; sous: string; date: string; cents: number; reste: number; sens: 'in' | 'out'; category: FinanceCategory; genre: GenreId }
+/**
+ * Les pièces qu'un remboursement peut viser (achats et ventes actifs), de la plus récente à la plus ancienne ; « reste » = montant moins ses avoirs.
+ * E40-6 : on ne rembourse que ce qui est payé ou encaissé : une pièce encore à payer, à recevoir ou payée en partie n'est pas proposée (`payeesSeulement`, vrai par défaut ;
+ * faux pour relire une pièce déjà choisie). Une ancienne pièce sans statut de règlement reste proposée : son statut n'est pas « à payer ».
+ * E40-7 : chaque pièce dit sa sorte (`genre`, le picto) et une sous-ligne utile : la sorte, le jour, et le libellé seulement s'il diffère du nom.
+ */
+export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30, payeesSeulement = true, paiements?: FinancialPayment[]): PieceRemboursable[] {
   const q = recherche.trim().toLowerCase();
   const avoirs = new Map<string, number>();
   for (const t of actives(transactions)) if (transactionKind(t) === 'refund' && t.finance?.refundOfId) avoirs.set(t.finance.refundOfId, (avoirs.get(t.finance.refundOfId) ?? 0) + transactionAmount(t));
@@ -272,9 +337,17 @@ export function piecesRemboursables(transactions: FinanceTransaction[], recherch
     if (k !== 'expense' && k !== 'income') continue;
     const cents = transactionAmount(t), reste = cents - (avoirs.get(t.id) ?? 0);
     if (reste <= 0) continue;
+    const statut = t.finance?.paymentStatus;
+    /* E41-2 : le registre des paiements dit mieux que l'étiquette de la pièce (les pièces d'avant la saisie à la main portent « à confirmer » ou rien, et un paiement réel) :
+       payée au registre = proposée ; à payer ou payée en partie au registre = écartée ; sans paiement connu, l'étiquette décide comme avant. */
+    const regle = paiements ? paymentState(t, paiements, transactions).state : 'unknown';
+    if (payeesSeulement && regle !== 'paid' && (regle !== 'unknown' || (statut && statut !== 'paid'))) continue;
     const nom = t.finance?.vendor || t.description;
     if (q && !`${nom} ${t.description} ${chf(cents)}`.toLowerCase().includes(q)) continue;
-    out.push({ id: t.id, nom, sous: `${jjmm(t.date)} · ${t.description}`, date: t.date, cents, reste, sens: transactionDirection(t, transactions), category: t.category });
+    const genre = genreDe(t);
+    const sorte = genre === 'autrei' ? 'Autre entrée' : genre === 'autreo' ? 'Autre sortie' : GENRES[genre].nom;
+    const sous = [sorte, jjmm(jourDe(t)), t.description.trim() && t.description.trim() !== nom.trim() ? t.description.trim() : ''].filter(Boolean).join(' · ');
+    out.push({ id: t.id, nom, sous, date: jourDe(t), cents, reste, sens: transactionDirection(t, transactions), category: t.category, genre });
     if (out.length >= max) break;
   }
   return out;

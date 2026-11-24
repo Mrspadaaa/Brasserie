@@ -72,10 +72,23 @@ const MESURES_NOM: Array<{ nom: string; re: RegExp }> = [
   { nom: 'Tension', re: /(?<![A-Za-zÀ-ÿ\d])(\d{3})\s?v(?![a-zà-ÿ])/i },
   { nom: 'Contenu ou poids', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:kg|g)(?![a-zà-ÿ])/i }
 ];
+/**
+ * T28-8 : « Schwerlastregal 180 × 160 × 60 cm » : trois dimensions écrites dans le nom. L'ordre n'est jamais deviné : un rayonnage
+ * s'écrit hauteur × largeur × profondeur (Hornbach « Regal 180 x 100 x 50 cm » = « Masse (BxHxT) 100 × 180 × 50 cm », Landi « 180 × 160 × 60 »),
+ * un autre produit (un frigo « 740×830×2010 mm » se lit L × P × H, un autre H × L × P) n'a pas d'ordre sûr : aucune dimension rendue.
+ */
+const RAYONNAGE = /regal|[ée]tag[èe]re|rayonnage|gestell|shelving|\brack\b/i;
+export function dimensionsDuNom(nom: string): ValeurLue[] {
+  const m = compact(nom).match(/(?<![\d.,])(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*(mm|cm|m)(?![a-zà-ÿ])/i);
+  if (!m || !RAYONNAGE.test(nom)) return [];
+  const u = m[4].toLowerCase();
+  return [['Hauteur', m[1]], ['Largeur', m[2]], ['Profondeur', m[3]]].map(([n, v]) => ({ nom: n, valeur: `${v.replace('.', ',')} ${u}` }));
+}
+
 /** Les mesures écrites dans le nom du produit (« Braukessel 60 L Edelstahl 3000 W », « Pilsner Malz, 3-5 EBC, 25 kg ») : le titre est une source. */
 export function mesuresDuNom(nom: string | undefined): ValeurLue[] {
   if (!nom) return [];
-  const out: ValeurLue[] = [];
+  const out: ValeurLue[] = [...dimensionsDuNom(nom)];
   for (const { nom: n, re } of MESURES_NOM) {
     const m = compact(nom).match(re);
     if (m) out.push({ nom: n, valeur: coupe(m[0].trim(), VAL_MAX) });

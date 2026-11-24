@@ -383,11 +383,11 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       // FN-37 : la créance « À récupérer » est listée dans son groupe, mais elle n'est pas une charge : le sous-total suit la pile.
       if (id !== 'jour' && estCreanceTropPaye(transaction)) continue;
       const entrant = direction === 'in';
-      cents += (id === 'jour' || id === 'recettes' || id === 'apports' ? (entrant ? 1 : -1) : (entrant ? -1 : 1)) * transactionAmount(transaction);
+      cents += (id === 'jour' || id === 'recettes' || id === 'autresEntrees' || id === 'apports' ? (entrant ? 1 : -1) : (entrant ? -1 : 1)) * transactionAmount(transaction);
     }
     const texte = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(cents) / 100);
     // CP-15 (10.11, « Pourquoi négatif sur un apport ? ») : un apport entre (+), un prélèvement sort (−), comme une vente.
-    return `${cents < 0 ? '−' : (id === 'recettes' || id === 'apports' || id === 'jour') && cents > 0 ? '+' : ''}${texte}`;
+    return `${cents < 0 ? '−' : (id === 'recettes' || id === 'autresEntrees' || id === 'apports' || id === 'jour') && cents > 0 ? '+' : ''}${texte}`;
   };
 
   /** m1do-a : un cadre par groupe de doublons, ses lignes complètes dans l'ordre de saisie. */

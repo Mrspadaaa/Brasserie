@@ -1,11 +1,12 @@
 import type { Transaction } from '../../../types';
 import { isActiveTransaction, isoDate } from '../../../domain/finance/ledger';
+import { estAutreEntree, estImpot } from '../../../domain/finance/libelleEcriture';
 
 /**
  * Les groupes de la liste Opérations (v6b) : une écriture paraît UNE fois, sous la catégorie de l'écriture (`tx.category`).
  * Les montants des piles ne passent pas par ici (`periodeSynthese`) ; ces groupes ne servent qu'à ranger et à sommer les lignes affichées.
  */
-export type GroupeId = 'chargesFixes' | 'recettes' | 'brassage' | 'nettoyage' | 'divers' | 'apports' | 'part' | 'retard' | 'sansDate' | 'annulees';
+export type GroupeId = 'chargesFixes' | 'recettes' | 'autresEntrees' | 'impots' | 'brassage' | 'nettoyage' | 'divers' | 'apports' | 'part' | 'retard' | 'sansDate' | 'annulees';
 
 /** Chemins SVG (viewBox 24, trait) repris des carrés de la maquette v6b ; les autres groupes reçoivent un pictogramme de même gabarit. */
 export interface GroupeMeta { id: GroupeId; label: string; chemin: string; fond: string; trait: string; liseré: string; sens: 'recette' | 'charge' }
@@ -16,6 +17,10 @@ const TXT = (hex: string) => `rgb(var(--ct-${hex}))`;
 export const GROUPES: Record<GroupeId, GroupeMeta> = {
   chargesFixes: { id: 'chargesFixes', label: 'Charges fixes', chemin: 'M4 11l8-6 8 6v9H4z', fond: VAR('3f2556'), trait: TXT('d8b9f4'), liseré: VAR('9856d2'), sens: 'charge' },
   recettes: { id: 'recettes', label: 'Ventes', chemin: 'M12 6v12M6 12h12', fond: VAR('255633'), trait: TXT('b9f4ca'), liseré: VAR('56d27b'), sens: 'recette' },
+  /** E38-2 : une rentrée qui n'est pas une vente (« Autre » de « Ça rentre ») a son groupe, même teinte que les ventes. */
+  autresEntrees: { id: 'autresEntrees', label: 'Autres entrées', chemin: 'M12 4v14M6 12l6 6 6-6', fond: VAR('255633'), trait: TXT('b9f4ca'), liseré: VAR('56d27b'), sens: 'recette' },
+  /** E38-7 : l'impôt sur la bière se lit « Impôts », pas « Autres frais » (teinte rouille de la saisie). */
+  impots: { id: 'impots', label: 'Impôts', chemin: 'M7 17L17 7M8 8h.01M16 16h.01', fond: '#4E2A22', trait: '#F4C6B9', liseré: '#D27356', sens: 'charge' },
   brassage: { id: 'brassage', label: 'Brassage', chemin: 'M12 21V8M12 8c-3 0-4-3-4-5 2 0 4 1 4 5z', fond: VAR('564925'), trait: TXT('f4e5b9'), liseré: VAR('d2b356'), sens: 'charge' },
   nettoyage: { id: 'nettoyage', label: 'Nettoyage', chemin: 'M12 3c3 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z', fond: VAR('254f56'), trait: TXT('b9ecf4'), liseré: VAR('56c1d2'), sens: 'charge' },
   divers: { id: 'divers', label: 'Autres frais', chemin: 'M5 12h.01M12 12h.01M19 12h.01', fond: 'rgb(var(--cave-800))', trait: 'rgb(var(--cave-texte-200))', liseré: 'rgb(var(--cave-400))', sens: 'charge' },
@@ -28,7 +33,7 @@ export const GROUPES: Record<GroupeId, GroupeMeta> = {
 };
 
 /** Ordre de la maquette : Charges fixes, Ventes, Brassage, Nettoyage ; le reste ensuite ; « à part » après une ligne pointillée ; le retard et le sans-date en fin. */
-export const ORDRE: GroupeId[] = ['chargesFixes', 'recettes', 'brassage', 'nettoyage', 'divers', 'apports', 'part', 'retard', 'sansDate', 'annulees'];
+export const ORDRE: GroupeId[] = ['chargesFixes', 'recettes', 'autresEntrees', 'brassage', 'nettoyage', 'impots', 'divers', 'apports', 'part', 'retard', 'sansDate', 'annulees'];
 
 /** Un investissement (matériel, local et travaux) se lit à part : ce n'est pas une charge du mois. */
 const EST_A_PART = new Set(['materiel', 'renovation']);
@@ -39,6 +44,8 @@ export function groupeDe(tx: Transaction, opts: { retardHorsMois: boolean }): Gr
   if (!isoDate(tx.date)) return 'sansDate';
   if (opts.retardHorsMois) return 'retard';
   if (EST_A_PART.has(tx.category)) return 'part';
+  if (estAutreEntree(tx)) return 'autresEntrees';
+  if (estImpot(tx)) return 'impots';
   if (tx.category === 'recettes' || tx.category === 'apports' || tx.category === 'chargesFixes' || tx.category === 'brassage' || tx.category === 'nettoyage') return tx.category;
   return 'divers';
 }

@@ -1,0 +1,14 @@
+import { ouvrir, sleep, photo, log, ou, toucher } from './outil.mjs';
+import { outils } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+setTimeout(() => { lacher(); process.exit(2); }, 150000);
+await o.nav('Finances'); await o.tap('Opérations', 'button,[role=tab]'); await sleep(1300);
+const a = await ou(page, 'ZZ TEST — Achat ·', 'button,[role=button]', true); await sleep(400); await toucher(cdp, a.x, a.y); await sleep(1300);
+const m = await page.evaluate(() => { const b = [...document.querySelectorAll('button')].filter((x) => x.getBoundingClientRect().width > 0 && x.textContent.trim() === 'Modifier').pop(); const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+await toucher(cdp, m.x, m.y); await sleep(1500);
+log('DBG inputs', await page.evaluate(() => [...document.querySelectorAll('input,textarea,[contenteditable]')].map((e) => { const r = e.getBoundingClientRect(); return `${e.tagName} t=${e.type} a=${e.getAttribute('aria-label')} p=${e.placeholder} v=${e.value} @${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)}`; }).filter((x) => !/ 0x0$/.test(x))));
+log('DBG point', await page.evaluate(() => { const e = document.elementFromPoint(70, 378); return e && (e.outerHTML.slice(0, 300)); }));
+await toucher(cdp, 70, 378); await sleep(800); await photo(page, 'DBG-montant-touche');
+log('DBG actif', await page.evaluate(() => { const e = document.activeElement; return e && e.outerHTML.slice(0, 300); }));
+lacher(); process.exit(0);

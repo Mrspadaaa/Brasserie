@@ -5,6 +5,8 @@ import { isoDate } from './finance/ledger';
 import { actualBrewDate, hasBrewStarted, plannedBrewDate, plannedDateIsPast } from './batchSchedule';
 import { delaiAppris, type ReglagesFournisseurs } from './fournisseurs';
 import type { CourbeCaisse, Creux } from './calendrierCaisse';
+import { JOUR, utc, versIso, MOIS_COURTS, aujourdhuiLocal, lundiDe, numeroSemaine, ajouterJours, dimancheDe, ecartJours, ecartSemaines, etiquetteS, jourLisible, jourAvecAnnee, dateDeSemaine, etiquetteListe, semaineAvecAn } from './calendrier/dates';
+export { lundiDe, numeroSemaine, ajouterJours, dimancheDe, ecartJours, ecartSemaines, etiquetteS, jourLisible, jourAvecAnnee, dateDeSemaine, etiquetteListe, semaineAvecAn } from './calendrier/dates';
 
 /**
  * Le calendrier (onglet choisi le 16.11, maquette onglet/v1 : « avoir un onglet calendrier en bas pour le global ») : six semaines
@@ -49,24 +51,6 @@ export interface EvenementCalendrier {
   partiel?: boolean;
   /** Brassin à ouvrir au toucher. */
   batchId?: string;
-}
-
-const JOUR = 86400000;
-const utc = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
-const versIso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
-
-/** Le lundi de la semaine qui contient `iso`. */
-export function lundiDe(iso: string): string {
-  const ms = utc(iso);
-  const jour = (new Date(ms).getUTCDay() + 6) % 7; // lundi = 0
-  return versIso(ms - jour * JOUR);
-}
-
-/** Numéro ISO 8601 de la semaine qui contient `iso`. */
-export function numeroSemaine(iso: string): number {
-  const jeudi = utc(lundiDe(iso)) + 3 * JOUR;
-  const debutAnnee = Date.UTC(new Date(jeudi).getUTCFullYear(), 0, 1);
-  return Math.floor((jeudi - debutAnnee) / JOUR / 7) + 1;
 }
 
 /**
@@ -221,40 +205,24 @@ export const nomRangee = (id: Rangee): string => RANGEES.find(r => r.id === id)?
 /** « Fêtes seules », « Brassins seuls » : l'accord suit le genre du nom. */
 export const nomSeules = (id: Rangee): string => `${nomRangee(id)} ${id === 'fetes' || id === 'ventes' || id === 'activites' ? 'seules' : 'seuls'}`;
 
-const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const;
-
-export const ajouterJours = (iso: string, n: number): string => versIso(utc(iso) + n * JOUR);
-export const dimancheDe = (iso: string): string => ajouterJours(lundiDe(iso), 6);
-export const ecartJours = (de: string, a: string): number => Math.round((utc(a) - utc(de)) / JOUR);
-/** Semaines entières entre le lundi de `de` et le lundi de `a` (négatif si `a` est avant). */
-export const ecartSemaines = (de: string, a: string): number => Math.round((utc(lundiDe(a)) - utc(lundiDe(de))) / (7 * JOUR));
-export const etiquetteS = (iso: string): string => `S${numeroSemaine(iso)}`;
-/** « 14 déc. » */
-export const jourLisible = (iso: string): string => `${Number(iso.slice(8, 10))} ${MOIS_COURTS[Number(iso.slice(5, 7)) - 1]}`;
-/** L-15 (T10-15) : aujourd'hui, en jour local ; `jourAvecAnnee` et `semaineAvecAn` s'y réfèrent par défaut. */
-const aujourdhuiLocal = (): string => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
-/** CT4-A-13 : « 20 déc. 2025 » quand l'année n'est pas celle d'`aujourdhui` ; « 3 nov. » dans l'année (jamais l'année partout). */
-export const jourAvecAnnee = (iso: string, aujourdhui: string = aujourdhuiLocal()): string => `${jourLisible(iso)}${iso.slice(0, 4) !== aujourdhui.slice(0, 4) ? ` ${iso.slice(0, 4)}` : ''}`;
-/** E04, i3 : « S50, 7 – 13 déc. » */
-export function dateDeSemaine(jour: string): string {
-  /* CRITIQUE-4 n° 14 : les vraies bornes lundi – dimanche de la semaine ISO, quel que soit le jour reçu (jamais 7 jours comptés depuis la date) */
-  const lundi = lundiDe(jour);
-  const fin = ajouterJours(lundi, 6);
-  const m1 = Number(lundi.slice(5, 7)) - 1, m2 = Number(fin.slice(5, 7)) - 1;
-  const plage = m1 === m2 ? `${Number(lundi.slice(8))} – ${Number(fin.slice(8))} ${MOIS_COURTS[m2]}` : `${Number(lundi.slice(8))} ${MOIS_COURTS[m1]} – ${Number(fin.slice(8))} ${MOIS_COURTS[m2]}`;
-  return `S${numeroSemaine(lundi)}, ${plage}`;
-}
-/** La Liste (E40, CRITIQUE-4 n° 14) : la date de la chose et sa vraie semaine ISO, « 26 août · S34 ». */
-export function etiquetteListe(jour: string): string {
-  return `${jourLisible(jour)} · ${etiquetteS(jour)}`;
-}
 /** Des francs entiers à la suisse, « 5 064 » ; le signe est un vrai moins. Jamais appelé sur un montant inconnu. */
 export const francs = (centimes: number): string => {
   const n = Math.round(Math.abs(centimes) / 100);
   return `${centimes < 0 && n > 0 ? '−' : ''}${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`;
 };
+/**
+ * E43-2 : le montant exact, pour la carte d'une chose (les rangées et la courbe gardent les francs entiers, compacts). « 2,50 », « 5 064 » : les centimes ne s'écrivent que
+ * s'il y en a, jamais « −3 » pour 2,50. Le signe est un vrai moins.
+ */
+export const francsExacts = (centimes: number): string => {
+  const abs = Math.abs(Math.round(centimes));
+  const entier = Math.trunc(abs / 100), cts = abs % 100;
+  const corps = String(entier).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (cts ? `,${String(cts).padStart(2, '0')}` : '');
+  return `${centimes < 0 && abs > 0 ? '−' : ''}${corps}`;
+};
+export const francsSignesExacts = (centimes: number): string => `${centimes < 0 ? '' : '+'}${francsExacts(centimes)}`;
 /** « +1 800 » ou « −1 800 » */
-export const francsSignes = (centimes: number): string => `${centimes < 0 ? '' : '+'}${francs(centimes)}`;
+export const francsSignes =(centimes: number): string => `${centimes < 0 ? '' : '+'}${francs(centimes)}`;
 
 /** La courbe porte 52 semaines à partir du lundi de la semaine courante (E02). */
 export const NB_SEMAINES_COURBE = 52;
@@ -438,6 +406,15 @@ export interface ChoseCalendrier {
    */
   horsCourbe?: true;
   /**
+   * E35-2, E35-3 (23.11 soir) : une rentrée qui n'est pas une vente (un apport de ma poche, une autre entrée). Elle se voit dans la rangée Ventes, à son jour,
+   * mais la pastille ne la compte pas dans le total des ventes et ne la dit jamais « à encaisser » (reçue, elle l'est déjà).
+   */
+  horsVentes?: 'apport' | 'autre-entree';
+  /** E40-3 : un prélèvement privé (« Pour moi ») : visible à son jour dans Papiers, mais jamais compté dans le total de la rangée (« un prélèvement n'est pas une charge », comme Mon mois). */
+  prive?: true;
+  /** E35-9 : une pièce encore à payer (`payer`) ou à recevoir (`recevoir`) à son échéance : prévue, jamais dessinée comme un paiement fait. */
+  prevue?: 'payer' | 'recevoir';
+  /**
    * CHD-3 (21.11) : brassin, ses lignes datées de prévision (courses, frais ; l'impôt est dans Papiers) dont `centimes` est la somme. La pastille de
    * la rangée compte ce qui tombe dans sa fenêtre, par date, pas le budget entier du brassin. Absent : le budget n'a aucune ligne datée.
    */
@@ -524,15 +501,6 @@ export function dureeBrassin(brassage: string, prete: string, aujourdhui: string
 
 /** « pas brassée · prête le 1 déc. » : un brassin pas brassé dont on a tiré le bord (CRITIQUE-5 n° 1). Jamais de « J ». */
 export const dureePasBrassee = (prete: string): string => `pas brassée · prête le ${jourLisible(prete)}`;
-
-/**
- * La semaine dite avec son année quand elle n'est pas celle de la semaine de référence (CRITIQUE-5 n° 2) : « S44 2027 » vu de S47 2026,
- * « S50 » dans la même année ISO. L'année est celle du jeudi de la semaine (ISO 8601).
- */
-export function semaineAvecAn(lundi: string, reference: string = aujourdhuiLocal()): string {
-  const an = (iso: string) => ajouterJours(lundiDe(iso), 3).slice(0, 4);
-  return an(lundi) === an(reference) ? etiquetteS(lundi) : `${etiquetteS(lundi)} ${an(lundi)}`;
-}
 
 /** Le poste d'une ligne de prévision d'un brassin, lu dans son id stable (`brew:<lot>:achats|frais|emballage|impot`, `brewForecast.ts`), sinon dans son libellé. */
 export function posteBrassin(item: Pick<ForecastItem, 'id' | 'label'>): PosteBrassin {
@@ -956,7 +924,7 @@ export function iconesIdees(items: readonly CreativeItem[], plans: readonly { id
   return sortie.sort((a, b) => a.lundi.localeCompare(b.lundi) || a.id.localeCompare(b.id));
 }
 
-const CATEGORIES_TRAVAUX = ['materiel', 'renovation'];
+export const CATEGORIES_TRAVAUX = ['materiel', 'renovation'];
 
 /**
  * La catégorie de Finances des matières de brassage : `brassage` (`FinanceCategory`, catégories de charge de `src/domain/finance/ledger.ts` l. 32 ; `periodeSynthese.ts` l. 62 y range les
@@ -1019,7 +987,7 @@ export function fusionnerFacturesLivraisons(
 ): ChoseCalendrier[] {
   const prises = new Set<string>();
   const fusion = new Map<string, ChoseCalendrier>();
-  const factures = choses.filter(f => f.source.genre === 'facture' && f.rangee === 'achats' && f.debut)
+  const factures = choses.filter(f => f.source.genre === 'facture' && f.rangee === 'achats' && f.debut && !f.id.startsWith('paiement-'))
     .sort((a, b) => (a.echeance ?? a.debut).localeCompare(b.echeance ?? b.debut) || a.id.localeCompare(b.id));
   for (const f of factures) {
     const cle = fournisseurs.get(f.source.id);
@@ -1047,6 +1015,12 @@ export function fusionnerFacturesLivraisons(
   }
   return choses.flatMap(c => (prises.has(c.id) ? [] : [fusion.get(c.id) ?? c]));
 }
+/**
+ * E41-3 : « Facturer » n'existe que pour une vente prévue à un client : on ne se facture pas un apport de sa poche (`horsVentes`), ni une autre entrée.
+ * Une vente probable (à accepter) ou une pièce se rouvre par « Ouvrir ».
+ */
+export const peutFacturer = (c: Pick<ChoseCalendrier, 'rangee' | 'source' | 'probable' | 'horsVentes'>): boolean =>
+  c.rangee === 'ventes' && c.source.genre === 'plan' && !c.probable && !c.horsVentes;
 const raisonFinances = (quoi: string, ou: string) => `${quoi} se règle dans ${ou}.`;
 
 /**
@@ -1066,6 +1040,7 @@ export function choseArgent(
   const { titre, notes } = titreCourtArgent(item);
   let rangee: Rangee, source: SourceChose, ouvre: CibleOuverture, deplacable: ChoseCalendrier['deplacable'];
   let retard: { echeance: string; enRetard: true } | null = null;
+  let prevue: ChoseCalendrier['prevue'];
   if (item.source === 'invoice') {
     const tx = item.id.replace(/^invoice:/, '');
     /* CRITIQUE-5 n° 4 : la prévision compte une facture échue à aujourd'hui ; la chose garde sa vraie échéance (`echeances` : id de la pièce → ISO) */
@@ -1075,6 +1050,7 @@ export function choseArgent(
     const deMatieres = matieres ? matieres.has(tx) : item.category === CATEGORIE_MATIERES;
     rangee = entree ? 'ventes' : deMatieres ? 'achats' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
     deplacable = { raison: raisonFinances('Une facture', 'la facture (Finances › Opérations)') };
+    prevue = entree ? 'recevoir' : 'payer';
   } else if (item.source === 'brew') {
     /* CRITIQUE-3 n° 2 : l'impôt sur la bière n'est ni une course ni un frais du brassin, il va dans Papiers (§ Données) */
     rangee = entree ? 'ventes' : posteBrassin(item) === 'impot' ? 'papiers' : CATEGORIES_TRAVAUX.includes(item.category) ? 'travaux' : 'achats'; source = { genre: 'prevision-brassin', id: item.batchId ?? item.planId ?? item.id };
@@ -1106,7 +1082,7 @@ export function choseArgent(
     ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
     ...(liensDuPlan(plan) ? { liens: liensDuPlan(plan) } : {}),
-    ...(retard ?? {}),
+    ...(retard ?? {}), ...(prevue ? { prevue } : {}),
     detail: `${retard ? `échéance le ${jourLisible(retard.echeance)} · en retard` : `le ${jourLisible(jour)}`}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
     source, ouvre, deplacable, mouvements: [item.id]
   };
