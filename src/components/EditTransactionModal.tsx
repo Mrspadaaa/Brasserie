@@ -19,7 +19,7 @@ import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
 import { RangeeApercu } from '../ui/finance/modifier/ApercuRangee';
 import { ChoixDate } from '../ui/ChoixDate';
-import { CATEGORIES_ACHAT, GENRES, METHODES, genreDe, jjmm, resumeReglement, type GenreId } from '../ui/saisie/modele';
+import { CATEGORIES_ACHAT, GENRES, METHODES, genreDe, indicationReference, jjmm, resumeReglement, type GenreId } from '../ui/saisie/modele';
 import { planDeplacerPaiement } from '../domain/finance/deplacerPaiement';
 import { Ic, teinteGenre } from '../ui/saisie/SaisieMain';
 import { CategoryTag } from '../ui/finance/CategoryTag';
@@ -397,7 +397,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             <div className="mod-g2">
               <label className="mod-f"><span className="mod-lib">Référence</span>
                 <Input type="text" name="tx_edit_reference" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-                  value={refSaisie ?? transaction.finance?.invoiceNumber ?? ''} onChange={(e) => setRefSaisie(e.target.value)} placeholder="N° de facture" className="mod-in" data-modifier-reference /></label>
+                  value={refSaisie ?? transaction.finance?.invoiceNumber ?? ''} onChange={(e) => setRefSaisie(e.target.value)} placeholder={indicationReference(genreSaisie.id)} className="mod-in" data-modifier-reference /></label>
               <label className="mod-f"><span className="mod-lib">Note</span>
                 <Input type="text" name="tx_edit_note" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
                   value={noteSaisie ?? transaction.finance?.notes ?? ''} onChange={(e) => setNoteSaisie(e.target.value)} className="mod-in" data-modifier-note /></label>

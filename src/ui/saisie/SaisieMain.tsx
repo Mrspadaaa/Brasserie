@@ -16,13 +16,14 @@ import { StorageService } from '../../services/storage';
 import { FinanceService, validateRefundTransaction } from '../../services/financeService';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import { todayISO, validateFinanceTransaction } from '../../domain/finance/ledger';
+import { datesDesOccurrences } from '../../domain/finance/forecast';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
 import { soldeLeVuPlan } from '../finance/soldePrevu';
 import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import {
-  CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
+  CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat, indicationReference,
   dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois, METHODES, propositionsTiers, tiersExiste, verbeEnregistrer,
   type Brouillon, type DateTiree, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
@@ -311,7 +312,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     if (b.solde) enfants.push(<div key="hab2" className="sai-lk sai-hab2"><Repeat size={15} /><span className="t">{(() => { const p = donnees.plans.find((x) => x.id === b.solde!.planId); return `${p?.recurrence ? RYTHME_LONG[p.recurrence.frequency].replace(/^./, (c) => c.toUpperCase()) : 'Prévu'} · solde l’échéance de ${moisDe(b.solde!.date)}, prévue le ${jjmm(b.solde!.date)}`; })()}</span></div>);
     else if (G.rythme !== null) {
       const fins = finsProposees(b.rythme);
-      const ech = recurrent ? echeances(b.date, b.rythme, fin, 4) : [];
+      /* E44-1 : les dates annoncées sont celles que le Calendrier montre (une règle, `datesDesOccurrences`) : « à payer d'ici le 24.12 » revient 24.12, 24.01 … */
+      const ech = recurrent && b.rythme !== 'une' ? datesDesOccurrences(b.date, b.rythme, fin, apayer ? b.echeance : undefined, 4) : [];
       enfants.push(<div key="rec" className="sai-rec"><h3><Repeat size={15} /> Revient ?</h3>
         <div className="sai-seg" role="group" aria-label="Revient ?">{RYTHMES.map((r) => <button key={r.id} type="button" aria-pressed={b.rythme === r.id} data-saisie-rythme={r.id} onPointerDown={garde} onClick={() => patch({ rythme: r.id, fin: 'sans', finDate: undefined })}>{r.nom}</button>)}</div>
         {recurrent ? <>
@@ -328,7 +330,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     }
     if (b.genre !== 'rembt' && !b.solde) enfants.push(<details key="pli" className="sai-fold"><summary>{G.pli}<span>facultatif <ChevronDown size={12} /></span></summary><div className="sai-blk">
       {tvaInscrit && !horsResultat(b.genre) ? <div className="sai-row"><small>TVA</small>{TVA.map((t) => chip(b.tvaRate === t, `${String(Math.round(t * 1000) / 10).replace('.', ',')} %`, () => patch({ tvaRate: t })))}</div> : null}
-      <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : horsResultat(b.genre) ? 'Référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} />
+      <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={indicationReference(b.genre)} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} />
       <input className="sai-in" aria-label="Note" placeholder="Note" value={b.note} onChange={(e) => patch({ note: e.target.value })} />
     </div></details>);
     if (b.genre !== 'rembt') enfants.push(<label key="sj" className="sai-ck" data-saisie-sans-justificatif><input type="checkbox" checked={!!b.sansJustificatif} onPointerDown={garde} onChange={(e) => patch({ sansJustificatif: e.target.checked })} />Sans justificatif, c’est normal</label>);
@@ -379,7 +381,7 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
   const rec = fait.plan?.recurrence;
   const fin = rec?.endDate;
   const origine = f.refundOfId ? txs.find((t) => t.id === f.refundOfId) : undefined;
-  const ech = rec ? echeances(tx.date, rec.frequency, fin, 4) : [];
+  const ech = rec ? datesDesOccurrences(tx.date, rec.frequency, fin, apayer ? f.dueDate : undefined, 4) : [];
   const dejaAvoirs = origine ? txs.filter((t) => t.finance?.refundOfId === origine.id && !t.finance?.voidedAt && t.id !== tx.id).reduce((n, t) => n + (t.finance?.amountCents ?? 0), 0) : 0;
   return <>
     <div className="sai-voile" />

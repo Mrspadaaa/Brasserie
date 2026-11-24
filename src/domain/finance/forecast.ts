@@ -108,12 +108,26 @@ export function forecastHorizonEnd(asOf: string, horizon: 30 | 90 | 365): string
 export function decalageDeLEcheance(plan: FinancialPlan, liees: FinanceTransaction[]): (date: string) => string {
   const debut = isoDate(plan.date);
   const premiere = debut ? liees.find(t => t.finance?.occurrenceId === `${plan.id}:${debut}`) : undefined;
-  const echeance = isoDate(premiere?.finance?.dueDate);
+  return decalageEntre(debut, isoDate(premiere?.finance?.dueDate));
+}
+/** Le délai d'une date à son échéance, appliqué à une autre date (mois entiers si même quantième, sinon jours). Sans échéance après la date : aucun décalage. */
+export function decalageEntre(debut: string | undefined, echeance: string | undefined): (date: string) => string {
   if (!debut || !echeance || echeance <= debut) return date => date;
   const mois = (Number(echeance.slice(0, 4)) - Number(debut.slice(0, 4))) * 12 + Number(echeance.slice(5, 7)) - Number(debut.slice(5, 7));
   if (mois > 0 && echeance.slice(8) === debut.slice(8)) return date => anchoredDate(date, mois);
   const jours = Math.round((Date.parse(`${echeance}T12:00:00Z`) - Date.parse(`${debut}T12:00:00Z`)) / 86_400_000);
   return date => new Date(Date.parse(`${date}T12:00:00Z`) + jours * 86_400_000).toISOString().slice(0, 10);
+}
+/**
+ * E44-1 : la règle UNIQUE des dates d'une écriture qui revient, partagée par l'aperçu et la carte de fin de la saisie et par le Calendrier (E38-6).
+ * Ce sont les occurrences du plan (`planOccurrences`), chacune décalée du délai de la première (`decalageEntre`) : une écriture « à payer d'ici le 24.12 »
+ * saisie le 24.11 revient 24.12, 24.01, 24.02 (mensuelle) ou 24.12, 24.03 (trimestrielle), et non 24.11, 24.12 … : la date de la pièce reste celle du jour,
+ * mais ce que le Calendrier montre est l'échéance. Payée (sans échéance après sa date), elle garde ses dates. La fin s'applique à la date non décalée, comme au Calendrier.
+ */
+export function datesDesOccurrences(debut: string, frequency: 'monthly' | 'quarterly' | 'yearly', endDate: string | undefined, echeance: string | undefined, n: number): string[] {
+  const plan: FinancialPlan = { id: 'saisie', title: '', date: debut, amountCents: 0, direction: 'out', category: 'chargesFixes', source: 'recurring', status: 'active', createdAt: '', recurrence: { frequency, endDate } };
+  const decaler = decalageEntre(isoDate(debut), isoDate(echeance));
+  return planOccurrences(plan, debut, '9999-12-31').slice(0, n).map(o => decaler(o.date));
 }
 export function planOccurrences(plan: FinancialPlan, from: string, to: string): Array<{ id: string; date: string }> {
   const start = isoDate(plan.date);

@@ -49,6 +49,16 @@ export const CATEGORIES_ACHAT: Array<{ id: FinanceCategory; nom: string }> = [
 /** Hors résultat : un apport ou un prélèvement n'entre jamais dans Mon mois (`periodeSynthese`). */
 export const horsResultat = (g: GenreId) => GENRES[g].kind === 'contribution' || GENRES[g].kind === 'withdrawal';
 
+/**
+ * E44-3 : l'indication du champ Référence, UNE règle pour la saisie et Modifier. Seule une facture (achat, charge, vente) porte un n° de facture ;
+ * un apport, un prélèvement privé et un remboursement n'en ont pas : « Référence, facultatif ». Un impôt : « Période, référence ».
+ */
+export function indicationReference(g: GenreId): string {
+  if (g === 'impot') return 'Période, référence';
+  if (horsResultat(g) || GENRES[g].kind === 'refund') return 'Référence, facultatif';
+  return 'Référence (n° de facture)';
+}
+
 /* ---------- montants et dates ---------- */
 /** « 2 000,5 », « 29.90 », « 400 » → centimes ; `undefined` si illisible ou nul (l'inconnu n'est jamais 0). */
 /* Lot 11 (hors lot du lot 6) : la lecture commune de toute saisie de nombre (lireDecimal : « 12,50 », « 1'234.50 », « 1.234,50 ») ;

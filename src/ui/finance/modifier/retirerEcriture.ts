@@ -1,7 +1,7 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { planRetrait } from '../../../domain/finance/correctionMontant';
-import { isActiveTransaction } from '../../../domain/finance/ledger';
+import { ecrituresLieesDans } from '../../../domain/finance/retraitEcriture';
 import { planApresRetrait } from '../../../domain/finance/upgradeRing';
 import { planApresRetraitRecurrent } from '../../../domain/finance/retraitEcriture';
 import { FinanceService } from '../../../services/financeService';
@@ -22,17 +22,7 @@ export { planRetrait };
  * Rend les écritures liées encore en vigueur, les plus éloignées d'abord (un avoir d'un avoir se retire avant son avoir).
  */
 export function ecrituresLiees(pieceId: string): Transaction[] {
-  const toutes = StorageService.getTransactions();
-  const sortie: Transaction[] = [];
-  const vues = new Set([pieceId]);
-  const descendre = (id: string) => {
-    for (const t of toutes) {
-      if (!isActiveTransaction(t) || t.finance?.refundOfId !== id || vues.has(t.id)) continue;
-      vues.add(t.id); descendre(t.id); sortie.push(t);
-    }
-  };
-  descendre(pieceId);
-  return sortie;
+  return ecrituresLieesDans(pieceId, StorageService.getTransactions()) as Transaction[];
 }
 
 /** Retire une écriture : contre-paiement de chaque paiement en vigueur, puis annulation (refuse, avec sa raison, ce que `revertTransaction` refuse). */

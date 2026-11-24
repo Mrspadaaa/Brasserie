@@ -21,6 +21,7 @@ import { db } from './firebase';
 import { BUSINESS_COLLECTIONS, BusinessCollection } from '../../functions/src/dataSchema';
 import { FINANCIAL_SYNC_COLLECTIONS } from '../../functions/src/financialSyncTypes';
 import { startFinancialLedgerSync, type FinancialLedgerState } from './financialLedgerSync';
+import { texteErreurServeur } from '../domain/finance/erreurServeur';
 
 /**
  * Couche d'accès Firestore.
@@ -124,7 +125,7 @@ function flushWrites(): void {
     writeFailure = unresolvedWriteError();
   }, err => {
     const rejected = !dispatched || permanentWriteFailure(err);
-    writeFailure = `${rejected ? 'Enregistrement refusé' : 'Confirmation incertaine'} : ${err.message}`;
+    writeFailure = `${rejected ? 'Enregistrement refusé' : 'Confirmation incertaine'} : ${texteErreurServeur(err)}`;
     operations.forEach(op => updateWriteState(op, rejected ? 'rejected' : 'pending', writeFailure!));
     lastError = writeFailure;
     console.error('[Firestore] atomic write', err);
@@ -197,7 +198,7 @@ function openCollection(name: CollectionName) {
       if (!current()) return;
       lastError = err.code === 'permission-denied'
         ? "Accès refusé par les règles de sécurité Firestore. Ce compte Google n'est pas autorisé."
-        : `Synchronisation ${name} impossible : ${err.message}`;
+        : `Synchronisation ${name} impossible : ${texteErreurServeur(err)}`;
       console.error(`[Firestore] onSnapshot ${name}`, err);
       // A failed Firestore listener is terminal; it must be attached again on recovery.
       failedCollections.add(name);
@@ -498,7 +499,8 @@ export const FirestoreRepo = {
         notify();
       }
     })).then(controller => { if (!syncing || epoch !== syncEpoch) controller.stop(); else { financialStarting = false; financialController = controller; } })
-      .catch(error => { if (syncing && epoch === syncEpoch) { financialStarting = false; financialState = { ...financialState, loading: false, error: (error as Error).message }; notify(); } });
+      .catch(error => { if (syncing && epoch === syncEpoch) { financialStarting = false; financialState = { ...financialState, loading: false, error: `Synchronisation des finances impossible : ${texteErreurServeur(error)}` };
+        console.error('[Firestore] financial sync', error); notify(); } });
   },
 
   /** Ouvre les abonnements temps réel. Idempotent. */

@@ -14,6 +14,7 @@ import { FactureLignes } from './fiche/FactureLignes';
 import { dateFiche, MODE_COURT } from './fiche/format';
 import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
+import { ecrituresLieesDans, phraseDuRetrait } from '../../domain/finance/retraitEcriture';
 import { estMouvementPrive, paiementsVivants } from '../../domain/finance/correctionMontant';
 import { retirerEcriture } from './modifier/retirerEcriture';
 import { libelleEcriture } from '../../domain/finance/libelleEcriture';
@@ -87,7 +88,8 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   /* u1 (20) : une pièce payée se retire en un geste (contre-paiements, puis annulation) ; les règles interdisent de supprimer, la confirmation le dit. */
   const retirer=async()=>{setOccupe(true);try{await retirerEcriture(tx.id,payments,{aujourdhui:todayISO(),maintenant:new Date().toISOString()});setError('');setCorrection(null);}catch(e){setError((e as Error).message);}finally{setOccupe(false);}};
   /* E41-1 : les remboursements liés se retirent avec la pièce ; la confirmation le dit, et un refus s'écrit sous le bouton touché (jamais seulement en haut de la fiche). */
-  const liees=transactions.filter(c=>c.id!==tx.id&&isActiveTransaction(c)&&c.finance?.refundOfId===tx.id);
+  /* E44-2 : les mêmes écritures liées que celles que le retrait emporte (le registre, pas la liste affichée, qui ne montre pas les avoirs) ; la liste reçue complète le registre. */
+  const liees=ecrituresLieesDans(tx.id,[...StorageService.getTransactions(),...transactions.filter(c=>!StorageService.getTransactions().some(r=>r.id===c.id))]);
   const tiers=[libelleEcriture(tx,CATEGORY_LABELS[tx.category]??tx.category),transactionVendor(tx),dateFiche(tx.date)].filter(Boolean).join(' · ');
   const nomPiece=tx.proofFileName||tx.finance?.invoiceNumber;
   return <Sheet open title={tx.description} subtitle={tiers} onClose={onClose} className="finance-sheet fiche-sheet">
@@ -145,7 +147,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         {!paiements.length&&<p className="fiche-note">Aucun paiement daté enregistré.</p>}
       </details>
       {!voided&&<details className="fiche-dt"><summary><span>Corriger une erreur de saisie</span><ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps"><p className="fiche-note">Une annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.</p><button type="button" className="fiche-b2" onClick={()=>setCorrection('retrait')}>Retirer cette écriture</button></div></details>}
-      {correction==='retrait'&&<div className="fiche-corriger"><p>Retirer cette écriture ? {enVigueur.length>0?<>Son paiement de {formatCHF(enVigueur.reduce((n,p)=>n+p.amountCents,0))} est d’abord inversé, puis l’écriture est annulée. </>:'Aucun paiement n’est noté : rien à inverser. '}{liees.length>0&&<>{liees.length>1?'Ses remboursements liés':'Son remboursement lié'} ({liees.map(l=>`${l.description} ${formatCHF(transactionAmount(l))}`).join(', ')}) {liees.length>1?'sont retirés avec elle':'est retiré avec elle'}, paiement inversé compris. </>}Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre.</p><div className="finance-actions"><button type="button" className="finance-action secondary" disabled={occupe} onClick={()=>{setError('');setCorrection(null);}}>Garder</button><button type="button" className="finance-action danger" disabled={occupe} onClick={retirer}>Confirmer le retrait</button></div>{error&&<p role="alert" className="fiche-erreur">{error}</p>}</div>}
+      {correction==='retrait'&&<div className="fiche-corriger"><p>{phraseDuRetrait(enVigueur.reduce((n,p)=>n+p.amountCents,0),liees)}</p><div className="finance-actions"><button type="button" className="finance-action secondary" disabled={occupe} onClick={()=>{setError('');setCorrection(null);}}>Garder</button><button type="button" className="finance-action danger" disabled={occupe} onClick={retirer}>Confirmer le retrait</button></div>{error&&<p role="alert" className="fiche-erreur">{error}</p>}</div>}
       {correction&&correction!=='retrait'&&<div className="fiche-corriger"><p>{correction==='void'?'Confirmer l’annulation de cette écriture erronée ?':'Ce paiement a été saisi par erreur. Sa contre-écriture reprendra la date d’origine ; pour un remboursement réel, utilise un avoir.'}</p><div className="finance-actions"><button type="button" className="finance-action secondary" onClick={()=>setCorrection(null)}>Garder</button><button type="button" className="finance-action danger" onClick={()=>apply(()=>{if(correction==='void'){const result=StorageService.revertTransaction(tx.id);if(!result.success)throw Error(result.message);}else{const p=payments.find(p=>p.id===correction)!;FinanceService.recordPayment({...p,id:`CONTRE-${p.id}`,direction:p.direction==='in'?'out':'in',reversalOfId:p.id,note:'Correction d’un paiement saisi par erreur',recordedAt:new Date().toISOString()});}})}>Confirmer la correction</button></div></div>}
     </div>
   </Sheet>;
