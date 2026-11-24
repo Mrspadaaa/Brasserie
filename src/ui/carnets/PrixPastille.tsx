@@ -10,7 +10,7 @@
  */
 import React, { useState } from 'react';
 import { ChevronUp, Link2, Pencil } from 'lucide-react';
-import { articleHonnete, quantiteArticle, texteParUnite } from '../../domain/carnets/prixUnitaire';
+import { articleHonnete, prixPourUnite, quantiteArticle, textePrixUnite, texteParUnite } from '../../domain/carnets/prixUnitaire';
 import { convertiChf, estEtranger, mentionFrais, portCentimes, renduArticle, tauxLu, tauxVersChf, TVA_IMPORT, type PrixRendu } from '../../domain/carnets/prixRendu';
 import { dateCourte, mentionTaxe, montant, type ArticleV } from './EtatIA';
 
@@ -39,7 +39,9 @@ export function rendu(a: ArticleV, taux?: number): PrixRendu | null {
 export function PrixPastille(p: PrixPastilleProps) {
   const a = articleHonnete(p.article);
   /* T28-6 : la quantité se dit à côté du prix (« 100 g », « 1 kg ») ; le prix par kilo est dans la ligne de détail */
-  const quantite = quantiteArticle(a);
+  const q0 = quantiteArticle(a);
+  /* R49 : un prix donné à l'unité n'a pas de conditionnement : ni « 1 kg » à côté du prix, ni CHF/kg sous un autre nom (le détail dit « 0,1044 CHF/g · 80 CHF/kg dès 1 kg ») */
+  const quantite = q0 && !q0.deLUnite ? q0 : null;
   const parUnite = a.prixCentimes === undefined ? null : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF');
   const eur = estEtranger(a);
   const r = rendu(a, p.taux);
@@ -51,7 +53,8 @@ export function PrixPastille(p: PrixPastilleProps) {
     const connu = r.totalChf !== undefined;
     /* R43 (C61-4) : l'euro et son rendu disent leur sachet (« 50 g · 69,20 CHF/kg »), comme le tableau et Comparer : jamais un nombre nu */
     const conv = convertiChf(a, p.taux);
-    const parU = quantite ? (conv !== undefined ? texteParUnite(a, conv, 'CHF') : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF')) : null;
+    const chfU = prixPourUnite(a, p.taux);
+    const parU = quantite ? (conv !== undefined && chfU !== null ? texteParUnite(a, chfU, 'CHF') : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF')) : null;
     const qte = quantite && parU ? <small className="cn-pastille-qte" data-quantite>{quantite.texte} · {parU}</small> : null;
     return (
       <button type="button" className={`cn-pastille-prix cn-pastille-est${connu ? '' : ' cn-pastille-pd'}`} data-eur aria-expanded={!!p.ouvert} onClick={p.onBascule}
@@ -127,8 +130,11 @@ export function prixUnique(a: ArticleV, taux?: number): { montant: string; devis
   const t = prixTexteArticle(a, taux);
   return t ? { ...t, rendu: false } : null;
 }
-export function PrixTexte({ a, taux, muet }: { a: ArticleV; taux?: number; muet?: boolean }) {
-  const t = prixTexteArticle(a, taux);
+export function PrixTexte({ a, taux, muet, converti }: { a: ArticleV; taux?: number; muet?: boolean; converti?: boolean }) {
+  /* R50 (C64-3) : la carte de la liste dit le même prix que le tableau, la feuille, la fiche et Comparer (≈4, le rendu) ; elle disait ≈3, le prix converti nu. `converti` : la fiche complète de
+     l'article du carnet garde le converti suivi de l'original et de sa mention (D447, carnetsPrixHorsFranc). */
+  const u = converti ? null : prixUnique(a, taux);
+  const t = u ? { montant: u.montant, devise: u.devise, approx: u.approx } : prixTexteArticle(a, taux);
   if (!t) return null;
   return (
     <span className="cn-nowrap">
@@ -145,8 +151,10 @@ export function detailPrix(a: ArticleV, taux?: number): string | null {
   const converti = convertiChf(a, taux) !== undefined;
   /* T28-6 : « 1 kg · 72,50 CHF/kg » : deux offres de quantités différentes se lisent à la même mesure */
   const q = quantiteArticle(a);
-  const parUnite = q ? texteParUnite(a, converti ? convertiChf(a, taux) : a.prixCentimes, converti ? 'CHF' : (a.devise ?? 'CHF')) : null;
-  const parts = [q ? q.texte : null, parUnite, converti ? prixOrigine(a) : mentionTaxe(a.taxe).trim() || null, portDit(a), converti || estEtranger(a) ? mentionFrais(a) : null];
+  const chfU = converti ? prixPourUnite(a, taux) : null;
+  const parUnite = q ? texteParUnite(a, converti ? (chfU ?? convertiChf(a, taux)) : a.prixCentimes, converti ? 'CHF' : (a.devise ?? 'CHF')) : null;
+  const unite = a.prixUnite && !converti ? textePrixUnite(a.prixUnite, a.devise ?? 'CHF') : null;
+  const parts = [unite ?? (q && !q.deLUnite ? q.texte : null), unite ? null : parUnite, converti ? prixOrigine(a) : mentionTaxe(a.taxe).trim() || null, portDit(a), converti || estEtranger(a) ? mentionFrais(a) : null];
   const t = parts.filter(Boolean).join(' · ');
   return t || null;
 }

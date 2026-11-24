@@ -43,17 +43,24 @@ export function mesureNormalisee<T extends Carac>(c: T): T {
 
 /* ---------------------------------------------------------------- familles de synonymes */
 
-interface Famille { canon: string; noms: ReadonlySet<string> }
-const famille = (canon: string, noms: string[]): Famille => ({ canon, noms: new Set(noms) });
+interface Famille { canon: string; noms: ReadonlySet<string>; /** le nom de la colonne : toujours le canonique (« Arômes », « Origine »), quelle que soit l'écriture lue en premier */ enTete?: true }
+const famille = (canon: string, noms: string[], enTete?: true): Famille => ({ canon, noms: new Set(noms), ...(enTete ? { enTete } : {}) });
 /** Un fait, plusieurs écritures (observées sur les chambres froides, les marmites, les fermenteurs). */
 const FAMILLES: readonly Famille[] = [
   famille('Température', ['temperature', 'plage de temperature', 'temperature de service', 'temperature de fonctionnement']),
   famille('Volume', ['volume', 'capacite', 'contenance', 'contenu', 'volume utile', 'volume total', 'volume utile total']),
   famille('Tension', ['tension', 'branchement electrique', 'raccordement electrique']),
   famille('Type de refroidissement', ['type de refroidissement', 'refroidissement', 'refrigeration']),
-  famille('Fluide frigorigène', ['fluide frigorigene', 'type de refrigerant', 'refrigerant'])
+  famille('Fluide frigorigène', ['fluide frigorigene', 'type de refrigerant', 'refrigerant']),
+  /* R50 (C64-4, 24.11) : MotlerHops publie « Arômes et saveurs », hopfenmarkt « Pays de récolte » : la fiche disait « Non publié : Arômes, Origine » et Comparer « ? » d'une valeur lue.
+     Les houblons se comparent par arômes et par origine (penser brasseur) : ces écritures disent la même caractéristique que les colonnes « Arômes » et « Origine ». */
+  famille('Arômes', ['aromes', 'aromes et saveurs', 'aromes saveurs', 'saveurs', 'profil aromatique', 'aroma', 'aromen', 'aromaprofil', 'flavour', 'flavor', 'flavours', 'flavors', 'aroma profile'], true),
+  famille('Origine', ['origine', 'pays de recolte', 'pays d origine', 'pays d\'origine', 'pays d’origine', 'land der ernte', 'herkunft', 'herkunftsland', 'ursprung', 'anbauland', 'country of origin', 'origin', 'growing region'], true)
 ];
 const familleDe = (nom: string): Famille | undefined => { const k = cleDeNom(nom); return FAMILLES.find(f => f.noms.has(k)); };
+
+/** Le nom sous lequel une caractéristique se met en colonne : le canonique pour « Arômes » et « Origine » (R50, C64-4), le nom lu sinon. */
+export const nomEnColonne = (nom: string): string => { const f = familleDe(nom); return f?.enTete ? f.canon : nom; };
 
 /** Deux noms disent-ils la même caractéristique ? Même nom, ou deux écritures de la même famille (« Capacité » et « Volume »). */
 export function memeCaracteristique(a: string, b: string): boolean {

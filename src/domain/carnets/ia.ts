@@ -308,6 +308,12 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     if (lienIci) {
       ligne.carnetId = ouvert!.id;
       if (connuDemande && idDemande !== ouvert!.id) ligne.carnetSuggere = idDemande;
+    } else if (ouvert && connuDemande && idDemande !== ouvert.id) {
+      /* R47 (C64-8, 24.11, données réelles touchées) : un message tapé dans un carnet OUVERT reste dans ce carnet. « Achat prévu fin du mois »,
+         tapé dans un carnet de test, a été écrit par l'IA dans le carnet réel des achats. Le carnet que l'IA désigne n'est qu'une suggestion
+         (« Déplacer vers … ? », au toucher du brasseur), jamais une écriture. */
+      ligne.carnetId = ouvert.id;
+      ligne.carnetSuggere = idDemande;
     } else if (connu) ligne.carnetId = idDemande;
     else if (ailleurs) ligne.carnetNeuf = ailleurs.titre;
     else if (connuDemande) ligne.carnetSuggere = idDemande;

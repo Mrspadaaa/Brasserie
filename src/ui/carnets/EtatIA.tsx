@@ -28,6 +28,8 @@ export interface ArticleV {
   /** D446, D447 : toutes les photos de la page, le prix HT ou TTC, le port vers la Suisse lu, le cours du jour (BCE) ; absents quand la page ne les donne pas. */
   photos?: string[]; taxe?: 'ht' | 'ttc'; prixTTCCentimes?: number;
   livraison?: { prixCentimes?: number; devise?: string; gratuite?: true; refusee?: true }; change?: { taux: number; date: string; source: 'BCE' };
+  /** PX (R39 à R41), R48 et R49 : la quantité du prix, les conditionnements publiés et le prix à l'unité avec ses paliers (types du modèle). */
+  conditionnement?: import('../../domain/carnets/modele').ConditionnementArticle; prixUnite?: import('../../domain/carnets/modele').PrixUniteArticle; offres?: import('../../domain/carnets/modele').OffreArticle[];
   lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible' | 'introuvable'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
 }
 export interface NoteV { id: string; texte: string; genre: GenreNote; le?: string; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }

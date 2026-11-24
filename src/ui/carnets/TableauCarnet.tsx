@@ -193,7 +193,9 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                       {/* C53-4 / R19 : la quantité et le prix unitaire (« 50 L · 10,40 CHF/L ») se lisent ICI, dans la colonne du nom qui a la place, entiers ; la colonne prix ne dit que le prix.
                           Chaque morceau ne se coupe pas (le nombre reste avec son unité), la ligne se replie entre eux. */}
                       {!l.ecarte && l.quantite && l.parUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.quantite}</span> · <span className="cn-nowrap">{l.parUnite}</span></span>}
-                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) || (l.quantite && l.parUnite) ? ' · ' : ''}{moinsBien}</span>}
+                      {/* R49 : un prix donné à l'unité (Brau : « 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg ») se lit ici, à la place d'une quantité de conditionnement qu'il n'a pas */}
+                      {!l.ecarte && !l.quantite && l.prixUnite && <span className="cn-mut">{sous ? ' · ' : ''}<span className="cn-nowrap">{l.prixUnite}</span></span>}
+                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) || (l.quantite && l.parUnite) || l.prixUnite ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
                   {cols.map((c, ci) => {

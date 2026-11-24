@@ -5,7 +5,7 @@ import { stockStatus } from './brewerSuppliers.js';
 import { bruitDeBoutique, completerValeurs, memeMesure, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
 import { montantDit } from './lienValeurs.js';
 import { libelleFrancais, retenir } from './lienLibelles.js';
-import { lireConditionnements, parTaille, prixParBase, uniteDeBase, type OffreConditionnee, type PrixUnite, type UniteQuantite } from './lienConditionnement.js';
+import { lireConditionnements, parTaille, prixAuPalier, prixParBase, uniteDeBase, type OffreConditionnee, type PrixUnite, type UniteQuantite } from './lienConditionnement.js';
 
 /** Ce qu'on LIT d'une page (avant le tri) ; ce qu'on GARDE après le tri de l'essentiel est plafonné à `GARDEES` (C48-5 : le plafond ne se prend jamais dans l'ordre de la page). */
 const LUES = 60, GARDEES = 24;
@@ -676,7 +676,9 @@ export function extraireProduit(html: string, url: URL): Extraction {
   let conditionnement: { valeur: number; unite: UniteQuantite } | undefined, prixUnite: PrixUnite | undefined, noteConditionnement = '';
   const sansDouteAuPoids = () => { const i = doutes.indexOf('prix donné au poids, sans conditionnement : non retenu'); if (i >= 0) doutes.splice(i, 1); };
   if (uniteLue && deviseCond) {
-    prix = prixParBase(uniteLue.prix, uniteLue.unite); devise = deviseCond; prixDes = false; sourcePrix = 'conditionnement';
+    /* R49 (C64-2) : 1 kg au palier. Brau- und Rauchshop : 0,1044 CHF le gramme, 0,08 dès 1 000 g ; le kilo y coûte 80 CHF, pas 104,40 (le tarif de base). Le prix d'1 unité de
+       base est celui du palier le plus haut qui commence au plus à cette unité (`prixAuPalier`) ; le prix à l'unité garde le tarif de base ET ses paliers, pour les dire. */
+    prix = prixParBase(prixAuPalier(uniteLue), uniteLue.unite); devise = deviseCond; prixDes = false; sourcePrix = 'conditionnement';
     conditionnement = { valeur: 1, unite: uniteDeBase(uniteLue.unite) }; prixUnite = uniteLue; prixAuPoids = false; sansDouteAuPoids();
     noteConditionnement = ` · 1 ${conditionnement.unite}, prix donné à l'unité`;
   } else if (offresCond.length) {
@@ -776,7 +778,8 @@ export function extraireProduit(html: string, url: URL): Extraction {
   if (qVariante && prix !== undefined && !QUANTITE.test(nom ?? '') && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
     valeurs.push({ nom: 'Conditionnement', valeur: qVariante[1].replace('.', ','), unite: qVariante[2].toLowerCase() === 'l' ? 'L' : qVariante[2].toLowerCase() });
   }
-  if (conditionnement && prix !== undefined && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
+  /* R49 : un prix donné à l'unité n'a pas de conditionnement (le « 1 kg » n'est qu'une base de calcul) : aucune ligne « Conditionnement 1 kg » inventée */
+  if (conditionnement && prix !== undefined && !prixUnite && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
     valeurs.push({ nom: 'Conditionnement', valeur: String(conditionnement.valeur).replace('.', ','), unite: conditionnement.unite === 'l' ? 'L' : conditionnement.unite });
   }
   return {

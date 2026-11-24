@@ -41,8 +41,8 @@ describe('R39 et R41 : MotlerHops (Shopify) — le prix lu est celui d\'un condi
 
 describe('R39, R40, R41 : Brau- und Rauchshop (prix au gramme, paliers) — jamais « 0,10 »', () => {
   const p = lu(65, BRAU);
-  it('le prix lu est celui du kilo converti du gramme : 104,40 CHF, jamais 0,10', () => {
-    expect(p.prix).toBeCloseTo(104.4, 2);
+  it('le prix lu est celui du kilo AU PALIER (R49, C64-2 : 1 000 g = 0,08 CHF le gramme, 80 CHF), jamais le tarif de base 104,40 ni 0,10', () => {
+    expect(p.prix).toBeCloseTo(80, 2);
     expect(p.devise).toBe('CHF');
     expect(p.conditionnement).toEqual({ valeur: 1, unite: 'kg' });
   });
@@ -102,7 +102,7 @@ describe('D450 : l\'IA lit toujours la page entière ; deux sources qui se contr
     const r = await completerParIA({ ...p, statut: 'lue', luLe: 0 } as any, page(65), appel as any);
     expect((r.etapes ?? []).find((e) => e.nom === 'ia')?.statut).not.toBe('douteux');
     expect((r.etapes ?? []).find((e) => e.nom === 'controle')?.statut).not.toBe('douteux');
-    expect(r.prix).toBeCloseTo(104.4, 2);
+    expect(r.prix).toBeCloseTo(80, 2);
   });
   it('MotlerHops : l\'IA répond 3,72 EUR pour 50 g : accord, le prix reste 3,72 pour 50 g', async () => {
     const p = lu(64, MOTLER);

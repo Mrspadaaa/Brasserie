@@ -179,7 +179,7 @@ export function CarteArticle(p: CarteArticleProps) {
           {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{vues.join(' · ')}{reste > 0 ? <span className="cn-mut"> · +{reste}</span> : null}</span>}
           {(prix || dispoDe(a)) && (
             <span className="cn-ligne cn-article-pied">
-              {prix && <PrixTexte a={a} taux={p.taux} />}
+              {prix && <PrixTexte a={a} taux={p.taux} converti />}
               {dispoDe(a) && <span className={`cn-pastille ${dispoClasse(dispoDe(a)!)}`}>{dispoDe(a)}</span>}
             </span>
           )}
@@ -280,9 +280,14 @@ export function CarteClassee(p: CarteClasseeProps) {
   const t = valeurTexte(v);
   const uniteAjoutee = unite && t !== null && !t.endsWith(unite) ? unite : undefined;
   const n = nombreValeur(v);
-  const pos = n !== null && p.bornes ? (p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min)) : null;
-  /* R46 (C61-5) : la jauge garde son sens (petit à gauche, grand à droite : c54 R22) ; la cible du critère s'y repère d'un trait, placé sur sa valeur (jamais « plus grand = mieux » seul) */
-  const posCible = pos !== null && p.bornes && p.cible !== undefined && p.bornes.max !== p.bornes.min ? Math.min(1, Math.max(0, (p.cible - p.bornes.min) / (p.bornes.max - p.bornes.min))) : null;
+  /* R50 (C61-5 rouvert, 24.11) : un critère SANS cible garde le sens de la jauge (petit à gauche, grand à droite : c54 R22). Un critère À CIBLE (« Marmite de brassage 50 L ») la dit autrement : la jauge est PLEINE
+     sur la cible et se vide avec l'écart (la marmite de 50 L pleine, le frigo de 242 L vide) ; le repère de la cible (R46) ne suffisait pas, la jauge du 242 restait pleine et verte. L'écart se mesure à la borne la plus lointaine. */
+  const cibleDite = p.cible !== undefined && Number.isFinite(p.cible) && !!p.bornes;
+  const ecartMax = cibleDite ? Math.max(Math.abs(p.bornes!.min - p.cible!), Math.abs(p.bornes!.max - p.cible!)) : 0;
+  const pos = n !== null && p.bornes
+    ? (cibleDite ? (ecartMax === 0 ? 1 : Math.min(1, Math.max(0, 1 - Math.abs(n - p.cible!) / ecartMax)))
+      : p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min))
+    : null;
   const [rendu, setRendu] = React.useState(false);
   const qui = [a.vendeur ?? a.domaine, a.pays].filter(Boolean).join(' · ');
   return (
@@ -310,9 +315,8 @@ export function CarteClassee(p: CarteClasseeProps) {
         {/* C52-1 : la jauge ne se dessine que pour une valeur chiffrée placée entre les bornes ; une plage (« 0 à 8 °C »), des dimensions ou
             une valeur inconnue n'ont pas de position : pas de piste vide, qui se lirait comme une valeur nulle (« Veiller » reste à droite) */}
         {pos !== null && (
-          <span className="cn-reglette" aria-hidden>
+          <span className="cn-reglette" aria-hidden {...(cibleDite ? { 'data-cible': p.cible } : {})}>
             <span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} />
-            {posCible !== null && <span className="cn-reglette-cible" data-cible={p.cible} style={{ left: `${Math.round(posCible * 100)}%` }} />}
           </span>
         )}
         {/* C50-8 : « Veiller » et son interrupteur vont ensemble, jamais coupés : le pied passe à la ligne avant de pousser l'interrupteur hors de l'écran */}

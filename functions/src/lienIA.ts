@@ -1,6 +1,6 @@
 import { load } from 'cheerio/slim';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
-import type { PageLue } from './carnetIA.js';
+import type { EtapeLien, PageLue } from './carnetIA.js';
 import { couper, montantsDe, positionsMontant } from './lienProduit.js';
 import { bruitDeBoutique } from './lienPlateforme.js';
 import { retenir } from './lienLibelles.js';
@@ -345,7 +345,14 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   const deja = new Set((out.valeurs ?? []).map((v) => norm(v.nom)));
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
   /* C48-5 : le plafond (24) se prend après le tri de l'essentiel : une température trouvée par l'IA ne tombe pas derrière 24 lignes de la page */
-  if (nouvelles.length) { out.valeurs = retenir([...(out.valeurs ?? []), ...nouvelles], 24); ajouts.push(`${nouvelles.length} caract.`); }
+  if (nouvelles.length) {
+    out.valeurs = retenir([...(out.valeurs ?? []), ...nouvelles], 24); ajouts.push(`${nouvelles.length} caract.`);
+    /* R50 (C64-5, 24.11) : l'étape « Caractéristiques » dit ce qui a été lu, IA comprise : elle restait « absent [Compléter] » à côté d'une carte qui montrait Alpha, Arômes et la fiche 7 lignes */
+    const total = out.valeurs.length;
+    const k = etapes.findIndex((e) => e.nom === 'caract');
+    const dite: EtapeLien = { nom: 'caract', statut: 'trouve', detail: `${total} caractéristique${total > 1 ? 's' : ''} : ${total - nouvelles.length ? `${total - nouvelles.length} de la page, ` : ''}${nouvelles.length} lue${nouvelles.length > 1 ? 's' : ''} par l'IA` };
+    if (k >= 0) etapes[k] = dite; else etapes.push(dite);
+  }
   const contreditFinal = !accordPrix(p, gardee);
   /* PX : la page n'avait pas de prix, l'IA en lit un avec sa quantité : le prix à l'unité devient le prix du kilo (R40), sinon le prix garde sa quantité (R39) */
   if (out.prix === gardee.prix && gardee.quantite && !out.conditionnement) {

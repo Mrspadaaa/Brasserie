@@ -44,7 +44,18 @@ export function creerRangementCarnets(x: RangementV) {
       const r = appliquer(remplacerRangement(magasin.lire(), { messageId, lignes: [], rangement: 'locale' }));
       if (r) inversesLiens.current?.set(messageId, r.inverse);
     },
-    messageExiste: messageId => lireMessages(magasin.lire()).some(m => m.id === messageId),
+    /* R50 (C64-7, 24.11) : « Lecture de lien interrompue : 2 à reprendre » parlait de lectures finies (leur jeton restait gardé) et de carnets supprimés ; « Reprendre » aurait relancé des
+       lectures payantes pour rien. Une lecture ne se propose que si son message existe, que son carnet existe encore et qu'aucun article du message n'est déjà lu (lue, illisible, introuvable). */
+    messageExiste: messageId => {
+      const etat = magasin.lire();
+      const m = lireMessages(etat).find(x => x.id === messageId);
+      if (!m) return false;
+      const carnets = lireCarnets(etat, { archives: true });
+      const effets = m.carnetMessage.effets;
+      if (effets.length && !effets.some(e => carnets.some(c => c.id === e.carnetId))) return false;
+      const finie = effets.some(e => e.cible === 'article' && carnets.find(c => c.id === e.carnetId)?.carnet.articles.some(a => a.id === e.id && a.lecture !== 'a-lire' && a.lecture !== 'en-cours'));
+      return !finie;
+    },
     /* T28-1 : le carnet où ce message a été écrit, lu sur le message lui-même (rouvert l'app ailleurs, le lien y revient) */
     depuisDuMessage: messageId => {
       const m = lireMessages(magasin.lire()).find(x => x.id === messageId);
@@ -242,7 +253,7 @@ export function creerRangementCarnets(x: RangementV) {
         /* n° 3 et 6 : écrit dans un carnet ouvert, l'IA met en forme (critère, façon, article lu, note). Test en ligne 2 (bloquant 2) : le
            carnet qu'elle rend fait foi (« doit tenir 80 °C » écrit dans Pompe reste dans Pompe, même si un carnet porte ce titre), et la
            sorte qu'elle donne aussi ; sans carnet rendu, le carnet annoncé. */
-        const dest = (l: LigneCarnet): Destination => (an.choisi ? { carnetId: an.carnetId } : connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf, l.domaine) : { carnetId: an.carnetId });
+        const dest = (l: LigneCarnet): Destination => (an.choisi || connu(l.carnetId) ? { carnetId: an.carnetId } : l.carnetNeuf ? versNeufIA(l.carnetNeuf, l.domaine) : { carnetId: an.carnetId });
         /* Paquet 1, PCN-183 (test en ligne 3) : une idée que l'IA range dans un carnet neuf (« Réfractomètre », écrit dans le Fermenteur)
            ouvre ce carnet ; elle n'est plus jetée, la phrase brute ne reste pas en note ici (D383). */
         const ideeNeuve = (l: LigneCarnet) => l.sorte === 'idee' && !an.choisi && !connu(l.carnetId) && !!(l.carnetNeuf ?? l.titre);

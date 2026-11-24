@@ -107,9 +107,10 @@ describe('L-2 : depuis la liste, un carnet existant n’est jamais écrit sans c
     expect(lignes.some(l => l.titrePropose)).toBe(false);
   });
 
-  it('depuis un carnet ouvert, le carnet rendu par l’IA fait toujours foi (inchangé)', () => {
+  it('R47 (C64-8) : depuis un carnet ouvert, le carnet rendu par l’IA n’est qu’une suggestion : la ligne reste dans l’ouvert', () => {
     const lignes = lireReponse({ lignes: [{ sorte: 'note', texte: 'Isoler le sol', carnetId: CHAMBRE.id }] }, { texte: 'isoler le sol', carnets: [OUVERT, CHAMBRE], depuis: OUVERT.id })!;
-    expect(lignes[0].carnetId).toBe(CHAMBRE.id);
+    expect(lignes[0].carnetId).toBe(OUVERT.id);
+    expect(lignes[0].carnetSuggere).toBe(CHAMBRE.id);
   });
 });
 

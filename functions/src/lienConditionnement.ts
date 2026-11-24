@@ -30,6 +30,16 @@ export const uniteDeBase = (u: UniteQuantite): 'kg' | 'l' => FACTEUR[u].base;
 /** Le prix de 1 `unite` ramené à 1 kg (ou 1 L), arrondi au centime. */
 export const prixParBase = (prix: number, unite: UniteQuantite): number => Math.round((prix / FACTEUR[unite].f) * 100) / 100;
 
+/**
+ * R49 : le prix pour 1 `unite` de base (1 kg, 1 L) d'un prix à l'unité à paliers, EXPRIMÉ pour l'unité de la page (par g : le prix d'un gramme à ce palier). Le palier qui compte est
+ * le plus haut dont le seuil (`des`, en `unite`) ne dépasse pas 1 unité de base (1 000 g pour 1 kg) ; sans palier atteint, le tarif de base.
+ */
+export function prixAuPalier(u: PrixUnite): number {
+  const unBase = 1 / FACTEUR[u.unite].f;
+  const atteints = (u.paliers ?? []).filter((p) => p.des <= unBase + 1e-9).sort((a, b) => b.des - a.des);
+  return atteints[0]?.prix ?? u.prix;
+}
+
 const QUANTITE = /(?<![\d.,'’a-zA-Zà-ÿ/])(\d+(?:[.,]\d+)?)\s?(kg|g|ml|cl|dl|l)(?![a-zA-Zà-ÿ0-9²³/])/i;
 /** La quantité écrite dans un titre de variante (« 50 g / 2025 / 13.2% », « Citra 13.6% 5kg »). `null` : aucune. */
 export function quantiteDuTitre(titre: string): { valeur: number; unite: UniteQuantite } | null {
@@ -110,11 +120,47 @@ function lignesNop($: CheerioAPI): { offres: OffreConditionnee[]; parUnite?: Pri
   return { offres: dedoubler(offres).sort(parTaille), ...(parUnite ? { parUnite } : {}), ...(devise ? { devise } : {}) };
 }
 
+/**
+ * R48 (C64-1, 24.11) : variantes publiées dans un bloc JSON de la page (`<script type="application/json">`, cas d'hopfenmarkt.ch : `variants: [{ label: « 100 g »,
+ * price_amount: « 6.70 », currency: « CHF » }]`). Le HTML visible n'en dit que le prix de la variante affichée ; sans cette lecture, le prix 6,70 (celui de 100 g) se
+ * retrouvait sans sa quantité, et l'IA l'accolait au sachet de 50 g (134 CHF/kg au lieu de 67). Le JSON est parsé (JSON.parse), jamais fouillé par expression régulière.
+ */
+function variantesJson($: CheerioAPI): { offres: OffreConditionnee[]; devise?: string } {
+  const offres: OffreConditionnee[] = [];
+  let devise: string | undefined;
+  const parcourir = (n: unknown, prof: number) => {
+    if (prof > 6 || !n || typeof n !== 'object') return;
+    if (Array.isArray(n)) { n.forEach((x) => parcourir(x, prof + 1)); return; }
+    const o = n as Record<string, unknown>;
+    if (Array.isArray(o.variants)) {
+      for (const v of o.variants) {
+        if (!v || typeof v !== 'object') continue;
+        const x = v as Record<string, unknown>;
+        const q = quantiteDuTitre(String(x.label ?? x.title ?? x.name ?? ''));
+        const brut = x.price_amount ?? x.priceAmount ?? x.price;
+        const prix = typeof brut === 'number' ? brut : montant(String(brut ?? ''));
+        if (!q || prix === null || prix === undefined || !(prix > 0)) continue;
+        offres.push({ ...q, prix });
+        devise ??= typeof x.currency === 'string' && /^[A-Z]{3}$/.test(x.currency) ? x.currency : devineDevise(String(x.price ?? ''));
+      }
+    }
+    for (const k of Object.keys(o)) if (k !== 'variants') parcourir(o[k], prof + 1);
+  };
+  $('script[type="application/json"]').each((_, e) => {
+    const t = $(e).contents().text();
+    if (!t || t.length > 400_000 || !/"variants"/.test(t)) return;
+    try { parcourir(JSON.parse(t), 0); } catch { /* bloc illisible : ignoré */ }
+  });
+  return { offres: dedoubler(offres).sort(parTaille), ...(devise ? { devise } : {}) };
+}
+
 export function lireConditionnements(html: string, $: CheerioAPI): Conditionnements {
   const nop = lignesNop($);
   if (nop.offres.length || nop.parUnite) return nop;
   const shopify = variantesShopify(html);
-  return shopify.offres.length ? shopify : { offres: [] };
+  if (shopify.offres.length) return shopify;
+  const json = variantesJson($);
+  return json.offres.length ? json : { offres: [] };
 }
 
 const CODES_UNITE: Record<string, UniteQuantite> = { GRM: 'g', KGM: 'kg', LTR: 'l', MLT: 'ml', CLT: 'cl', DLT: 'dl', g: 'g', kg: 'kg', l: 'l', ml: 'ml' };

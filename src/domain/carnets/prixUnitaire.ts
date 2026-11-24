@@ -8,9 +8,10 @@
  */
 import type { Article } from './modele';
 import { ditAlpha } from './alpha';
+import { renduArticle, type PrixArticleDonnees } from './prixRendu';
 
 export type Dimension = 'masse' | 'volume';
-type PrixArticle = Pick<Article, 'nom' | 'prixCentimes'> & Partial<Pick<Article, 'devise' | 'change' | 'conditionnement' | 'valeurs'>>;
+type PrixArticle = Pick<Article, 'nom' | 'prixCentimes'> & Partial<Pick<Article, 'devise' | 'change' | 'conditionnement' | 'valeurs' | 'offres' | 'prixUnite'>>;
 
 /**
  * T30-4 : le prix en centimes de franc ; un prix en euros passe au cours que la lecture a posé (`change`, BCE) ; sans cours, il reste
@@ -21,8 +22,18 @@ export function prixEnChf(a: Pick<Article, 'prixCentimes'> & Partial<Pick<Articl
   if ((a.devise ?? 'CHF').toUpperCase() === 'CHF') return a.prixCentimes;
   return a.change && a.change.taux > 0 ? a.prixCentimes * a.change.taux : null;
 }
+/**
+ * R50 (C64-3) : le prix qui sert au prix à l'unité. Hors franc, avec un cours : le rendu (TVA d'import comprise), le montant que toutes les surfaces disent (« ≈4 CHF rendu ») ; le
+ * CHF/kg se calcule sur LUI, pas sur le prix converti nu (« ≈4 CHF » à côté de 68,30 CHF/kg ne s'accordait pas). En francs, ou sans cours : le prix en francs, comme avant.
+ */
+export function prixPourUnite(a: PrixArticle, taux?: number): number | null {
+  const r = renduArticle(a as PrixArticleDonnees, taux);
+  if (r && r.totalChf !== undefined) return r.totalChf;
+  return prixEnChf(a);
+}
 /** `base` : la quantité en kg (masse) ou en L (volume) ; `texte` : « 100 g », « 1 kg », « 2,5 L », comme on l'écrit à côté du prix. */
-export interface QuantiteArticle { dim: Dimension; base: number; texte: string; /** R43 : lue sur la ligne « Poids » d'un houblon proposé en plusieurs sachets : le plus petit */ depuisPoids?: true }
+export interface QuantiteArticle { dim: Dimension; base: number; texte: string; /** R43 : lue sur la ligne « Poids » d'un houblon proposé en plusieurs sachets : le plus petit */ depuisPoids?: true;
+  /** R49 : la base de calcul d'un prix donné à l'unité (« 1 kg » pour 0,1044 CHF le gramme) : elle sert au CHF/kg, elle ne se dit jamais comme un conditionnement */ deLUnite?: true }
 
 const FACTEUR: Record<string, { dim: Dimension; f: number; affiche: string }> = {
   kg: { dim: 'masse', f: 1, affiche: 'kg' }, g: { dim: 'masse', f: 0.001, affiche: 'g' },
@@ -61,13 +72,28 @@ function quantiteDuPoids(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'valeur
 }
 
 /**
+ * L'offre publiée dont le prix est celui de l'article (au centime). Plusieurs offres au même prix (rare) : on ne tranche pas, sauf si la quantité posée en fait partie.
+ * `undefined` : l'article ne garde pas ses offres, ou aucune n'a ce prix (le conditionnement posé reste).
+ */
+function conditionnementDuPrix(a: Partial<Pick<Article, 'conditionnement' | 'prixCentimes' | 'offres'>>): Article['conditionnement'] | undefined {
+  if (!a.offres?.length || a.prixCentimes === undefined) return undefined;
+  const memePrix = a.offres.filter(o => Math.abs(o.prixCentimes - a.prixCentimes!) < 1);
+  if (!memePrix.length) return undefined;
+  const c = a.conditionnement, base = (v: number, u: string) => v * (FACTEUR[u]?.f ?? 0);
+  if (c && memePrix.some(o => Math.abs(base(o.valeur, o.unite) - base(c.valeur, c.unite)) < 1e-9)) return c;
+  return memePrix.length === 1 ? { valeur: memePrix[0].valeur, unite: memePrix[0].unite } : undefined;
+}
+
+/**
  * La quantité de l'article : celle que la page a lue pour son prix (`conditionnement` : « 50 g », ou « 1 kg » pour un prix donné au gramme, R39) ; à défaut, celle que
  * son nom dit ; `null` : aucune, ou ambiguë.
  */
-export function quantiteArticle(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'conditionnement' | 'valeurs'>>): QuantiteArticle | null {
-  const c = a.conditionnement;
+export function quantiteArticle(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'conditionnement' | 'valeurs' | 'prixCentimes' | 'offres' | 'prixUnite'>>): QuantiteArticle | null {
+  /* R48 (C64-1) : un prix est attaché à SON conditionnement. Quand l'article garde ses conditionnements publiés (`offres`) et que son prix est celui de l'un d'eux,
+     la quantité est celle de cette offre, quelle que soit la quantité posée à côté (6,70 CHF est le prix de 100 g d'hopfenmarkt ; « 50 g » posé à tort faisait 134 CHF/kg). */
+  const c = conditionnementDuPrix(a) ?? a.conditionnement;
   const u = c ? FACTEUR[c.unite] : undefined;
-  if (c && u && Number.isFinite(c.valeur) && c.valeur > 0) return { dim: u.dim, base: c.valeur * u.f, texte: `${String(c.valeur).replace('.', ',')} ${u.affiche}` }; /* C53 (R17) : insécable */
+  if (c && u && Number.isFinite(c.valeur) && c.valeur > 0) return { dim: u.dim, base: c.valeur * u.f, texte: `${String(c.valeur).replace('.', ',')} ${u.affiche}`, ...(a.prixUnite ? { deLUnite: true as const } : {}) }; /* C53 (R17) : insécable */
   const nom = a.nom ?? '';
   const trouvees: QuantiteArticle[] = [];
   for (const m of nom.matchAll(MOTIF)) {
@@ -97,7 +123,7 @@ export function articleHonnete<T extends { nom?: string; prixCentimes?: number; 
 /** Le prix (centimes de sa devise) pour 1 kg ou 1 L ; `null` : prix ou quantité inconnus. */
 export function prixParUnite(a: PrixArticle): { centimes: number; dim: Dimension } | null {
   const q = quantiteArticle(a);
-  const chf = prixEnChf(a);
+  const chf = prixEnChf(a); /* le classement et les écarts restent au prix converti nu (pxCompromisUnite) ; la ligne « CHF/kg » dite au brasseur suit le prix rendu qu'il lit (`prixPourUnite`) */
   if (!q || chf === null) return null;
   return { centimes: chf / q.base, dim: q.dim };
 }
@@ -133,7 +159,7 @@ export function ecartDePrix(a: PrixArticle, b: PrixArticle): number | null {
 }
 
 /** « 72,50 CHF/kg » : le prix par unité d'un article (`centimes` dans la devise donnée) ; `null` sans quantité lisible. */
-export function texteParUnite(a: Pick<Article, 'nom' | 'prixCentimes'> & Partial<Pick<Article, 'conditionnement' | 'valeurs'>>, centimesAffiches: number | undefined, devise: string): string | null {
+export function texteParUnite(a: Pick<Article, 'nom' | 'prixCentimes'> & Partial<Pick<Article, 'conditionnement' | 'valeurs' | 'offres' | 'prixUnite'>>, centimesAffiches: number | undefined, devise: string): string | null {
   const p = prixParUnite(a);
   const q = quantiteArticle(a);
   if (!p || !q || centimesAffiches === undefined) return null;
@@ -141,4 +167,23 @@ export function texteParUnite(a: Pick<Article, 'nom' | 'prixCentimes'> & Partial
   const nombre = parUnite.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/ | /g, ' ');
   /* C53 (R17, C53-4) : espace insécable entre le nombre et l'unité : « 10,40 CHF/L » ne se coupe jamais sur deux lignes */
   return `${nombre} ${devise}/${p.dim === 'masse' ? 'kg' : 'L'}`;
+}
+
+/**
+ * R49 (C64-2) : ce que dit une boutique qui vend à l'unité, avec ses paliers : « 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg ». Le prix à l'unité tel que la page l'écrit, puis le prix
+ * du kilo (ou du litre) : au tarif de base quand aucun palier n'est atteint à 1 kg, sinon celui du palier, dit avec son seuil. Un palier plus haut (« dès 5 kg ») se dit aussi.
+ */
+export function textePrixUnite(u: NonNullable<Article['prixUnite']>, devise: string): string {
+  const f = FACTEUR[u.unite];
+  if (!f) return '';
+  const nombre = (n: number, max: number) => n.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: max }).replace(/[   ]/g, ' ');
+  const base = f.dim === 'masse' ? 'kg' : 'L';
+  const parBase = (prix: number) => Math.round((prix / f.f) * 100) / 100;
+  const seuil = (des: number) => { const b = des * f.f; return b >= 1 ? `${String(Math.round(b * 1000) / 1000).replace('.', ',')} ${base}` : `${des} ${u.unite}`; };
+  const paliers = [...(u.paliers ?? [])].sort((a, b) => a.des - b.des);
+  const atteint = paliers.some(p => p.des * f.f <= 1 + 1e-9);
+  const parts = [`${nombre(u.prix, 4)} ${devise}/${u.unite}`];
+  if (!atteint) parts.push(`${nombre(parBase(u.prix), 2)} ${devise}/${base}`);
+  for (const p of paliers) parts.push(`${nombre(parBase(p.prix), 2)} ${devise}/${base} dès ${seuil(p.des)}`);
+  return parts.join(' · ');
 }

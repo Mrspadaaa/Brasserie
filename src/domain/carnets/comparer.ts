@@ -8,13 +8,13 @@
 import { parseDecimal } from '../../ui/numericInput';
 import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { articleAEscalader } from './manques';
-import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
+import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, prixPourUnite, quantiteArticle, textePrixUnite, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { aromesEnFrancais, estLigneAromes } from '../../../functions/src/aromesFrancais';
 import { estLigneStyles, stylesEnFrancais } from '../../../functions/src/stylesFrancais';
 import { ditAlpha, nomAlpha } from './alpha';
 import { estLigneOrigine, paysEnFrancais } from './pays';
-import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
+import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, nomEnColonne, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -136,7 +136,7 @@ export function colonnesLues(articles: readonly Article[], deja: readonly Colonn
     /* C50-1 : une caractéristique que porte déjà un critère, sous un synonyme (« Capacité » et « Volume »), n'est pas une 2e colonne */
     if (!cle || vues.has(cle) || v === undefined || v.valeur === '' || deja.some(k => memeCaracteristique(k.nom, nom))) continue;
     const existante = [...comptes.entries()].find(([, c]) => memeCaracteristique(c.nom, nom));
-    const [cleC, c] = existante ?? [cle, { nom, n: 0, unites: new Map<string, number>() }];
+    const [cleC, c] = existante ?? [cle, { nom: nomEnColonne(nom), n: 0, unites: new Map<string, number>() }];
     c.n += 1;
     const u = separerUnite(nom, v).unite ?? '';
     c.unites.set(u, (c.unites.get(u) ?? 0) + 1);
@@ -572,7 +572,8 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     const chf = prixEnChf(a);
     const classe = clePrix ? prixDeClassement(a, dimPrix) : null;
     const quantite = quantiteArticle(a);
-    const parUnite = quantite && chf !== null ? texteParUnite(a, chf, 'CHF') : null;
+    const chfUnite = prixPourUnite(a);
+    const parUnite = quantite && chf !== null && chfUnite !== null ? texteParUnite(a, chfUnite, 'CHF') : null;
     const cellules: Record<string, Valeur | undefined> = {};
     for (const k of colonnes) { const v = valeurDe(a, k); if (v) cellules[k.nom] = v; }
     const raison = raisonEcarte(d, a);
@@ -588,8 +589,9 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
-      ...(classe !== null ? { prixClasse: classe } : {}), ...(quantite ? { quantite: quantite.texte } : {}), ...(parUnite ? { parUnite } : {}),
-      ...(a.prixUnite ? { prixUnite: texteDuPrixUnite(a.prixUnite, a.devise ?? 'CHF') } : {}),
+      ...(classe !== null ? { prixClasse: classe } : {}), ...(quantite && !quantite.deLUnite ? { quantite: quantite.texte } : {}), ...(parUnite && !quantite?.deLUnite ? { parUnite } : {}),
+      /* R49 : un prix donné à l'unité se dit tel que la page l'écrit, avec son kilo au palier (« 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg ») ; jamais un « 1 kg » de conditionnement */
+      ...(a.prixUnite ? { prixUnite: textePrixUnite(a.prixUnite, a.devise ?? 'CHF') } : {}),
       ...(articleAEscalader(a).length ? { aEscalader: articleAEscalader(a) } : {}),
       ...(a.devise ? { devise: a.devise } : {}),
       ...(a.taxe ? { taxe: a.taxe } : {}), ...(a.livraison ? { livraison: a.livraison } : {}), ...(a.change ? { change: a.change } : {}),

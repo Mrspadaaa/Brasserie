@@ -90,7 +90,8 @@ describe('garde lireReponse (B2)', () => {
     expect(une(garde({ lignes: [{ sorte: 'critere', texte: 'Silencieux', carnetId: 'c-invente', titre: 'Hotte silencieuse' }] }, 'hotte silencieuse')))
       .toMatchObject({ carnetNeuf: 'Hotte silencieuse' });
     expect(une(garde({ lignes: [{ sorte: 'critere', texte: 'x', carnetId: 'c-invente' }] }, 'x')).carnetId).toBeUndefined();
-    expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x', { depuis: 'c-ventil' })).carnetId).toBe('c-evier');
+    /* R47 (C64-8, 24.11) : depuis un carnet ouvert, le carnet que l'IA désigne n'est qu'une suggestion : la ligne reste dans l'ouvert */
+    expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x', { depuis: 'c-ventil' }))).toMatchObject({ carnetId: 'c-ventil', carnetSuggere: 'c-evier' });
     /* L-2 (23.11) : une phrase seule tapée sur la liste n’est jamais versée dans un carnet existant ; il n’est que suggéré */
     expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x'))).toMatchObject({ carnetSuggere: 'c-evier' });
     expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x' }] }, 'x', { depuis: 'c-ventil' })).carnetId).toBe('c-ventil');

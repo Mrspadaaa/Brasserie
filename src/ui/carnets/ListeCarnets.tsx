@@ -24,6 +24,7 @@ import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
 import { articleHonnete, quantiteArticle } from '../../domain/carnets/prixUnitaire';
+import { renduArticle } from '../../domain/carnets/prixRendu';
 import { texteIntention } from '../../domain/horizons';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
@@ -112,14 +113,25 @@ type CarnetListe = CarnetV & { estimatedCost?: number };
  * prix d'article, le prix estimé du carnet (« estimé »), sinon le budget qu'il a écrit (« Budget du Planning : 3 500 CHF », « budget ») ;
  * rien d'inventé sinon. Le prix choisi contre l'estimé (Q-1) n'est pas tranché ici : un article prix reste devant.
  */
+/**
+ * R50 (C64-6, 24.11) : la liste dit le prix dans la monnaie du carnet (CHF), le même montant que le carnet : « ≈4 CHF les 50 g », pas « 3,72 EUR les 50 g » à côté de carnets en francs.
+ * Hors franc avec un cours : le rendu estimé (celui de la pastille, du tableau et de Comparer) ; sans cours : le prix dans sa devise (jamais un cours inventé).
+ */
+function prixListe(a: { prixCentimes?: number; devise?: string } | undefined): { texte: string; devise: string } | null {
+  if (!a || a.prixCentimes === undefined) return null;
+  const r = renduArticle(a as never);
+  if (r && r.totalChf !== undefined) { const m = montant(Math.round(r.totalChf / 100) * 100); return m ? { texte: `≈${m}`, devise: 'CHF' } : null; }
+  const m = montant(a.prixCentimes);
+  return m ? { texte: m, devise: a.devise ?? 'CHF' } : null;
+}
 export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: string; quantite?: string; sorte?: 'estime' | 'budget' } | null {
   /* R43 (C61-1) : la liste dit le prix du carnet ouvert (celui qui classe) avec sa quantité ou son unité, ou rien ; jamais le plancher d'un prix sans quantité (« dès 0,10 CHF », le gramme) */
   if (c.status === 'validated' && c.carnet.choix) {
     const a0 = c.carnet.articles.find(x => x.id === c.carnet.choix!.articleId);
     const a = a0 ? articleHonnete(a0) : undefined;
-    const m = montant(a?.prixCentimes);
+    const m = prixListe(a);
     const q = a ? quantiteArticle(a as never) : null;
-    return m ? { des: false, texte: m, devise: a?.devise ?? 'CHF', ...(q ? { quantite: `les ${q.texte}` } : {}) } : null;
+    return m ? { des: false, texte: m.texte, devise: m.devise, ...(q && !q.deLUnite ? { quantite: `les ${q.texte}` } : {}) } : null;
   }
   const t = calculerTableau(c.carnet as never);
   const enLice = articlesEnLice(c).map(a => articleHonnete(a));
@@ -138,9 +150,9 @@ export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: strin
   const devise = devises.includes('CHF') ? 'CHF' : devises[0];
   const memes = prix.filter(a => (a.devise ?? 'CHF') === devise);
   const moins = memes.reduce((p, a) => (a.prixCentimes! < p.prixCentimes! ? a : p));
-  const m = montant(moins.prixCentimes);
+  const m = prixListe(moins);
   const q = quantiteArticle(moins as never);
-  return m ? { des: prix.length > 1, texte: m, devise, ...(q ? { quantite: `les ${q.texte}` } : {}) } : null;
+  return m ? { des: prix.length > 1, texte: m.texte, devise: m.devise, ...(q && !q.deLUnite ? { quantite: `les ${q.texte}` } : {}) } : null;
 }
 
 function prixSansArticle(c: CarnetListe): { des: false; texte: string; devise: string; sorte: 'estime' | 'budget' } | null {

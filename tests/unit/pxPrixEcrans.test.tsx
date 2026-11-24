@@ -87,7 +87,9 @@ describe('R39, R40 : la quantité vient du conditionnement lu, pas seulement du 
     expect(t.prixParUnite).toBe('masse');
     const m = t.lignes.find(l => l.nom.includes('CITRA'))!, b = t.lignes.find(l => l.nom.includes('Citra 13'))!;
     expect(m.quantite).toBe('50 g');
-    expect(b.quantite).toBe('1 kg');
+    /* R49 (C64-2) : un prix donné à l'unité n'a pas de conditionnement « 1 kg » : il se dit « 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg » */
+    expect(b.quantite).toBeUndefined();
+    expect(b.prixUnite).toMatch(/0,1044\s?CHF\/g/);
     expect(m.rang).toBe(1);
     expect(b.rang).toBe(2);
   });
