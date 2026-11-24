@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
-import { lundiDe } from '../../../domain/calendrier';
+import { lundiDe, numeroSemaine } from '../../../domain/calendrier';
 import { ajouterJours, jourCourt, largeurTexte, placeEtiquette, type Boite } from './Courbe';
 import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, roleSous, useGlisse } from '../../geste';
 import { avalerClicSuivant } from '../usePointeurCourbe';
@@ -10,56 +10,27 @@ import { avalerClicSuivant } from '../usePointeurCourbe';
  * période de l'app (E07, ET-PER) : la fenêtre ET la période sont la même chose, écrite sous la forme `Periode` de `dates`.
  */
 
-/** La fenêtre : le lundi de sa première semaine et le nombre de semaines (colonnes de la frise). */
-export interface FenetreSemaines { du: string; semaines: number }
+/* D444 : la fenêtre, sa période et leur lecture l'une dans l'autre vivent dans le temps de la frise (d3-time), une seule fois */
+import { fenetreDePeriode, type FenetreSemaines } from '../../../domain/calendrier/temps';
+export { fenetreDePeriode, MOIS_MIN_SEMAINES, periodeDeFenetre, semainesEntre, type FenetreSemaines } from '../../../domain/calendrier/temps';
 
 export const SEMAINES_ANNEE = 52;
 /** Part de la largeur au-delà de laquelle la poignée lâchée ouvre l'année (c1-d). */
 const SEUIL_ANNEE = 0.8;
-
-const JOUR = 86400000;
-const ms = (iso: string) => { const [a, m, j] = iso.split('-').map(Number); return Date.UTC(a, m - 1, j); };
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
-export const semainesEntre = (lundi1: string, lundi2: string): number => Math.round((ms(lundi2) - ms(lundi1)) / (7 * JOUR));
-
-/** La fenêtre écrite comme la période de l'app : du lundi de sa première semaine au dimanche de la dernière. */
-export const periodeDeFenetre = (f: FenetreSemaines): Periode => ({ genre: 'dates', du: f.du, au: ajouterJours(f.du, f.semaines * 7 - 1) });
-
-/**
- * La période de l'app (réglée au calendrier ou dans Finances) lue comme une fenêtre de semaines, dans l'horizon de la courbe.
- * `tout` n'a pas de bornes : `null`, la fenêtre reste ce qu'elle est. Une période tout entière passée : `null`.
- */
-export function fenetreDePeriode(periode: Periode | undefined, premierLundi: string, total: number): FenetreSemaines | null {
-  // une période sans genre connu (un banc qui passe une fonction, calPasseG3) n'a pas de bornes : la fenêtre reste la sienne
-  const b = periode ? bornes(periode) : undefined;
-  if (!b) return null;
-  const { du, au } = b;
-  if (!du || !au) return null;
-  let debut = lundiDe(du);
-  const voulu = debut;
-  if (debut < premierLundi) debut = premierLundi;
-  let fin = lundiDe(au);
-  /* CHV-4 : une plage tirée avant l'horizon garde sa durée (une année reste 52 semaines) : elle se pose au début de l'horizon, la barre dit ce que le cadre montre. */
-  if (periode.genre === 'dates' && voulu < debut && fin >= debut) fin = lundiDe(new Date(Date.parse(`${debut}T00:00:00Z`) + semainesEntre(voulu, fin) * 7 * 864e5).toISOString().slice(0, 10));
-  if (fin < debut) return null;
-  const decalage = semainesEntre(premierLundi, debut);
-  if (decalage >= total) return null;
-  // Décision pilote (c), CRITIQUE-7 : un mois se lit dès aujourd'hui et montre au moins 4 semaines ; s'il finit avant, la fenêtre déborde sur
-  // le suivant (le 30 nov. : S49 à S52, jamais une semaine seule). La période reste « mois » : seule sa lecture en semaines s'allonge.
-  const semaines = semainesEntre(debut, fin) + 1;
-  const min = periode.genre === 'mois' ? MOIS_MIN_SEMAINES : 1;
-  /* CAL-PLUS-QU-UN-AN (23.11) : la fenêtre suit la période de l'app au-delà d'un an (« Tout », une plage de deux ans), bornée à l'horizon seul
-     (L-44 la plafonnait à 52 semaines) */
-  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, total - decalage) };
-}
-
-/** Un mois lu au calendrier montre au moins ces semaines (décision pilote (c), 18.11). */
-export const MOIS_MIN_SEMAINES = 4;
 
 /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
 export function libelleDuree(semaines: number, annee: boolean): string {
   // CAL-PLUS-QU-UN-AN : au-delà de l'An, les années entières (« 2 ans ») ou les mois (« 18 mois »)
-  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? (Math.round(ans) === 1 ? 'An' : `${Math.round(ans)} ans`) : `${Math.round(semaines / 4.348)} mois`; }
+  if (semaines > SEMAINES_ANNEE + 1) {
+    const ans = semaines / 52.18;
+    if (Math.abs(ans - Math.round(ans)) < 0.04 && Math.round(ans) === 1) return 'An';
+    /* T29-12 (23.11, « 31 mois », « 46 mois », « 63 mois » : attendu « 2 ans ½ », « 5 ans ») : dès deux ans, des années au demi-an près (le quart
+       s'arrondit vers le bas) ; en dessous, les mois (« 18 mois ») */
+    if (ans < 1.95) return `${Math.round(semaines / 4.348)} mois`;
+    const demis = Math.ceil(ans * 2 - 0.55);
+    return demis % 2 ? `${(demis - 1) / 2} ans ½` : `${demis / 2} ans`;
+  }
   if (annee || semaines >= SEMAINES_ANNEE) return 'An';
   if (semaines === 13) return '3 mois';
   if (semaines === 26) return '6 mois';
@@ -110,6 +81,8 @@ export interface CadreProps {
   debutRamenee?: boolean;
   /** R4 : la vue de la courbe (semaines), celle où se posent le cadre et ses poignées. */
   vue: VueCourbe;
+  /** CAL-ETIQUETTE-GRAIN-AU-DESSUS : le grain de la bande ; en jours, le cadre dit ses semaines avec l'année (« S52 2026 – S1 2027 »). */
+  grain?: 'jour' | 'semaine' | 'mois' | 'an';
   /** R7, R10 : pendant le tirage, la vue qui défile ou se resserre, puis son recalage ; `null` : la vue du repos. */
   onVue?: (v: VueCourbe | null) => void;
 }
@@ -150,6 +123,15 @@ export function etiquetteDates(lundis: readonly string[] | undefined, index: num
   if (nombre <= 1 || l === a) return joursSemaine(a);
   const b = ajouterJours(l, 6), ya = a.slice(0, 4), yb = b.slice(0, 4), ref = aujourdhui?.slice(0, 4);
   return `${jourCourt(a)}${ya !== yb ? ` ${ya}` : ''} – ${jourCourt(b)}${yb !== ref || ya !== yb ? ` ${yb}` : ''}`;
+}
+
+/** L'année ISO d'une semaine (celle de son jeudi) et son numéro : « S52 2026 » ; deux bouts : « S52 2026 – S1 2027 », « S47 – S49 2026 ». */
+export function etiquetteSemainesAnnees(lundis: readonly string[], index: number, nombre: number): string {
+  const a = lundis[index], b = lundis[Math.min(lundis.length - 1, index + Math.max(1, nombre) - 1)];
+  if (!a || !b) return '';
+  const s = (l: string) => `S${numeroSemaine(l)}`, an = (l: string) => anneeIso(l);
+  if (a === b) return `${s(a)} ${an(a)}`;
+  return an(a) === an(b) ? `${s(a)} – ${s(b)} ${an(b)}` : `${s(a)} ${an(a)} – ${s(b)} ${an(b)}`;
 }
 
 /** Les jours d'une semaine, court : « 16–22 févr. », « 26 oct.–1 nov. » (l'étiquette d'une fenêtre d'une semaine, CAL-FRISE-ETIQUETTES). */
@@ -256,7 +238,7 @@ interface SaisieCadre {
   glis?: number;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, onTire, etiquetteAnnee, surface, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, onTire, etiquetteAnnee, surface, debutRamenee, vue, onVue, aujourdhui, grain }: CadreProps) {
   const total = numeros.length;
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
@@ -266,7 +248,9 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   /* CAL-FRISE-ETIQUETTES (« S47 » écrit deux fois) : au repos, une fenêtre d'une semaine a sa graduation « S44 » juste dessous ; le cadre dit ses jours
      (« 26 oct. – 1 nov. »), jamais le même numéro. Pendant le tirage, la bulle garde le numéro (il change sous le doigt). */
   /* D434 : les dates, au repos comme pendant le tirage (l'An au repos garde ses mois) */
-  const etiquette = annee && !drag && etiquetteAnnee ? etiquetteAnnee : etiquetteDates(lundis, cur.index, cur.nombre, aujourdhui) ?? etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis, aujourdhui);
+  /* CAL-ETIQUETTE-GRAIN-AU-DESSUS (23.11, « en mode jour, 21dec et 10 janvier ont pas besoin d'être afficher, mais il faudrait mettre les semaines
+     genre S52 2026 - S1 2027 ») : l'étiquette dit le grain au-dessus de celui de la bande : bande en jours → semaines avec l'année ; sinon les dates */
+  const etiquette = annee && !drag && etiquetteAnnee ? etiquetteAnnee : grain === 'jour' && lundis ? etiquetteSemainesAnnees(lundis, cur.index, cur.nombre) : etiquetteDates(lundis, cur.index, cur.nombre, aujourdhui) ?? etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis, aujourdhui);
   /* L-13 (T10-13) : pendant le glisser du corps, le cadre accompagne le doigt (R2) ; à une semaine (248 px), il ne bougeait qu'après 124 px */
   const glis = drag?.glis ?? 0;
   const gauche = xDe(cur.index + glis), droite = xDe(cur.index + cur.nombre + glis);

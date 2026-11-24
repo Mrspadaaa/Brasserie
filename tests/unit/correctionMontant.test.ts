@@ -22,7 +22,7 @@ describe('planCorrection : la suite d’écritures, en centimes', () => {
   it('hausse + le paiement suit : le montant, puis un paiement de la différence', () => {
     expect(planCorrection(piece(4200), [p1], 4550, 'suit')).toEqual([
       { type: 'montant', cents: 4550 },
-      { type: 'paiement', cents: 350, direction: 'out', method: 'bank' }
+      { type: 'paiement', cents: 350, direction: 'out', method: 'bank', date: '2026-11-09' }
     ]);
   });
   it('hausse + reste à payer : le montant seul', () => {
@@ -70,12 +70,12 @@ describe('planCorrection : la suite d’écritures, en centimes', () => {
     expect(etapes[1]).toEqual({ type: 'contre', paiementId: 'PAI-A' });
     expect(etapes[3]).toMatchObject({ cents: 2500 });
   });
-  it('M2 : une baisse « suit » date le remplacement du dernier paiement inversé (une correction, pas un virement) ; une hausse « suit » n’a pas de date (aujourd’hui)', () => {
+  it('M2 : une baisse « suit » date le remplacement du dernier paiement inversé (une correction, pas un virement) ; une hausse « suit » garde la date du paiement d’origine, pas aujourd’hui (E38-3)', () => {
     const a = paiement('PAI-A', 3000, '2026-11-05'), b = paiement('PAI-B', 1200, '2026-11-09');
     const baisse = planCorrection(piece(4200), [a, b], 2500, 'suit').at(-1);
     expect(baisse).toMatchObject({ type: 'paiement', date: '2026-11-09' });
     const hausse = planCorrection(piece(4200), [p1], 4550, 'suit').at(-1) as { date?: string };
-    expect(hausse.date).toBeUndefined();
+    expect(hausse.date).toBe('2026-11-09');
   });
   it('baisse au-dessus du payé (pièce partielle) : le montant seul', () => {
     const partiel = paiement('PAI-1', 2000);
@@ -97,7 +97,7 @@ describe('planCorrection : la suite d’écritures, en centimes', () => {
   it('une recette garde son sens « in »', () => {
     const entrant = paiement('PAI-1', 4200, '2026-11-09', { direction: 'in' });
     const vente = piece(4200, { category: 'recettes', finance: { version: 1, kind: 'income', amountCents: 4200, lines: [] } });
-    expect(planCorrection(vente, [entrant], 4550, 'suit')[1]).toEqual({ type: 'paiement', cents: 350, direction: 'in', method: 'bank' });
+    expect(planCorrection(vente, [entrant], 4550, 'suit')[1]).toEqual({ type: 'paiement', cents: 350, direction: 'in', method: 'bank', date: '2026-11-09' });
   });
   it('montant invalide : erreur', () => {
     expect(() => planCorrection(piece(4200), [p1], 0, 'suit')).toThrow(/invalide/);

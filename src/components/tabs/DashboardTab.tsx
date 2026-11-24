@@ -8,7 +8,8 @@ import type { AppConfig, Batch, CreativeItem, StockItem, Transaction } from '../
 import { dansPeriode, enPeriode, titre as titrePeriode, type PeriodeEntree } from '../periode/periode';
 import { compte } from '../../services/plural';
 import { StorageService } from '../../services/storage';
-import { useStorageValue } from '../../hooks/useLiveData';
+import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
+import { CreativeItemSheet } from '../../ui/CreativeItemSheet';
 import { DateUtils } from '../../services/dateUtils';
 import { FinanceService } from '../../services/financeService';
 import { formatCHF, summarizeLedger, todayISO } from '../../domain/finance/ledger';
@@ -49,6 +50,19 @@ function estEnRetard(item: CreativeItem, aujourdhui: string): boolean {
 function displayDate(value?: string) {
   const date = DateUtils.parseDate(value || '');
   return date ? date.toLocaleDateString('fr-CH') : value || 'Date à préciser';
+}
+
+/** T29-4 : une ligne de Bord › Agenda. Seule la case coche « Fait » ; le nom ouvre la feuille de la ligne sur place (CALP-11 : une fête, un événement s'ouvre dans sa feuille, jamais dans un autre écran). Pas de <label> : le texte ne relaie aucun clic à la case. */
+export function LigneAgenda({ item, jour, onOuvrir, onCocher }: { item: CreativeItem; jour: string; onOuvrir: (item: CreativeItem) => void; onCocher: (item: CreativeItem) => void }) {
+  return <div className="flex min-h-8 items-center gap-2 px-2 py-1">
+    <input type="checkbox" checked={item.status === 'done'} onChange={() => onCocher(item)} aria-label={`${item.status === 'done' ? 'Refaire' : 'Fait'} : ${item.title}`}
+      className="h-4 w-4 shrink-0 cursor-pointer accent-area-agenda" />
+    <button type="button" onClick={() => onOuvrir(item)} aria-haspopup="dialog" className="min-w-0 flex-1 cursor-pointer text-left" data-agenda-nom={item.id}>
+      <span className={`block break-words text-2xs ${item.status === 'done' ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
+      {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}{estEnRetard(item, jour) && <> · <b className="font-semibold text-attention">en retard</b></>}</span>}
+    </button>
+    {item.status === 'done' && <span className="text-xs text-cave-400">Fait</span>}
+  </div>;
 }
 
 /** Le seuil est le repère affiché, pas une capacité ou une couverture supposée. */
@@ -133,6 +147,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onNavigateToCreativeLab
 }) => {
   const creativeItems = useStorageValue(StorageService.getCreativeItems);
+  /** T29-4 : la ligne d'agenda dont la feuille (Modifier) est ouverte sur place ; fermer ramène au Bord tel qu'il était. */
+  const [feuilleAgenda, setFeuilleAgenda] = useLiveSelection(creativeItems, 'id');
   const financeProfile = useStorageValue(FinanceService.getProfile);
   const financePayments = useStorageValue(FinanceService.getPayments);
   const financePlans = useStorageValue(FinanceService.getPlans);
@@ -382,15 +398,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </button>
           {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
           <div className="divide-y divide-cave-800">
-            {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">
-              <input type="checkbox" checked={item.status === 'done'} onChange={() => toggleEvent(item)}
-                className="h-4 w-4 shrink-0 accent-area-agenda" />
-              <span className="min-w-0 flex-1">
-                <span className={`block break-words text-2xs ${item.status === 'done' ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
-                {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}{estEnRetard(item, jourJ) && <> · <b className="font-semibold text-attention">en retard</b></>}</span>}
-              </span>
-              {item.status === 'done' && <span className="text-xs text-cave-400">Fait</span>}
-            </label>)}
+            {/* T29-4 (23.11, test en ligne : toucher le nom d'une fête la cochait « Fait », vraie donnée) : seule la case coche ; le nom ouvre l'agenda,
+                où la ligne s'ouvre sur sa feuille */}
+            {events.slice(0, 3).map(item => <LigneAgenda key={item.id} item={item} jour={jourJ} onOuvrir={setFeuilleAgenda} onCocher={toggleEvent} />)}
           </div>
           {events.length > 3 && <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Voir tout l’agenda<ChevronRight size={14} aria-hidden="true" /></button>}
         </section>
@@ -423,5 +433,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </details>
         </section>
     </div>
+    <CreativeItemSheet item={feuilleAgenda} onClose={() => setFeuilleAgenda(null)} onSave={(maj) => StorageService.updateCreativeItem(maj)}
+      onDelete={(item) => StorageService.deleteCreativeItem(item.id)} />
   </div>;
 };

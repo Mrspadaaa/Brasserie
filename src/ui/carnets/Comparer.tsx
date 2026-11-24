@@ -321,7 +321,7 @@ function CellulePrix({ l, taux }: { l: LigneT; taux?: number }) {
       ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{orig}</small></>
       : <><span className="cn-mono">{orig}</span><small className="cn-mut">{dev === 'EUR' ? 'taux ?' : 'cours ?'}</small></>;
   }
-  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}</>;
+  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.quantite ? <small className="cn-mut">{l.quantite}{l.parUnite ? ` · ${l.parUnite}` : ''}</small> : null}{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}</>;
 }
 
 export function Comparer(p: ComparerProps) {

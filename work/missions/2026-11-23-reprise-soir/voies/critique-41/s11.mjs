@@ -1,0 +1,16 @@
+import { ouvrir, sleep, photo, log } from './outil.mjs';
+import { outils, texte } from './commun.mjs';
+import fs from 'node:fs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+setTimeout(() => { lacher(); process.exit(2); }, 120000);
+await o.nav('Finances'); await o.tap('Synthèse', 'button,[role=tab]'); await sleep(1500);
+const t = await texte(page); const b = JSON.parse(fs.readFileSync('apres.json', 'utf8'));
+b.caisse = (/En caisse\n([^\n]+)\n([^\n]+)/.exec(t) || []).slice(1).join(' | ');
+b.synthese = (/Entré\n([^\n]+)\nDépensé\n([^\n]+)/.exec(t) || []).slice(1).join(' / ');
+await photo(page, 'S11-synthese');
+await o.tap('Solde et paramètres'); await sleep(1500); await photo(page, 'S11-solde', true);
+b.soldeDepart = (/Solde de départ[\s\S]{0,60}/.exec(await texte(page)) || [''])[0].replace(/\n/g, ' ¦ ');
+fs.writeFileSync('apres.json', JSON.stringify(b, null, 1));
+await page.keyboard.press('Escape'); await sleep(500);
+lacher(); process.exit(0);

@@ -1,0 +1,14 @@
+import { ouvrir, sleep, photo, log } from './outil.mjs';
+import { outils, texte } from './commun.mjs';
+import fs from 'node:fs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+setTimeout(() => { lacher(); process.exit(2); }, 120000);
+await page.keyboard.press('Escape'); await sleep(500);
+const s = await o.soldes('S10');
+await o.nav('Calendrier'); await sleep(1500); await photo(page, 'S10-calendrier');
+s.zzCal = await page.evaluate(() => [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).filter((x) => /ZZ TEST/.test(x)));
+s.periode = await page.evaluate(() => ({ ls: localStorage.getItem('laffinee.calendrier.fenetre-locale'), cadre: (document.querySelector('.ent-cadre') || {}).innerText }));
+await o.nav('Finances'); await o.tap('Prévisions', 'button,[role=tab]'); await sleep(1500); s.prev = (await texte(page)).includes('TEST'); await photo(page, 'S10-previsions', true);
+fs.writeFileSync('apres.json', JSON.stringify(s, null, 1));
+lacher(); process.exit(0);

@@ -1,0 +1,13 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou } from './outil.mjs';
+import { outils, court } from './commun.mjs';
+import { etat } from './lire.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const { tap, duree } = outils(page, cdp);
+const filt = (l) => l.filter((b) => !/^(Bord|Finances|Calendrier|Brassins|Stocks|Clients|S\d|Masquer|Ajouter dans|Poignée)/.test(b));
+await page.evaluate(() => scrollTo(0, 0));
+const z = await ou(page, 'ZZ TEST — apport', 'button', true); await sleep(600);
+const z2 = await ou(page, 'ZZ TEST — apport', 'button'); await toucher(cdp, z2.x, z2.y); await sleep(1300);
+await tap('Ouvrir', 'button'); await sleep(2000);
+await photo(page, 'Z1-00-ouvert', false);
+log('ouvert', filt(await boutons(page)).slice(-25));
+lacher();

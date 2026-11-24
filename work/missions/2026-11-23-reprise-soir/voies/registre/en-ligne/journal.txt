@@ -1,0 +1,93 @@
+paquet index-Bl2OF9G2.js
+nav ["Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commander","Clients","Compagnon brasseur"]
+bouton calendrier {"x":162.5625,"y":824}
+periode Tout
+poignees [{"k":"debut","l":35.78125,"r":79.78125,"w":44,"h":68,"i":{"l":66.78125,"r":72.78125}},{"k":"fin","l":310.203125,"r":354.203125,"w":44,"h":68,"i":{"l":317.203125,"r":323.203125}}]
+cadre 23 nov. 2026 – 21 févr. 2027
+bande ["","S46","","S48","","S50","","S52"]
+boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. Choisir la plage","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","−1 663 CHF à dépenser sans passer sous 0 (S53, dan","±","3 mois · période, liste, tri et filtre","Maintenant : 8 en retard","Aligner la courbe sur la frise","Cacher la courbe","Plein écran","Poignée de début : étirer la fenêtre, elle commenc","Poignée de fin : étirer ou réduire la fenêtre (Ent","S45, 2 – 8 nov.","S46, 9 – 15 nov.","S47, 16 – 22 nov.","S48, 23 – 29 nov.","S49, 30 nov. – 6 déc.","S50, 7 – 13 déc.","S51, 14 – 20 déc.","S52, 21 – 27 déc.","S53, 28 déc. – 3 janv.","S1, 4 – 10 janv.","S2, 11 – 17 janv.","S3, 18 – 24 janv.","S4, 25 – 31 janv.","S5, 1 – 7 févr.","S6, 8 – 14 févr.","S7, 15 – 21 févr.","S8, 22 – 28 févr.","S9, 1 – 7 mars","S10, 8 – 14 mars","Ajouter dans Brassins","Masquer Brassins","Ajouter dans Fêtes","Masquer Fêtes","Ajouter dans Ventes","Masquer Ventes"]
+w {"sw":390,"iw":390,"sh":988}
+C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\2026-11-23-reprise-soir\voies\registre\en-ligne\c00-calendrier-ouvert.png
+fenetre-locale avant {"app":"{\"genre\":\"tout\"}","locale":{"genre":"dates","du":"2026-11-23","au":"2027-02-21"}}
+bouton periode {"x":224,"y":67,"w":92,"h":28,"l":178,"r":270,"t":53,"b":81}
+menu periode {"l":8,"r":308,"t":87,"b":432,"bs":[{"t":"Jour","l":20,"r":112,"t0":149,"b":179},{"t":"Semaine","l":112,"r":204,"t0":149,"b":179},{"t":"Mois","l":204,"r":296,"t0":149,"b":179},{"t":"2 sem.","l":18,"r":72,"t0":198,"b":238},{"t":"6 sem.","l":74,"r":129,"t0":198,"b":238},{"t":"3 mois","l":131,"r":185,"t0":198,"b":238},{"t":"6 mois","l":187,"r":242,"t0":198,"b":238},{"t":"An","l":244,"r":298,"t0":198,"b":238},{"t":"Liste","l":15,"r":301,"t0":243,"b":287},{"t":"Sans date · 5","l":15,"r":301,"t0":289,"b":333},{"t":"Trier les rangées","l":15,"r":301,"t0":335,"b":379},{"t":"Filtrer par type","l":15,"r":301,"t0":381,"b":425}]}
+CALP-4 menu dans l ecran true chevauchements []
+CALP-9 poignees [{"k":"debut","l":36,"r":80,"w":44,"h":68},{"k":"fin","l":310,"r":354,"w":44,"h":68}]
+avant geste 23 nov. 2026 – 21 févr. 2027 bande [{"t":"S46","l":31,"w":19,"lundi":"2026-11-09"},{"t":"S48","l":70,"w":19,"lundi":"2026-11-23"},{"t":"S50","l":108,"w":19,"lundi":"2026-12-07"},{"t":"S52","l":147,"w":19,"lundi":"2026-12-21"}]
+apres poignee debut a gauche de 45 px 12 oct. 2026 – 21 févr. 2027 bande [{"t":"S38","l":12,"w":14,"lundi":"2026-09-14"},{"t":"S40","l":39,"w":14,"lundi":"2026-09-28"},{"t":"S42","l":66,"w":14,"lundi":"2026-10-12"},{"t":"S44","l":93,"w":14,"lundi":"2026-10-26"}]
+apres un 2e geste 3 août 2026 – 21 févr. 2027 bande [{"t":"S26","l":20,"w":8,"lundi":"2026-06-22"},{"t":"S30","l":54,"w":8,"lundi":"2026-07-20"},{"t":"S34","l":87,"w":8,"lundi":"2026-08-17"},{"t":"S38","l":121,"w":8,"lundi":"2026-09-14"}]
+CALP-1 verdict {"avant":"23 nov. 2026 – 21 févr. 2027","apres":"3 août 2026 – 21 févr. 2027","aujourdhui":""}
+curseur {"dasharray":["circle","circle","circle","circle","circle","circle"],"lecture":null}
+lignes 3 mois [{"t":"pas brassée · prête le 1 avr.","id":"brassin-LOT-012","y":238,"l":13,"w":364},{"t":"","id":"brassin-LOT-001","y":270,"l":13,"w":193},{"t":"","id":"brassin-LOT-010","y":302,"l":13,"w":191},{"t":"","id":"brassin-LOT-002","y":334,"l":13,"w":122},{"t":"prête 19 févr.","id":"brassin-LOT-016","y":366,"l":35,"w":279},{"t":"","id":"brassin-LOT-019","y":398,"l":38,"w":70},{"t":"pas brassée","id":"brassin-LOT-009","y":430,"l":68,"w":240},{"t":"","id":"proposition-brassin-REC-MTO8ZDHF","y":462,"l":71,"w":42},{"t":"","id":"proposition-brassin-REC-MTYT8FX0","y":494,"l":71,"w":34},{"t":"prête 29 mars","id":"brassin-LOT-011","y":334,"l":145,"w":232},{"t":"","id":"creatif-CR-85e7d786-90ce-4cac-bd93-c794f","y":648,"l":13,"w":235},{"t":"","id":"achat-prevu-PLAN-PLANNING-T-19","y":728,"l":162,"w":28},{"t":"","id":"argent-PREV-5e66976e-5780-4dda-993f-d9ae","y":834,"l":57,"w":28},{"t":"","id":"impot-2026-11-23","y":864,"l":57,"w":28},{"t":"","id":"impot-2027-01-30","y":894,"l":244,"w":28}]
+lignes 19 sem [{"t":"pas brassée · prête le 1 avr.","id":"brassin-LOT-012","y":238,"l":13,"w":364},{"t":"","id":"brassin-LOT-001","y":270,"l":13,"w":230},{"t":"","id":"brassin-LOT-002","y":302,"l":13,"w":180},{"t":"","id":"brassin-LOT-007","y":334,"l":12,"w":28},{"t":"","id":"brassin-LOT-005","y":366,"l":12,"w":28},{"t":"","id":"brassin-LOT-004","y":398,"l":13,"w":28},{"t":"","id":"brassin-LOT-010","y":430,"l":73,"w":168},{"t":"","id":"brassin-LOT-016","y":462,"l":123,"w":196},{"t":"","id":"brassin-LOT-019","y":494,"l":125,"w":48},{"t":"","id":"brassin-LOT-009","y":526,"l":147,"w":168},{"t":"","id":"proposition-brassin-REC-MTO8ZDHF","y":558,"l":149,"w":29},{"t":"","id":"proposition-brassin-REC-MTYT8FX0","y":590,"l":146,"w":28},{"t":"","id":"brassin-LOT-011","y":302,"l":201,"w":176},{"t":"","id":"creatif-CR-85e7d786-90ce-4cac-bd93-c794f","y":744,"l":67,"w":205},{"t":"","id":"achat-prevu-PLAN-PLANNING-T-17","y":824,"l":13,"w":28},{"t":"","id":"achat-prevu-PLAN-PLANNING-T-18","y":854,"l":13,"w":28},{"t":"","id":"achat-prevu-PLAN-PLANNING-T-19","y":884,"l":208,"w":28},{"t":"","id":"argent-PREV-5e66976e-5780-4dda-993f-d9ae","y":990,"l":135,"w":28},{"t":"","id":"impot-2026-11-23","y":1020,"l":135,"w":28},{"t":"","id":"impot-2027-01-30","y":1050,"l":266,"w":28}]
+CALP-6 lignes de texte identiques [["",270,302],["",270,334],["",270,366],["",270,398],["",270,430],["",270,462],["",270,494],["",270,526],["",270,558],["",270,590],["",270,302],["",270,744],["",270,824],["",270,854],["",270,884],["",270,990],["",270,1020],["",270,1050]]
+fete vi null
+brassins [{"id":"brassin-LOT-012","aria":"Hefe, 10 sept., S37, −5 + à venir, pas brassée · prête le 1 avr., courses : Pilsner Malz le 23 nov. · −5","w":364,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-001","aria":"Milk Stout, 1 mai, S18, coût à venir, J206 / 255 · prête 11 janv.","w":230,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-002","aria":"NEIPA Test, 3 sept., S36, coût à venir, J81 / 104 · prête 16 déc.","w":180,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-007","aria":"Jhhh, 7 sept., S37","w":28,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-005","aria":"Jhhh, 5 sept., S36","w":28,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-004","aria":"Ssr, 21 sept., S39, −13 + à venir","w":28,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-010","aria":"Ttt, 15 oct., S42, −4 + à venir, pas brassée · prête le 10 janv., courses : Pilsner Malz le 23 nov. · −4","w":168,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-016","aria":"neipa v3, 10 nov., S46, coût à venir, J13 / 101 · prête 19 févr.","w":196,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-019","aria":"neipa v3, 11 nov., S46, coût à venir, J12 / 25 · prête 6 déc.","w":48,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-009","aria":"Ttt, 22 nov., S47, −4 + à venir, pas brassée · prête le 17 févr., courses : Pilsner Malz le 23 nov. · −4","w":168,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null},{"id":"brassin-LOT-011","aria":"Fruty, 20 déc., S51, −2 + à venir, J0 / 99 · prête 29 mars, courses : Malt Maris Otter le 13 déc. · −2","w":176,"ligne":"pas brassée · prête le 1 avr. Hefe −5 + à venir Milk Stout · coût à venir NEIPA ","titre":null}]
+fete {"x":127.22222137451172,"y":457,"aria":"vi, 12 oct., S42","t":""}
+apres toucher {"dialogs":[],"calendrier":true,"chemin":"/","hautDePage":["Calendrier"]}
+boutons de sortie [{"t":"Retour au tableau de bord","x":51,"y":-280},{"t":"Fermer","x":357,"y":495}]
+fete {"x":73,"y":517}
+Modifier {"x":116.90625,"y":498,"t":"Modifier"}
+apres Modifier {"cal":true,"liens":[],"titres":["Calendrier","Fêtes"],"rangees":["brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","fetes"],"dialogs":[" | Fêtes Modifier Brassins Fêtes Ventes Achats Travaux Activités Papiers vi CHF + Quand passé · S42 S42, 12 oct. Aujourd'hui 1 mois 3 mois 6 mo"]}
+sortie {"x":370,"y":85.75,"t":"Fermer"}
+apres sortie {"cal":true,"liens":[],"titres":["Calendrier"],"rangees":["brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","fetes"],"dialogs":[]}
+Finances {"cal":false,"liens":[],"titres":[],"rangees":[],"dialogs":[]}
+lien Finances null
+Brassins {"cal":false,"liens":[],"titres":[],"rangees":[],"dialogs":[]}
+lien Brassins null
+Bord : boutons agenda ["Cette semaine au calendrier","Calendrier"]
+Stocks {"cal":false,"liens":[],"titres":[],"rangees":[],"dialogs":[]}
+Materiel {"x":339.203125,"y":64,"t":"Matériel"} {"cal":false,"liens":[],"titres":[],"rangees":[],"dialogs":[]}
+Finances {"x":97.3125,"y":824,"t":"Finances"}
+Finances {"cal":false,"liens":[],"boutons":["Calendrier"]}
+Brassins {"x":227.8125,"y":824,"t":"Brassins"}
+Brassins {"cal":false,"liens":[],"boutons":["Calendrier"]}
+Bord {"x":32.4375,"y":824,"t":"Bord"}
+Bord {"cal":false,"liens":[],"boutons":["Cette semaine au calendrier","Calendrier"]}
+Stocks {"x":292.6875,"y":824,"t":"Stocks, 11 articles à commander"}
+Stocks {"cal":false,"liens":[],"boutons":["Calendrier"]}
+Materiel null
+Materiel {"cal":false,"liens":[],"boutons":["Calendrier"]}
+Synthese null
+Finances synthese {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+lien null
+-> section {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+Operations null
+sous-onglet Brassins null
+Brassins {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+lien null
+-> section {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+Atelier null
+Agenda null
+-> section {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+Synthese {"x":57,"y":57,"t":"Synthèse"}
+Finances synthese {"cal":false,"liens":["finances:Calendrier de l’argent"],"rangees":[],"titre":["Tout l’historique"],"entete":null}
+lien {"x":195,"y":102,"t":"Calendrier de l’argent"}
+-> section {"cal":true,"liens":[],"rangees":["ventes","achats","achats","travaux","papiers","papiers","papiers","papiers"],"titre":["Calendrier"],"entete":"−1 663 CHF à dépenser S53 ± 3 mois 8 0 lol −600 Extincteur −80 23 nov. 2026 – 21 févr. 2027 S46 S48 S50 S52 S1 S3 S5 S7 "}
+Operations {"x":146.75,"y":57,"t":"Opérations"}
+sous-onglet Brassins {"x":227.8125,"y":824,"t":"Brassins"}
+Brassins {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+lien null
+-> section {"cal":false,"liens":[],"rangees":[],"titre":[],"entete":null}
+Atelier null
+Agenda {"x":192,"y":620.78125,"t":"Cette semaine au calendrier"}
+-> section {"cal":true,"liens":[],"rangees":["brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","fetes","fetes","ventes","achats","achats","travaux","activites","papiers","papiers","papiers","papiers"],"titre":["Calendrier"],"entete":"−1 663 CHF à dépenser S53 ± 3 mois 8 0 lol −600 Extincteur −80 23 nov. 2026 – 21 févr. 2027 S46 S48 S50 S52 S1 S3 S5 S7 "}
+sous-onglet Brassins null
+Brassins {"cal":false,"liens":[],"rangees":[],"boutons":["Retour au tableau de bord","Période précédente","Période : Tout l’historique.","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaët","Brassins (17)","Recettes (23)","Atelier","Adapter les volumes","Matériel","Carnet","Tarifs","À comparer"]}
+lien null
+-> section {"cal":false,"liens":[],"rangees":[],"boutons":["Retour au tableau de bord","Période précédente","Période : Tout l’historique.","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaët","Brassins (17)","Recettes (23)","Atelier","Adapter les volumes","Matériel","Carnet","Tarifs","À comparer"]}
+retour Atelier null
+Gerer {"x":331.5390625,"y":578.78125,"t":"Gérer"}
+-> apres Gerer {"cal":true,"liens":[],"rangees":["brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","fetes","fetes","activites"],"boutons":["Retour au tableau de bord","Période précédente","Période : Tout l’historique.","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaët","Tout le calendrier ›","−1 663 CHF à dépenser sans p","±","3 mois · période, liste, tri","Maintenant : 8 en retard","Aligner la courbe sur la fri","Cacher la courbe","Plein écran"]}
+nav {"x":228.828125,"y":824,"t":"Brassins"}
+sous-onglet {"x":65.234375,"y":62,"t":"Brassins (17)"}
+Brassins {"cal":false,"liens":["brassins:Calendrier des brassins"],"rangees":[]}
+lien {"x":195,"y":109,"t":"Calendrier des brassins"}
+-> section {"cal":true,"liens":[],"rangees":["brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","brassins","ventes"]}
+nav {"x":228.828125,"y":824,"t":"Brassins"}
+retour Atelier null
+etat initial boutons ["Retour au tableau de bor","Période précédente","Période : Tout l’histori","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de ","Brassins (17)","Recettes (23)","Atelier","Adapter les volumes","Calendrier des brassins","Filtrer","Tous 17","En cuve","À brasser","Conditionnés"]
+Atelier {"x":258.9609375,"y":62,"t":"Atelier"}
+Carnet {"x":195,"y":113,"t":"Carnet"}
+Finances restaure : Operations {"x":97.3125,"y":824,"t":"Finances"} {"x":146.75,"y":57,"t":"Opérations"}
+Bord {"x":31.8359375,"y":824,"t":"Bord"}

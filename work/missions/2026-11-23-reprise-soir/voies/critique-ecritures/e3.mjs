@@ -1,0 +1,11 @@
+import { ouvrir, sleep, photo, log } from './outil.mjs';
+import { outils, texte } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+await page.keyboard.press('Escape'); await sleep(500);
+await o.tap('Retour'); await sleep(500);
+await o.nav('Finances');
+await o.tap('Actions rapides'); await sleep(900); await photo(page, 'E3-actions'); log('actions', await o.b());
+await o.tap('Écriture'); await sleep(1200); await photo(page, 'E3-ecriture'); log('ecriture', await o.b()); log('t', (await texte(page)).slice(-600));
+await o.tap('changer'); await sleep(900); await photo(page, 'E3-changer'); log('changer', await o.b()); log('t', (await texte(page)).slice(-900));
+lacher();

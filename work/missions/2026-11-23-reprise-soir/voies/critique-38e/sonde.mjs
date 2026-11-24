@@ -1,0 +1,10 @@
+import { ouvrir, sleep, photo, log, ou, toucher } from './outil.mjs';
+import { outils } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+setTimeout(() => { lacher(); process.exit(2); }, 120000);
+await o.nav('Finances'); await o.tap('Opérations', 'button,[role=tab]'); await sleep(1300);
+const a = await ou(page, 'ZZ TEST — Achat ·', 'button,[role=button]', true); await toucher(cdp, a.x, a.y); await sleep(1300);
+await o.tap('Modifier', 'button'); await sleep(1500);
+console.log(await page.evaluate(() => [...document.querySelectorAll('.mod-corps input, .mod-corps textarea, .mod-corps select, .mod-corps [contenteditable]')].map((e) => e.tagName + ' ' + e.type + ' «' + (e.getAttribute('aria-label') || e.placeholder || e.name) + '» =' + e.value + ' w' + Math.round(e.getBoundingClientRect().width) + ' t' + Math.round(e.getBoundingClientRect().top)).join(' | ')));
+lacher(); process.exit(0);

@@ -1,5 +1,14 @@
 # État des tâches — 23.11 soir, après le tour 26 (b44b191d3, index-Bl2OF9G2.js)
 
+## Reprise (24.11 nuit, session pilote f97e7359 ; mission work/missions/2026-11-23-reprise-soir/MISSION.md)
+- En ligne : tour 44 (tag en-ligne/2026-11-23-tour44, index-Cz4Lt44o.js ; tours 27 à 44), aiTask mise à jour aux tours 28, 30, 34. deploy-leger.sh : ligne T sur tour44 → passer à tour45. Méthode (brasseur, 23.11) : « les seul vrai tests sont ceux sur la vrai app » : déployer chaque lot, puis test d'écran en ligne par un critique Opus sur ZZ TEST (Chrome de débug 9222, jamais fermé), soldes et période du Calendrier remis à l'identique.
+- Fait et vérifié en ligne : étapes de lecture d'un lien (D448) ; T25-8, T26-1..4, BL-7, T28 (sauf restes), T30, frise : cœur reconstruit (d3, état unique ; 26 fonctions gardées, relecture), bord à bord et traits continus, menu +, saisie : coche sans justificatif, date en direct, avis de version en bas ; écritures : E35, E38, E40 en grande partie.
+- Écritures : test en ligne du tour 44 : 0 bloquant ; E35, E38, E40, E41, E43 vérifiés en ligne ; restent E44-1 (dates annoncées d'une récurrente à payer), E44-2 (confirmation du retrait muette sur le remboursement lié), E44-3 (« N° de facture » sur un apport) ; bandeau d'erreur serveur en anglais (firestoreRepo.ts).
+- Prochaine action : E44-1..3, puis le point (5) de la demande : reste de l'état des tâches (Carnet : Q-1..Q-6, filtres D437, L-24, CA13 ; Calendrier : CALP-6, CALP-13, bandeau « Enregistrement… », lenteur ; méthode : test de propriété instable, CI, web-vitals…).
+- Test par modèle de la frise : vert 200 × 2 graines sur aadbb914f (voie modele2) ; build du banc à refaire avant chaque série (cause du faux rouge « An ≠ 21,9 sem. »).
+- Décisions du pilote ce soir : période de l'app fixe (T32-1, son choix du 22.11) ; barre tenue au bord : la frise s'agrandit (son choix CAL-BARRE-BORD) ; Autres entrées à part des Ventes ; apport hors du total des Ventes, tirelire ; parcours Calendrier remplacé par e2e/calendrier (CALP-14). À lui montrer si besoin : rangée à part pour les apports.
+- Ouverts notables : CALP-6, CALP-13 ; BL-13, BL-14 ; facture lue par l'IA, 1280 et thème sombre jamais testés ce soir ; dépense IA ≈ 0,5 CHF ce soir (journal ia-journal.jsonl).
+
 ## Reprise (23.11 soir, session pilote close à la demande du brasseur ; vérifié par git et fichiers, pas de mémoire)
 - En ligne : hosting tour 26 = b44b191d3 (tag en-ligne/2026-11-23-tour26, index-Bl2OF9G2.js) ; aiTask déployée depuis b44b191d3. origin/main = 9e22f0e2a ou plus récent (= b44b191d3 + documents du pilote : CHOIX.md, D448, cet état, journal IA fusionné).
   Copies : port-carnet = b44b191d3 (fusion + mise en ligne ici ; modifs NON commitées d'une autre session dans src/domain/stock/murDonnees.ts,

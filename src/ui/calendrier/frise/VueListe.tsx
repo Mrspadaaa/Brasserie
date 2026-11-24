@@ -50,7 +50,9 @@ const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? `${c.reste
 
 /** « · proposé », sauf une échéance récurrente (un loyer) : « · à payer » jusqu'au paiement (E47 c, n° 21). */
 function marqueProposee(c: ChoseCalendrier): string | null {
-  if (c.proposition === 'echeance') return 'à payer';
+  if (c.proposition === 'echeance') return c.prive ? 'prévu' : c.horsVentes || (c.centimes ?? 0) > 0 ? 'à recevoir' : 'à payer';
+  /* E35-9 : une pièce à payer ou à recevoir à son échéance est prévue, dite comme telle (la Liste ne le disait que pour un loyer récurrent) */
+  if (c.prevue) return c.prevue === 'recevoir' ? 'à recevoir' : 'à payer';
   return c.proposition || c.probable ? 'proposé' : null;
 }
 

@@ -140,9 +140,11 @@ describe('rangement : déroulé d\'un envoi (B5)', () => {
     };
     const { r, ecrits } = banc({ appels, surEtat: (e) => { etats.push(e); } });
     await r.envoyer('celle-ci https://pompe-inox.ch/p/12');
-    expect(appels.lire).toHaveBeenCalledWith('https://pompe-inox.ch/p/12', expect.any(AbortSignal));
+    expect(appels.lire).toHaveBeenCalledWith('https://pompe-inox.ch/p/12', expect.any(AbortSignal), expect.objectContaining({ jeton: expect.any(String) }));
     expect(etats.filter((e) => e.etape === 'en-cours').map((e) => (e as { lecture?: unknown }).lecture)).toEqual([
-      undefined, { url: 'https://pompe-inox.ch/p/12' }, { url: 'https://pompe-inox.ch/p/12', statut: 'lue' }
+      undefined, expect.objectContaining({ url: 'https://pompe-inox.ch/p/12' }), expect.objectContaining({ url: 'https://pompe-inox.ch/p/12', statut: 'lue' }),
+      /* T30-10 : pendant que l'IA range, l'étape « Rangement » tourne */
+      expect.objectContaining({ url: 'https://pompe-inox.ch/p/12', statut: 'lue', rangement: true })
     ]);
     expect(ecrits.ia[0].lignes[0]).toMatchObject({ prixCentimes: 69000, prixSource: 'page', page });
   });
@@ -158,7 +160,7 @@ describe('rangement : déroulé d\'un envoi (B5)', () => {
       await vi.advanceTimersByTimeAsync(DELAI_LECTURE_BANC);
       expect(appels.lire).toHaveBeenCalledTimes(3);
       const lu = etats.filter((e) => e.etape === 'en-cours').map((e) => (e as { lecture?: { statut?: string } }).lecture).at(-1);
-      expect(lu).toEqual({ url: urls[0], statut: 'lue' });
+      expect(lu).toMatchObject({ url: urls[0], statut: 'lue' });
       await vi.advanceTimersByTimeAsync(10);
       expect(await envoi).toMatchObject({ etape: 'range', rangement: 'simulee' });
       expect(ecrits.ia).toHaveLength(1);

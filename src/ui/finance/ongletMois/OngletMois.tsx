@@ -42,8 +42,8 @@ function tuilesDe(e: EffetPiece, variante: VarianteMois): Tuile[] {
 /** Les piles du mois (v6a) avec la pièce en segment cerné : pleine si réglée, hachurée si à payer. Hauteurs en règle de trois sur les centimes (affichage seulement). */
 function PilesMois({ effet }: { effet: EffetPiece }) {
   const apres = colonnesDe(effet.apres), avant = colonnesDe(effet.avant);
-  const avantDe = (cle: string) => [avant.ventes, ...avant.charges, avant.materiel].find(c => c?.cle === cle);
-  const toutes = [apres.ventes, ...apres.charges, apres.materiel].filter((c): c is NonNullable<typeof c> => !!c);
+  const avantDe = (cle: string) => [avant.ventes, avant.autres, ...avant.charges, avant.materiel].find(c => c?.cle === cle);
+  const toutes = [apres.ventes, apres.autres, ...apres.charges, apres.materiel].filter((c): c is NonNullable<typeof c> => !!c);
   /* MM-1 (10.11, « On voit pas vraiment ce que on ajoute ») : quand les ventes écrasent les charges (plus du double de la plus haute), leur pile est
      coupée (axe interrompu, montant exact écrit) et l'échelle se règle sur les charges ; la pièce garde un segment d'au moins 10 px et son écart écrit. */
   const autres = [...apres.charges, apres.materiel].filter((c): c is NonNullable<typeof c> => !!c);
@@ -72,7 +72,8 @@ function PilesMois({ effet }: { effet: EffetPiece }) {
   const sep = (k: string) => <span key={k} className="om-sep" aria-hidden="true" />;
   return <div className="om-piles" role="group" aria-label="Le mois par catégorie, avec cette pièce cernée">
     {apres.ventes && pile(apres.ventes)}
-    {apres.ventes && (apres.charges.length > 0 || apres.materiel) && sep('s1')}
+    {apres.autres && pile(apres.autres)}
+    {(apres.ventes || apres.autres) && (apres.charges.length > 0 || apres.materiel) && sep('s1')}
     {apres.charges.map(pile)}
     {apres.materiel && apres.charges.length > 0 && sep('s2')}
     {apres.materiel && pile(apres.materiel)}

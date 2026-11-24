@@ -3,7 +3,7 @@ import { Beer, CalendarCheck, CalendarDays, Check, ChevronRight, Ellipsis, Link2
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, type EtapeBrassin } from './etapes';
 import { RenommerSurPlace } from '../../saisie/RenommerSurPlace';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
-import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourAvecAnnee, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
+import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, francsSignesExacts, jourAvecAnnee, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ICONE_RANGEE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 import type { LiensPossibles } from './MenuAppuiLong';
 import { DureeFenetre } from './DureeFenetre';
@@ -246,7 +246,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     : null;
   const lieeA = [nomFeteLiee, chose.lie ? nomLie(chose.lie) : null].filter((x): x is string => !!x);
   const commander = chose.jalons?.find(j => j.id === 'commander');
-  const montant = chose.centimes !== undefined ? francsSignes(chose.centimes) : null;
+  const montant = chose.centimes !== undefined ? francsSignesExacts(chose.centimes) : null;
   const semaine = chose.debut ? dateDeSemaine(lundiDe(chose.debut)) : null;
   const peutMiseDeCote = !!(chose.fenetre && chose.centimes && !brassin && (chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')));
   const proposition = !!chose.proposition;

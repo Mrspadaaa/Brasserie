@@ -81,6 +81,16 @@ export interface OptionsPointeur {
  */
 const ZONE_DEFILE_PX = BANDE_PX;
 
+/**
+ * T29-6 (23.11, « tenir la barre 2,5 s au bord droit : la frise passe de 6 sem. à 6 mois et l'événement saute de 11 semaines ») : le défilement
+ * au bord est mesuré. La vitesse du module `geste` croît avec la profondeur du doigt ; comptée en colonnes de l'appui (65 px à 6 sem.), elle
+ * allait jusqu'à 8 colonnes par seconde. Au plus 3 colonnes par seconde : un doigt tenu 2,5 s ajoute 7 semaines, jamais 20.
+ */
+export const COLONNES_MAX_PAR_S = 3;
+export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number): number {
+  return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * dt);
+}
+
 /** Le sens où le doigt tire la fenêtre : `-1` bord gauche (le passé), `1` bord droit (le futur), `0` ailleurs. `arme` : sens du dernier mouvement. */
 export function sensDefilement(x: number, arme: number, cadre: { left: number; right: number }): -1 | 0 | 1 {
   return vitesseBord(x - cadre.left, cadre.right - cadre.left, arme).sens;
@@ -150,6 +160,11 @@ interface Etat {
 const bornes = (k: number, b?: [number, number]) => (b ? Math.max(b[0], Math.min(b[1], k)) : k);
 /** La plage de pas permise, élargie des colonnes hors fenêtre (`marge`). */
 const plage = (b: [number, number] | undefined, marge: [number, number] | undefined): [number, number] | undefined => (b ? [b[0] - (marge?.[0] ?? 0), b[1] + (marge?.[1] ?? 0)] : undefined);
+/**
+ * T29-6 / C38-2 (tour 38, en ligne : barre tenue au bord droit, posée le 22 mars, hors du cadre qui finit le 7 mars) : un doigt SUR la frise vise une
+ * colonne que la fenêtre montre, jamais au-delà ; les colonnes hors fenêtre (`marge`) ne se visent qu'un doigt sorti de la frise, de son côté.
+ */
+export const plageDuDoigt = (b: [number, number] | undefined, marge: [number, number] | undefined, surLaFrise: boolean): [number, number] | undefined => (surLaFrise ? b : plage(b, marge));
 
 /*
  * CRITIQUE-11 n° 2 a (E29 « tirer le bord l'allonge et rien d'autre », E22 « l'œil ne masque que sur un toucher voulu »). En 6 mois à 390, une
@@ -244,6 +259,8 @@ export function usePointeur(options: OptionsPointeur) {
     if (!s.axe0 || !o.colonnes?.length || !(o.largeurColonne > 0)) return null;
     return { colonnes: o.colonnes, largeurColonne: o.largeurColonne, gauche: s.frise?.isConnected ? s.frise.getBoundingClientRect().left : s.L };
   };
+  /* le doigt est sur la frise (entre sa gauche et sa droite visibles à l'appui) */
+  const surLaFrise = (s: Etat) => Number.isFinite(s.R) && s.xPrec >= s.L && s.xPrec <= s.R;
   /* la cible lue : le pas du doigt, moins les colonnes dont la fenêtre a bougé sous lui (la colonne sous le doigt est celle de la fenêtre d'ORIGINE moins le recul) */
   const pasDe = (s: Etat): number => {
     const w = opts.current.largeurColonne || 1;
@@ -253,7 +270,7 @@ export function usePointeur(options: OptionsPointeur) {
     const axe = axeDuMoment(s);
     if (s.axe0 && axe) {
       /* au jour, la barre se glisse aussi dans sa colonne (1 sem. : une seule colonne, les bornes en colonnes la figeaient) */
-      const b = plage(opts.current.borne?.(), opts.current.marge);
+      const b = plageDuDoigt(opts.current.borne?.(), opts.current.marge, surLaFrise(s));
       /* T9-1 : un doigt au-delà de la frise vise son dernier jour (le milieu de la dernière colonne figeait le glisser au jour d'une fenêtre d'une colonne) */
       const xj = Number.isFinite(s.R) ? Math.min(s.xPrec, s.R - 1) : s.xPrec;
       return bornes(pasDuDoigt(s.axe0, s.x0, axe, xj, s.parJour), b && s.parJour ? [b[0] - 6 / 7, b[1] + 6 / 7] : b);
@@ -261,7 +278,7 @@ export function usePointeur(options: OptionsPointeur) {
     const cols = (xv - s.L) / w - (s.x0 - s.L) / (s.w0 || w);
     /* CAL-JOUR : au jour, le pas est 1/7 de colonne ; `k` reste en semaines (3 jours = 3/7), la barre et sa bulle se posent sans autre calcul */
     const brut = s.parJour ? Math.round(cols * 7) / 7 : Math.round(cols);
-    return bornes(brut - s.recul, plage(opts.current.borne?.(), opts.current.marge));
+    return bornes(brut - s.recul, plageDuDoigt(opts.current.borne?.(), opts.current.marge, surLaFrise(s)));
   };
   /* le bord, au jour : les jours entre le doigt et l'appui, chacun lu dans sa fenêtre, moins les semaines dont le début a reculé */
   const largeurJourDe = (o: OptionsPointeur) => (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7);
@@ -382,7 +399,7 @@ export function usePointeur(options: OptionsPointeur) {
       /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
       /* VISION-tour9 n° 2 : comptée en colonnes de l'APPUI (une fenêtre qui grandit rétrécit ses colonnes : comptée en colonnes du moment, elle
          allait de 6 à 23 semaines en 1,5 s et la bulle ne suivait plus) */
-      s.acc += (vitesse * dt * largeur) / Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne));
+      s.acc += colonnesParImage(vitesse, dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)));
       while (s.acc >= 1) {
         s.acc -= 1;
         /* la barre sortirait d'une fenêtre qui GLISSE : elle ne fait alors que grandir (jamais une barre tenue qui disparaît sous le doigt) ;

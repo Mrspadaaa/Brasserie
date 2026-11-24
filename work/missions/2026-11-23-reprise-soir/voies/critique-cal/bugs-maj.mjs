@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+const F = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/BUGS.md';
+let t = fs.readFileSync(F, 'utf8');
+const C = 'work/missions/2026-11-23-reprise-soir/voies/critique-cal/cap/';
+const W = '(390 px, en ligne index-BWLOL1xf.js, frise inchangée en index-KxF0Bcaa.js)';
+const lignes = [
+ ['T29-1', 'Calendrier, frise, période de l’app', 'Régler la période de l’app du 01.01.2024 au 31.12.2027, puis la poignée de début tirée à gauche → observé : la frise dit « 4 ans », mais son cadre va du 24 nov. 2025 au 25 nov. 2029 ; avec la période 22.11.15–21.11.19, il reste 2025–2029 ; la poignée de début ne bouge pas, sans butée visible ; attendu : le cadre est la période de l’app, sinon une butée dite', 'B', 'R1-03.png, ' + C + 'R1-06-debut-gauche.png, ' + C + 'R1-11-precedente2.png'],
+ ['T29-2', 'En-tête, Période suivante', 'Depuis 01.01.24–31.12.27, toucher › → observé : 22.11.23–21.11.27, la période recule ; ni ‹ ni › ne changent la frise ; attendu : › avance de 4 ans, et la frise suit', 'B', 'R1-09-suivante.png, ' + C + 'R1-10-precedente.png'],
+ ['T29-3', 'Calendrier, frise, barre glissée', 'Tenir la barre « ZZ TEST — barre » à 6 mois, puis glisser 150 px à gauche → observé : la frise passe à 6 sem. au toucher, la barre quitte le doigt, l’événement est posé deux semaines plus tard (2 → 16 août) ; à 3 mois, un glisser de 72 px reste sans effet ; attendu : même échelle, la date suit le doigt (suite de T28-16)', 'B', 'R8-a-6mois-gauche-pendant.png, ' + C + 'R6-a-droite72-pendant.png'],
+ ['T29-4', 'Bord › Agenda', 'Toucher le nom de la fête « vi » → observé : la ligne est un <label>, la fête est cochée « Fait » (vraie donnée, décochée aussitôt : « 12.10.2026 · en retard ») ; aucun renvoi vers sa feuille ; attendu : le nom ouvre la chose sur place, seule la case coche', 'B', 'R13-fete-1.png, ' + C + 'R13-vi-repare.png'],
+ ['T29-5', 'Calendrier, frise, barre glissée', 'Glisser la barre ZZ à 6 sem. après le zoom au toucher → observé : l’étiquette « S33 · 16 août · lâcher ici » couvre la barre glissée ; attendu : l’étiquette hors de la barre (CALP-5)', 'm', 'R8-a-6mois-gauche-pendant.png'],
+ ['T29-6', 'Calendrier, frise, barre tenue au bord', 'Tenir la barre ZZ 2,5 s au bord droit, puis la lâcher → observé : la frise passe de 6 sem. à 6 mois, l’événement saute du 16 nov. au 2 août, posé hors du cadre qui finit le 27 juin ; à gauche, 2 août → 24 mai, hors du cadre du 14 juin au 29 août ; pendant le geste, la barre et « lâcher ici » passent sous la barre du bas ; attendu : un défilement mesuré, une pose dans le cadre visible', 'm', 'R6-c-bord-1.png, ' + C + 'R6-c-apres.png, ' + C + 'R8-c-6mois-gauche-apres.png'],
+ ['T29-7', 'Calendrier, bande de graduations', 'Cadre de 25 à 31 mois → observé : « M M J S 2027 M J S 2028 … », la première année n’a pas de nom ; attendu : l’année sur chaque segment', 'm', 'R1-04-fin-gauche.png'],
+ ['T29-8', 'Calendrier, vue An', 'Menu des durées : An → observé : la bande montre « O N D J F M A M J J A S O N D J F », sans année au passage de janvier ; attendu : l’année à janvier, comme à 31 mois', 'm', 'R1-13-duree-An.png'],
+ ['T29-9', 'Calendrier, en-têtes de rangée', 'Cadre sans chose dans la rangée, mais des choses hors du cadre → observé : pastille de somme vide et « pas confirmé » (Brassins, Fêtes, Travaux, Papiers) ; attendu : « vide » ou un montant', 'm', 'R1-07-debut-droite.png, ' + C + 'R6-c-apres.png'],
+ ['T29-10', 'Calendrier, rangée Brassins', 'Cadre de 4 ans, puis de 31 mois → observé : « prévu S48–S47 », « prévu S48–S25 », sans années ; la plage se lit à l’envers ; attendu : années dès que le cadre passe l’an', 'm', 'R1-03-plage4ans-frise.png, ' + C + 'R1-04-fin-gauche.png'],
+ ['T29-11', 'Calendrier, « ‹ auj. »', 'Toucher « ‹ auj. » (cadre en déc. 2026) → observé : cadre sur S51, la semaine cachée dessous ; attendu : retour à aujourd’hui (S48)', 'm', 'R3-03-auj.png'],
+ ['T29-12', 'Calendrier, bouton de durée', 'Poignées tirées → observé : « 31 mois », « 46 mois », « 63 mois » ; attendu : en années (« 2 ans ½ », « 5 ans »)', 'D', 'R1-04-fin-gauche.png, ' + C + 'R1-05-fin-droite.png'],
+];
+const out = lignes.map(([id, ou, quoi, g, caps]) => `| ${id} | Test en ligne, tour 29 | ${ou} ${W} | ${quoi} | ${g} | ouvert — présent |   | tour 29, test d’écran en ligne 23.11 ; capture ${C}${caps} |`);
+if (!t.includes('| T29-1 |')) t = t.replace(/\n*$/, '\n') + out.join('\n') + '\n';
+const maj = (id, etatNeuf) => { t = t.split('\n').map((l) => { if (!l.startsWith(`| ${id} |`)) return l; const c = l.split(' | '); c[5] = etatNeuf; return c.join(' | '); }).join('\n'); };
+maj('T28-16', 'ouvert — présent (tour 29, 23.11 : à 3 mois, glisser de 72 px à droite → 23 → 30 nov., la date avance ; mais la frise passe encore à 6 sem. au toucher ; à 6 mois, glisser à gauche pose 2 → 16 août, voir T29-3 ; ' + C + 'R5-a-droite72-apres.png, ' + C + 'R8-a-6mois-gauche-pendant.png)');
+maj('CALP-5', 'ouvert — présent (tour 29, 23.11, événement ZZ : à 3 mois → 6 sem., « S49 · 30 nov. · lâcher ici » ne couvre pas la barre, mais cache le fantôme d’origine ; à 6 mois → 6 sem., « S33 · 16 août · lâcher ici » couvre la barre glissée, voir T29-5 ; ' + C + 'R5-a-droite72-pendant.png, ' + C + 'R8-a-6mois-gauche-pendant.png)');
+fs.writeFileSync(F, t);
+console.log('écrit', out.length, 'lignes');

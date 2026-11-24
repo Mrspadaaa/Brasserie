@@ -449,7 +449,7 @@
 .ent-auj-g0 { stop-color: rgb(var(--area-finances)); stop-opacity: 0.28; }
 .ent-auj-g1 { stop-color: rgb(var(--area-finances)); stop-opacity: 0; }
 .ent-auj-bd { position: absolute; top: 0; bottom: 0; pointer-events: none; background: rgb(var(--area-finances) / 0.12); }
-.ent-auj-hors { position: absolute; top: 0; bottom: 1px; display: flex; align-items: center; padding: 0 6px 0 14px; z-index: 1; pointer-events: none; font-size: 13.5px; font-weight: 800; color: var(--ent-fin); background: linear-gradient(to right, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0) 22px), rgb(var(--cave-950) / 0.85); }
+.ent-auj-hors { position: absolute; top: 0; bottom: 1px; display: flex; align-items: center; padding: 0 6px 0 14px; z-index: 1; pointer-events: auto; cursor: pointer; border: 0; font-family: inherit; font-size: 13.5px; font-weight: 800; color: var(--ent-fin); background: linear-gradient(to right, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0) 22px), rgb(var(--cave-950) / 0.85); }
 .ent-auj-hors--gauche { left: 0; }
 .ent-auj-hors--droite { right: 0; padding: 0 14px 0 6px; background: linear-gradient(to left, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0) 22px), rgb(var(--cave-950) / 0.85); }
 .ent-bd-c[data-courant] .ent-sem, .ent-bd-j[data-auj], .ent-sem[data-auj-mois] { color: var(--ent-fin); font-weight: 800; }

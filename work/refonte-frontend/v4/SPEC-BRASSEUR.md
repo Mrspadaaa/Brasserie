@@ -2838,3 +2838,17 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant « Ces pourcentages ne comptent pas 5 pages qui bloquent les robots ni un lien mort : on ne contourne jamais ces blocages. ») « SI, il faut »
 - (citant le refus de contourner les défis anti-robots) « Pas de problème, fait le par le biais de l'ia ou gemini »
 - (classement de la page des étapes) « Carnet, lecture d’un lien, classement par écran (23.11) Début · le lien vient d'être collé : 1 v05, v06 · 2 v03, v04 · 4 v02 Milieu · 3 étapes faites, dont une douteuse : 1 v03 · 2 v01, v05, v06 · 3 v04 Barre repliée · l'app peut se fermer : 1 v01 (v01 : Toujours pas assez compact le carnet ) Fin · retrouvée à la réouverture : 2 v01, v03, v05 fin · 5 v06 (v06 : Toujours en ttc) Échec · lien introuvable : 2 base, v03 (v03 : Bouton escaler, où on pourrait utiliser encore une meilleure ia) Ça sera à faire par l'autre session, Parcontre ça manque un peu de compact, c'est pas assez dense. Comme il aura pas accès à l'artefact fait en sorte que ce soit facile »
+
+### 23.11 (nuit) — Reprise : Chrome de débug
+- « un chrome a été ouver avec pour le test, jamais utiliser le chrome in claude. » (avec la commande chrome.exe --remote-debugging-port=9222 --user-data-dir=C:\Users\mrspa\chrome-test)
+- « et jamais fermé le chrome de débug »
+
+### 23.11 (nuit) — Jetons
+- « Est-ce que on peut mieux optimisé ça sans perdre en qualité ? »
+- « 2,3,4 à mettre en place » (2 : dossier préparé par voie ; 3 : le mécanique à Haiku ; 4 : gestes groupés en un script, captures à demi-échelle)
+- « Non, ce que j'ai dis c'est que les seul vrai tests sont ceux sur la vrai app. Les unit test montre peu de vrai bug. Pareil pour les test local. Donc déployé plus souvent.Tu as pas trouvé ces informations ?? »
+- (capture 23.11 21:27, Calendrier 20 mois, zones entourées : toute la frise, et Travaux/Activités/Papiers) « Il y a toujours de l'espace vide et une donné que je cache brise les lignes » (work/missions/2026-11-23-reprise-soir/plaintes/2327-vide-lignes.jpg)
+- (23.11 21:32, trois captures : bord droit, bord gauche, écran entier) « Je sais pas si tu as bien compris le problème c'est que il y a des bords tout autour du calendrier » (plaintes/2332-*.jpg)
+- (23.11 21:34–21:37, captures plaintes/2334-apport.jpg, 2335-apport-fin.jpg, 2336-calendrier-apport.jpg, 2337-vente.jpg) « Plusieurs projets problème la vue apport, d'ailleurs elle s'affiche pas sûr le calendrier... Et elle diffère des autres vue, et il y a pas de coche pour dire que il y a pas de justificatif, c'est normal ??? »
+- (21:39, plaintes/2339-curseur-date.jpg) « Le slider met pas à jour la date en dynamique »
+- (21:40, plaintes/2340-plus.jpg) « D'ailleurs le + affiche étrangement mtn »

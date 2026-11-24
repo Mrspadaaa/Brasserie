@@ -3,6 +3,7 @@ import { Handler } from 'htmlmetaparser';
 import { Parser } from 'htmlparser2';
 import { stockStatus } from './brewerSuppliers.js';
 import { bruitDeBoutique, completerValeurs, memeMesure, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
+import { montantDit } from './lienValeurs.js';
 
 /**
  * Lecture d'une page produit, sans modèle (D446, 23.11 : « vraiment très mauvais » au banc réel). Remplace la lecture JSON-LD seule.
@@ -444,7 +445,7 @@ function livraisonCH(offres: Json[], visible: string, prix: number | undefined, 
     const lu: Livraison | undefined = m && m.montant === 0 ? { gratuite: true } : m && dev ? { prix: m.montant, devise: dev } : undefined;
     if (lu) { schema = lu; schemaOffreChoisie = choisie; }
   }
-  if (LIVRAISON_REFUSEE.test(visible)) return { l: { refusee: true }, ...(schema && !schema.refusee ? { doute: 'les données disent une livraison en Suisse, la page la refuse' } : {}) };
+  if (LIVRAISON_REFUSEE.test(visible)) return { l: { refusee: true }, ...(schema && !schema.refusee ? { doute: 'la fiche du site dit une livraison en Suisse, la page la refuse' } : {}) };
   // Une gratuité écrite ne vaut pour la Suisse que sur une boutique suisse (ou si la page nomme la Suisse) et sous son seuil éventuel.
   let texteGratuit = false;
   const m = visible.match(LIVRAISON_GRATUITE);
@@ -455,7 +456,7 @@ function livraisonCH(offres: Json[], visible: string, prix: number | undefined, 
     const seuilOk = !seuil || (prix !== undefined && prix >= (prixLocalise(seuil[1])?.montant ?? Infinity));
     texteGratuit = (suisse || /schweiz|suisse|switzerland/i.test(suite)) && !ailleurs && seuilOk;
   }
-  if (texteGratuit) return { l: { gratuite: true }, ...(schema && !schema.gratuite ? { doute: `les données disent un port de ${schema.prix} ${schema.devise ?? ''}, la page « livraison gratuite »` } : {}) };
+  if (texteGratuit) return { l: { gratuite: true }, ...(schema && !schema.gratuite ? { doute: `la fiche du site dit un port de ${schema.prix !== undefined ? montantDit(schema.prix) : ''} ${schema.devise ?? ''}, la page « livraison gratuite »` } : {}) };
   return { l: schema };
 }
 
@@ -465,6 +466,20 @@ function livraisonCH(offres: Json[], visible: string, prix: number | undefined, 
 
 const RETIRE = /nicht\s+mehr\s+(?:verfügbar|lieferbar|erhältlich)|plus\s+disponible|n['’]est\s+plus\s+disponible|no\s+longer\s+available|discontinued|ausgelistet/i;
 const LISTE_PRIX = /ListPrice|StrikethroughPrice|SRP|MSRP|InvoicePrice|SalePrice_none/i;
+
+/** T28-9 : d'où viennent les prix, dit en mots du brasseur (la fiche produit du site est la source normale, donc muette). */
+const SOURCE_PRIX_DITE: Record<string, string> = { 'Open Graph': ' (annonce du site)', 'bloc d\'achat': ' (bloc d\'achat de la page)', 'page (sous le titre)': ' (lu sous le titre de la page)' };
+
+/**
+ * « 20 caractéristiques » ; « 8 caractéristiques : 5 du tableau de la page, 1 du nom » (T28-9 : ni « HTML » ni « données embarquées » ; T30-9 : en mots
+ * du brasseur, jamais « 8 mesures : 8 ailleurs dans la page »). La provenance ne se détaille que si elle varie : tout au même endroit ne se redit pas.
+ */
+function detailCaract(total: number, tableau: number, duNom: number): string {
+  const ailleurs = total - tableau - duNom;
+  const sources = [tableau, ailleurs, duNom].filter((n) => n > 0).length;
+  const d = sources < 2 ? [] : [tableau ? `${tableau} du tableau de la page` : '', ailleurs ? `${ailleurs} ailleurs dans la page` : '', duNom ? `${duNom} du nom` : ''].filter(Boolean);
+  return `${total} caractéristique${total > 1 ? 's' : ''}${d.length ? ` : ${d.join(', ')}` : ''}`;
+}
 
 export function extraireProduit(html: string, url: URL): Extraction {
   const $ = load(html);
@@ -478,7 +493,8 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const p = principal(s, h1, ogTitre, url);
   const etapes: EtapeLecture[] = [];
   const doutes: string[] = [];
-  etapes.push(p ? { nom: 'donnees', statut: 'trouve', detail: [...new Set(s.produits.map((x) => x.source))].join(' + ') } : { nom: 'donnees', statut: 'absent', detail: 'aucun Product schema.org' });
+  /* T28-9 : l'écran parle brasseur. Jamais « schema.org », « microdata » ni « JSON-LD » : la page publie, ou non, la fiche de son produit. */
+  etapes.push(p ? { nom: 'donnees', statut: 'trouve', detail: 'fiche produit publiée par le site' } : { nom: 'donnees', statut: 'absent', detail: 'le site ne publie pas de fiche produit' });
 
   // Nom, marque comprise (BL-9) ; repli : og:title, h1, puis <title> sans le nom de la boutique.
   const site = norm(meta('og:site_name') ?? url.hostname.replace(/^www\./, '').split('.')[0]);
@@ -553,13 +569,13 @@ export function extraireProduit(html: string, url: URL): Extraction {
   let prixDouteux: string | undefined;
   if (prix !== undefined && sourcePrix === 'schema.org' && visible.length > 500 && !positionsMontant(visible, prix).length) {
     const vu = h1 ? prixSousTitre(visible, h1) : undefined;
-    if (vu && vu.devise === devise && !egal(vu.montant, prix)) prixDouteux = `données ${prix}, page ${vu.montant} ${vu.devise}`;
+    if (vu && vu.devise === devise && !egal(vu.montant, prix)) prixDouteux = `la fiche du site dit ${montantDit(prix)} ${devise}, la page ${montantDit(vu.montant)} ${vu.devise}`;
   }
   /* la note de taxe d'une boutique vit souvent dans son pied de page (retiré du texte visible) : lue à part, jamais pour un autre usage */
   const notesTaxe = prix !== undefined ? compact($('[class*="footnote" i], [class*="vat" i], [class*="mwst" i], footer').map((_, e) => $(e).text()).get().filter((t) => /MwSt|USt|VAT|TVA|Mehrwertsteuer/i.test(t)).slice(0, 6).join(' ')) : '';
   const taxe = prix !== undefined ? taxeDe(prix, visible, tvaSchema, notesTaxe) : {};
   etapes.push(prix !== undefined
-    ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `${prix} ${devise} (${sourcePrix})${prixDes ? ', dès' : ''}` }
+    ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `prix ${montantDit(prix)} ${devise}${prixDes ? ' (dès)' : ''}${SOURCE_PRIX_DITE[sourcePrix] ?? ''}` }
     : { nom: 'prix', statut: 'absent' });
   if (prixDouteux) doutes.push(`prix : ${prixDouteux}`);
 
@@ -573,7 +589,7 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const { l: livraison, doute: douteLivraison } = livraisonCH(offres, visible, prix, devise, suisse);
   if (douteLivraison) doutes.push(`port : ${douteLivraison}`);
   etapes.push(devise
-    ? { nom: 'devise-frais', statut: douteLivraison ? 'douteux' : 'trouve', detail: [devise, taxe.taxe?.toUpperCase(), livraison?.refusee ? 'pas de livraison en Suisse' : livraison?.gratuite ? 'port gratuit' : livraison?.prix !== undefined ? `port ${livraison.prix} ${livraison.devise}` : 'port non publié'].filter(Boolean).join(' · ') }
+    ? { nom: 'devise-frais', statut: douteLivraison ? 'douteux' : 'trouve', detail: [taxe.taxe === 'ttc' ? 'taxe comprise' : taxe.taxe === 'ht' ? 'hors taxe' : '', livraison?.refusee ? 'pas de livraison en Suisse' : livraison?.gratuite ? 'port gratuit' : livraison?.prix !== undefined ? `frais de port ${montantDit(livraison.prix)} ${livraison.devise ?? devise}` : 'frais de port non publiés'].filter(Boolean).join(' · ') }
     : { nom: 'devise-frais', statut: 'absent' });
 
   const sourcesPhotos: unknown[] = [p?.image, choisie?.image, ...variantes.slice(0, 3).map((v) => v.image)];
@@ -617,7 +633,7 @@ export function extraireProduit(html: string, url: URL): Extraction {
   { const n = completerValeurs(fusion.valeurs, mesuresDuNom(nom)); fusion = n; dNom = n.ajoutees; }
   valeurs.splice(0, valeurs.length, ...(fusion.valeurs as Valeur[]));
   etapes.push(valeurs.length
-    ? { nom: 'caract', statut: 'trouve', detail: [`${valeurs.length}`, dHtml !== valeurs.length ? `dont ${dHtml} du HTML, ${valeurs.length - dHtml - dNom} de données embarquées ou de descriptions${dNom ? `, ${dNom} du nom` : ''}` : ''].filter(Boolean).join(' · ') }
+    ? { nom: 'caract', statut: 'trouve', detail: detailCaract(valeurs.length, dHtml, dNom) }
     : { nom: 'caract', statut: 'absent' });
 
   const vendeur = texte(liste<Json>(offres[0]?.seller)[0]?.name, 80) ?? meta('og:site_name');

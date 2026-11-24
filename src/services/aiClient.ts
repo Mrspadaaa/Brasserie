@@ -134,6 +134,20 @@ const estEtapeProvisoire = (m: unknown): m is AiFluxEtape =>
   typeof (m as AiFluxEtape).jeton === 'string' && (m as AiFluxEtape).jeton !== '' &&
   (m as AiFluxEtape).data !== null && typeof (m as AiFluxEtape).data === 'object';
 
+/**
+ * IA-ETAPES-VISIBLES (D448) : le morceau que la tâche `lireLien` envoie à chaque étape (`functions/src/lecturesLiens.ts`) : le jeton de la
+ * lecture, ses étapes en cumul, la sous-tâche lente en cours. Passé à `runFlux` avec `estFluxLecture`.
+ */
+export interface AiFluxLecture {
+  etape: 'lecture';
+  jeton: string;
+  etapes: Array<{ nom: string; statut: 'trouve' | 'absent' | 'douteux'; detail?: string }>;
+  enCours?: 'ia' | 'bloquee';
+}
+export const estFluxLecture = (m: unknown): m is AiFluxLecture =>
+  m !== null && typeof m === 'object' && (m as AiFluxLecture).etape === 'lecture' && typeof (m as AiFluxLecture).jeton === 'string' &&
+  Array.isArray((m as AiFluxLecture).etapes);
+
 const MESSAGE_FLUX_FERME = 'Le serveur IA a fermé la connexion sans réponse. Réessaie dans quelques instants ; la saisie manuelle reste disponible.';
 const MESSAGE_LECTURE_INTERROMPUE = 'Lecture interrompue.';
 
@@ -201,7 +215,11 @@ export const AiClient = {
    *    résultat est une erreur, jamais une attente.
    * Un `signal` levé (la feuille se ferme) coupe l'attente ; le serveur finit sa lecture et la met en cache.
    */
-  async runFlux<T = any>(req: AiRequest, onEtape: (etape: AiFluxEtape) => void, signal?: AbortSignal): Promise<AiResponse<T>> {
+  async runFlux<T = any, E = AiFluxEtape>(
+    req: AiRequest, onEtape: (etape: E) => void, signal?: AbortSignal,
+    /** Le contrat des morceaux transmis (par défaut : le provisoire de la facture ; `estFluxLecture` pour `lireLien`). */
+    estEtape: (m: unknown) => m is E = estEtapeProvisoire as unknown as (m: unknown) => m is E
+  ): Promise<AiResponse<T>> {
     if (typeof callAiTask.stream !== 'function') return this.run(req) as Promise<AiResponse<T>>;
     if (signal?.aborted) return { ok: false, error: MESSAGE_LECTURE_INTERROMPUE };
 
@@ -228,7 +246,7 @@ export const AiClient = {
         for (;;) {
           const pas = await Promise.race([lecteur.next(), coupee]);
           if (pas.done) break;
-          if (!estEtapeProvisoire(pas.value)) continue;
+          if (!estEtape(pas.value)) continue;
           // L'écran ne doit jamais faire échouer la lecture : le final compte plus que son confort.
           try { onEtape(pas.value); } catch { /* le final arrive quand même */ }
         }

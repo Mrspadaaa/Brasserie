@@ -13,7 +13,7 @@
 .sai-hd button{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:var(--val)}
 .sai-hd .sai-doc{border:1px solid var(--bordm)}
 .sai-hd .sai-hl{font-size:12px;color:var(--sec);border:1px solid var(--bordm);border-radius:6px;padding:0 6px}
-.sai-b{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 10px 12px;display:flex;flex-direction:column;gap:10px}
+.sai-b{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 10px calc(12px + var(--avis-maj,0px));display:flex;flex-direction:column;gap:10px}
 .sai-b>*{flex:none}
 .sai-err{border:1px solid #B3261E;color:#B3261E;background:rgba(179,38,30,.06);border-radius:10px;padding:8px 10px;font-size:13.5px}
 [data-theme="cave"] .sai-err{border-color:#F2B8B5;color:#F2B8B5}
@@ -106,6 +106,8 @@
 .sai-fold>summary span{font-size:12px;color:var(--sec);display:inline-flex;gap:3px;align-items:center}
 .sai-fold[open]>summary span svg{transform:rotate(180deg)}
 .sai-fold .sai-blk{padding:8px 2px 0}
+.sai-ck{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 4px;font-size:14px;color:var(--val);cursor:pointer}
+.sai-ck input{width:18px;height:18px;flex:none;accent-color:var(--act)}
 .sai-in{height:40px;border:1px solid var(--bordm) !important;border-radius:10px;padding:0 10px !important;font-size:15px;color:var(--val);width:100%}
 /* pied */
 .sai-ft{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--bord);background:var(--page)}
@@ -150,3 +152,8 @@
 .sai-ok-a button{height:44px;padding:0 12px !important;border-radius:12px;border:1px solid var(--bordm) !important;font-weight:600 !important;color:var(--val) !important;display:inline-flex;align-items:center;gap:5px}
 .sai-ok-a .sai-go{border:0 !important;color:var(--acttx) !important;margin-left:auto;padding:0 22px !important}
 @media (min-width:1024px){.sai-col{max-width:520px;margin:0 auto;width:100%;border-left:1px solid var(--bord);border-right:1px solid var(--bord)}}
+/* E35-5 : le choix de la contrepartie (« + autre ») : un champ, puis les noms déjà connus en puces */
+.sai-tiers{display:flex;flex-direction:column;gap:6px}
+.sai-tiers .sai-vide{font-size:12.5px;color:var(--sec)}
+/* E35-8 : le mot dit sous la frise quand le doigt touche la borne */
+.sai-date [data-choix-date-borne]{margin:2px 2px 0;color:var(--sec)}

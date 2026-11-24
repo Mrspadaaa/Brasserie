@@ -45,6 +45,9 @@ export interface DureeFenetreProps {
    *  pièce ancienne se corrige au doigt sans retomber sur janv. 2025. Le Calendrier n'en passe pas : rien ne change pour lui. */
   epoque?: string;
   dernier?: string;
+  /** E41-6 (24.11) : le dernier jour qui se pose (la saisie d'une écriture : aujourd'hui). La piste s'arrête là (à deux jours près, pour que le repère tenu reste entier) : plus de moitié de piste
+   *  qui ne sert à rien, et le mois du jour est toujours écrit. Absent : rien ne change (Calendrier, fiches). */
+  jourMax?: string;
 }
 
 /** Au repos, au moins treize semaines sur la largeur : une semaine seule reste lisible, la fin se saisit loin du début. */
@@ -69,14 +72,14 @@ type Role = 'a' | 'b' | 'corps';
 interface Saisie { role: Role; a0: number; b0: number; debut0: string; fin0: string | null; vue0: Vue; vue: Vue; off: number; w: number }
 
 /** R4 : le début à 56 px du bord gauche ; la fin (le dimanche de sa semaine) à 56 px du bord droit, sauf sous treize semaines. Seule : au milieu. */
-function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number): Vue {
-  if (seule) return { span: spanMin, v0: a + 0.5 - spanMin / 2 };
+function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number, bord = Infinity): Vue {
+  if (seule) return { span: spanMin, v0: Math.min(a + 0.5 - spanMin / 2, bord - spanMin) };
   const marge = Math.min(MARGE_BOUTS_PX, w / 4);
   const span = Math.max(spanMin, (b - a) * w / (w - 2 * marge));
   return { span, v0: a - marge * span / w };
 }
 
-export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, etiquette = 'Durée', max = 104, pas = 'semaine', onLacher, epoque = EPOQUE, dernier = DERNIER_LUNDI }: DureeFenetreProps) {
+export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, etiquette = 'Durée', max = 104, pas = 'semaine', onLacher, epoque = EPOQUE, dernier = DERNIER_LUNDI, jourMax }: DureeFenetreProps) {
   const jour = pas === 'jour';
   const u = jour ? 1 : 7, spanMin = jour ? SPAN_MIN_JOUR : SPAN_MIN, K_MAX = kMax(u, epoque, dernier);
   const kDe = (d: string) => unitesEntre(epoque, d, u);
@@ -96,8 +99,11 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
   const w = largeur || LARGEUR_DEFAUT;
   const n = !seule && fin ? Math.max(1, unitesEntre(debut, fin, u) + 1) : 1;
   const a = kDe(debut), b = a + n;
+  /* E41-6 : le bord droit de la piste (en unités depuis l'époque) : le jour max, son repère entier, deux unités de marge ; sans `jourMax`, aucun bord */
+  const bord = jourMax && jour ? kDe(jourMax) + 1 + 2 : Infinity;
+  const calee = (v: Vue): Vue => (v.v0 + v.span > bord ? { ...v, v0: bord - v.span } : v);
   const [tenue, setTenue] = useState<Vue | null>(null);
-  const vue = tenue ?? cadrer(a, b, w, seule, spanMin);
+  const vue = tenue ?? cadrer(a, b, w, seule, spanMin, bord);
   const x = (semaine: number) => (semaine - vue.v0) / vue.span * w;
   const xa = x(a), xb = x(b), xp = x(a + 0.5);
 
@@ -116,7 +122,7 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
     saisir: (px) => {
       const role: Role = seule ? 'corps' : roleSous(px, xa, xb);
       if (!onPlage && role !== 'b') return null;
-      const v = cadrer(a, b, w, seule, spanMin);
+      const v = cadrer(a, b, w, seule, spanMin, bord);
       setTenue(v);
       return { role, a0: a, b0: b, debut0: debut, fin0: fin, vue0: v, vue: v, off: 0, w };
     },
@@ -134,6 +140,7 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
         const ga = seule ? p.a + 0.5 : p.a, gb = seule ? p.a + 0.5 : p.b;
         if ((ga - s.vue.v0) * q < M) s.vue = { ...s.vue, v0: ga - M / q };
         else if ((gb - s.vue.v0) * q > s.w - M) s.vue = { ...s.vue, v0: gb - (s.w - M) / q };
+        s.vue = calee(s.vue);
         setTenue(s.vue);
       }
       poser(p.a, p.b);
@@ -143,7 +150,7 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
       if (s.role === 'corps') {
         // R7 : le corps avance dans le sens du doigt, l'échelle défile avec lui
         s.off += sens * pas;
-        s.vue = { ...s.vue, v0: s.vue.v0 + sens * pas };
+        s.vue = calee({ ...s.vue, v0: s.vue.v0 + sens * pas });
       } else if (s.role === 'b' && sens > 0) {
         // R7 : la fin tirée dehors ; l'échelle se resserre, le début reste à sa place à l'écran
         const xa0 = (s.a0 - s.vue.v0) / s.vue.span;
@@ -199,6 +206,10 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
       const mois = j1 <= 7 ? jourLisible(d).split(' ').slice(1).join(' ') : null;
       if (tous || mois || k % 4 === 0) reperes.push({ k, plein: !!mois, mois });
     }
+  }
+  /* E41-6 : la piste dit toujours le mois où l'on est : sans 1er de mois près du bord gauche, le mois du premier jour visible s'écrit au bord (jamais « déc. » seul, quand la date est en novembre) */
+  if (jour && jourMax && reperes.length && reperes[0].k === premiere && !reperes[0].mois && !reperes.some(r => r.mois && r.k - premiere < 6)) {
+    reperes[0] = { ...reperes[0], mois: jourLisible(lundiK(premiere)).split(' ').slice(1).join(' ') };
   }
   const pxSemaine = pxUnite * 7 / u;
   const finTexte = fin ?? debut;

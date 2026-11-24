@@ -1,5 +1,5 @@
 import type { Batch, StockItem } from '../../types';
-import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
+import type { FinanceKind, FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
 import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
 import type { CashCause } from './ledger';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
@@ -99,6 +99,22 @@ export function forecastHorizonEnd(asOf: string, horizon: 30 | 90 | 365): string
   date.setUTCDate(date.getUTCDate() + horizon);
   return date.toISOString().slice(0, 10);
 }
+/**
+ * E38-6 : « à payer d'ici le 23.12 » sur une écriture qui revient. La 1re pièce (date du jour, échéance +1 mois) se place à son échéance ; les occurrences suivantes
+ * gardent le MÊME délai : un Salaire du 23.11 dû le 23.12 revient dû le 23.01, un Loyer trimestriel du 23.11 dû le 23.12 revient dû le 23.03 (jamais « sans délai » :
+ * deux Salaire le même jour). Délai en mois entiers quand l'échéance tombe le même quantième que la date ; sinon en jours. Sans pièce liée à la 1re occurrence ou sans
+ * échéance après sa date : aucun décalage (le comportement d'avant).
+ */
+export function decalageDeLEcheance(plan: FinancialPlan, liees: FinanceTransaction[]): (date: string) => string {
+  const debut = isoDate(plan.date);
+  const premiere = debut ? liees.find(t => t.finance?.occurrenceId === `${plan.id}:${debut}`) : undefined;
+  const echeance = isoDate(premiere?.finance?.dueDate);
+  if (!debut || !echeance || echeance <= debut) return date => date;
+  const mois = (Number(echeance.slice(0, 4)) - Number(debut.slice(0, 4))) * 12 + Number(echeance.slice(5, 7)) - Number(debut.slice(5, 7));
+  if (mois > 0 && echeance.slice(8) === debut.slice(8)) return date => anchoredDate(date, mois);
+  const jours = Math.round((Date.parse(`${echeance}T12:00:00Z`) - Date.parse(`${debut}T12:00:00Z`)) / 86_400_000);
+  return date => new Date(Date.parse(`${date}T12:00:00Z`) + jours * 86_400_000).toISOString().slice(0, 10);
+}
 export function planOccurrences(plan: FinancialPlan, from: string, to: string): Array<{ id: string; date: string }> {
   const start = isoDate(plan.date);
   if (!start || plan.status !== 'active') return [];
@@ -178,11 +194,16 @@ function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payment
     if (isUpgradePlan(plan) && input.includeEquipmentProjects === false) continue;
     if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { noter(`Projet à compléter : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'projet de matériel à compléter (date ou budget) : écarté de la prévision'); continue; }
     if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { noter(`Prévision invalide : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'date ou montant illisible : la prévision n’est pas comptée'); continue; }
-    const linked = active.filter(t => t.finance?.planId === plan.id && transactionKind(t) === (plan.direction === 'out' ? 'expense' : 'income'));
+    /* E40-1 : une écriture liée est du sens de la prévision. Un apport (`contribution`, entrée) et un prélèvement (`withdrawal`, sortie) reviennent comme une vente ou une charge :
+       sans eux, l'occurrence déjà saisie restait « à payer » aujourd'hui. */
+    const sortes: FinanceKind[] = plan.direction === 'out' ? ['expense', 'withdrawal'] : ['income', 'contribution'];
+    const linked = active.filter(t => t.finance?.planId === plan.id && sortes.includes(transactionKind(t)));
     if (plan.recurrence && linked.some(t => !t.finance?.occurrenceId)) {
       noter(`Récurrence « ${plan.title} » : confirmer l’échéance des factures liées. Leur mois sert au rapprochement provisoire ; les échéances suivantes restent prévues.`, { kind: 'plan', planId: plan.id }, plan.title, 'récurrence : confirme l’échéance des factures liées');
     }
+    const decaler = plan.recurrence ? decalageDeLEcheance(plan, linked) : (date: string) => date;
     for (const occurrence of planOccurrences(plan, plan.recurrence ? `${currentMonth}-01` : asOf, end)) {
+      const echeanceDeLOccurrence = decaler(occurrence.date);
       // A documented invoice replaces the intention, whether paid or still payable.
       const undatedLinked = linked.filter(isUndatedPending);
       if (undatedLinked.length) noter(`Facture sans échéance liée à « ${plan.title} » : la prévision reste réservée, la facture est comptée à part.`, { kind: 'plan', planId: plan.id }, plan.title, 'facture sans échéance liée : la prévision reste réservée');
@@ -196,8 +217,9 @@ function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payment
       }, 0);
       const remaining = Math.max(0, plan.amountCents - invoiced);
       if (!remaining) continue;
-      if (occurrence.date < asOf) noter(`Échéance passée « ${plan.title} » : montant encore prévu aujourd’hui, à rapprocher d’une facture ou à confirmer.`, { kind: 'plan', planId: plan.id }, plan.title, 'échéance passée : encore prévue aujourd’hui, à rapprocher d’une facture');
-      items.push({ id: occurrence.id, occurrenceId: occurrence.id, planId: plan.id, date: occurrence.date < asOf ? asOf : occurrence.date, label: plan.title, amountCents: remaining,
+      if (echeanceDeLOccurrence > end) continue;
+      if (echeanceDeLOccurrence < asOf) noter(`Échéance passée « ${plan.title} » : montant encore prévu aujourd’hui, à rapprocher d’une facture ou à confirmer.`, { kind: 'plan', planId: plan.id }, plan.title, 'échéance passée : encore prévue aujourd’hui, à rapprocher d’une facture');
+      items.push({ id: occurrence.id, occurrenceId: occurrence.id, planId: plan.id, date: echeanceDeLOccurrence < asOf ? asOf : echeanceDeLOccurrence, label: plan.title, amountCents: remaining,
         direction: plan.direction, source: plan.source === 'brew' ? 'brew' : isUpgradePlan(plan) ? 'equipment' : plan.recurrence ? 'recurring' : 'plan', category: plan.category });
     }
   }

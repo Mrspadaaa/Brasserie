@@ -307,7 +307,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const allongement = coteBord === 'debut' ? -(props.allongement ?? 0) : props.allongement ?? 0;
   const el = React.useRef<HTMLDivElement | null>(null);
   const dureeEl = React.useRef<HTMLElement | null>(null);
-  const proposee = !!(chose.proposition || chose.probable);
+  const proposee = !!(chose.proposition || chose.probable || chose.prevue);
   const brassin = chose.source.genre === 'batch';
   const nbJours = Math.max(1, ecartJours(chose.debut, chose.fin) + 1);
   const total = chose.jalons?.length ? Math.max(...chose.jalons.map(j => j.ecart), nbJours - 1) : 0;

@@ -1,0 +1,10 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou } from './outil.mjs';
+import { etat } from './lire.mjs';
+import { court, outils } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const { tap } = outils(page, cdp);
+await tap('· période, liste, tri et filtre'); await sleep(800);
+await photo(page, 'C1-00-menu', true);
+log('menu', (await page.evaluate(() => document.querySelector('[role=dialog],[role=menu]')?.innerText || document.body.innerText.slice(0, 600))).replace(/\n/g, ' | '));
+log('menu btn', (await boutons(page)).slice(0, 60));
+lacher();

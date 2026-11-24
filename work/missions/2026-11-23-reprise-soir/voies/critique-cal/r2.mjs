@@ -1,0 +1,18 @@
+import { ouvrir, sleep, photo, log, toucher, ou, boutons } from './outil.mjs';
+import { etat } from './lire.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const pas = async (nom, f, demi = true) => { if (f) await f(); await sleep(1300); await photo(page, nom, demi); const e = await etat(page); delete e.brassinsListe; delete e.periode; log(nom, JSON.stringify(e)); return e; };
+const tap = async (t, s = 'button,[role=button],[role=tab],[role=option],[role=menuitem]') => { const r = await ou(page, t, s); if (!r) { log('introuvable', t); return null; } await toucher(cdp, r.x, r.y); await sleep(700); return r; };
+const annuler = async () => { log('annuler ?', (await boutons(page, 'Annuler|Revenir|d’avant')).join(' ; ')); return tap('Annuler'); };
+await page.evaluate(() => scrollTo(0, 0));
+log('message', (await page.evaluate(() => [...document.querySelectorAll('[role=status],[role=alert],.cal-message,[class*=message]')].map((e) => (e.innerText||'').replace(/\n/g, ' ')).filter(Boolean))).slice(0, 3));
+await pas('R2-02-annuler', annuler, false);
+await pas('R2-03-touche-S53', () => tap('S53,'));
+await pas('R2-04-annuler', annuler);
+await pas('R2-05-An', async () => { await tap('· période, liste, tri et filtre'); await tap('An'); await page.keyboard.press('Escape'); });
+log('bande mois', (await boutons(page, '^\w+\.? ?\d* ?(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)|^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)')).slice(0, 20));
+const m = await page.evaluate(() => { const g = document.querySelector('[data-bande-colonnes="mois"]') || document.querySelector('[data-bande-semaines]'); const els = [...g.querySelectorAll('button,[role=button],*')].filter((x) => x.childElementCount === 0 && /^M$/.test(x.textContent.trim())); const e = els[0]; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, aria: (e.closest('[aria-label]') || e).getAttribute('aria-label') }; });
+log('mois touché', m);
+await pas('R2-06-touche-mars', async () => { await toucher(cdp, m.x, m.y); await sleep(500); }, false);
+await pas('R2-07-annuler', annuler, false);
+lacher();

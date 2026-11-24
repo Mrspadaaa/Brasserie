@@ -9,10 +9,13 @@ import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, type RepereAujourdhui, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
-import { Cadre, etiquetteCadre, etiquetteRepos, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, uniteDeVue, vueDeFenetre, vueEnUnites, type AxeCourbe, type FenetreSemaines, type VueCourbe } from './Fenetre';
+import { Cadre, etiquetteCadre, etiquetteRepos, libelleDuree, libellePeriode, semainesDeVue, SEMAINES_ANNEE, uniteDeVue, vueDeFenetre, vueEnUnites, type AxeCourbe, type FenetreSemaines, type VueCourbe } from './Fenetre';
 import { BandeSemaines, grainDeFenetre, graduationsBande, type GrainBande } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
 import type { Echelle } from '../echelle';
+import type { ActionCadre, Instantane } from '../cadre/etat';
+import { MOIS_LONGS } from '../../../components/periode/periode';
+import { axeDeLEchelle, echelleDeVue, fenetreDePeriode as fenetreDe, lundi as lundiIso } from '../../../domain/calendrier/temps';
 import type { Colonne } from '../frise/Rangee';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
@@ -41,10 +44,12 @@ export interface EnTeteCalendrierProps {
   modele: ModeleEnTete;
   /** La fenêtre : le lundi de sa première semaine et son nombre de semaines (les colonnes de la frise). */
   fenetre: FenetreSemaines;
-  onFenetre: (fenetre: FenetreSemaines) => void;
-  /** LA période de l'app : le calendrier l'écrit, Finances la lit, et l'inverse (ET-PER). */
+  /** La période du cadre (D444 : dérivée du seul état, `useCadre`) ; « Nov. » quand c'est le mois de l'app tel quel. */
   periode: Periode;
-  onPeriode: (periode: Periode) => void;
+  /** D444 : chaque geste de la fenêtre (poignées, corps, durée, An) est une action du cœur ; l'en-tête ne garde aucune fenêtre à lui. */
+  agir: (a: ActionCadre) => void;
+  /** L'état d'avant un geste (Annuler d'un cadre posé par la bande). */
+  instantane?: () => Instantane;
   vue: VueCalendrier;
   /** `ancre: 'sans-date'` ouvre la liste sur la poche (E46). */
   onVue: (vue: VueCalendrier, ancre?: 'sans-date') => void;
@@ -100,7 +105,7 @@ export interface EnTeteCalendrierProps {
   onCourbeCachee?: (cachee: boolean) => void;
 }
 
-export interface MessageEnTete { genre: 'annee' | 'invite' | 'refus'; texte: string }
+export interface MessageEnTete { genre: 'annee' | 'invite' | 'refus' | 'cadre'; texte: string; /** CAL-TOUCHER-GRADUATION : rend la vue d'avant. */ annuler?: () => void }
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
@@ -169,7 +174,7 @@ function useMesure(ref: React.RefObject<HTMLElement | null>): number {
 type Info = { genre: 'message' | 'invite' | 'date'; texte: string; colonne?: number; colonnes?: number; cle?: string };
 
 export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
-  const { modele, fenetre, onFenetre, periode, onPeriode, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer, onMessage, etoiles } = props;
+  const { modele, fenetre, periode, agir, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer, onMessage, etoiles } = props;
   const paysage = orientation === 'paysage';
   const graph = vue === 'graph';
   const liste = vue === 'liste';
@@ -333,7 +338,6 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, []);
   const minuterie = useRef<ReturnType<typeof setTimeout> | null>(null);
   const vueAvant = useRef<VueCalendrier>('semaines');
-  const fenAvantAnnee = useRef<FenetreSemaines | null>(null);
 
   const montrer = useCallback((i: Info, dureeMs: number | null) => {
     if (minuterie.current) clearTimeout(minuterie.current);
@@ -363,38 +367,13 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     setInfo(i => (i && i.genre !== 'date' && (!genre || (genre === 'invite' ? i.genre === 'invite' : i.genre === 'message')) ? null : i));
   }, []);
 
-  // ---- La période de l'app et la fenêtre sont la même chose (E07, ET-PER, les deux sens) ----
-  const fenRef = useRef(fenetre);
-  fenRef.current = fenetre;
-  const clePeriode = JSON.stringify(periode);
-  useEffect(() => {
-    if (!total) return;
-    const d = fenetreDePeriode(periode, semainesTot[0].debut, total);
-    if (!d) return;
-    const f = fenRef.current;
-    if (d.du !== f.du || d.semaines !== f.semaines) onFenetre(d);
-    /* CHV-4 : une plage tirée avant le début de l'horizon est ramenée à la fenêtre réellement montrée : la barre de l'app dit la même période que le cadre. */
-    if (periode.genre === 'dates' && lundiDe(periode.du) < d.du) onPeriode(periodeDeFenetre(d));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clePeriode, total]);
-
-  const ecrire = useCallback((f: FenetreSemaines) => { onFenetre(f); onPeriode(periodeDeFenetre(f)); }, [onFenetre, onPeriode]);
-
-  // ---- La rotation : 13 semaines en paysage, la fenêtre d'avant au retour (E10). Jamais une période écrite : la rotation ne règle pas Finances ----
-  const avantPaysage = useRef<FenetreSemaines | null>(null);
+  // ---- La fenêtre (D444) : la période, la fenêtre de semaines, l'An et la rotation (13 semaines en paysage, E10) sont tenus par le cœur
+  // (`useCadre`) ; l'en-tête les lit et lui envoie ses gestes. Plus d'effet qui rapproche deux états. ----
   const orientationVue = useRef<Orientation>('portrait');
   useEffect(() => {
     if (orientationVue.current === orientation) return;
     orientationVue.current = orientation;
-    if (orientation === 'paysage') {
-      taire('invite');
-      const f = (total ? fenetreDePeriode(periode, semainesTot[0].debut, total) : null) ?? fenRef.current;
-      avantPaysage.current = f;
-      if (f.semaines < 13) onFenetre({ du: f.du, semaines: 13 });
-    } else if (avantPaysage.current) {
-      onFenetre(avantPaysage.current);
-      avantPaysage.current = null;
-    }
+    if (orientation === 'paysage') taire('invite');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orientation]);
 
@@ -499,36 +478,29 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, [graph]);
 
   // ---- Les gestes de la fenêtre ----
-  const versAnnee = () => {
-    if (!total) return;
-    fenAvantAnnee.current = fenetre;
-    taire('annee');
-    // En Liste, la période change et la Liste reste : l'An s'y lit par sa fenêtre (anneeListe).
-    if (!liste) onVue('annee');
-    // l'An part du début de la fenêtre (aujourd'hui par défaut, plus tôt si on a reculé), calé pour que les 52 semaines tiennent dans le modèle
-    const i0 = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
-    ecrire({ du: semainesTot[Math.min(i0, Math.max(0, total - SEMAINES_ANNEE))].debut, semaines: Math.min(SEMAINES_ANNEE, total) });
-  };
-  const quitterAnnee = () => {
-    const f = fenAvantAnnee.current ?? { du: semainesTot[0]?.debut ?? fenetre.du, semaines: 6 };
-    fenAvantAnnee.current = null;
-    if (!liste) onVue('semaines');
-    ecrire(f);
-  };
+  /* l'An part du début de la fenêtre (aujourd'hui par défaut, plus tôt si on a reculé), calé pour que ses 52 semaines tiennent dans l'horizon ;
+     en Liste, la période change et la Liste reste : l'An s'y lit par sa fenêtre (anneeListe) */
+  const versAnnee = () => { if (!total) return; taire('annee'); agir({ type: 'annee' }); };
+  const quitterAnnee = () => agir({ type: 'quitterAnnee' });
   // CAL-ECHELLE-FIGEE (21.11) : dans l'An, le cadre se tire comme ailleurs ; une durée de moins de 52 semaines quitte l'An (le menu ne coche plus
   // « An », « 3 mois » se rechoisit). Le corps glissé garde 52 semaines : l'An reste, décalé.
   const changerCadre = (c: { index: number; nombre: number }) => {
-    if (annee && c.nombre < SEMAINES_ANNEE) { fenAvantAnnee.current = null; if (!liste) onVue('semaines'); }
-    ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre });
+    if (semainesTot[c.index]) agir({ type: 'poser', fenetre: { du: semainesTot[c.index].debut, semaines: c.nombre } });
   };
-  const choisirDuree = (n: number) => {
-    if (n >= SEMAINES_ANNEE) { versAnnee(); return; }
-    const depart = annee ? (fenAvantAnnee.current ?? fenetre) : fenetre;
-    const i0 = Math.max(0, semainesTot.findIndex(s => s.debut >= depart.du));
-    const i = total >= n ? Math.min(i0, total - n) : i0;
-    fenAvantAnnee.current = null;
-    ecrire({ du: semainesTot[i]?.debut ?? depart.du, semaines: n });
-    if ((annee || graph) && !liste) onVue('semaines');
+  /* une durée choisie depuis l'An part du début de la fenêtre d'avant l'An ; elle quitte la courbe en grand */
+  const choisirDuree = (n: number) => agir({ type: 'duree', semaines: n });
+  /* CAL-TOUCHER-GRADUATION (23.11, « que du je clique sur une semaine ou mois, ça fasse un focus dessus, genre ça me l'a frize dessus ») : la
+     semaine, le mois ou l'année touchés sur la bande deviennent le cadre (ses semaines entières : un mois va du lundi qui le contient au dimanche
+     qui le finit) ; le message le dit, Annuler rend la vue d'avant. */
+  const cadrer = (jour: string, unite: 'semaine' | 'mois' | 'an') => {
+    if (!total) return;
+    const a = Number(jour.slice(0, 4)), m = Number(jour.slice(5, 7));
+    const f = unite === 'semaine' ? { du: lundiIso(jour), semaines: 1 } : fenetreDe(unite === 'mois' ? { genre: 'mois', annee: a, mois: m } : { genre: 'annee', annee: a }, semainesTot[0].debut, total);
+    if (!f) return;
+    const avant = props.instantane?.();
+    agir({ type: 'poser', fenetre: f, vue: liste ? 'liste' : unite === 'an' ? 'annee' : 'semaines' });
+    const nom = unite === 'semaine' ? dateDeSemaine(f.du) : unite === 'mois' ? `${MOIS_LONGS[m - 1].toLowerCase()} ${a}` : String(a);
+    if (avant) dire({ genre: 'cadre', texte: `Cadre sur ${nom}`, annuler: () => agir({ type: 'restaurer', avant }) });
   };
 
   // ---- Ce qui se lit ----
@@ -738,6 +710,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       auj: repereAuj
     };
   })() : null;
+  /* D444 (CAL-ETAT-COHERENT, I4 « axe ⊇ cadre ») : l'axe montré, lu sur l'échelle de temps de la vue (d3 scaleUtc), et les dates du cadre au repos */
+  const axeMontre = lundi0 ? axeDeLEchelle(echelleDeVue(lundi0, vueC, largeur)) : null;
+  const cadreRepos = semainesTot[index] ? { du: semainesTot[index].debut, au: ajouterJours(semainesTot[index].debut, nombre * 7 - 1) } : null;
   const cleAxe = axe ? JSON.stringify(axe) : '';
   const onAxeRef = useRef(props.onAxe);
   onAxeRef.current = props.onAxe;
@@ -763,7 +738,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
   return (
     <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-aligne={paysageAligne ? 'oui' : undefined}
-      data-bouton-al={boutonAligne ? '' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
+      data-bouton-al={boutonAligne ? '' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group"
+      data-axe-du={axeMontre?.du} data-axe-au={axeMontre?.au} data-cadre-du={cadreRepos?.du} data-cadre-au={cadreRepos?.au}>
       <div className="ent-t" onPointerDownCapture={versCourbe}>
         {cle}
         <span ref={boutonsTete} className="ent-t-b">
@@ -823,7 +799,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
               </div>
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} aujourdhui={props.aujourdhui} index={index} nombre={nombre} largeur={largeur} annee={annee}
-                onChange={changerCadre} onAnnee={versAnnee} onRevient={quitterAnnee}
+                onChange={changerCadre} onAnnee={versAnnee} onRevient={quitterAnnee} grain={bandeSurCourbe.abscisses ? grain : undefined}
                 onTirage={setTirage} onTire={setTiree} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} debutRamenee={(modele.passe ?? 0) > 0}
                 vue={vueC} onVue={setVueTirage} />
             )}
@@ -844,7 +820,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {!graph && (
         <div className="ent-bz">
           {repereAuj && repereAuj.cote === 'dans' && <i className="ent-auj-bd" aria-hidden="true" data-auj-bande style={{ left: Math.max(0, repereAuj.x0), width: Math.max(5, Math.min(largeur, repereAuj.x1) - Math.max(0, repereAuj.x0)) }} />}
-          {repereAuj && repereAuj.cote !== 'dans' && <span className={`ent-auj-hors ent-auj-hors--${repereAuj.cote}`} data-auj-bande={repereAuj.cote}>{repereAuj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</span>}
+          {/* T29-11 (23.11, « ‹ auj. » touché : le cadre allait sur S51, la semaine cachée dessous) : le mot est un bouton, il ramène le cadre à aujourd'hui */}
+          {repereAuj && repereAuj.cote !== 'dans' && <button type="button" className={`ent-auj-hors ent-auj-hors--${repereAuj.cote}`} data-auj-bande={repereAuj.cote} aria-label="Revenir à aujourd’hui"
+            onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); agir({ type: 'aujourdhui' }); }}>{repereAuj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</button>}
           {annee && courbe && !bandeSurCourbe.abscisses ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
@@ -852,6 +830,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           ) : (
             <BandeSemaines {...bandeSurCourbe} masqueAuj={masqueAuj} grain={bandeSurCourbe.abscisses ? grain : undefined} aujourdhui={props.aujourdhui} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
               {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
+              {...(bandeSurCourbe.abscisses ? { onCadrer: cadrer } : {})}
               largeurColonne={bandeSurCourbe.abscisses ? largeur / Math.max(1e-6, vueC.span) : largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
           {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}

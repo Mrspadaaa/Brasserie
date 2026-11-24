@@ -138,6 +138,16 @@ function finHorizon(aujourdhui: string): string {
   return fin < max ? fin : max;
 }
 
+/**
+ * T29-2 (23.11) : une plage de dates glisse jusqu'à l'horizon du Calendrier, cinq ans (CAL-PLUS-QU-UN-AN, `HORIZON_SEMAINES`), et non 52 semaines : une plage
+ * de quatre ans réglée au Calendrier butait sur l'ancien bout et « › » la faisait reculer (22.11.23–21.11.27 depuis 01.01.24–31.12.27).
+ */
+function finHorizonPlage(aujourdhui: string): string {
+  const d = new Date(`${aujourdhui}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + (5 * 52 + 1) * 7 - 1);
+  return d.toISOString().slice(0, 10);
+}
+
 /** La flèche mène-t-elle ailleurs ? Non au bout des bornes : elle s'éteint (CHN-1). */
 export const peutPasser = (p: Periode, sens: -1 | 1): boolean => JSON.stringify(pas(p, sens)) !== JSON.stringify(p);
 
@@ -154,7 +164,7 @@ function pasLibre(p: Periode, sens: -1 | 1): Periode {
     }
     case 'annee': return { genre: 'annee', annee: p.annee + sens };
     /* Une plage glisse de sa durée, comme les flèches de la bande de Finances (1er au 15 : quinze jours plus tôt). */
-    case 'dates': { const g = glisser(p, sens, PREMIER_JOUR, finHorizon(aujourdhuiISO())); return { genre: 'dates', du: g.du, au: g.au }; }
+    case 'dates': { const g = glisser(p, sens, PREMIER_JOUR, finHorizonPlage(aujourdhuiISO())); return { genre: 'dates', du: g.du, au: g.au }; }
   }
 }
 

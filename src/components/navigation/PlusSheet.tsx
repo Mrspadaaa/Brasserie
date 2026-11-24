@@ -248,8 +248,11 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
     );
   }
 
+  /* PLUS-VOILE-ROGNE (23.11, « le + affiche étrangement » : panneau décalé, voile sur la moitié gauche, cartes de Bord tronquées derrière) :
+     la pile défile (PLUS-MENU-COUPE, 22.11) ; un `overflow` sur la pile rognait son voile propre (`.plus-pile::before`, qui déborde de 78 px à gauche
+     et de 120 px en haut). Le défilement vit ici, sur un conteneur intérieur ; la pile ne rogne plus rien. */
   return (
-    <>
+    <div className="plus-pile-defile">
       <ActionPleine menu={menu} avecLettre={avecLettre} onChoisir={onChoisir} />
       {menu.autres.map((e) => <ActionDeLEcran key={e.cle} e={e} avecLettre={avecLettre} onChoisir={onChoisir} />)}
       {pageOuverte && onPage && pageOuverte.actions.map((a) => <ActionDeLaPage key={a.id} a={a} onPage={onPage} />)}
@@ -259,6 +262,6 @@ export const PlusSheet: React.FC<Props> = ({ menu, forme, compagnon, onChoisir, 
         : nom && <span className="plus-pile-zone" data-zone="ecran">{nom} · rien à créer, le commun reste</span>}
       {grillePartout(false)}
       <span className="plus-pile-zone" data-zone="partout-titre">Partout</span>
-    </>
+    </div>
   );
 };

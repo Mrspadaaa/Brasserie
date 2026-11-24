@@ -1,0 +1,27 @@
+controle-base calendrier work/missions/2026-11-23-reprise-soir/voies/registre/parcours-tour26/ecran-calendrier-instantane.html
+  gardé  ok   G1 Courbe de caisse au-dessus, une barre par chose dessous, mêmes semaines — svg path, svg polyline : 198 visible(s) (min 1) ; /S4\d[\s\S]*S5\d/ vu : « S49 ± 3 mois 3 0 lol −600 Loyer du local »
+  gardé  KO   G2 Projets sans budget et activités, comptés en jours — « Activités » vu ; /\d+ j\b/ absent
+  gardé  KO   G3 Filtres de planification par genre, visibles au premier plan (3 au moins) — [data-filtre] : 0 visible(s) (min 3) | [class*="chip"] : 0 visible(s) (min 3)
+  gardé  KO   G4 Trier les rangées — [aria-label*="Trier" i], [title*="Trier" i], [data-trier] : 0 dans le HTML (min 1)
+  gardé  ok   G5 Vue paysage 844 × 390, plus de semaines (10 au moins) — à 844 × 390 : 11 semaines (ecran-calendrier-instantane.html ; min 10), pas de sœur -paysage.html
+  gardé  ok   G6 Onglet Calendrier, 6e, entre Finances et Brassins — /Finances\s+Calendrier\s+Brassins/ vu : « Finances Calendrier Brassins »
+  gardé  KO   G7 Le + volant, à droite, juste au-dessus des onglets — aucun + volant visible au-dessus de la barre d’onglets
+  gardé  KO   G8 Compacité de g-d1 : la première barre de la frise dans les 30 % du haut — « Blonde d » introuvable
+  gardé  ok   G9 Thème de l'app, avec ses couleurs (EBC, zones) — source /#(F2C14E|E0A02E|C87A2C|A0522D|E7A070|86B9E6|A3C97A|BCA5E8|567F45|4F7E9B|6A4FB0|9A4F1E)\b/ vue
+  gardé  KO   G10 Titre de rangée en clair, à gauche, juste au-dessus de ses barres — « Marché de Noël » introuvable
+  refusé ok   R1 En-tête de cd1 (chiffre, paliers suivants, hypothèses, « libre en fin de semaine · dessous… » empilés) — /dès S\d+/ absent ; « / sem. · présence » absent ; « libre en fin de semaine · dessous » absent
+  refusé ok   R2 Rangées ou cases de pose dédiées au + (L1 intrusif) — « touche pour poser » absent | [aria-label="Toucher pour poser"] : 0 visible(s) (min 3)
+  refusé ok   R3 L18 : entretien daté au calendrier — /entretien/ absent
+  refusé ?    R4 Thème flottant, éventail, balayage (ta, tb, tc) — non vérifiable mécaniquement (maquettes ta, tb, tc absentes de cette copie : aucune signature sûre ; au critique)
+  refusé ?    R5 Les 16 calendriers compacts de fils/ (rangées en icônes, régressions) — non vérifiable mécaniquement (refus de versions entières ; G10 garde les noms de rangée en clair)
+  idée   —    I1 Mouvement de la semaine sous le solde (−148, +120…) (non bloquant)
+  idée   —    I2 Le solde nommé « libre en fin de semaine » (non bloquant)
+  idée   —    I3 Date de chaque semaine (23 nov., 30 nov.…) (non bloquant)
+  idée   —    I4 Charge par semaine contre présence (1/2 j, « sur 2 ») (non bloquant)
+  idée   —    I5 Hypothèses réglables (caisse, +/sem., présence, « exemple ») (non bloquant)
+  idée   —    I6 Résumé par rangée (« 2 · −324 ») (non bloquant)
+  idée   —    I7 Prochains paliers de caisse (« ensuite … dès S26 ») (non bloquant)
+  idée   là   I8 Le chiffre clé dit ce qu'il est (« à dépenser », « au plus serré ») (non bloquant)
+  idée   —    I9 « 2 en retard » en mots (non bloquant)
+  idée   —    I10 Jours dans les barres (7 cases, « en cuve ») (non bloquant)
+BASE ECHEC (6 gardé(s) absent(s), 0 refusé(s) présent(s))

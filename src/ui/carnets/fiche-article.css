@@ -16,3 +16,6 @@
 .cn-fiche-photo-nav:disabled { opacity: .35; }
 .cn-fiche-photo-prec { left: 6px; }
 .cn-fiche-photo-suiv { right: 6px; }
+
+/* T26-3 : « photo non lue » sous le pictogramme quand la page est lue sans sa photo (plus discret que la légende d une vraie photo) */
+.cn-fiche-picto .cn-fiche-photo-non-lue { font-size: 12px; color: var(--c-mut, inherit); background: transparent; padding: 0 4px; left: 12px; bottom: 8px; }
