@@ -43,5 +43,6 @@ pause: 2026-11-24T14:28:19.517Z
 
 ## En attente de lui
 - [x] Tags en-ligne tour27..44 retirés de GitHub (24.11, son accord)
-- [ ] Tour 57 en ligne (index-JrS2YtfY.js : poignees, Q-4) : test critique-57
+- [x] Tour 57 : critique-57, 2 problèmes (0 B), POI-1 et Q4-1 vérifiés
+- [ ] Voie k57 (K57-1, K57-2), avec c56-fix au tour 58
 - [x] PR ouverte : https://github.com/Mrspadaaa/Brasserie/pull/204 (branche claude/reprise-soir-24-11, sans captures de l app réelle) ; à remettre à jour après chaque lot
