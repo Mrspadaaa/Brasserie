@@ -2882,3 +2882,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (lecture des liens, règle « l IA ne remplace jamais un champ trouvé ») : « Alors ça c était pas une bonne idée, ils doivent d accorder. C est plutôt au les deux sont d accord c est bon,ai non il y a un problème. Mais pourquoi on utilise pas la même manière que toi tu utilises pour lire les pages ? »
 
 - 24.11 (lecture des liens) : « Et pourquoi on a pas la même fonctionnalités que toi tu utilises pour lire es liens, les pages web ? »
+
+- 24.11 (lecture des liens, url_context 57/57 réservé aux pages bloquées) : « ????? Bah alors ?? »

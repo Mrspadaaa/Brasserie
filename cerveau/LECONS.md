@@ -111,7 +111,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 07.11 : découpe réglée et jugée sur les mêmes 200 pièces ; sur 200 neuves, pire que HEAD (88 silencieuses contre 57).
+- Erreur : 24.11, url_context (prix 57/57) laissé aux pages bloquées pour quelques millièmes : « Bah alors ?? ». 20 et 22.10, la « grille 1,8 Mo » lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté. 07.11 : découpe jugée sur ses pièces de réglage, pire sur des neuves.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
 - Faire : un chiffre dit est mesuré, ou « estimé » avec sa source ; une garantie se bâtit sans l'IA (qui n'ajoute que des alertes). Chronométrer `simulerCas` sur le cas réel et le catalogue, à froid, entrée changeante ; le repli tient jusqu'à la mesure. Avant une architecture de calcul, profiler. Réglage choisi sur une moitié des cas, jugé sur l'autre (D77) ; un brief ne taille rien sur ses exemples. ([[maquettes-16-11]])
 - Rôles : pilote, conseil, auteur, exécutant
