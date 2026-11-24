@@ -15,7 +15,7 @@
  * Avant le 2e article : les façons en cartes et l'article en carte. Notes : chaque note porte son genre et son picto (G22).
  */
 import { domaineParMots } from './domaineMots';
-import { domaineDe, type DomaineCarnet } from '../../domain/carnets/domaines';
+import { domaineDe } from '../../domain/carnets/domaines';
 import { PastilleDomaine } from './Domaines';
 import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
