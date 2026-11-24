@@ -210,8 +210,19 @@ export const francs = (centimes: number): string => {
   const n = Math.round(Math.abs(centimes) / 100);
   return `${centimes < 0 && n > 0 ? '−' : ''}${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`;
 };
+/**
+ * E43-2 : le montant exact, pour la carte d'une chose (les rangées et la courbe gardent les francs entiers, compacts). « 2,50 », « 5 064 » : les centimes ne s'écrivent que
+ * s'il y en a, jamais « −3 » pour 2,50. Le signe est un vrai moins.
+ */
+export const francsExacts = (centimes: number): string => {
+  const abs = Math.abs(Math.round(centimes));
+  const entier = Math.trunc(abs / 100), cts = abs % 100;
+  const corps = String(entier).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (cts ? `,${String(cts).padStart(2, '0')}` : '');
+  return `${centimes < 0 && abs > 0 ? '−' : ''}${corps}`;
+};
+export const francsSignesExacts = (centimes: number): string => `${centimes < 0 ? '' : '+'}${francsExacts(centimes)}`;
 /** « +1 800 » ou « −1 800 » */
-export const francsSignes = (centimes: number): string => `${centimes < 0 ? '' : '+'}${francs(centimes)}`;
+export const francsSignes =(centimes: number): string => `${centimes < 0 ? '' : '+'}${francs(centimes)}`;
 
 /** La courbe porte 52 semaines à partir du lundi de la semaine courante (E02). */
 export const NB_SEMAINES_COURBE = 52;

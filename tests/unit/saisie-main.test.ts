@@ -112,7 +112,7 @@ describe('saisie à la main : habituels et derniers noms', () => {
     const malt = tx('T-M', '2026-10-27', 'Malt Pilsner', 'expense', 8650, {}, { vendor: 'Malterie' });
     const h = habituels([loyerOct, loyerNov, apport, malt], [plan], J);
     expect(h.map((x) => [x.genre, x.nom, x.sous])).toEqual([
-      ['loyer', 'Loyer de l’atelier', 'prévu le 22.12 · le solde'],
+      ['loyer', 'Loyer de l’atelier', 'échéance le 22.12 · à enregistrer'],
       ['achat', 'Malt Pilsner', 'achat · dernier le 27.10'],
       ['apport', 'De ma poche', 'apport · dernier le 03.10']]);
     expect(h[0].solde).toEqual({ planId: 'P-L', occurrenceId: 'P-L:2026-12-22', date: '2026-12-22' });

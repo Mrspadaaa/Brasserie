@@ -5,7 +5,7 @@
 // Pas de TVA à l'AFC (D428, le brasseur : ni champ neuf ni option) : « Impôts » propose l'impôt sur la bière (charge, `divers`) et les impôts privés (Pour moi).
 import type { FinanceCategory } from '../../types';
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
-import { isActiveTransaction, paymentState, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, paymentState, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
 import { lireDecimal } from '../numericInput';
@@ -231,8 +231,11 @@ export function genreDe(tx: FinanceTransaction): GenreId {
   if (tx.category === 'divers') return 'autreo';
   return 'achat';
 }
-const parDateDesc = (a: FinanceTransaction, b: FinanceTransaction) => (b.date || '').localeCompare(a.date || '') || (b.finance?.recordedAt ?? '').localeCompare(a.finance?.recordedAt ?? '');
-const actives = (txs: FinanceTransaction[]) => txs.filter((t) => isActiveTransaction(t) && /^\d{4}-\d{2}-\d{2}$/.test(t.date));
+/* E41-2 : les pièces d'avant la saisie à la main écrivent leur jour « 19.11.2026 » : un test sur la seule forme aaaa-mm-jj les écartait toutes
+   (« De quelle pièce ? » et les habituels ne voyaient que les écritures neuves). Le jour se lit par `isoDate`, qui connaît les deux formes. */
+const jourDe = (t: FinanceTransaction) => isoDate(t.date) ?? '';
+const parDateDesc = (a: FinanceTransaction, b: FinanceTransaction) => jourDe(b).localeCompare(jourDe(a)) || (b.finance?.recordedAt ?? '').localeCompare(a.finance?.recordedAt ?? '');
+const actives = (txs: FinanceTransaction[]) => txs.filter((t) => isActiveTransaction(t) && isoDate(t.date));
 
 export interface Habituel { cle: string; genre: GenreId; nom: string; sous: string; cents: number; sens: 'in' | 'out'; vendor?: string; solde?: Brouillon['solde'] }
 /**
@@ -243,12 +246,13 @@ export function habituels(transactions: FinanceTransaction[], plans: FinancialPl
   const txs = actives(transactions).sort(parDateDesc);
   const out: Habituel[] = [];
   for (const p of plans) {
+    if (out.length >= max - 1) break; // E43-3 : une place au moins reste aux derniers mouvements réels (« De ma poche »), jamais toutes aux prévisions
     if (p.status !== 'active' || p.source !== 'recurring' || !p.recurrence) continue;
     const liees = txs.filter((t) => t.finance?.planId === p.id);
     const prochaine = planOccurrences(p, `${aujourdhui.slice(0, 7)}-01`, plusMois(aujourdhui, 3)).find((o) => !liees.some((t) => t.finance?.occurrenceId === o.id));
     if (!prochaine) continue;
     const g = liees[0] ? genreDe(liees[0]) : p.direction === 'in' ? 'vente' : /loyer/i.test(p.title) ? 'loyer' : 'abo';
-    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `prévu le ${jjmm(prochaine.date)} · le solde`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
+    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `échéance le ${jjmm(prochaine.date)} · à enregistrer`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
       solde: { planId: p.id, occurrenceId: prochaine.id, date: prochaine.date } });
   }
   const vus = new Set(out.map((h) => h.nom.toLowerCase()));
@@ -260,7 +264,7 @@ export function habituels(transactions: FinanceTransaction[], plans: FinancialPl
     if (!cle || vus.has(cle)) continue;
     vus.add(cle);
     const sens = transactionDirection(t, transactions);
-    out.push({ cle: `tx:${t.id}`, genre: g, nom: t.description.trim(), sous: `${GENRES[g].nom.toLowerCase()} · dernier le ${jjmm(t.date)}`, cents: transactionAmount(t), sens, vendor: t.finance?.vendor });
+    out.push({ cle: `tx:${t.id}`, genre: g, nom: t.description.trim(), sous: `${GENRES[g].nom.toLowerCase()} · dernier le ${jjmm(jourDe(t))}`, cents: transactionAmount(t), sens, vendor: t.finance?.vendor });
   }
   return out.slice(0, max);
 }
@@ -342,8 +346,8 @@ export function piecesRemboursables(transactions: FinanceTransaction[], recherch
     if (q && !`${nom} ${t.description} ${chf(cents)}`.toLowerCase().includes(q)) continue;
     const genre = genreDe(t);
     const sorte = genre === 'autrei' ? 'Autre entrée' : genre === 'autreo' ? 'Autre sortie' : GENRES[genre].nom;
-    const sous = [sorte,jjmm(t.date), t.description.trim() && t.description.trim() !== nom.trim() ? t.description.trim() : ''].filter(Boolean).join(' · ');
-    out.push({ id: t.id, nom, sous, date: t.date, cents, reste, sens: transactionDirection(t, transactions), category: t.category, genre });
+    const sous = [sorte, jjmm(jourDe(t)), t.description.trim() && t.description.trim() !== nom.trim() ? t.description.trim() : ''].filter(Boolean).join(' · ');
+    out.push({ id: t.id, nom, sous, date: jourDe(t), cents, reste, sens: transactionDirection(t, transactions), category: t.category, genre });
     if (out.length >= max) break;
   }
   return out;

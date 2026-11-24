@@ -1,3 +1,4 @@
+import { IconeCompte } from '../ui/saisie/IconeCompte';
 import React, { useId, useRef, useState } from 'react';
 import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from '../ui/NumberInput';
@@ -234,15 +235,18 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       // E41-5 : le paiement d'abord (inversé puis réécrit au nouveau jour), la pièce ensuite ; un refus arrête avant l'écriture de la pièce.
       const deplacer = !etapes.length ? planDeplacerPaiement(transaction, FinanceService.getPayments(), isoDate(candidate.date) ?? '', todayISO()) : [];
       if (deplacer.length) await executerPlan(deplacer, transaction.id, ctxEcriture, v => v);
+      /* E43-1 : la pièce s'écrit en entier (`put`) ; ses champs de règlement (solde réglé, dernier paiement) viennent d'être changés par les paiements ci-dessus.
+         Écrire la copie lue avant eux les remettrait à l'ancienne valeur : le serveur refuse (« Missing or insufficient permissions »). On la relit donc après. */
+      const aEcrire = deplacer.length ? aEnregistrer(StorageService.getTransactions().find(t => t.id === transaction.id) ?? vivante) : candidate;
       const etapeAvoir = etapes.find((s): s is Extract<EtapeCorrection, { type: 'avoir' }> => s.type === 'avoir');
       if (etapeAvoir) verifierAvoir(candidate, etapeAvoir, { ...ctx, maintenant: new Date().toISOString() }, StorageService.getTransactions(), FinanceService.getPayments());
       if (etapes.some(s => s.type === 'montant')) {
         // Un lot Firestore par étape (B1) : on n'annonce « mise à jour » qu'une fois toutes les étapes mises en file ; un refus ultérieur du serveur reste le bandeau « Enregistrement refusé ».
         await executerPlan(etapes, transaction.id, { ...ctx, maintenant: new Date().toISOString() }, aEnregistrer);
       } else {
-        StorageService.updateTransaction(candidate);
+        StorageService.updateTransaction(aEcrire);
       }
-      onSave(candidate);
+      onSave(aEcrire);
       onClose();
     } catch (error) {
       setSaveError((error as Error).message);
@@ -302,7 +306,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               <div className="sai-c1">
                 <input aria-label="Nom" name="tx_edit_label" required value={description} enterKeyHint="done" autoComplete="off" autoCorrect="off" spellCheck={false}
                   data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" onChange={(e) => field('description', e.target.value)} />
-                {prive ? <span className="finance-tag finance-tag-apports">Privé</span>
+                {/* E43-5 : comme la saisie : « Privé » seulement pour Pour moi ; l'apport porte son étiquette de catégorie (« Apports privés »). */}
+                {genreSaisie.id === 'prel' ? <span className="finance-tag finance-tag-apports">Privé</span>
                   : <CategoryTag category={category} libelle={genreSaisie.id === 'autrei' ? 'Autre entrée' : genreSaisie.id === 'impot' ? 'Impôts' : undefined} />}
                 {/* E38-4 : la date de la saisie : une pastille, et la frise au toucher (le curseur), jamais un champ « JJ.MM.AAAA » */}
                 <button type="button" className="sai-chip dt" data-modifier-date aria-expanded={dateOuverte} aria-label={`Date de l’opération : ${iso ? jjmm(iso, true) : 'à poser'}`}
@@ -320,7 +325,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               {aFinance && <div className="sai-row" data-modifier-reglement>
                 <span className={`sai-chip${reglement.etat === 'paye' ? ' on' : ''}`} aria-current={reglement.etat === 'paye' ? 'true' : undefined}>{reglement.etat === 'paye' ? <Check size={14} aria-hidden="true" /> : null}{sortant ? 'Payé' : 'Reçu'}{reglement.etat === 'paye' && dateReglement ? ` le ${jjmm(dateReglement)}` : ''}</span>
                 <span className={`sai-chip${reglement.etat === 'apayer' || reglement.etat === 'partiel' ? ' on' : ''}`} aria-current={reglement.etat === 'apayer' || reglement.etat === 'partiel' ? 'true' : undefined}>{reglement.etat === 'partiel' ? (sortant ? 'Payé en partie' : 'Reçu en partie') : sortant ? 'À payer' : 'À recevoir'}</span>
-                {reglement.moyen && <span className="sai-chip" aria-label="Compte et moyen de paiement"><Landmark size={14} aria-hidden="true" />{METHODES.find((m) => m.id === reglement.moyen)?.nom ?? reglement.moyen}</span>}
+                {reglement.moyen && <span className="sai-chip" aria-label="Compte et moyen de paiement"><IconeCompte methode={reglement.moyen} />{METHODES.find((m) => m.id === reglement.moyen)?.nom ?? reglement.moyen}</span>}
                 {reglement.etat === 'inconnu' && <small>Règlement non noté.</small>}
                 {(reglement.etat === 'apayer' || reglement.etat === 'partiel') && <><small>d’ici le</small>
                   <ChoixDate saisie label="Échéance" valeur={echeanceSaisie ?? transaction.finance?.dueDate ?? ''} vide="Échéance à poser" rangee="achats" onChange={setEcheanceSaisie} /></>}
@@ -385,9 +390,10 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
           {/* E35-11 : les blocs de la saisie à la main : contrepartie (Chez / Client…), référence, note, règlement, sans justificatif */}
           {aFinance && <>
-            <label className="mod-f"><span className="mod-lib">{genreSaisie.qui ?? 'Tiers'}</span>
+            {/* E43-5 : la saisie d'un Apport, d'un Pour moi, d'un impôt n'a pas de contrepartie : Modifier non plus, sauf si la pièce en porte déjà une (jamais cachée). */}
+            {(genreSaisie.qui || transaction.finance?.vendor) && <label className="mod-f"><span className="mod-lib">{genreSaisie.qui ?? 'Tiers'}</span>
               <Input type="text" name="tx_edit_vendor" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-                value={tiersSaisi ?? transaction.finance?.vendor ?? ''} onChange={(e) => setTiersSaisi(e.target.value)} placeholder={LIBELLE_TIERS[genreSaisie.id] ?? 'Nom'} className="mod-in" data-modifier-tiers /></label>
+                value={tiersSaisi ?? transaction.finance?.vendor ?? ''} onChange={(e) => setTiersSaisi(e.target.value)} placeholder={LIBELLE_TIERS[genreSaisie.id] ?? 'Nom'} className="mod-in" data-modifier-tiers /></label>}
             <div className="mod-g2">
               <label className="mod-f"><span className="mod-lib">Référence</span>
                 <Input type="text" name="tx_edit_reference" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"

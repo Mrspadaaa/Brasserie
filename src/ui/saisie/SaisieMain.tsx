@@ -4,6 +4,7 @@
 // le pied (Mon mois + le bouton qui dit le sens) reste au-dessus du clavier ; Entrée = ce bouton. Nom facultatif, gris par défaut, ou une puce des
 // derniers noms ; « Revient ? » en 4 segments ; la date par la frise partagée (ChoixDate). Écrit par les services de Finances : pièce, paiement,
 // prévision récurrente (rien de neuf dans le schéma). Le cas avec document reste la lecture (ExpenseSheet, p3c-3) : l'icône en haut à droite y passe.
+import { IconeCompte } from './IconeCompte';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, Briefcase, CalendarDays, Check, ChevronDown, FileText, Home, Landmark, Link2, MoreHorizontal, Pencil, PiggyBank, Percent, Plus, Repeat, Search, ShoppingCart, Tag, Undo2, Wallet, X } from 'lucide-react';
 import { ModalShell } from '../ModalShell';
@@ -213,7 +214,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert saisie valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onBrouillon={(d) => dates.tirer(cle, d)} onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
 
   const listeComptes = comptes ? <div className="sai-row" role="radiogroup" aria-label="Compte de paiement" data-saisie-comptes>
-    {METHODES.map((m) => <React.Fragment key={m.id}>{chip(b.methode === m.id, m.nom, () => { patch({ methode: m.id }); setComptes(false); }, { 'data-saisie-compte': m.id, role: 'radio', 'aria-checked': String(b.methode === m.id) })}</React.Fragment>)}</div> : null;
+    {METHODES.map((m) => <React.Fragment key={m.id}>{chip(b.methode === m.id, <><IconeCompte methode={m.id} />{m.nom}</>, () => { patch({ methode: m.id }); setComptes(false); }, { 'data-saisie-compte': m.id, role: 'radio', 'aria-checked': String(b.methode === m.id) })}</React.Fragment>)}</div> : null;
 
   const tuile = (g: GenreId) => {
     const t = teinteGenre(g);
@@ -269,13 +270,13 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     {choisi && b.genre !== 'rembt' ? <div className="sai-row">
       {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Payé'}{b.reglement === 'paye' && jourVu === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }), { 'data-saisie-reglement': 'paye' })}
       {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À payer'}</>, () => patch({ reglement: 'apayer' }), { 'data-saisie-reglement': 'apayer' })}
-      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance', false, 'd’ici le ') : chip(comptes, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
+      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance', false, 'd’ici le ') : chip(comptes, <><IconeCompte methode={b.methode} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
     </div> : null}
     {choisi && b.genre !== 'rembt' && b.reglement === 'paye' ? listeComptes : null}
     {choisi && b.genre === 'rembt' && b.pieceId ? <div className="sai-row">
       {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Rendu'}{b.reglement === 'paye' && jourVu === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }))}
       {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À rendre'}</>, () => patch({ reglement: 'apayer' }))}
-      {chip(comptes, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
+      {chip(comptes, <><IconeCompte methode={b.methode} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => setComptes((o) => !o), { 'aria-label': 'Compte de paiement', 'aria-expanded': String(comptes), 'data-saisie-compte-ouvrir': '' })}
     </div> : null}
     {choisi && b.genre === 'rembt' && b.pieceId ? listeComptes : null}
     {b.reglement === 'apayer' && choisi ? frise('echeance', b.echeance, 'Échéance', (d) => patch({ echeance: d }), { min: b.date }) : null}
