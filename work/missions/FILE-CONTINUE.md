@@ -10,7 +10,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 - Garde-fou : trois arrêts d'affilée sans changement de ce fichier laissent passer l'arrêt.
 
 actif: oui
-session: libre-apres f97e7359-a046-4072-af48-f44ecac2f73e
+session: f97e7359-a046-4072-af48-f44ecac2f73e
 pause:
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
@@ -27,7 +27,8 @@ pause:
 - [x] Tour 54 : critique-54, 5 problèmes (0 B), corrigés 4/5
 - [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
-- [ ] Tour 58 en ligne (index-CPpfj_-A.js : c56-fix, k57, aiTask) : test critique-58
+- [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
+- [ ] C58 (BLOQUANT C58-2 d abord : le correctif C56-3 coupe le nombre lui-même, « 5 » / « 0 L », « 2 » / « 0 mm » ; C56-3 et C50-5 rouverts ; C55-2 retombé : le critère 50 L ne classe plus) : c58-tests puis c58-fix, tour 59, critique-59
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact

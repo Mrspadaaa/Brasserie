@@ -5,6 +5,7 @@
 - Méthode depuis le 24.11 : règle (pas exemple) + grep des équivalents ; tests rouges écrits par une voie cNN-tests, correctif par une autre cNN-fix ; chaque test en ligne (critique-NN) rejoue aussi les corrigés ; son carnet « chambre froide » regardé seulement.
 - Décisions : D449 (Escalader = Neon ; Hydrogen auto dès qu un champ manque) ; repères du Calendrier en francs entiers ; S53 sans année (sa réponse) ; C50-5 oui (compromis gain/perte) ; réglette de Choisir (g05-11) gardée ; marche nommée par l écriture la plus lourde.
 - En cours au passage de main (24.11, 451 k) : tour 58 en ligne (index-CPpfj_-A.js : c56-fix, k57, aiTask) ; critique-58 lancé par l ancienne session, écrit dans voies/critique-58/RESULTAT.md (attendre la ligne « RESULTAT critique-58 : … », sinon le relancer). Boucle : critique-NN → constats cNN → cNN-tests (rouges) → cNN-fix → deploy-leger (ligne T → tour suivant) + aiTask si functions/ change → critique suivant qui rejoue les corrigés. Tendance : 9, 5, 6, 5, 4, 6, 2 problèmes, 0 bloquant depuis le tour 51.
+- critique-58 FAIT : 6 problèmes (1 B : C58-2, régression du tour 58 en ligne, nombre coupé de son chiffre), corrigés 8/9 ; prochaine action : voie c58-tests puis c58-fix sur C58-1..6, C56-3, C50-5, C55-2, puis tour 59.
 - PR #204 = instantané de 266ba9905 sans captures ; les tours 45..57 n y sont pas (push à son accord).
 
 ## Reprise (24.11 nuit, session pilote f97e7359 ; mission work/missions/2026-11-23-reprise-soir/MISSION.md)
