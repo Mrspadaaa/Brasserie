@@ -129,6 +129,16 @@ export function datesDesOccurrences(debut: string, frequency: 'monthly' | 'quart
   const decaler = decalageEntre(isoDate(debut), isoDate(echeance));
   return planOccurrences(plan, debut, '9999-12-31').slice(0, n).map(o => decaler(o.date));
 }
+/**
+ * E45-1 : la fin d'une série annoncée = la DERNIÈRE des dates que `datesDesOccurrences` liste (et leur nombre), jamais un calcul à part depuis la date de saisie.
+ * Un Salaire mensuel de 6 mois saisi le 24.11, dû le 24.12, finit le 24.05 (6 dates : 24.12 … 24.05) ; la borne du plan (`endDate`, 24.04) reste celle du Calendrier,
+ * qui la compare à la date non décalée. Sans fin : `undefined` (« sans fin »).
+ */
+export function finDesOccurrences(debut: string, frequency: 'monthly' | 'quarterly' | 'yearly', endDate: string | undefined, echeance: string | undefined): { fin: string; fois: number } | undefined {
+  if (!endDate) return undefined;
+  const dates = datesDesOccurrences(debut, frequency, endDate, echeance, 1000);
+  return dates.length ? { fin: dates[dates.length - 1], fois: dates.length } : undefined;
+}
 export function planOccurrences(plan: FinancialPlan, from: string, to: string): Array<{ id: string; date: string }> {
   const start = isoDate(plan.date);
   if (!start || plan.status !== 'active') return [];

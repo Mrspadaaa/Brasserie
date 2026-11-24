@@ -6,7 +6,7 @@
 import type { FinanceCategory } from '../../types';
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { isActiveTransaction, isoDate, paymentState, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
-import { planOccurrences } from '../../domain/finance/forecast';
+import { decalageDeLEcheance, planOccurrences } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
 import { lireDecimal } from '../numericInput';
 
@@ -55,7 +55,7 @@ export const horsResultat = (g: GenreId) => GENRES[g].kind === 'contribution' ||
  */
 export function indicationReference(g: GenreId): string {
   if (g === 'impot') return 'Période, référence';
-  if (horsResultat(g) || GENRES[g].kind === 'refund') return 'Référence, facultatif';
+  if (horsResultat(g) || GENRES[g].kind === 'refund' || g === 'salaire') return 'Référence, facultatif'; // E45-3 : un salaire n'a pas de facture
   return 'Référence (n° de facture)';
 }
 
@@ -262,8 +262,12 @@ export function habituels(transactions: FinanceTransaction[], plans: FinancialPl
     const prochaine = planOccurrences(p, `${aujourdhui.slice(0, 7)}-01`, plusMois(aujourdhui, 3)).find((o) => !liees.some((t) => t.finance?.occurrenceId === o.id));
     if (!prochaine) continue;
     const g = liees[0] ? genreDe(liees[0]) : p.direction === 'in' ? 'vente' : /loyer/i.test(p.title) ? 'loyer' : 'abo';
-    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `échéance le ${jjmm(prochaine.date)} · à enregistrer`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
-      solde: { planId: p.id, occurrenceId: prochaine.id, date: prochaine.date } });
+    /* E45-2 : la date annoncée est celle du Calendrier, qui décale chaque occurrence du délai de la 1re pièce (« à payer d'ici le 24.12 » → 24.03 et non 24.02). Même règle
+       (`decalageDeLEcheance`, mêmes pièces liées que le Calendrier) ; l'identifiant de l'occurrence reste celui du plan. */
+    const sortes: FinanceKind[] = p.direction === 'out' ? ['expense', 'withdrawal'] : ['income', 'contribution'];
+    const dateCalendrier = decalageDeLEcheance(p, liees.filter((t) => sortes.includes(transactionKind(t))))(prochaine.date);
+    out.push({ cle: `plan:${p.id}`, genre: g, nom: p.title, sous: `échéance le ${jjmm(dateCalendrier)} · à enregistrer`, cents: p.amountCents, sens: p.direction, vendor: p.vendor,
+      solde: { planId: p.id, occurrenceId: prochaine.id, date: dateCalendrier } });
   }
   const vus = new Set(out.map((h) => h.nom.toLowerCase()));
   for (const t of txs) {

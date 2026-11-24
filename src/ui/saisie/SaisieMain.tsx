@@ -16,7 +16,7 @@ import { StorageService } from '../../services/storage';
 import { FinanceService, validateRefundTransaction } from '../../services/financeService';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import { todayISO, validateFinanceTransaction } from '../../domain/finance/ledger';
-import { datesDesOccurrences } from '../../domain/finance/forecast';
+import { datesDesOccurrences, finDesOccurrences } from '../../domain/finance/forecast';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
@@ -314,6 +314,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       const fins = finsProposees(b.rythme);
       /* E44-1 : les dates annoncées sont celles que le Calendrier montre (une règle, `datesDesOccurrences`) : « à payer d'ici le 24.12 » revient 24.12, 24.01 … */
       const ech = recurrent && b.rythme !== 'une' ? datesDesOccurrences(b.date, b.rythme, fin, apayer ? b.echeance : undefined, 4) : [];
+      /* E45-1 : la fin et le nombre de fois viennent de la même règle (dernière des dates listées), non de la date de saisie */
+      const bout = recurrent && b.rythme !== 'une' ? finDesOccurrences(b.date, b.rythme, fin, apayer ? b.echeance : undefined) : undefined;
       enfants.push(<div key="rec" className="sai-rec"><h3><Repeat size={15} /> Revient ?</h3>
         <div className="sai-seg" role="group" aria-label="Revient ?">{RYTHMES.map((r) => <button key={r.id} type="button" aria-pressed={b.rythme === r.id} data-saisie-rythme={r.id} onPointerDown={garde} onClick={() => patch({ rythme: r.id, fin: 'sans', finDate: undefined })}>{r.nom}</button>)}</div>
         {recurrent ? <>
@@ -324,7 +326,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
           {b.fin === 'date' ? frise('fin', b.finDate ?? b.date, 'Dernière échéance', (d) => patch({ finDate: d }), { min: b.date }) : null}
           {cents ? <div className="sai-row"><span className="sai-sum">Σ 12 mois <b className={sens ?? 'out'}>{signe(sens ?? 'out', sommeDouzeMois(cents, b.date, b.rythme, fin))}</b></span></div> : null}
           <div className="sai-ap" data-saisie-apercu><b><CalendarDays size={14} />Calendrier</b>{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}
-            <small>… {fin ? `${jjmm(fin, true)} · ${echeances(b.date, b.rythme, fin, 400).length} fois` : 'sans fin'}</small></div>
+            <small>… {bout ? `${jjmm(bout.fin, true)} · ${bout.fois} fois` : 'sans fin'}</small></div>
         </> : null}
       </div>);
     }
@@ -382,6 +384,7 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
   const fin = rec?.endDate;
   const origine = f.refundOfId ? txs.find((t) => t.id === f.refundOfId) : undefined;
   const ech = rec ? datesDesOccurrences(tx.date, rec.frequency, fin, apayer ? f.dueDate : undefined, 4) : [];
+  const bout = rec ? finDesOccurrences(tx.date, rec.frequency, fin, apayer ? f.dueDate : undefined) : undefined; // E45-1 : la fin = la dernière date listée
   const dejaAvoirs = origine ? txs.filter((t) => t.finance?.refundOfId === origine.id && !t.finance?.voidedAt && t.id !== tx.id).reduce((n, t) => n + (t.finance?.amountCents ?? 0), 0) : 0;
   return <>
     <div className="sai-voile" />
@@ -395,7 +398,7 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
       </> : <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className={`sai-mmv ${apayer ? 'prevu' : sens}`}>{signe(sens, cents)}</span><small>{origine ? `${CATEGORY_LABELS[origine.category] ?? origine.category} réduit de ${chf(cents)}` : apayer ? `prévu, échéance ${f.dueDate ? jjmm(f.dueDate) : ''}` : moisDe(tx.date)}</small></div>}
       {origine ? <div className="sai-ok-r"><b><Link2 size={16} /> Pièce</b><span className="sai-pv">{origine.finance?.vendor || origine.description} {jjmm(origine.date)} · {chf(origine.finance?.amountCents ?? 0)} → net {chf((origine.finance?.amountCents ?? 0) - dejaAvoirs - cents)}</span></div> : null}
       {rec ? <>
-        <div className="sai-ok-r"><b><CalendarDays size={16} /> Calendrier</b><div className="sai-ap">{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}<small>… {fin ? `→ ${moisAn(fin)}` : 'sans fin'}</small></div></div>
+        <div className="sai-ok-r"><b><CalendarDays size={16} /> Calendrier</b><div className="sai-ap">{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}<small>… {bout ? `→ ${moisAn(bout.fin)}` : 'sans fin'}</small></div></div>
         <div className="sai-ok-r"><b>Σ 12 mois</b><span className={`n ${sens}`}>{signe(sens, sommeDouzeMois(cents, tx.date, rec.frequency, fin))}</span><small>sur un an</small></div>
       </> : null}
       {fait.prevuAvant ? <div className="sai-ok-r"><b><Link2 size={16} /> Prévu</b><span className="sai-pv">« {fait.prevuAvant.title} » soldé, quitte le Calendrier</span></div> : null}

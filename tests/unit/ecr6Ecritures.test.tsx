@@ -96,7 +96,8 @@ describe('E44-3 : la Référence d’un apport n’est pas un n° de facture', (
     expect(indicationReference('prel')).toBe('Référence, facultatif');
     expect(indicationReference('rembt')).toBe('Référence, facultatif');
     expect(indicationReference('impot')).toBe('Période, référence');
-    for (const g of ['achat', 'loyer', 'abo', 'salaire', 'autreo', 'vente', 'autrei'] as const) expect(indicationReference(g)).toBe('Référence (n° de facture)');
+    expect(indicationReference('salaire')).toBe('Référence, facultatif'); // E45-3 : un salaire n'a pas de facture
+    for (const g of ['achat', 'loyer', 'abo', 'autreo', 'vente', 'autrei'] as const) expect(indicationReference(g)).toBe('Référence (n° de facture)');
     expect(Object.keys(GENRES).length).toBe(11);
   });
   it('Modifier d’un Apport : l’indication de la Référence est « Référence, facultatif », jamais « N° de facture »', () => {
