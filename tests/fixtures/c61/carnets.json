@@ -1,0 +1,40 @@
+{
+  "_note": "Voie c61-tests (24.11). Carnet « Houblons citra » du test en ligne du tour 61 (voies/critique-61/RESULTAT.md), noms de vendeurs et valeurs des captures ; aucune donnée personnelle. H1 = « Citra 13.6% » (prix « dès 0,10 CHF » = le gramme, sans quantité, C59-6/C61-1) ; H2 = « CITRA® (US) » (3,72 EUR TTC, poids 50, 250 et 500 g, C61-4) ; la page de H2 dit l'alpha « Taux d'acides alpha 10 % - 15 % » après Origine et Poids (C59-8 rouvert).",
+  "citra": {
+    "titre": "ZZ TEST — houblons citra",
+    "articles": [
+      {
+        "id": "H1", "nom": "Citra 13.6%", "vendeur": "Brau- und Rauchshop", "pays": "CH", "dispo": "en stock",
+        "prixCentimes": 10, "prixDes": true, "devise": "CHF", "taxe": "ht",
+        "lignes": [
+          { "nom": "Citra", "valeur": "13,6", "unite": "%" },
+          { "nom": "Arômes", "valeur": "citron vert, mangue, fruits tropicaux" },
+          { "nom": "Origine", "valeur": "USA" },
+          { "nom": "Particulièrement adapté pour", "valeur": "amerikanische Ales und IPA's" }
+        ]
+      },
+      {
+        "id": "H2", "nom": "CITRA® (US)", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock",
+        "prixCentimes": 372, "devise": "EUR", "taxe": "ttc",
+        "change": { "taux": 0.93, "date": "2026-11-24", "source": "BCE" },
+        "lignes": [
+          { "nom": "Origine", "valeur": "États-Unis" },
+          { "nom": "Poids", "valeur": "50 g, 250 g et 500 g" },
+          { "nom": "Taux d'acides alpha", "valeur": "10 % - 15 %" }
+        ]
+      }
+    ]
+  },
+  "paysEquivalents": [
+    ["USA", "États-Unis"],
+    ["US", "États-Unis"],
+    ["United States", "États-Unis"],
+    ["Deutschland", "Allemagne"],
+    ["New Zealand", "Nouvelle-Zélande"]
+  ],
+  "valeursAllemandes": [
+    { "nom": "Besonders geeignet für", "valeur": "amerikanische Ales und IPA's" },
+    { "nom": "Besonders geeignet für", "valeur": "englische Ales und Porter" },
+    { "nom": "Besonders geeignet für", "valeur": "Pale Ales und IPA's" }
+  ]
+}
