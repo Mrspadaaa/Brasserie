@@ -285,9 +285,32 @@ function toucheLeTrace(courbe: readonly SoldeSemaine[], g: Geo, b: Boite, marge 
  */
 export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = [], mise: MisePlacee | null = null, etoiles: readonly EtoileCourbe[] = [],
   lignesSous: readonly number[] = []): Etiquette[] {
-  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number };
+  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number; court?: string };
   const parNom = new Map<string, Article>();
+  /* K51-1 : des mouvements de noms différents, payés le même jour dans le même sens, font UNE marche. Un seul nom avec son montant ne dirait pas la marche
+     (« achat rond −80 » sur −159,95) : leur étiquette dit la somme, le plus gros nom et « + 1 autre ». Un nom qui revient ailleurs sur la courbe (un récurrent)
+     ou qu'une chose étoilée porte garde sa propre étiquette. */
+  const occurrences = new Map<string, number>();
+  courbe.forEach(s => s.mouvements.forEach(m => occurrences.set(m.nom, (occurrences.get(m.nom) ?? 0) + 1)));
+  const nomsEtoiles = new Set(etoiles.map(e => e.nom));
+  const memeMarche = new Map<string, SoldeSemaine['mouvements']>();
   courbe.forEach((s, i) => s.mouvements.forEach(m => {
+    if (Math.round(Math.abs(m.centimes) / 100) === 0 || occurrences.get(m.nom) !== 1 || nomsEtoiles.has(m.nom)) return;
+    const cle = `${i}|${m.jour}|${m.centimes < 0 ? '-' : '+'}`;
+    memeMarche.set(cle, [...(memeMarche.get(cle) ?? []), m]);
+  }));
+  const fondus = new Map<SoldeSemaine['mouvements'][number], { tete: SoldeSemaine['mouvements'][number]; nom: string; court: string; centimes: number }>();
+  for (const liste of memeMarche.values()) {
+    if (liste.length < 2) continue;
+    const tete = [...liste].sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes))[0];
+    const autres = liste.length - 1;
+    const groupe = { tete, nom: `${tete.nom} + ${autres} autre${autres > 1 ? 's' : ''}`, court: `${liste.length} mouvements`, centimes: liste.reduce((t, m) => t + m.centimes, 0) };
+    for (const m of liste) fondus.set(m, groupe);
+  }
+  courbe.forEach((s, i) => s.mouvements.forEach(m0 => {
+    const fondu = fondus.get(m0);
+    if (fondu && fondu.tete !== m0) return;
+    const m = fondu ? { ...m0, nom: fondu.nom, centimes: fondu.centimes } : m0;
     // Un montant inconnu ou de moins d'un franc ne se nomme pas « 0 » (l'inconnu n'est jamais 0) : la frise le montre, sans chiffre.
     if (Math.round(Math.abs(m.centimes) / 100) === 0) return;
     const deja = parNom.get(m.nom);
@@ -298,7 +321,7 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
       else if (!deja.semaines.includes(s.numero)) deja.semaines.push(s.numero);
       return;
     }
-    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false, fois: 1 });
+    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false, fois: 1, ...(fondu ? { court: fondu.court } : {}) });
   }));
   // Des mouvements opposés qui s'annulent (+45 et −45) ne font plus de marche à nommer.
   for (const [nom, a] of parNom) if (a.centimes !== null && Math.round(Math.abs(a.centimes) / 100) === 0) parNom.delete(nom);
@@ -345,6 +368,7 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
     const formes = mouvement
       ? [{ nom: fois(m.nom), montant, w: largeurNom(fois(m.nom), montant, m.etoile) },
         ...raccourcis.map(nom => ({ nom: fois(nom), montant, w: largeurNom(fois(nom), montant, m.etoile) })),
+        ...(m.court ? [{ nom: m.court, montant, w: largeurNom(m.court, montant, m.etoile) }] : []),
         ...(m.etoile && montant ? [{ nom: fois(m.nom), montant: '', w: largeurNom(fois(m.nom), '', true) }] : [])]
       : textesMise({ i: m.i, centimes: m.centimes ?? 0, titres: mise?.titres ?? [] }).map(t => ({ nom: t, montant: '', w: CARRE_MISE + largeurTexte(t) }));
     // À droite de la marche, à gauche, ou centré au-dessus (ou au-dessous) d'elle : l'abscisse d'ancrage reste celle de sa semaine. La mise de

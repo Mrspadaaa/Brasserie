@@ -108,7 +108,7 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
           }}>
           <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={saisie && max && ISO.test(max) && lundiDe(max) < plage.dernier ? lundiDe(max) : plage.dernier} jourMax={saisie && max && ISO.test(max) ? max : undefined}
             onPlage={d => poser(d)} onLacher={ecrire} />
-          {saisie && atteinte ? <small className="block text-xs text-cave-300" role="status" data-choix-date-borne={atteinte}>
+          {saisie && atteinte ? <small className="block text-xs text-cave-400" role="status" data-choix-date-borne={atteinte}>
             {atteinte === 'max' && max ? `Pas de date après le ${jourLisible(max)} : le jour d’aujourd’hui est le dernier.` : min ? `Pas de date avant le ${jourLisible(min)}.` : ''}</small> : null}
         </div>
       )}

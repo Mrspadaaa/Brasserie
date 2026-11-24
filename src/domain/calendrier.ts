@@ -208,7 +208,8 @@ export const nomSeules = (id: Rangee): string => `${nomRangee(id)} ${id === 'fet
 /** Des francs entiers à la suisse, « 5 064 » ; le signe est un vrai moins. Jamais appelé sur un montant inconnu. */
 export const francs = (centimes: number): string => {
   const n = Math.round(Math.abs(centimes) / 100);
-  return `${centimes < 0 && n > 0 ? '−' : ''}${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`;
+  // Francs entiers : jamais de point décimal ; le `replace` fixe la règle (virgule suisse) si un jour des décimales passent ici.
+  return `${centimes < 0 && n > 0 ? '−' : ''}${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`.replace('.', ',');
 };
 /**
  * E43-2 : le montant exact, pour la carte d'une chose (les rangées et la courbe gardent les francs entiers, compacts). « 2,50 », « 5 064 » : les centimes ne s'écrivent que
@@ -217,7 +218,8 @@ export const francs = (centimes: number): string => {
 export const francsExacts = (centimes: number): string => {
   const abs = Math.abs(Math.round(centimes));
   const entier = Math.trunc(abs / 100), cts = abs % 100;
-  const corps = String(entier).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (cts ? `,${String(cts).padStart(2, '0')}` : '');
+  // Le point décimal se dit virgule (suisse romande) : on écrit « 2.50 » puis on le remplace, comme les autres formateurs du dépôt.
+  const corps = (String(entier).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (cts ? `.${String(cts).padStart(2, '0')}` : '')).replace('.', ',');
   return `${centimes < 0 && abs > 0 ? '−' : ''}${corps}`;
 };
 export const francsSignesExacts = (centimes: number): string => `${centimes < 0 ? '' : '+'}${francsExacts(centimes)}`;

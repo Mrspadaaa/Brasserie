@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
-import { graduations, groupesRecurrents, joursEntre, motEtiquette, nomProjet, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
+import { graduations, groupesRecurrents, joursEntre, motEtiquette, NOM_PLAN_MAX, nomProjet, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
 import { mesurerTexte, obstaclesDeCourbe, oublierMesures, placerEtiquettes, pointDAccroche, type Demande, type Mesure, type Rect } from './placement';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
@@ -42,6 +42,13 @@ export const texteLot = (items: ForecastItem[]) => {
   const total = items.reduce((s, i) => s + i.amountCents, 0), partiel = items.some(i => i.partial?.length);
   const mots = [...new Set(items.map(motEtiquette))];
   const m = partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total);
+  /* PC-117 : « TEST (2 fois) » disait « la même chose deux fois » de deux écritures différentes (« ZZ TEST — achat », « ZZ TEST — achat rond ») dont seul le mot-clé coïncide :
+     le lot nomme alors la plus grosse, en entier, et « + N autre(s) » (comme l'étiquette de la courbe du Calendrier). « (2 fois) » reste pour la même écriture répétée. */
+  const noms = [...new Set(items.map(nomLong))];
+  if (mots.length === 1 && noms.length > 1) {
+    const tete = items.reduce((a, b) => (Math.abs(b.amountCents) > Math.abs(a.amountCents) ? b : a));
+    return `${nomProjet(nomLong(tete), NOM_PLAN_MAX)} + ${noms.length - 1} autre${noms.length > 2 ? 's' : ''} ${m}, ${jourCourt(items[0].date)}`;
+  }
   return mots.length === 1 ? `${mots[0]} (${items.length} fois) ${m}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
 };
 /** Les sorties d'une marche qui partagent son étiquette : au moins deux, hors projet testé (qui garde sa fiche) et hors récurrence déjà regroupée. */

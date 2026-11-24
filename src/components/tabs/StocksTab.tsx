@@ -670,7 +670,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </div>
 
       {subTab === 'stock' && catalogue && <>
-        <div className="shrink-0 px-[10px] pt-2"><button type="button" className="inline-flex min-h-touch items-center gap-2 text-sm font-semibold text-cave-100" data-catalogue-retour onClick={() => setCatalogue(false)}><ArrowLeft size={18} aria-hidden="true" />Articles</button></div>
+        <div className="shrink-0 px-[10px] pt-2"><button type="button" className="inline-flex min-h-touch items-center gap-2 text-sm font-semibold text-cave-200" data-catalogue-retour onClick={() => setCatalogue(false)}><ArrowLeft size={18} aria-hidden="true" />Articles</button></div>
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du catalogue des houblons…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
       </>}
 

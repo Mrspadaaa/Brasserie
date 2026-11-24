@@ -148,7 +148,7 @@ export function resumeDuBloc(croise: string, rangs: readonly RangControle[]): st
 /** Un montant en centimes : « 1 234,50 » (sans unité). */
 export const montant = (cents: number): string => {
   const n = Math.abs(Math.round(cents)), e = Math.floor(n / 100), c = String(n % 100).padStart(2, '0');
-  return `${String(e).replace(/\B(?=(\d{3})+$)/g, ' ')},${c}`;
+  return `${String(e).replace(/\B(?=(\d{3})+$)/g, ' ')}.${c}`.replace('.', ',');
 };
 /**
  * LR2-3 (vision v3 : doc25 « 3/3 · 7 désaccords » pour 35 points des lectures) : la rangée « Lectures » dit ce qu'elle compte. Elle compte des VALEURS (un champ d'une ligne ou de l'en-tête)

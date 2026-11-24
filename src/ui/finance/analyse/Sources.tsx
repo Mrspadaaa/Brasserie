@@ -38,7 +38,7 @@ export function SourcesVue({ c, finJour, duree, pourquoi, onJournal }: SourcesPr
   const max = Math.max(1, ...bornes), min = Math.min(0, ...bornes);
   const gr = graduations(min, max, 3), bas = Math.min(min, gr.bas), haut = Math.max(max, gr.haut);
   const pct = (v: number) => `${((v - bas) / (haut - bas) * 100).toFixed(2)}%`;
-  const larg = (a: number, b: number) => `${(Math.abs(b - a) / (haut - bas) * 100).toFixed(2)}%`;
+  const larg = (a: number, b: number) => `${(Math.abs(b - a) / (haut - bas) * 100).toFixed(2)}%`; // virgule-ok : largeur CSS (width), pas un affichage
   const dep = c.plusGrosDepassement;
   return <>
     <p className="ana-dit">

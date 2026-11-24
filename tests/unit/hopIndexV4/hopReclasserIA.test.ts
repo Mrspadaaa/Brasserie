@@ -144,7 +144,7 @@ describe('hopReclasserIA : refus, pannes, entrée', () => {
 });
 
 describe('module partagé : l’invite de l’essai ia1, mot pour mot', () => {
-  const figees = JSON.parse(readFileSync(resolve('work/missions/2026-10-25-integration-houblons/voies/ia1-reclassement/requetes/requetes-moteur.json'), 'utf8'));
+  const figees = JSON.parse(readFileSync(resolve('tests/fixtures/hopReclasserIA/requetes-moteur.json'), 'utf8'));
   const parId = new Map(CATALOGUE.map((h) => [h.id, h]));
   it('le système, le schéma et la génération sont ceux des requêtes figées', () => {
     expect(figees.systeme).toBe(SYSTEME); expect(figees.schema).toEqual(SCHEMA); expect(figees.generation).toEqual(GENERATION);

@@ -47,7 +47,7 @@ export function BandeauMiseAJour() {
       role="status"
       data-mise-a-jour
       style={{ bottom: bas }}
-      className="fixed left-1/2 z-[90] flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-2 rounded-panel border border-cave-700 bg-cave-900 py-0.5 pl-3 pr-0.5 text-xs text-cave-100 shadow-2xl"
+      className="fixed left-1/2 z-[90] flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-2 rounded-panel border border-cave-700 bg-cave-900 py-0.5 pl-3 pr-0.5 text-xs text-cave-200 shadow-2xl"
     >
       <span>Nouvelle version</span>
       <span aria-hidden="true" className="text-cave-400">·</span>
