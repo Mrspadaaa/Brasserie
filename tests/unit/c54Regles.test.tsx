@@ -403,7 +403,7 @@ describe('R21 : les groupes énergie, froid, dimensions se reconnaissent par mot
 const volumes = (sens: 'plus' | 'moins') => carnet([
   { id: 'V1', nom: 'Marmite de brassage inox 50 L', valeurs: { Volume: val(50, 'L') }, prix: 52000 },
   { id: 'V2', nom: 'Kibernetik KS240L', valeurs: { Volume: val(242, 'L') }, prix: 30200 }
-], [critere('Volume de 50 L', 'Volume', sens, 'L')], 'Marmite');
+], [critere('Grand volume', 'Volume', sens, 'L')], 'Marmite'); // sans nombre : un « 50 L » dans le texte en fait une cible (C59-4, C61-5, R50)
 const gauche = (e: Element) => Number((e as HTMLElement).style.left.replace('%', ''));
 /** Les ronds de la jauge d'une fiche, dans l'ordre croissant des valeurs (le DOM les trie), avec leur position en % depuis la gauche. */
 function rondsDeFiche(c: HTMLElement) { return [...c.querySelectorAll('.cn-piste-rond')].map(gauche); }
