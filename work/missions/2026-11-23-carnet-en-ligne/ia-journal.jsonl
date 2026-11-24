@@ -414,3 +414,14 @@
 {"date":"2026-11-24T08:25:41.604Z","tache":"lireLien","url":"galaxus KS240L (E47), reprise","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
 {"date":"2026-11-24T08:26:14.912Z","tache":"lireLien","url":"galaxus 115 L retiré (E47-2, 3e article), reprise","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
 {"date":"2026-11-24T08:33:20Z","tache":"correction","texte":"lireLien galaxus KS240L (E47) 1er essai : lien non envoyé (focus perdu, artefact de script), coût 0 ; le collage suivant a concaténé deux URL (page 404, arrêt à 1 sur 6, article retiré)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":-0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:57:51.272Z","tache":"ranger","texte":"ZZ TEST — chambre froide","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
+{"date":"2026-11-24T08:58:31.045Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
+{"date":"2026-11-24T08:59:40Z","tache":"correction","texte":"ranger ZZ TEST — chambre froide (critique-50) : non envoyé (champ de liste caché, carnet ouvert), coût 0 ; le 2e envoi a concaténé deux titres, carnet ranger réel puis supprimé","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":-0.002,"voie":"critique-50"}
+{"date":"2026-11-24T09:00:14.990Z","tache":"ranger","texte":"ZZ TEST — chambre froide","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
+{"date":"2026-11-24T09:00:59Z","tache":"correction","texte":"ranger ZZ TEST — chambre froide 2e essai (critique-50) : non envoyé ; la saisie a ouvert son carnet Chambre froide existant (rien écrit), coût 0","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":-0.002,"voie":"critique-50"}
+{"date":"2026-11-24T09:01:26.729Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
+{"date":"2026-11-24T09:02:00.951Z","tache":"lireLien","url":"ggmgastro chambre froide 4,06 (R1, R5)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
+{"date":"2026-11-24T09:02:28.509Z","tache":"lireLien","url":"ggmgastro chambre froide 2,6 (R1, R4)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
+{"date":"2026-11-24T09:03:43.282Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.002,"voie":"critique-50"}
+{"date":"2026-11-24T09:04:09.726Z","tache":"lireLien","url":"brewstore marmite 50 L (R5, E47-5)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
+{"date":"2026-11-24T09:04:42.652Z","tache":"lireLien","url":"galaxus KS240L (R5, E47-5)","modele":"serveur (aiTask tour 50, u01CJTAh)","cout_chf":0.01,"voie":"critique-50"}
