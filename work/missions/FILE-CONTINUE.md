@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T23:11:35.377Z
+pause: 2026-11-24T23:33:03.454Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -33,9 +33,9 @@ pause: 2026-11-24T23:11:35.377Z
 - [x] Tour 64 : critique-64, 9 problèmes (3 B : C64-1 prix 100 g lu comme 50 g, C64-2 palier 1 kg Brau, C64-8 message ZZ rangé dans son vrai carnet), corrigés 11/13
 - [x] C64 : URGENT C64-8 (MESSAGE-RESTE-DANS-SON-CARNET : un message tapé dans un carnet ouvert n y est jamais déplacé seul), puis C64-1, C64-2 (prix par conditionnement et paliers), C61-5, m ; tests puis correctif — corrigé (c64Regles 28/28, c54 aligné), tour 65 en ligne index-BTs27oam.js, aiTask redéployé
 - [x] critique-65 : 8 problèmes (3 B) ; C64-1, C64-2, C61-5 tenus ; C64-8 NE TIENT PAS en ligne (C65-1 chemin IA, C65-2 chemin local)
-- [ ] URGENT C65-1/C65-2 : message gardé dans son carnet ouvert, test par le composant (corrigé 30bdcf361, cause destinationDans ; à mettre en ligne au tour 66 après la reprise greffe-p2, puis rejouer en ligne) ; puis C65-3 (13,6 % sur « dès 1 kg ») et m ; tour 66 ; rondes de nuit : Carnet en lecture seule tant que pas « C65 corrigé en ligne »
+- [ ] URGENT C65-1/C65-2 : message gardé dans son carnet ouvert, test par le composant (corrigé 30bdcf361, cause destinationDans ; EN LIGNE tour 66 index-Rj9Pjhxu.js ; critique-66 rejoue) ; puis C65-3 (13,6 % sur « dès 1 kg ») et m ; tour 66 ; rondes de nuit : Carnet en lecture seule tant que pas « C65 corrigé en ligne »
 - [attente] Note parasite « Fûts déplacés dans la chambre froide en attendant. » dans son carnet Chambre froide (20:29Z, tour 64, autre session) : à retirer avec son accord
-- [ ] Port D451 : domaine PRÊT 402d1a8a9 (passe-plat 81072809e à mettre en ligne seul après critique-65) → ia PRÊT a3e99e4c7 ∥ greffe-p2 PRÊT 38aff7806 (branchée 700dee88d) → tour 66 en ligne (en cours) → probleme ∥ afaire → liste → en ligne → onglets (work/missions/2026-11-24-port-d451/PLAN.md)
+- [ ] Port D451 : domaine PRÊT 402d1a8a9 (passe-plat 81072809e à mettre en ligne seul après critique-65) → ia PRÊT a3e99e4c7 ∥ greffe-p2 PRÊT 38aff7806 (branchée 700dee88d) → tour 66 en ligne (Rj9Pjhxu) → probleme ∥ afaire (en cours) → probleme ∥ afaire → liste → en ligne → onglets (work/missions/2026-11-24-port-d451/PLAN.md)
 - [x] (accord 24.11, retirée par l'app : 3 → 2 notes, vérifié après rechargement, voies/retrait-note) Sa note « Achat prévu fin du mois. » ajoutée par erreur dans son carnet « Achat brasserie : moulin à malt + bac etc. » par la voie exemples : à retirer avec son accord ; voie exemples ARRÊTÉE
 - [ ] (D451 mode nuit : porter si le critique juge qu une base + greffes répond à tous les besoins, sinon écrire le manque ; après tour 65) Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement — VERDICT : base v01 p3 + greffes v01 p2, v05 p3, v03 p3 (D451/VERDICT.md) ; plan en cours work/missions/2026-11-24-port-d451
 - [ ] (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
