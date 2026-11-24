@@ -17,7 +17,7 @@ import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
   HORIZON_SEMAINES, NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseAchatPrevu, choseVenteProbable, estFactureDeMatieres,
-  fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
+  fournisseurDePiece, francsExacts, francsSignesExacts, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
 } from '../../domain/calendrier';
@@ -230,14 +230,14 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const retards = retardsDe({ aujourdhui, restes: [...synthese.aPayer, ...synthese.aEncaisser], batches: e.batches, items: e.items, sansDensite, commandes, courses: e.courses ?? null });
 
   const hypotheses: HypotheseCaisse[] = [];
-  if (soldeConnu && prevision.openingCashCents !== null) hypotheses.push({ id: 'depart', texte: `Solde de départ : ${francs(prevision.openingCashCents)} CHF`, source: 'Finances › Solde', ouvre: { ecran: 'solde' } });
+  if (soldeConnu && prevision.openingCashCents !== null) hypotheses.push({ id: 'depart', texte: `Solde de départ : ${francsExacts(prevision.openingCashCents)} CHF`, source: 'Finances › Solde', ouvre: { ecran: 'solde' } });
   /* n° 32, E01 : la tendance de Finances (lignes `trend` de la prévision), par mois, avec sa source ; sans tendance, rien */
   const tendance = new Map<string, number>();
   for (const i of prevision.items) if (i.source === 'trend') tendance.set(i.date.slice(0, 7), (tendance.get(i.date.slice(0, 7)) ?? 0) + (i.direction === 'in' ? i.amountCents : -i.amountCents));
   for (const [id] of repris) {
     const c = choses.find(x => x.source.genre === 'batch' && x.source.id === id);
     if (c?.centimes === undefined) continue;
-    hypotheses.push({ id: `budget-repris-${id}`, texte: `${c.titre} : ${francsSignes(c.centimes)} CHF, budget repris de sa recette, estimé`, source: 'Budget › du brassin', ouvre: { ecran: 'brassin', id } });
+    hypotheses.push({ id: `budget-repris-${id}`, texte: `${c.titre} : ${francsSignesExacts(c.centimes)} CHF, budget repris de sa recette, estimé`, source: 'Budget › du brassin', ouvre: { ecran: 'brassin', id } });
   }
   if (tendance.size) {
     const parMois = Math.round([...tendance.values()].reduce((s, n) => s + n, 0) / tendance.size);
@@ -245,7 +245,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
      * CRITIQUE-10, doute m04 : la tendance est la médiane des charges payées MOINS les charges déjà prévues (le loyer récurrent, compté à part dans
      * la courbe) : « moyenne des mois passés » se lisait comme un double compte (−400 de loyer et −250 de moyenne, alors que 650 sont payés).
      */
-    if (parMois !== 0) hypotheses.push({ id: 'tendance', texte: `Tendance de Finances : ${francsSignes(parMois)} CHF/mois`, source: 'Finances › Prévision (médiane des charges payées, moins les charges déjà prévues)', ouvre: { ecran: 'finances' } });
+    if (parMois !== 0) hypotheses.push({ id: 'tendance', texte: `Tendance de Finances : ${francsSignesExacts(parMois)} CHF/mois`, source: 'Finances › Prévision (médiane des charges payées, moins les charges déjà prévues)', ouvre: { ecran: 'finances' } });
   }
 
   const icones: IconeSemaine[] = [

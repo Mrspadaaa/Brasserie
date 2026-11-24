@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
-import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS, francsSignesExacts, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, rectVolant, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
@@ -665,11 +665,11 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   if (rangee === 'activites') {
     if (jours) morceaux.push(`${jours} j`);
   } else if (solde !== null) {
-    morceaux.push(`solde ${francsSignes(solde)}`);
+    morceaux.push(`solde ${francsSignesExacts(solde)}`);
     /* le chiffre mêle des degrés de certitude : chacun se lit à part (aria-label), avec les mots de Finances */
     const part = (k: 'confirme' | 'du' | 'prevu', texte: string) => {
       const l = chiffrees.filter(v => statutArgent(v.c) === k);
-      return l.length ? [`${francsSignes(l.reduce((s, v) => s + (v.centimes as number), 0))} ${texte}`] : [];
+      return l.length ? [`${francsSignesExacts(l.reduce((s, v) => s + (v.centimes as number), 0))} ${texte}`] : [];
     };
     const detail = [...part('confirme', 'encaissé'), ...part('du', solde >= 0 ? 'à encaisser' : 'à payer'), ...part('prevu', 'prévu')];
     if (new Set(statuts).size > 1) morceaux.push(`dont ${detail.join(', ')}`);
@@ -677,23 +677,23 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   else if (vues.length && !aVenir.length) morceaux.push('solde non renseigné');
   if (aVenir.length) morceaux.push('coût à venir');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
-  if (estime !== null) morceaux.push(`${estime < 0 ? 'coût' : 'recette'} estimée ${francsSignes(estime)}, hors courbe (pas dans Finances)`);
-  if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}${probable !== null ? ` ${francsSignes(probable)}` : ''}`);
+  if (estime !== null) morceaux.push(`${estime < 0 ? 'coût' : 'recette'} estimée ${francsSignesExacts(estime)}, hors courbe (pas dans Finances)`);
+  if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}${probable !== null ? ` ${francsSignesExacts(probable)}` : ''}`);
   const recu = recues.length ? recues.reduce((s, c) => s + (c.centimes as number), 0) : null;
-  if (attendues.length) morceaux.push(`${francsSignes(attendues.reduce((s, c) => s + (c.centimes as number), 0))} attendu, hors ventes`);
-  if (privees.length) morceaux.push(`${francsSignes(privees.reduce((s, c) => s + (c.centimes as number), 0))} privé, hors total`);
-  if (recu !== null) morceaux.push(`${francsSignes(recu)} reçu, hors ventes (${recues.some(c => c.horsVentes === 'apport') ? 'apport' : 'autre entrée'})`);
+  if (attendues.length) morceaux.push(`${francsSignesExacts(attendues.reduce((s, c) => s + (c.centimes as number), 0))} attendu, hors ventes`);
+  if (privees.length) morceaux.push(`${francsSignesExacts(privees.reduce((s, c) => s + (c.centimes as number), 0))} privé, hors total`);
+  if (recu !== null) morceaux.push(`${francsSignesExacts(recu)} reçu, hors ventes (${recues.some(c => c.horsVentes === 'apport') ? 'apport' : 'autre entrée'})`);
   /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) ;
      jamais un chiffre seul (« 1 ») : « 1 chose », ou « coût à venir » quand c'est le coût qui manque */
   const nbVu = dedans.length;
   const enMots = aVenir.length ? 'coût à venir' : nbVu ? nChoses(nbVu) : '';
   const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
-    : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
-      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : enMots;
+    : solde !== null ? `${francsSignesExacts(solde)}${aVenir.length ? ' + coût à venir' : ''}`
+      : estime !== null && !aVenir.length ? `${francsSignesExacts(estime)} estimé` : probable !== null ? `${francsSignesExacts(probable)} probable` : enMots;
   /* le mot posé à côté : « prévu S44–S49 » ; sans argent dans la fenêtre, il le dit (« aucun mouvement »), jamais « confirmé » */
   /* REPRISE-4 (a) : une seule colonne (1 sem.) se dit une fois, « prévu S47 », jamais « S47–S47 » */
   const periode = premier === dernier ? premier : `${premier}–${dernier}`;
-  const conf = mot ? `${mot} ${periode}${estime !== null ? ` · ${francsSignes(estime)} estimé` : ''}`
+  const conf = mot ? `${mot} ${periode}${estime !== null ? ` · ${francsSignesExacts(estime)} estimé` : ''}`
     : estime !== null && !probSeul ? 'hors courbe'
       : recu !== null && !probSeul ? `hors ventes ${periode}` : probSeul ? 'pas confirmé' : sansMouvement && !sansMontant ? 'aucun mouvement' : sansMontant ? 'sans montant' : 'pas confirmé';
   return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier, periode };

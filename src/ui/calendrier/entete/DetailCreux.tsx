@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { HypotheseCaisse } from '../../../domain/calendrier';
 import { paliersApres } from '../../../domain/calendrierCaisse';
-import { ajouterJours, aujourdhuiDe, causesDuCreux, chf, jourCourt, semaineCourte, sg, type SoldeSemaine } from './Courbe';
+import { ajouterJours, aujourdhuiDe, causesDuCreux, chf, chfExact, jourCourt, semaineCourte, sg, type SoldeSemaine } from './Courbe';
 
 /**
  * Le creux et ses causes (E01, q5/z2s) : un toucher sur le chiffre clé déplie « Le creux de S24 : ses causes ». Les sorties qui font le creux,
@@ -68,7 +68,7 @@ export function DetailCreux({ courbe, index, hypotheses, onOuvrirFinances, onFer
       {finHorizon && <p className="ent-pop-t" data-horizon>Horizon : jusqu’au {finHorizon}</p>}
       {causes.map((c, k) => (
         <div className="ent-pop-l" key={`${c.index}-${k}`} data-cause-semaine={c.numero} data-cause-index={c.index}>
-          <span className="ent-w">{sem(c.lundi)}</span><span className="ent-nm">{c.nom}</span><b className="ent-m">{chf(c.centimes)}</b>
+          <span className="ent-w">{sem(c.lundi)}</span><span className="ent-nm">{c.nom}</span><b className="ent-m">{chfExact(c.centimes)}</b>
         </div>
       ))}
       {sansSortie && (

@@ -244,7 +244,7 @@ describe('CRITIQUE-4 n° 2 (E23, E24) : un brassin posé par la feuille porte le
     expect(apres.creux!.centimes).toBeLessThanOrEqual(avant.creux!.centimes + neuve!.centimes!);
     /* l'hypothèse le dit : budget repris de sa recette, estimé ; D405 : Finances le compte aussi (même prévision), la phrase ne dit plus le contraire */
     const textes = apres.hypotheses.map(h => h.texte).join(' | ');
-    expect(textes).toMatch(/Blonde d’automne : −\d[\d ]* CHF, budget repris de sa recette, estimé/);
+    expect(textes).toMatch(/Blonde d’automne : −\d[\d ]*(?:,\d\d)? CHF, budget repris de sa recette, estimé/);
     expect(textes).not.toMatch(/pas encore dans Finances/);
     /* rien n'est écrit : les plans de l'app ne changent pas */
     expect(poser(e, 'R-BLONDE', 'LOT-NEUF').plans).toEqual(e.plans);

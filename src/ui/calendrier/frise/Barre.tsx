@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link2, Pin, Star } from 'lucide-react';
-import { COUT_A_VENIR, ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
+import { COUT_A_VENIR, ecartJours, etiquetteS, francsSignesExacts, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur, type CoteBord } from './usePointeur';
 import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
@@ -113,10 +113,10 @@ export { PastilleLie };
 
 /** Le montant écrit à côté du nom (« −158 », « 3 j −600 ») : celui que la mise en page mesure (Rangee) est celui qui s'affiche. */
 export const montantBarre = (chose: ChoseCalendrier): string | null => {
-  if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignes(chose.centimes)}` : ''}` : chose.centimes ? francsSignes(chose.centimes) : null;
+  if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignesExacts(chose.centimes)}` : ''}` : chose.centimes ? francsSignesExacts(chose.centimes) : null;
   if (chose.centimes === undefined) return null;
   /* CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre dit son montant par mois (as/cap/p-c1d : « −400 / mois ») */
-  return `${francsSignes(chose.centimes)}${chose.partiel ? ' + à venir' : ''}${chose.parMois ? ' / mois' : ''}`;
+  return `${francsSignesExacts(chose.centimes)}${chose.partiel ? ' + à venir' : ''}${chose.parMois ? ' / mois' : ''}`;
 };
 const montantDe = montantBarre;
 

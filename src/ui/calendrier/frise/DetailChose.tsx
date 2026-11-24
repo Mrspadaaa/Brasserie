@@ -141,7 +141,7 @@ function texteFrais(c: ChoseCalendrier): string | null {
   const f = champ(c, 'frais');
   if (typeof f === 'string' && f.trim()) return f.trim();
   if (Array.isArray(f)) { const l = f.filter((x): x is string => typeof x === 'string' && !!x.trim()); return l.length ? l.join(', ') : null; }
-  if (typeof f === 'number' && Number.isFinite(f)) return francsSignes(f);
+  if (typeof f === 'number' && Number.isFinite(f)) return francsSignesExacts(f);
   return null;
 }
 

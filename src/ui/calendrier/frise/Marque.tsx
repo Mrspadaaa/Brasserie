@@ -1,6 +1,6 @@
 import React from 'react';
 import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, MoreHorizontal, PartyPopper, PiggyBank, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
-import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
+import { etiquetteS, francsSignesExacts, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
 import { posee, poseeADroite } from './posee';
@@ -261,7 +261,7 @@ export interface MarqueProps {
   pointLie?: Rangee;
 }
 
-const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignes(c.centimes)}${c.partiel ? ' + à venir' : ''}`);
+const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignesExacts(c.centimes)}${c.partiel ? ' + à venir' : ''}`);
 
 export const Marque: React.FC<MarqueProps> = props => {
   const { chose, centre, haut, hauteur = 28, largeurColonne, epinglee, etoilee, selectionnee, menuOuvert, libelle, decalage = 0, bornes } = props;

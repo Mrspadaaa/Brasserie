@@ -1,5 +1,5 @@
 import React from 'react';
-import { etiquetteListe, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
+import { etiquetteListe, francsSignesExacts, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, champ, dureeVue, iconeChose } from './Marque';
 import './feuille.css';
 import './liste.css';
@@ -46,7 +46,7 @@ const enAttente = (c: ChoseCalendrier): boolean => enRetard(c) || pasBrassee(c);
 /** La date que la liste montre : l'échéance d'une chose en retard, sinon son début. */
 const dateDe = (c: ChoseCalendrier): string => (enRetard(c) ? echeanceDe(c) ?? c.debut : c.debut);
 
-const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? `${c.reste ? 'reste ' : ''}${francsSignes(c.centimes)}` : c.coutAVenir ? 'coût à venir' : c.joursActifs ? `${c.joursActifs} j` : null);
+const montantDe = (c: ChoseCalendrier) => (c.centimes !== undefined ? `${c.reste ? 'reste ' : ''}${francsSignesExacts(c.centimes)}` : c.coutAVenir ? 'coût à venir' : c.joursActifs ? `${c.joursActifs} j` : null);
 
 /** « · proposé », sauf une échéance récurrente (un loyer) : « · à payer » jusqu'au paiement (E47 c, n° 21). */
 function marqueProposee(c: ChoseCalendrier): string | null {

@@ -9,7 +9,7 @@ import {
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
 import { Horizons } from '../../saisie/Horizons';
 import { ChoixDate } from '../../ChoixDate';
-import { RANGEES, ajouterJours, etiquetteS, francs, jourAvecAnnee, jourLisible, lundiDe, nomRangee, semaineAvecAn, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
+import { RANGEES, ajouterJours, etiquetteS, francsExacts, jourAvecAnnee, jourLisible, lundiDe, nomRangee, semaineAvecAn, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 import { DureeFenetre } from './DureeFenetre';
 import './feuille.css';
@@ -214,7 +214,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const puces1 = brassin ? montrerPuces(['recette']) : b.rangee === 'ventes' ? montrerPuces(['vente-probable', 'client']) : montrerPuces(['nom']);
   const temps = brassin ? montrerPuces(['temps']) : [];
   const montants = argent ? montrerPuces(['montant']) : [];
-  const libelleAjouter = confirmation ? `Oui, ${francs(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut && !b.fin ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
+  const libelleAjouter = confirmation ? `Oui, ${francsExacts(b.centimes ?? 0)} CHF` : mode === 'modifier' ? 'Enregistrer' : b.debut && !b.fin ? `Ajouter en ${etiquetteS(b.debut)}` : 'Ajouter';
 
   return (
     <Sheet
@@ -297,10 +297,10 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             />
             {/* D2 : « ZZ TEST Pompe de brassage 2026 : 420 · Garder » ; un toucher pose le montant, dit « estimé » ensuite (la facture le remplace) */}
             {prixPropose && (
-              <button type="button" data-prix-semblable aria-label={`Garder ${francs(prixPropose.centimes)} CHF, prix estimé d’après ${prixPropose.source}`}
+              <button type="button" data-prix-semblable aria-label={`Garder ${francsExacts(prixPropose.centimes)} CHF, prix estimé d’après ${prixPropose.source}`}
                 onClick={() => { setPrixGarde({ centimes: prixPropose.centimes, source: prixPropose.source }); regler({ ...b, centimes: prixPropose.centimes, signe: '-' }); }}
                 className={`${PUCE} border-dashed`}>
-                <span className="cal-f-m text-alert-strong">{francs(prixPropose.centimes)}</span><span className="text-cave-200">{prixPropose.source}</span><b className="font-semibold">Garder</b>
+                <span className="cal-f-m text-alert-strong">{francsExacts(prixPropose.centimes)}</span><span className="text-cave-200">{prixPropose.source}</span><b className="font-semibold">Garder</b>
               </button>
             )}
             {prixGarde && b.centimes === prixGarde.centimes && <span data-prix-estime className="text-xs text-cave-200">estimé · {prixGarde.source}</span>}
@@ -446,7 +446,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           </label>
         )}
 
-        {confirmation && <p data-confirmation className="rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50"><b className="font-semibold">{francs(b.centimes ?? 0)} CHF</b> : {confirmation.texte}</p>}
+        {confirmation && <p data-confirmation className="rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50"><b className="font-semibold">{francsExacts(b.centimes ?? 0)} CHF</b> : {confirmation.texte}</p>}
         {refus && <p data-refus className="text-sm text-alert-strong">{refus}</p>}
       </div>
     </Sheet>

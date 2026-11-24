@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ajouterJours, francs, francsExacts, francsSignes, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
+import { ajouterJours, francs, francsExacts, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
 
 /**
@@ -17,11 +17,14 @@ export type { SoldeSemaine, MouvementNomme } from '../../../domain/calendrierCai
 
 /* ---------- montants et dates (une seule façon de les dire : celle du domaine) ---------- */
 
-/** Des centimes en francs entiers, « 2 800 », « −1 800 ». */
+/** Des centimes en francs entiers, « 2 800 », « −1 800 » : pour un REPÈRE (graduation d'axe, solde libre, niveau de la courbe), jamais pour le montant d'une chose (C46-5 : `chfExact`). */
 export const chf = (centimes: number): string => francs(centimes);
-/** « +988 », « −56 » : le signe est toujours dit (0 se dit « 0 »). */
-export const sg = (centimes: number): string => (centimes === 0 ? '0' : francsSignes(centimes));
-/* C46-5 : le montant d'une chose nommée sur la frise se dit comme sur sa carte (« −79,95 » ; un montant rond sans centimes) ; les totaux (solde, écarts, semaines) et l'échelle gardent les francs entiers (`chf`, `sg`) */
+/* C46-5 (rouvert, tour 49) : le montant d'une chose ou d'une somme de choses (un mouvement, la semaine, la tendance, l'écart d'un glisser) se dit comme sur la carte :
+   les centimes dès qu'il y en a (« −79,95 »), un montant rond sans (« −80 »). Seuls les repères (`chf` : solde libre, graduations, niveaux) restent en francs entiers. */
+/** « +988 », « −56,50 » : le signe est toujours dit (0 se dit « 0 »). */
+export const sg = (centimes: number): string => (centimes === 0 ? '0' : francsSignesExacts(centimes));
+/** Le montant d'une chose, sans signe forcé : « 79,95 », « −1 800 ». */
+export const chfExact = (centimes: number): string => francsExacts(centimes);
 export const sgExact = (centimes: number): string => (centimes === 0 ? '0' : francsSignesExacts(centimes));
 export { ajouterJours };
 export const MOIS_MIN = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const;
