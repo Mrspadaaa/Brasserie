@@ -5,6 +5,7 @@ import { ouvrirCarnet, poserFixtureCarnet, surListe } from '../outils/carnet';
 
 const liste = (page: Page) => page.locator('[data-carnets]').first();
 const champ = (page: Page) => page.locator('textarea').first();
+const ouvrirRecherche = async (page: Page) => { const l = page.getByRole('button', { name: 'Chercher un carnet' }); if (await l.count()) await l.tap(); };
 const filtre = (page: Page, s: 'research' | 'idea' | 'validated') => page.locator(`[data-filtre="${s}"]`);
 
 test.describe('Lot 5 : liste des carnets', () => {
@@ -42,8 +43,7 @@ test.describe('Lot 5 : liste des carnets', () => {
   });
 
   test('L-34 : le champ de recherche se lit en entier et son anneau de focus n’est pas rogné', async ({ page }, info) => {
-    await filtre(page, 'idea').tap();
-    await filtre(page, 'validated').tap();
+    await ouvrirRecherche(page);
     const recherche = page.getByRole('searchbox', { name: 'Chercher un carnet' });
     await recherche.tap();
     const m = await recherche.evaluate((e: HTMLInputElement) => {
@@ -60,9 +60,10 @@ test.describe('Lot 5 : liste des carnets', () => {
     expect(m.dedans, 'l’anneau de focus tient dans la rangée qui défile').toBe(true);
   });
 
-  test('L-34 : un filtre d’état qui ne trouve rien le dit', async ({ page }) => {
+  test.skip('L-34 : un filtre d’état qui ne trouve rien le dit (puces d’état retirées par D437, 23.11)', async ({ page }) => {
     await filtre(page, 'idea').tap();
     await filtre(page, 'validated').tap();
+    await ouvrirRecherche(page);
     await page.getByRole('searchbox', { name: 'Chercher un carnet' }).fill('Hotte');
     await expect(liste(page).locator('section[aria-label="Idée"]')).toBeVisible();
     await expect(liste(page).locator('[data-vide-filtre="validated"]')).toBeVisible();
@@ -72,6 +73,7 @@ test.describe('Lot 5 : liste des carnets', () => {
   test('L-35 : la recherche dit les carnets Faits qu’elle laisse de côté', async ({ page }) => {
     await expect(liste(page).locator('section[aria-label="Faits"]')).toBeVisible();
     const n = Number(await liste(page).locator('section[aria-label="Faits"] .cn-groupe .cn-mono').innerText());
+    await ouvrirRecherche(page);
     await page.getByRole('searchbox', { name: 'Chercher un carnet' }).fill('évier');
     const dit = liste(page).locator('[data-faits-caches]');
     await expect(dit).toBeVisible();

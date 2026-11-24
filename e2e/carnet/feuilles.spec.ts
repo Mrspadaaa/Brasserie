@@ -86,6 +86,7 @@ test.describe('Carnet : au Calendrier, l’argent, les dates', () => {
     await ouvrirCarnet(page);
     await ouvrirUnCarnet(page, 'Frigo + congel');
     const quand = page.locator('[data-carnets] section[aria-label="Quand"]');
+    if (await quand.locator('[data-quand-replie]').count()) await quand.locator('[data-quand-replie]').tap(); /* Q-5 A : Quand replié au repos */
     await expect(quand).toBeVisible();
     const libelles = HORIZONS.map((h) => h.libelle);
     const puces = await quand.getByRole('group', { name: 'Quand' }).getByRole('button').allInnerTexts();
@@ -122,6 +123,7 @@ test.describe('Carnet : au Calendrier, l’argent, les dates', () => {
     await ouvrirCarnet(page);
     await ouvrirUnCarnet(page, 'Frigo + congel');
     const quand = page.locator('[data-carnets] section[aria-label="Quand"]');
+    if (await quand.locator('[data-quand-replie]').count()) await quand.locator('[data-quand-replie]').tap(); /* Q-5 A : Quand replié au repos */
     await quand.getByRole('button', { name: '1 mois' }).tap();
     await page.getByRole('button', { name: /^Au calendrier/ }).first().tap();
     await expect(page.locator('[data-calendrier]')).toBeVisible({ timeout: 15_000 });
