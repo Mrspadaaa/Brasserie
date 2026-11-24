@@ -51,6 +51,12 @@ export const INVOICE_STRONG_TIMEOUT_MS = 60_000;
  * Tarif : 2 $ / 10 $ le million jusqu'au 30.11.2026, 4 $ / 20 $ dès le 1.12 (`geminiCosts.ts`, `RATE_CHANGES`).
  */
 export const INVOICE_ARGON_MODEL = 'gemini-4-argon';
+/**
+ * `gemini-4-neon` : « Escalader » dans le Carnet, quand le brasseur demande lui-même de relire un lien (D449, 24.11 : « escalader devrait utiliser
+ * neon plutôt que hydrogen »). Jamais appelé sans ce geste. Tarif mesuré au banc des outils : 3 $ / 15 $ le million, réflexion basse ; lent
+ * (10,7 s sur une page), acceptable pour un bouton qu'il touche lui-même : l'étape « en cours » le dit. Le client ne dit que `escalade: true`.
+ */
+export const LIEN_NEON_MODEL = 'gemini-4-neon';
 /** Les relectures qu'un client peut demander, par leur mot : la seule valeur admise est `'argon'`. */
 export type InvoiceRelecture = 'argon';
 /** Ce que le client a envoyé comme `relecture` : exactement `'argon'`, sinon rien (un nom de modèle, un texte, un nombre : ignoré, jamais transmis ni deviné). */
@@ -58,7 +64,7 @@ export function invoiceRelecture(value: unknown): InvoiceRelecture | undefined {
   return value === 'argon' ? 'argon' : undefined;
 }
 /** Liste blanche du serveur : aucune requête ne part vers un autre modèle. */
-export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, INVOICE_ARGON_MODEL] as const;
+export const GEMINI_MODELS = [GEMINI_MODEL, GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, INVOICE_ARGON_MODEL, LIEN_NEON_MODEL] as const;
 export type GeminiModel = (typeof GEMINI_MODELS)[number];
 
 /** Une première tentative, puis une seule nouvelle tentative, sur 3.8. */

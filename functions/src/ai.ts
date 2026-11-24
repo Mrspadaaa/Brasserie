@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { onCall, HttpsError, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
-import { AiTier, GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, DIAGNOSTIC_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, invoiceRelecture, type InvoiceRelecture, type TierConfig } from './models.js';
+import { AiTier, GEMINI_LITE_MODEL, INVOICE_ARGON_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL, INVOICE_STRONG_TIMEOUT_MS, DIAGNOSTIC_STRONG_TIMEOUT_MS, TIERS, aiTier, assertGeminiModel, geminiAttempts, invoiceRelecture, LIEN_NEON_MODEL, type InvoiceRelecture, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { geminiBody, userTextOf } from './geminiBody.js';
@@ -389,7 +389,8 @@ export const aiTask = onCall(
       const appelIA: AppelIA | undefined = cle ? (modele, consigne, texte) => {
         const restant = limite - Date.now();
         if (restant < 5000) return Promise.reject(new Error('plus de temps pour l\'IA'));
-        return callGemini(modele === 'lite' ? GEMINI_LITE_MODEL : INVOICE_STRONG_MODEL, cle, consigne, texte, LIEN_IA_SCHEMA as unknown as Record<string, unknown>,
+        // D449 : `lite` Flash-Lite ; `fort` Hydrogen (champ manquant après Flash-Lite) ; `neon` Neon (le bouton Escalader du brasseur).
+        return callGemini(modele === 'lite' ? GEMINI_LITE_MODEL : modele === 'neon' ? LIEN_NEON_MODEL : INVOICE_STRONG_MODEL, cle, consigne, texte, LIEN_IA_SCHEMA as unknown as Record<string, unknown>,
           { temperature: 0, thinkingLevel: modele === 'lite' ? 'minimal' : 'low' }, undefined, false, LIEN_IA_SORTIE_MAX,
           AbortSignal.timeout(Math.min(LIEN_IA_DELAI_MS, restant)), liteUnusable) as Promise<ReponseIA>;
       } : undefined;

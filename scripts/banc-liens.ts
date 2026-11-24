@@ -20,7 +20,7 @@ import { LIEN_IA_SCHEMA, type AppelIA, type ReponseIA } from '../functions/src/l
 import { geminiBody } from '../functions/src/geminiBody';
 import { geminiAnswerText } from '../functions/src/geminiResponse';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
-import { GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL } from '../functions/src/models';
+import { GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, LIEN_NEON_MODEL } from '../functions/src/models';
 
 /** Cours fixes du banc (ordre de grandeur du 23.11) : le banc ne dépend ni du jour ni du réseau. */
 const COURS_FIXES: Record<string, number> = { EUR: 0.93, GBP: 1.06, AUD: 0.52, USD: 0.8 };
@@ -76,7 +76,7 @@ const proche = (a: number | undefined, b: number | undefined) => a !== undefined
 const chiffres = (t: string) => (norm(t).match(/\d+(?:[.,]\d+)?/g) ?? []).map((x) => x.replace(',', '.').replace(/\.0+$/, ''));
 
 type Note = '=' | '✗' | '·' | '?' | '';
-export interface Ligne { sansJsonLd?: boolean; n: number; genres: string[]; statut: string; nom: Note; prix: Note; photo: Note; caract: Note; ttc: Note; livraison: Note; inventions: string[]; ms: number; lu: unknown }
+export interface Ligne { ia?: { chf: number; ms: number; appels: number; inconnus: number }; sansJsonLd?: boolean; n: number; genres: string[]; statut: string; nom: Note; prix: Note; photo: Note; caract: Note; ttc: Note; livraison: Note; inventions: string[]; ms: number; lu: unknown }
 
 /** Note une lecture contre sa vérité. « = » juste et rempli, « · » absent honnête, « ? » manquant, « ✗ » faux (= invention). */
 export function noter(v: Verite, l: any, ms = 0): Ligne {
@@ -167,13 +167,35 @@ export function taux(lignes: Ligne[], verite: Map<number, Verite>) {
  */
 const MISSION = path.join(BANC, '..');
 const JOURNAL_IA = path.join(MISSION, 'ia-journal.jsonl');
-const MODELES_IA = { lite: { id: GEMINI_LITE_MODEL, niveau: 'minimal' as const }, fort: { id: INVOICE_STRONG_MODEL, niveau: 'low' as const } };
+const MODELES_IA = { lite: { id: GEMINI_LITE_MODEL, niveau: 'minimal' as const }, fort: { id: INVOICE_STRONG_MODEL, niveau: 'low' as const }, neon: { id: LIEN_NEON_MODEL, niveau: 'low' as const } };
 export const PLAFOND_SORTIE_IA = 1500;
+/** La voie qui dépense : ses lignes du journal portent `voie`, et le budget (`--budget`) est CUMULÉ sur toutes ses lignes, pas par lancement. */
+const VOIE_IA = 'liens-modeles';
 
 export interface BancIA {
   pour(n: number): AppelIA;
-  bilan(): { appels: number; parModele: Record<string, number>; depenseChf: number; reserveeEngageeChf: number; refuses: number; rejoues: number; textesMax: number; ms: number[] };
+  /** Coût (CHF) et durée (ms) des appels d'un lien, rejoués compris (le coût d'un rejeu vient du journal ou du fichier de mesure de l'appel). */
+  duLien(n: number): { chf: number; ms: number; appels: number; inconnus: number };
+  bilan(): { appels: number; parModele: Record<string, number>; depenseChf: number; cumuleVoieChf: number; reserveeEngageeChf: number; refuses: number; rejoues: number; textesMax: number; ms: number[]; msParModele: Record<string, number[]> };
 }
+/** Ce que le journal sait déjà d'un appel du banc : « Lien n° 49 lu par gemini-4-hydrogen … (3030 ms …) » → coût et durée, par lien et modèle. */
+function memoireJournal(): { cumuleVoie: number; appel: Map<string, { chf: number; ms: number }> } {
+  const appel = new Map<string, { chf: number; ms: number }>();
+  let cumuleVoie = 0;
+  if (!fs.existsSync(JOURNAL_IA)) return { cumuleVoie, appel };
+  for (const l of fs.readFileSync(JOURNAL_IA, 'utf8').split('\n')) {
+    if (!l.includes('banc-liens-ia')) continue;
+    try {
+      const j = JSON.parse(l);
+      if (j.voie === VOIE_IA) cumuleVoie += Number(j.estimation_chf) || 0;
+      const m = /Lien n° (\d+) lu par (\S+) .*?(\d+) ms/.exec(String(j.geste ?? ''));
+      if (m) appel.set(`${m[1]}|${m[2]}`, { chf: Number(j.estimation_chf) || 0, ms: Number(m[3]) });
+    } catch { /* ligne d'une autre voie, illisible : ignorée */ }
+  }
+  return { cumuleVoie, appel };
+}
+const centile = (xs: number[], q: number) => { if (!xs.length) return null; const s = [...xs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.ceil(q * s.length) - 1)]; };
+export { centile };
 export async function bancIA(mode: 'seche' | 'reel', budgetChf: number, secretPath?: string): Promise<BancIA> {
   let cle: string | undefined;
   if (mode === 'reel') {
@@ -183,8 +205,16 @@ export async function bancIA(mode: 'seche' | 'reel', budgetChf: number, secretPa
     cle = garde.readLocalKey(secretPath ? { secretPath } : {});
     if (!cle) throw new Error('Aucune clé Gemini lisible (readLocalKey) : aucun appel.');
   }
+  const memoire = memoireJournal();
+  // Budget cumulé de la voie : ce qui est déjà au journal sous `voie` compte avant le premier envoi de ce lancement.
   let depense = 0, engage = 0, appels = 0, refuses = 0, textesMax = 0, rejoues = 0;
-  const parModele: Record<string, number> = {}, ms: number[] = [];
+  const parModele: Record<string, number> = {}, ms: number[] = [], msParModele: Record<string, number[]> = {};
+  const lien = new Map<number, { chf: number; ms: number; appels: number; inconnus: number }>();
+  const noter1 = (n: number, chf: number | null, duree: number | null) => {
+    const e = lien.get(n) ?? { chf: 0, ms: 0, appels: 0, inconnus: 0 };
+    e.appels++; if (chf === null || duree === null) e.inconnus++; else { e.chf += chf; e.ms += duree; }
+    lien.set(n, e);
+  };
   return {
     pour: (n) => async (m, consigne, texte) => {
       const { id, niveau } = MODELES_IA[m];
@@ -195,17 +225,23 @@ export async function bancIA(mode: 'seche' | 'reel', budgetChf: number, secretPa
       // Une réponse déjà payée se rejoue sans nouvel appel quand le texte envoyé est le même (le journal ne la recompte pas).
       const cleCache = createHash('sha1').update([id, consigne, texte].join('\n')).digest('hex');
       const fichierCache = path.join(BANC, 'ia-reponses', `${cleCache}.json`);
-      if (fs.existsSync(fichierCache)) { rejoues++; return JSON.parse(fs.readFileSync(fichierCache, 'utf8')) as ReponseIA; }
-      // Arrêt net : la réservation conservatrice (1 octet = 1 jeton) doit tenir dans ce qui reste, appels en vol compris.
-      if (depense + engage + reserve > budgetChf) { refuses++; throw new Error(`budget du banc atteint (${budgetChf} CHF)`); }
+      const fichierMesure = path.join(BANC, 'ia-reponses', `${cleCache}.mesure.json`);
+      if (fs.existsSync(fichierCache)) {
+        rejoues++;
+        const mesure = fs.existsSync(fichierMesure) ? JSON.parse(fs.readFileSync(fichierMesure, 'utf8')) as { chf: number; ms: number } : memoire.appel.get(`${n}|${id}`);
+        noter1(n, mesure?.chf ?? null, mesure?.ms ?? null);
+        return JSON.parse(fs.readFileSync(fichierCache, 'utf8')) as ReponseIA;
+      }
+      // Arrêt net : la réservation conservatrice (1 octet = 1 jeton) doit tenir dans ce qui reste du budget de la voie, appels en vol compris.
+      if (memoire.cumuleVoie + depense + engage + reserve > budgetChf) { refuses++; throw new Error(`budget du banc atteint (${budgetChf} CHF, dont ${Math.round((memoire.cumuleVoie + depense) * 1e5) / 1e5} déjà dépensés)`); }
       appels++; parModele[m] = (parModele[m] ?? 0) + 1;
-      if (mode === 'seche') { depense += reserve * 0.25; return { caracteristiques: [] }; } // estimation : ~¼ de la réservation
+      if (mode === 'seche') { depense += reserve * 0.25; noter1(n, null, null); return { caracteristiques: [] }; } // estimation : ~¼ de la réservation
       engage += reserve;
       const t0 = performance.now();
       let reponse: any = null, http = 0;
       try {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cle! }, body: JSON.stringify(devis.body), signal: AbortSignal.timeout(m === 'fort' ? 40_000 : 25_000)
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cle! }, body: JSON.stringify(devis.body), signal: AbortSignal.timeout(m === 'lite' ? 25_000 : 60_000)
         });
         http = res.status;
         reponse = await res.json().catch(() => null);
@@ -214,22 +250,26 @@ export async function bancIA(mode: 'seche' | 'reel', budgetChf: number, secretPa
       const observe = reponse ? observedGeminiCostDetails(devis, reponse) : null;
       const chf = (observe ? observe.chargedMicroChf : devis.reservedMicroChf) / 1e6; // coût inconnu : jamais 0, on compte la réservation
       if (http !== -1) depense += chf;
-      const duree = Math.round(performance.now() - t0); ms.push(duree);
+      const duree = Math.round(performance.now() - t0); ms.push(duree); (msParModele[m] ??= []).push(duree);
+      noter1(n, chf, duree);
       const u = reponse?.usageMetadata;
-      fs.appendFileSync(JOURNAL_IA, JSON.stringify({ heure: new Date().toISOString(), methode: 'banc-liens-ia', geste: `Lien n° ${n} lu par ${id} sur le texte nettoyé (${texte.length} car., ${duree} ms, http ${http})`, modele: id, jetons_entree: u?.promptTokenCount ?? null, jetons_sortie: u?.candidatesTokenCount ?? null, estimation_chf: Math.round(chf * 1e5) / 1e5 }) + '\n');
+      fs.appendFileSync(JOURNAL_IA, JSON.stringify({ heure: new Date().toISOString(), methode: 'banc-liens-ia', voie: VOIE_IA, geste: `Lien n° ${n} lu par ${id} sur le texte nettoyé (${texte.length} car., ${duree} ms, http ${http})`, modele: id, jetons_entree: u?.promptTokenCount ?? null, jetons_reflexion: u?.thoughtsTokenCount ?? null, jetons_sortie: u?.candidatesTokenCount ?? null, estimation_chf: Math.round(chf * 1e5) / 1e5 }) + '\n');
       if (http !== 200 || reponse?.candidates?.[0]?.finishReason !== 'STOP') throw new Error(`réponse inutilisable (http ${http}, ${reponse?.candidates?.[0]?.finishReason ?? 'vide'})`);
       const lu = JSON.parse(geminiAnswerText(reponse).replace(/```json/g, '').replace(/```/g, '').trim()) as ReponseIA;
       fs.mkdirSync(path.dirname(fichierCache), { recursive: true });
       fs.writeFileSync(fichierCache, JSON.stringify(lu));
+      fs.writeFileSync(fichierMesure, JSON.stringify({ n, modele: id, chf, ms: duree }));
       return lu;
     },
-    bilan: () => ({ appels, parModele, depenseChf: Math.round(depense * 1e5) / 1e5, reserveeEngageeChf: Math.round(engage * 1e5) / 1e5, refuses, rejoues, textesMax, ms })
+    duLien: (n) => lien.get(n) ?? { chf: 0, ms: 0, appels: 0, inconnus: 0 },
+    bilan: () => ({ appels, parModele, depenseChf: Math.round(depense * 1e5) / 1e5, cumuleVoieChf: Math.round((memoire.cumuleVoie + depense) * 1e5) / 1e5, reserveeEngageeChf: Math.round(engage * 1e5) / 1e5, refuses, rejoues, textesMax, ms, msParModele })
   };
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const val = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
+  if (val('--comparer')) { comparer(val('--comparer')!.split(',')); return; }
   const etiquette = val('--etiquette') ?? 'courant';
   const seul = val('--seul')?.split(',').map(Number);
   const vs = verites().filter((v) => !seul || seul.includes(v.n));
@@ -238,14 +278,17 @@ async function main() {
   const modeIA = val('--ia') as 'seche' | 'reel' | undefined;
   if (modeIA && modeIA !== 'seche' && modeIA !== 'reel') throw new Error('--ia seche|reel');
   const ia = modeIA ? await bancIA(modeIA, Number(val('--budget') ?? 0.25), val('--secret')) : undefined;
+  // D449 : `--regle avant` rejoue la règle du 23.11 (Hydrogen pour le seul prix) ; `--escalade 3,5` lit ces liens comme le bouton Escalader (Neon).
+  const regleAvant = val('--regle') === 'avant';
+  const escalade = new Set((val('--escalade') ?? '').split(',').filter(Boolean).map(Number));
   const lire1 = async (v: Verite) => {
     const c = caps.get(v.n);
     if (!c) { lignes.push(noter(v, { statut: 'non-capture' })); return; }
     const t0 = performance.now();
-    const l = await lireLien(v.lien, { fetchPage: fetchRejoue(c, v.n), maintenant: 0, ...(ia ? { ia: ia.pour(v.n) } : {}), cours: async (d: string) => (COURS_FIXES[d] ? { taux: COURS_FIXES[d], date: '2026-11-23' } : null) });
+    const l = await lireLien(v.lien, { fetchPage: fetchRejoue(c, v.n), maintenant: 0, ...(ia ? { ia: ia.pour(v.n) } : {}), ...(regleAvant ? { regleAvant: true } : {}), ...(escalade.has(v.n) ? { escalade: true } : {}), cours: async (d: string) => (COURS_FIXES[d] ? { taux: COURS_FIXES[d], date: '2026-11-23' } : null) });
     const html = (() => { const f = path.join(BANC, 'pages', String(v.n).padStart(2, '0') + '.html.gz'); return fs.existsSync(f) ? zlib.gunzipSync(fs.readFileSync(f)).toString('utf8') : ''; })();
     const sansJsonLd = ![...html.matchAll(/<script[^>]*ld\+json[^>]*>([\s\S]*?)<\/script>/g)].some((m) => /"price"/.test(m[1]));
-    lignes.push({ ...noter(v, l, Math.round(performance.now() - t0)), sansJsonLd });
+    lignes.push({ ...noter(v, l, Math.round(performance.now() - t0)), sansJsonLd, ...(ia && ia.duLien(v.n).appels ? { ia: ia.duLien(v.n) } : {}) });
   };
   // Des appels en parallèle par lots de 8 (les pages se rejouent sans réseau ; seuls les appels IA attendent).
   const lot = Number(val('--lot') ?? 8);
@@ -261,8 +304,37 @@ async function main() {
   console.log(`\nBANC LIENS ${etiquette} :`, JSON.stringify(t, null, 1));
   const bilanIA = ia?.bilan();
   if (bilanIA) console.log(`IA ${modeIA} :`, JSON.stringify(bilanIA));
+  console.log('COUT ET DUREE PAR LIEN :', JSON.stringify(resumeIA(lignes)));
   fs.mkdirSync(path.join(BANC, 'mesures'), { recursive: true });
   fs.writeFileSync(path.join(BANC, 'mesures', `${etiquette}.json`), JSON.stringify({ le: new Date().toISOString(), ia: modeIA ?? null, bilanIA: bilanIA ?? null, taux: t, lignes }, null, 1));
+}
+
+/** Coût et durée de l'IA par lien (seulement les liens où l'IA a parlé), p50 et p90 ; rejeux compris quand leur coût est connu. */
+export function resumeIA(lignes: Ligne[]) {
+  const avec = lignes.filter((l) => l.ia && l.ia.appels > 0);
+  const chf = avec.map((l) => l.ia!.chf), ms = avec.map((l) => l.ia!.ms);
+  const r = (x: number | null) => (x === null ? null : Math.round(x * 1e5) / 1e5);
+  return { liensAvecIA: avec.length, appels: avec.reduce((a, l) => a + l.ia!.appels, 0), appelsSansCout: avec.reduce((a, l) => a + l.ia!.inconnus, 0), totalChf: r(chf.reduce((a, b) => a + b, 0)), chfParLienP50: r(centile(chf, 0.5)), chfParLienP90: r(centile(chf, 0.9)), msParLienP50: centile(ms, 0.5), msParLienP90: centile(ms, 0.9) };
+}
+
+/** `--comparer avant,apres` : deux mesures côte à côte, champ par champ, et les liens qui ont changé. */
+function comparer([a, b]: string[]) {
+  const lire = (e: string) => JSON.parse(fs.readFileSync(path.join(BANC, 'mesures', e + '.json'), 'utf8')) as { taux: Record<string, unknown>; lignes: Ligne[] };
+  const A = lire(a), B = lire(b);
+  const champs: Array<[string, keyof Ligne]> = [['prix', 'prix'], ['nom', 'nom'], ['photo', 'photo'], ['caractéristiques', 'caract'], ['HT dit', 'ttc'], ['devise/frais (livraison CH)', 'livraison']];
+  const out: string[] = [`COMPARAISON ${a} -> ${b}`, `| champ | ${a} | ${b} |`, '|---|---|---|'];
+  const ligne = (nom: string, cle: string) => out.push(`| ${nom} | ${A.taux[cle]} | ${B.taux[cle]} |`);
+  ligne('prix', 'prixAffiche'); ligne('nom', 'nom'); ligne('photo', 'photoAffichee'); ligne('caractéristiques', 'caracteristiques'); ligne('HT dit', 'htDit'); ligne('devise/frais (livraison CH)', 'livraisonCH');
+  out.push(`| inventions | ${A.taux.inventions} ${JSON.stringify(A.taux.liensAvecInvention)} | ${B.taux.inventions} ${JSON.stringify(B.taux.liensAvecInvention)} |`);
+  out.push('', 'Liens changés (note avant -> après) :');
+  const parB = new Map(B.lignes.map((l) => [l.n, l]));
+  for (const la of A.lignes) {
+    const lb = parB.get(la.n); if (!lb) continue;
+    const diffs = champs.filter(([, k]) => la[k] !== lb[k]).map(([nom, k]) => `${nom} ${la[k] || '∅'} -> ${lb[k] || '∅'}`);
+    if (diffs.length) out.push(`  n° ${la.n} : ${diffs.join(' ; ')}`);
+  }
+  out.push('', `coût/durée ${a} : ${JSON.stringify(resumeIA(A.lignes))}`, `coût/durée ${b} : ${JSON.stringify(resumeIA(B.lignes))}`);
+  console.log(out.join('\n'));
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(e); process.exit(1); });

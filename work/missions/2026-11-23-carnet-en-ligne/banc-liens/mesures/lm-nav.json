@@ -1,0 +1,376 @@
+{
+ "le": "2026-11-24T07:13:51.884Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 5,
+  "parModele": {
+   "lite": 3,
+   "fort": 2
+  },
+  "depenseChf": 0.02139,
+  "cumuleVoieChf": 0.26517,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 0,
+  "textesMax": 4693,
+  "ms": [
+   1084,
+   3944,
+   717,
+   2724,
+   812
+  ],
+  "msParModele": {
+   "lite": [
+    1084,
+    717,
+    812
+   ],
+   "fort": [
+    3944,
+    2724
+   ]
+  }
+ },
+ "taux": {
+  "liens": 3,
+  "prixSansJsonLd": "3/3 (100 %)",
+  "caracteristiquesSansJsonLd": "2/3 (67 %)",
+  "photoSansJsonLd": "3/3 (100 %)",
+  "nom": "3/3 (100 %)",
+  "prixAffiche": "3/3 (100 %)",
+  "photoAffichee": "3/3 (100 %)",
+  "caracteristiques": "2/3 (67 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/0 (0 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 26,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 5124,
+   "lu": {
+    "url": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidels Braumeister PLUS 20 Liter",
+    "prix": 2190,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Speidels Braumeister PLUS 20 Liter - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~2.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~3.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~4.jpg",
+     "https://www.sios.ch/media/image/product/4396/lg/4396.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 2 190 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 5 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "BE720P"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumeister"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     },
+     {
+      "nom": "Capacité",
+      "valeur": "20 ou 50 Litern"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "rostfreiem inox"
+     },
+     {
+      "nom": "Capacité de brassage",
+      "valeur": "20 l"
+     },
+     {
+      "nom": "Quantité max. de malt",
+      "valeur": "6 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.011122,
+    "ms": 5028,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 27,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 3518,
+   "lu": {
+    "url": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra (USA) 1 kg Hopfenpellets Typ 90",
+    "prix": 72.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Citra (USA) 1 kg Hopfenpellets Typ 90 - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+     "https://www.sios.ch/media/image/product/2949/lg/2949.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 72,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 1 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "HH0251001"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Pellets type 90"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "1 kg"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "1 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.008842,
+    "ms": 3441,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 28,
+   "genres": [
+    "prix-kg",
+    "prix-des",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 884,
+   "lu": {
+    "url": "https://www.sios.ch/Malz-Pilsner",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Pilsner Malz, 3-5 EBC, 25 kg",
+    "prix": 36.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Pilsner Malz, 3-5 EBC, 25 kg - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+     "https://www.sios.ch/media/image/product/1909/lg/1909.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 36,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques : 2 du tableau de la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "ajouté : 2 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "MZ1010025"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumalz (Brühmalz)"
+     },
+     {
+      "nom": "Couleur (EBC)",
+      "valeur": "3-5 EBC"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "3-5 EBC"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "25 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.001425,
+    "ms": 812,
+    "appels": 1,
+    "inconnus": 0
+   }
+  }
+ ]
+}

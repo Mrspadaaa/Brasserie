@@ -177,7 +177,7 @@ export function LectureLien(p: LectureLienProps) {
             <li className="cnl-etape" data-lecture-etape data-escalade data-statut={rel === 'en-cours' ? 'en-cours' : 'echec'}>
               <Icone s={rel === 'en-cours' ? 'en-cours' : 'echec'} />
               <span className="cnl-nom">Relu par une IA plus forte</span>
-              <span className="cnl-detail"><span>{rel === 'en-cours' ? `en cours · ${ecoule}` : 'le lien ne mène toujours à rien'}</span></span>
+              <span className="cnl-detail"><span>{rel === 'en-cours' ? `en cours · ${ecoule} · l’IA la plus fine prend 10 à 15 s` : 'le lien ne mène toujours à rien'}</span></span>
               <span className="cnl-mot">{rel === 'en-cours' ? 'en cours' : 'non lue'}</span>
             </li>
           )}

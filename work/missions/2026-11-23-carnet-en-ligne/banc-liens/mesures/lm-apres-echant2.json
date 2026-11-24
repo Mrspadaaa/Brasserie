@@ -1,0 +1,535 @@
+{
+ "le": "2026-11-24T07:10:37.469Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 3,
+  "parModele": {
+   "fort": 3
+  },
+  "depenseChf": 0.02407,
+  "cumuleVoieChf": 0.24378,
+  "reserveeEngageeChf": 0,
+  "refuses": 1,
+  "rejoues": 4,
+  "textesMax": 12000,
+  "ms": [
+   4079,
+   2358,
+   2622
+  ],
+  "msParModele": {
+   "fort": [
+    4079,
+    2358,
+    2622
+   ]
+  }
+ },
+ "taux": {
+  "liens": 4,
+  "prixSansJsonLd": "1/1 (100 %)",
+  "caracteristiquesSansJsonLd": "1/1 (100 %)",
+  "photoSansJsonLd": "1/1 (100 %)",
+  "nom": "4/4 (100 %)",
+  "prixAffiche": "4/4 (100 %)",
+  "photoAffichee": "4/4 (100 %)",
+  "caracteristiques": "4/4 (100 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/2 (0 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 23,
+   "genres": [
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 4188,
+   "lu": {
+    "url": "https://www.landi.ch/shop/weisswaren_150104/tiefkuehltruhe-prima-vista-308l_105650",
+    "domaine": "landi.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Tiefkühltruhe Prima Vista 308l",
+    "prix": 379,
+    "devise": "CHF",
+    "photo": "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_4.jpg",
+    "photos": [
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_4.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_3.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_0.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_1.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista_105650_5.jpg",
+     "https://www.landi.ch/ImageOriginal/Img/product/105/650/105650_tiefkuehltruhe-prima-vista-308l_105650_0.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "landi.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 379 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 8 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "L × H × P",
+      "valeur": "112 × 85 × 73 cm."
+     },
+     {
+      "nom": "Volume",
+      "valeur": "308 l"
+     },
+     {
+      "nom": "Garantie",
+      "valeur": "60"
+     },
+     {
+      "nom": "Niveau sonore",
+      "valeur": "40 dB"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "112 × 85 × 73 cm"
+     },
+     {
+      "nom": "Classe énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Classe climatique",
+      "valeur": "SN-T"
+     },
+     {
+      "nom": "Classe de congélation",
+      "valeur": "4 Sterne"
+     },
+     {
+      "nom": "Température de fonctionnement",
+      "valeur": "≤ −18 °C"
+     }
+    ]
+   },
+   "sansJsonLd": false,
+   "ia": {
+    "chf": 0.011257,
+    "ms": 4944,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 38,
+   "genres": [
+    "lot",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 2446,
+   "lu": {
+    "url": "https://mashcamp.shop/shop/brauanlagen/gaerbehaelter/gaerbehaelter-edelstahl-drucklos/speidel-edelstahl-konus-gaertank-60-liter-set-drucklos/",
+    "domaine": "mashcamp.shop",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+    "prix": 1384.8,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "mashcamp.shop",
+    "photo": "https://mashcamp.shop/wp-content/uploads/2023/01/104000145_Speidel-Edelstahl-Konus-Gaertank-60-Liter-SET-drucklos1.jpg",
+    "photos": [
+     "https://mashcamp.shop/wp-content/uploads/2023/01/104000145_Speidel-Edelstahl-Konus-Gaertank-60-Liter-SET-drucklos1.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mashcamp.shop"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 384,80 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 1 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "39,000 kg"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Inox"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false,
+   "ia": {
+    "chf": 0.008895,
+    "ms": 3087,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 44,
+   "genres": [
+    "lot",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 2695,
+   "lu": {
+    "url": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Set Edelstahl Konus Gärtank 60 Liter",
+    "prix": 1333,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255",
+    "photos": [
+     "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 333 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 3 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "39 kg"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "39 kg"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Inox"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false,
+   "ia": {
+    "chf": 0.006947,
+    "ms": 3530,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 51,
+   "genres": [
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 561,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B075QH8DGT",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Klarstein Bierbrauset, Bierbrauanlage, Maischekessel zum Bier Brauen, Bier-Selbstbrauset, Selber Bier Brauen Set, Braukessel, Umwälzpumpe, Touch-Panel, Gärbehälter 50 Liter, 3000",
+    "prix": 374.97,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX679_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 374,97 CHF (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "18 caractéristiques : 16 du tableau de la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 3 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Marque",
+      "valeur": "‎Klarstein"
+     },
+     {
+      "nom": "Numéro de modèle",
+      "valeur": "‎FP3-Mundschenk-XXL"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "‎Argent"
+     },
+     {
+      "nom": "Dimensions extérieures",
+      "valeur": "‎42 x 43 x 80 cm; 12 Kilogramm"
+     },
+     {
+      "nom": "Capacité",
+      "valeur": "‎50 Liter"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "‎3000 Watt"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "‎220 Volt"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "‎Inox"
+     },
+     {
+      "nom": "Automatische Abschaltung",
+      "valeur": "‎non"
+     },
+     {
+      "nom": "Weitere Spezifikationen",
+      "valeur": "‎Easy to use"
+     },
+     {
+      "nom": "Poids de l'article",
+      "valeur": "‎12 Kilograms"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B075QH8DGT"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,4 4,4 von 5 Sternen (286) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 281.255 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 3 in"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "24. September 2017"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "50 Liter"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "42 x 43 x 80 cm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "12 Kilogramm"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Inox"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.002939,
+    "ms": 1186,
+    "appels": 1,
+    "inconnus": 0
+   }
+  }
+ ]
+}

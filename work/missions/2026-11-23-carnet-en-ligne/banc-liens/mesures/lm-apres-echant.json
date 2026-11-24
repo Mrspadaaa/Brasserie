@@ -1,0 +1,1116 @@
+{
+ "le": "2026-11-24T07:09:51.059Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 8,
+  "parModele": {
+   "fort": 8
+  },
+  "depenseChf": 0.0833,
+  "cumuleVoieChf": 0.17459,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 10,
+  "textesMax": 12000,
+  "ms": [
+   2545,
+   1405,
+   2978,
+   2667,
+   2418,
+   5180,
+   3600,
+   3341
+  ],
+  "msParModele": {
+   "fort": [
+    2545,
+    1405,
+    2978,
+    2667,
+    2418,
+    5180,
+    3600,
+    3341
+   ]
+  }
+ },
+ "taux": {
+  "liens": 9,
+  "prixSansJsonLd": "8/8 (100 %)",
+  "caracteristiquesSansJsonLd": "8/9 (89 %)",
+  "photoSansJsonLd": "9/9 (100 %)",
+  "nom": "9/9 (100 %)",
+  "prixAffiche": "8/8 (100 %)",
+  "photoAffichee": "9/9 (100 %)",
+  "caracteristiques": "8/9 (89 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/0 (0 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 21,
+   "genres": [
+    "retire",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "·",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 71,
+   "lu": {
+    "url": "https://www.hornbach.ch/de/p/edelstahlregal-gastro-regal-kaiserthal-180-x-100-x-50-cm-4-boeden-tragkraft-320-kg/10684563/",
+    "domaine": "hornbach.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Edelstahlregal Gastro Regal Kaiserthal 180 x 100 x 50 cm 4 Böden Tragkraft 320 kg",
+    "dispo": "retire",
+    "vendeur": "HORNBACH",
+    "photo": "https://media.hornbach.ch/hb/packshot/as.82178185.jpg?dvid=8",
+    "photos": [
+     "https://media.hornbach.ch/hb/packshot/as.82178185.jpg?dvid=8"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hornbach.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 7 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Hauteur",
+      "valeur": "180 cm"
+     },
+     {
+      "nom": "Largeur",
+      "valeur": "100 cm"
+     },
+     {
+      "nom": "Profondeur",
+      "valeur": "50 cm"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "320 kg"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "100 cm x 180 cm x 50 cm"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Nombre de tablettes",
+      "valeur": "4"
+     },
+     {
+      "nom": "Charge par tablette",
+      "valeur": "80 kg"
+     },
+     {
+      "nom": "Charge maximale",
+      "valeur": "320 kg"
+     },
+     {
+      "nom": "Contenu",
+      "valeur": "1 Stück"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.013321000000000001,
+    "ms": 5748,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 26,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 2589,
+   "lu": {
+    "url": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidels Braumeister PLUS 20 Liter",
+    "prix": 2190,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Speidels Braumeister PLUS 20 Liter - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~2.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~3.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~4.jpg",
+     "https://www.sios.ch/media/image/product/4396/lg/4396.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 2 190 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "relu par une IA plus forte ; rien de plus à lire"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "BE720P"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumeister"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.007589,
+    "ms": 3350,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 27,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1439,
+   "lu": {
+    "url": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra (USA) 1 kg Hopfenpellets Typ 90",
+    "prix": 72.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Citra (USA) 1 kg Hopfenpellets Typ 90 - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/2949/md/2949.jpg",
+     "https://www.sios.ch/media/image/product/2949/lg/2949.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 72,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 1 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "HH0251001"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Pellets type 90"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "1 kg"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "1 kg"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.00668,
+    "ms": 2137,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 28,
+   "genres": [
+    "prix-kg",
+    "prix-des",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 3053,
+   "lu": {
+    "url": "https://www.sios.ch/Malz-Pilsner",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Pilsner Malz, 3-5 EBC, 25 kg",
+    "prix": 36.5,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Pilsner Malz, 3-5 EBC, 25 kg - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/1909/md/1909.jpg",
+     "https://www.sios.ch/media/image/product/1909/lg/1909.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 36,50 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4 caractéristiques : 2 du tableau de la page, 2 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 2 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "MZ1010025"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumalz (Brühmalz)"
+     },
+     {
+      "nom": "Couleur (EBC)",
+      "valeur": "3-5 EBC"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "25 kg"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "3-5 EBC"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.011371,
+    "ms": 3710,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 35,
+   "genres": [
+    "prix-des",
+    "variantes",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 2703,
+   "lu": {
+    "url": "https://hopfenshop.ch/produkt/citra-hopfen/",
+    "domaine": "hopfenshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra",
+    "vendeur": "www.hopfenshop.ch",
+    "photo": "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png",
+    "photos": [
+     "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : prix, 3 caract."
+     }
+    ],
+    "prix": 4,
+    "devise": "CHF",
+    "prixDes": true,
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "n. a."
+     },
+     {
+      "nom": "Origine",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Acide alpha",
+      "valeur": "11-13 %"
+     },
+     {
+      "nom": "Teneur en huile",
+      "valeur": "2,2-2,8 ML"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.007549,
+    "ms": 3321,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 47,
+   "genres": [
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "",
+   "inventions": [],
+   "ms": 2465,
+   "lu": {
+    "url": "https://www.bier-brauen.at/gaertank-konisch-60",
+    "domaine": "bier-brauen.at",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "ERPEL Edelstahl Gärbehälter konisch - 60 Liter",
+    "prix": 185.34,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Konischer Gärtank aus Edelstahl mit 60 Liter Volumen",
+    "photo": "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+    "photos": [
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~2.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~3.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~4.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~5.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~6.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~7.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/lg/gaertank-konisch-60.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "bier-brauen.at"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 185,34 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8 caractéristiques : 7 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : port, 2 caract."
+     }
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "valeurs": [
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "10,80 kg"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "PD-31234"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "9120111123540"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Gärkeller"
+     },
+     {
+      "nom": "Fabricant",
+      "valeur": "ERPEL"
+     },
+     {
+      "nom": "Robinet de vidange en bas",
+      "valeur": "1\" Außengewinde"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "Inox"
+     },
+     {
+      "nom": "Raccord",
+      "valeur": "1\" Außengewinde"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.007012,
+    "ms": 3223,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 50,
+   "genres": [
+    "prix-barre",
+    "variantes",
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 5282,
+   "lu": {
+    "url": "https://www.brewtools.com/all-in-one/7714334/b40pro-brewing-system-3-dot-2kw-9kg-malt",
+    "domaine": "brewtools.com",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "B40pro Brewing System, EU",
+    "prix": 1279.2,
+    "devise": "EUR",
+    "photo": "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4485-edit171533299.jpeg",
+    "photos": [
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4485-edit171533299.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4446-14384818.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4448787936041.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4450-1175843964.jpeg",
+     "https://www.brewtools.com/Media/Cache/Images/1/4/WEB_Image_B40pro_Brewing_System__EU_3_2kW__9kg_mal_img_4520-edit-1036503417.jpeg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewtools.com"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 279,20 EUR (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5 (galerie de la page)"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 12 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "46 liters"
+     },
+     {
+      "nom": "Puissance",
+      "valeur": "3200 W"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "20 kg"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "1 mm inox (SS304)"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "58 (h) x 52 (w) x 52 (d) cm"
+     },
+     {
+      "nom": "Poids avec emballage",
+      "valeur": "24,5 kg"
+     },
+     {
+      "nom": "Dimensions du réservoir",
+      "valeur": "Ø40 cm, height 36 cm"
+     },
+     {
+      "nom": "Volume du réservoir",
+      "valeur": "46 liters"
+     },
+     {
+      "nom": "Volume du tube à malt",
+      "valeur": "25,7 l"
+     },
+     {
+      "nom": "Capacité de malt",
+      "valeur": "9 kg"
+     },
+     {
+      "nom": "Volume minimum de liquide",
+      "valeur": "15 l"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "1 mm inox (SS304)"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.017227,
+    "ms": 6146,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 52,
+   "genres": [
+    "marketplace",
+    "prix-kg",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 4158,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B074PTR695",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Brewferm 100g Hopfenpellets T90 Sorte Hallertauer Perle zum Bierbrauen und für Kaltauszüge Aktueller Alphasäuregehalt variiert im Bereich von 5-10%",
+    "prix": 11.37,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "photo": "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX355_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX450_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX679_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 11,37 CHF (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "11 caractéristiques : 10 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 2 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Dimensions de l'emballage",
+      "valeur": "‎19,7 x 13 x 8,2 cm; 100 Gramm"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "‎100 Gramm"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B074PTR695"
+     },
+     {
+      "nom": "Numéro de modèle",
+      "valeur": "4014"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "17. Juni 2014"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,8 4,8 von 5 Sternen (18) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 425.562 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 145 in"
+     },
+     {
+      "nom": "Auslaufartikel (Produktion durch Hersteller eingestellt)",
+      "valeur": "non"
+     },
+     {
+      "nom": "Abpackung",
+      "valeur": "100 g / lichgeschützte Vakuumverpackung für optimales Aroma und Haltbarkeit"
+     },
+     {
+      "nom": "Contenu ou poids",
+      "valeur": "100 g"
+     },
+     {
+      "nom": "Teneur en acide alpha",
+      "valeur": "5,3 %"
+     },
+     {
+      "nom": "Récolte",
+      "valeur": "2022"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.02158,
+    "ms": 4549,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 54,
+   "genres": [
+    "lien-court",
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 3851,
+   "lu": {
+    "url": "https://www.amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&ref_=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&social_share=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5",
+    "domaine": "amazon.fr",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Amazon Kindle 16 Go (nouvelle génération) : désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube",
+    "prix": 126.11,
+    "devise": "EUR",
+    "photo": "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY550_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY606_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY679_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY741_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY879_.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.fr"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 126,11 EUR (bloc d'achat de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "2 caractéristiques : 1 du tableau de la page, 1 ailleurs dans la page"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 6 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "En parfait accord",
+      "valeur": "gardez votre Kindle bien au chaud avec notre étui en maille (vendu séparément)."
+     },
+     {
+      "nom": "Amazon Kindle 16 Go (nouvelle génération)",
+      "valeur": "désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube : Amazon…"
+     },
+     {
+      "nom": "Stockage",
+      "valeur": "16 Go"
+     },
+     {
+      "nom": "Écran",
+      "valeur": "6\""
+     },
+     {
+      "nom": "Capacité",
+      "valeur": "16 Go"
+     },
+     {
+      "nom": "Taille de l'écran",
+      "valeur": "6\""
+     },
+     {
+      "nom": "Autonomie",
+      "valeur": "Jusqu'à 6 semaines"
+     },
+     {
+      "nom": "Couleur",
+      "valeur": "Violet Ube"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.015215,
+    "ms": 4176,
+    "appels": 2,
+    "inconnus": 0
+   }
+  }
+ ]
+}

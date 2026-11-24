@@ -172,8 +172,10 @@ export interface OptionsLecture {
   pageBloquee?: AppelPageBloquee;
   /** La sous-tâche qui démarre (seules l'IA et la lecture par Google sont lentes : l'écran les montre « en cours » avant leur réponse). */
   onDebut?: (nom: 'ia' | 'bloquee') => void;
-  /** Lecture refaite à la demande du brasseur : l'étape IA va directement au modèle fort (Hydrogen), sans passer par Flash-Lite ; l'étape le dit (« modèle fort »). */
+  /** Lecture refaite à la demande du brasseur : l'étape IA va directement à Neon (D449), sans passer par Flash-Lite ; l'étape le dit (« IA plus forte »). */
   escalade?: boolean;
+  /** Pour le banc seulement (scripts/banc-liens.ts) : la règle d'avant le 24.11, afin de mesurer l'avant et l'après. Jamais posée par l'app. */
+  regleAvant?: boolean;
 }
 
 /** Les noms des caractéristiques en français (`lienLibelles.ts`) ; la valeur n'est jamais touchée. */
@@ -313,11 +315,11 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       let page = lirePage(html, url, luLe);
       for (const e of page.etapes ?? []) if (!(e.nom === 'page' && e.statut === 'trouve')) dire(e);
       page = enFrancais(await parPlateforme(page, html, url));
-      /* `escalade` : la lecture refaite à la demande du brasseur va directement au modèle fort, même quand la page paraît complète. */
+      /* `escalade` : la lecture refaite à la demande du brasseur va directement à Neon, même quand la page paraît complète. */
       if (opts.ia && (iaUtile(page) || (opts.escalade === true && page.statut === 'lue'))) {
         const avant = page.etapes?.length ?? 0;
         try { opts.onDebut?.('ia'); } catch { /* l'écran ne fait jamais échouer la lecture */ }
-        page = enFrancais(await completerParIA(page, html, opts.ia, { escalade: opts.escalade === true }));
+        page = enFrancais(await completerParIA(page, html, opts.ia, { escalade: opts.escalade === true, ...(opts.regleAvant ? { regleAvant: true } : {}) }));
         for (const e of (page.etapes ?? []).slice(avant)) dire(e);
       }
       return avecChange(page);

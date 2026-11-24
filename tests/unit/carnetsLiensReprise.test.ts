@@ -4,7 +4,7 @@
  *   - les libellés de caractéristiques en français ; le volume « Nutzvolumen Gesamt 242 l » repris sous « Volume » ;
  *   - la longueur du câble ou du colis jamais présentée comme dimension ;
  *   - une page bloquée lue par Google : « photo non lue » dit à l'étape `photos` ;
- *   - `escalade` : l'IA va directement au modèle fort.
+ *   - `escalade` : l'IA va directement à Neon (D449, 24.11).
  * Aucun réseau, aucun Gemini : un faux fetch, une IA simulée. Pages : fixtures tirées des vraies pages galaxus.ch du banc (63 liens).
  */
 import { readFileSync } from 'node:fs';
@@ -115,24 +115,24 @@ function pageAvecTexte({ mesures }: { mesures: number }): string {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Cuve de test KS240L</title><script type="application/ld+json">${JSON.stringify(ld)}</script></head><body><main><h1>Cuve de test KS240L</h1><p>${texte}</p></main></body></html>`;
 }
 
-describe('option `escalade` : l\'étape IA va directement au modèle fort', () => {
+describe('option `escalade` : l\'étape IA va directement à Neon (D449, 24.11)', () => {
   const adresse = 'https://boutique-exemple.ch/produit/cuve';
   const reponse: ReponseIA = { caracteristiques: [{ nom: 'Hauteur', valeur: '143.50 cm' }] };
 
-  it('sans escalade : Flash-Lite d\'abord, rien ne change', async () => {
+  it('sans escalade : Flash-Lite d\'abord, puis Hydrogen car il manque encore des caractéristiques (D449)', async () => {
     const appels: string[] = [];
     const ia: AppelIA = async (modele) => { appels.push(modele); return reponse; };
     const page = await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 1 })), ia, ...SANS_IA });
-    expect(appels).toEqual(['lite']);
+    expect(appels).toEqual(['lite', 'fort']);
     /* T30-11 : l'étape dit ce qu'elle a fait, jamais un nom de modèle */
-    expect(page.etapes?.find((e) => e.nom === 'ia')?.detail).not.toMatch(/lite|fort|modèle/i);
+    expect(page.etapes?.find((e) => e.nom === 'ia')?.detail).not.toMatch(/\blite\b|\bfort\b|hydrogen|neon|modèle/i);
   });
 
-  it('avec escalade : un seul appel, au modèle fort, et l\'étape le dit', async () => {
+  it('avec escalade : un seul appel, à Neon, et l\'étape le dit', async () => {
     const appels: string[] = [];
     const ia: AppelIA = async (modele) => { appels.push(modele); return reponse; };
     const page = await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 1 })), ia, escalade: true, ...SANS_IA });
-    expect(appels).toEqual(['fort']);
+    expect(appels).toEqual(['neon']);
     const etape = page.etapes?.find((e) => e.nom === 'ia');
     expect(etape?.detail).toMatch(/IA plus forte/);
     expect(etape?.detail).not.toMatch(/lite/);
@@ -143,17 +143,17 @@ describe('option `escalade` : l\'étape IA va directement au modèle fort', () =
     const appels: string[] = [];
     const ia: AppelIA = async (modele) => { appels.push(modele); return reponse; };
     await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 4 })), ia, escalade: true, ...SANS_IA });
-    expect(appels).toEqual(['fort']);
+    expect(appels).toEqual(['neon']);
     appels.length = 0;
     await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 4 })), ia, ...SANS_IA });
     expect(appels).toEqual([]);
   });
 
-  it('une panne du modèle fort ne se rejoue pas (aucun second appel)', async () => {
+  it('une panne de Neon ne se rejoue pas (aucun second appel)', async () => {
     const appels: string[] = [];
     const ia: AppelIA = async (modele) => { appels.push(modele); throw new Error('budget atteint'); };
     const page = await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 1 })), ia, escalade: true, ...SANS_IA });
-    expect(appels).toEqual(['fort']);
+    expect(appels).toEqual(['neon']);
     expect(page.etapes?.find((e) => e.nom === 'ia')).toMatchObject({ statut: 'absent', detail: expect.stringContaining('IA indisponible') });
   });
 

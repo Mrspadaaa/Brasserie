@@ -189,7 +189,8 @@ describe('l\'IA en dernière marche : Flash-Lite d\'abord, Hydrogen en escalade,
   });
 
   it('Flash-Lite complète les caractéristiques écrites dans le texte : un seul appel, l\'étape « ia » les ajoute', async () => {
-    const appel = vi.fn<AppelIA>(async (): Promise<ReponseIA> => ({ prix: 189, devise: 'CHF', taxe: 'ttc', caracteristiques: [{ nom: 'Débit', valeur: '20 l/min' }] }));
+    /* D449 : quatre mesures écrites suffisent ; en dessous, Hydrogen relit (carnetsLiensModeles.test.ts) */
+    const appel = vi.fn<AppelIA>(async (): Promise<ReponseIA> => ({ prix: 189, devise: 'CHF', taxe: 'ttc', caracteristiques: [{ nom: 'Débit', valeur: '20 l/min' }, { nom: 'Puissance', valeur: '120 W' }, { nom: 'Tension', valeur: '230 V' }, { nom: 'Poids', valeur: '3.2 kg' }] }));
     const debuts: string[] = [];
     const p = await lireLien(urlSansPrix, {
       fetchPage: faussesRoutes({ 'https://boutique-exemple.ch/robots.txt': () => reponse('', 'text/plain', 404), [urlSansPrix]: () => reponse(pageSansPrix, 'text/html') }).fetchPage,

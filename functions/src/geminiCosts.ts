@@ -41,6 +41,8 @@ const PRICES: Record<string, { input: number; output: number; largeInput?: numbe
   'gemini-4-hydrogen': { input: 1_500_000, output: 7_500_000 },
   // Argon (relecture demandée par l'utilisateur) : 2 / 10 USD par million jusqu'au 30.11.2026 ; le tarif de ce tableau est celui d'AUJOURD'HUI, `RATE_CHANGES` porte la suite.
   'gemini-4-argon': { input: 2_000_000, output: 10_000_000 },
+  // Neon (« Escalader » du Carnet, D449) : 3 / 15 USD par million de jetons, la réflexion comptée en sortie (mesuré au banc des outils, 23.11).
+  'gemini-4-neon': { input: 3_000_000, output: 15_000_000 },
   'gemini-3.1-flash-lite': { input: 250_000, audioInput: 500_000, output: 1_500_000 },
   // Provision at the announced January 2027 standard rate already: never rely
   // on the temporary 50% discount, and no automatic annual maintenance cliff.

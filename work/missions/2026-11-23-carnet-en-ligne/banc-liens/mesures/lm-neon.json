@@ -1,0 +1,384 @@
+{
+ "le": "2026-11-24T07:10:17.102Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 2,
+  "parModele": {
+   "neon": 2
+  },
+  "depenseChf": 0.04512,
+  "cumuleVoieChf": 0.21971,
+  "reserveeEngageeChf": 0,
+  "refuses": 1,
+  "rejoues": 0,
+  "textesMax": 9521,
+  "ms": [
+   8888,
+   6294
+  ],
+  "msParModele": {
+   "neon": [
+    8888,
+    6294
+   ]
+  }
+ },
+ "taux": {
+  "liens": 3,
+  "prixSansJsonLd": "2/2 (100 %)",
+  "caracteristiquesSansJsonLd": "0/2 (0 %)",
+  "photoSansJsonLd": "2/2 (100 %)",
+  "nom": "3/3 (100 %)",
+  "prixAffiche": "3/3 (100 %)",
+  "photoAffichee": "3/3 (100 %)",
+  "caracteristiques": "1/3 (33 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/0 (0 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 12,
+   "genres": [
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 8980,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/20-litre-braumeister-plus1",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel 20-litre #Braumeister PLUS",
+    "prix": 1990,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Braumeister_20_Liter_2023.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/47070-30-speidels-braumeister-plus-2020-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/legende-braumeister-plus-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-vorne.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-hinten.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-edelstahlverschraubung.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/braumeister-signet.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-heizspirale.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-malzrohr.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 1 990 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "10"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "IA plus forte ; ajouté : 12 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Max. malt quantity",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "inox"
+     },
+     {
+      "nom": "Capacité",
+      "valeur": "20 l"
+     },
+     {
+      "nom": "Quantité maximale de malt",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "19 kg"
+     },
+     {
+      "nom": "Puissance de chauffe",
+      "valeur": "2,000 W"
+     },
+     {
+      "nom": "Puissance de la pompe",
+      "valeur": "27 W"
+     },
+     {
+      "nom": "Tension",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Hauteur",
+      "valeur": "60 cm"
+     },
+     {
+      "nom": "Diamètre",
+      "valeur": "40 cm"
+     },
+     {
+      "nom": "Dimensions de l'emballage",
+      "valeur": "74 x 60 x 61 cm"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "24 kg"
+     },
+     {
+      "nom": "Indice de protection",
+      "valeur": "IP 65"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false,
+   "ia": {
+    "chf": 0.02772,
+    "ms": 8888,
+    "appels": 1,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 26,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 6420,
+   "lu": {
+    "url": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+    "domaine": "sios.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidels Braumeister PLUS 20 Liter",
+    "prix": 2190,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Speidels Braumeister PLUS 20 Liter - Sios.ch",
+    "photo": "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+    "photos": [
+     "https://www.sios.ch/media/image/product/4396/md/4396.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~2.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~3.jpg",
+     "https://www.sios.ch/media/image/product/4396/md/4396~4.jpg",
+     "https://www.sios.ch/media/image/product/4396/lg/4396.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "sios.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 2 190 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 caractéristiques : 2 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "IA plus forte ; rien de plus à lire"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Numéro d'article",
+      "valeur": "BE720P"
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Braumeister"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.017404,
+    "ms": 6294,
+    "appels": 1,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 39,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 292,
+   "lu": {
+    "url": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+    "domaine": "hebu-shop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+    "prix": 398,
+    "devise": "CHF",
+    "photo": "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-1.jpg",
+    "photos": [
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-1.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-2.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_for-all-micro-brewery_s500-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_S500-1_vcjkbligi7864-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_Interior_7861431-scaled.jpg",
+     "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-50_Interior_4586531-scaled.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hebu-shop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "le site ne publie pas de fiche produit"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 398 CHF (lu sous le titre de la page)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6 (galerie de la page)"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "5 caractéristiques : 4 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "IA indisponible (budget du banc atteint (0.3 CHF, dont 0.21971 déjà dépensés))"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Poids",
+      "valeur": "15 kg"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "46 × 46 × 82 cm"
+     },
+     {
+      "nom": "Fabricant",
+      "valeur": "HEBUfacturing"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "2810GB-50"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "50 L"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  }
+ ]
+}
