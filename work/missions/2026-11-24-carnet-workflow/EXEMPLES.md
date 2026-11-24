@@ -10,3 +10,6 @@
 
 ## Correction de sa part (24.11) : « Je veux dire créé des nouvelles exemple que ceux cité, d autres use case »
 - En plus de ses histoires, crée 5 à 6 carnets « ZZ TEST — » sur D AUTRES usages réels d une micro-brasserie, pas cités par lui (ex. : CO2 qui baisse vite dans un fût, pompe qui chauffe, levure lente à démarrer, contrôle d hygiène à préparer, panne du frigo de garde, étiquettes à refaire, fournisseur de malt en rupture, réglage de la sertisseuse, odeur de soufre dans un lot) : chacun avec 3 à 6 messages qui suivent le cycle (constat → pistes → choix ou achat → résolu ou ouvert).
+
+## Couvrir par la FORME, pas par le nombre (pilote, 24.11, après « ça peut être un peu n importe quoi »)
+- Ajoute 4 carnets hors brassage, un par forme encore absente : papiers (« ZZ TEST — assurance à renouveler », échéance et pièces), local (« ZZ TEST — ranger la cave », photos et à-faire), événement (« ZZ TEST — fête de la bière en juin », idées, liste, budget), et un cas limite : une seule photo sans texte, ou une seule phrase vague (« ZZ TEST — truc à voir »). Pas plus : au-delà, les formes se répètent.

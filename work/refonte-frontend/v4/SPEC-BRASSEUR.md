@@ -2906,3 +2906,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 soir (Carnet, workflow) : « Créé quelques exemples pour le test aussi »
 
 - 24.11 soir (Carnet, exemples) : « Je veux dire créé des nouvelles exemple que ceux cité, d autres use case »
+
+- 24.11 soir (Carnet, exemples) : « Ah oui très bon, est-ce que ça vaut le coup de couvrir plus ? Car comme j ai dis ça peut être un peu n importe quoi... »
