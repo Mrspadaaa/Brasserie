@@ -19,6 +19,7 @@ import { compromisDe, ecartPrixDit, perteDite, groupeDeLigne, LIGNE_CRITERE, LIG
 import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import { BoutonRelire } from './BoutonRelire';
+import { BoutonEscalader } from './BoutonEscalader';
 import { Insec, liesParNbsp } from './insecable';
 import './carnets-decider.css';
 import './comparer-compact.css';
@@ -26,6 +27,12 @@ import './comparer-compact.css';
 /** Le tableau tel que `tableau(carnet)` de `comparer.ts` le rend (lot A, critère A9). */
 export type TableauV = Tableau;
 type LigneT = Tableau['lignes'][number];
+
+/**
+ * R40 (PX) : la colonne des prix dit la monnaie de COMPARAISON : le franc (on classe en francs, au kilo ou au litre quand les quantités sont dites), jamais la devise du
+ * premier article (« prix EUR » sur ses mots du 24.11 : MotlerHops en tête de ligne).
+ */
+const unitePrixColonne = (t: Tableau): string => (t.prixParUnite ? (t.prixParUnite === 'volume' ? 'CHF/L' : 'CHF/kg') : 'CHF');
 
 /** Une colonne affichée : les caractéristiques des critères, puis le prix (sens moins, même devise). */
 export interface ColonneVue { cle: string; nom: string; unite?: string; sens: Sens; critere: boolean }
@@ -38,7 +45,7 @@ export function colonnesVue(t: Tableau): ColonneVue[] {
   const vue = (c: Tableau['colonnes'][number], critere: boolean): ColonneVue => ({ cle: c.nom, nom: c.nom, unite: c.unite, sens: c.sens, critere });
   const deCriteres = t.colonnes.filter(c => c.critereId);
   const cols: ColonneVue[] = deCriteres.map((c, i) => vue(c, i === 0));
-  if (t.lignes.some(l => l.prixCentimes !== undefined)) cols.push({ cle: '__prix', nom: 'prix', unite: t.lignes.find(l => l.devise)?.devise ?? 'CHF', sens: 'moins', critere: false });
+  if (t.lignes.some(l => l.prixCentimes !== undefined)) cols.push({ cle: '__prix', nom: 'prix', unite: unitePrixColonne(t), sens: 'moins', critere: false });
   for (const c of t.colonnes.filter(x => !x.critereId)) cols.push(vue(c, false));
   return cols;
 }
@@ -55,7 +62,7 @@ const LIVRAISON = [{ cle: '__dispo', nom: 'dispo', champ: 'dispo' }, { cle: '__v
  */
 export function colonnesComparer(t: Tableau): ColonneVue[] {
   const deCritere = new Set(t.colonnes.filter(c => c.critereId).map(c => c.nom));
-  const prix: ColonneVue = { cle: '__prix', nom: 'prix', unite: t.lignes.find(l => l.devise)?.devise ?? 'CHF', sens: 'moins', critere: false };
+  const prix: ColonneVue = { cle: '__prix', nom: 'prix', unite: unitePrixColonne(t), sens: 'moins', critere: false };
   const livraison: ColonneVue[] = LIVRAISON.filter(x => t.lignes.some(l => !!l[x.champ])).map(x => ({ cle: x.cle, nom: x.nom, sens: 'texte', critere: false }));
   const toutes = [prix, ...colonnesVue(t).filter(c => c.cle !== '__prix'), ...livraison];
   const famille = (c: ColonneVue) => groupeDeLigne(c.nom, deCritere.has(c.cle));
@@ -202,6 +209,8 @@ export interface ComparerProps {
   onChoisir?: () => void;
   /** C48-1 : relire la page d'un article lu dont le prix est « ? » (geste du brasseur) ; absent : pas de bouton. */
   onRelire?: (articleId: string) => void | Promise<void>;
+  /** ESCALADER-SUR-MANQUE : relire avec l'IA forte un article dont un champ manque ou dont les lectures se contredisent ; absent : pas de bouton. */
+  onEscalader?: (articleId: string) => void | Promise<void>;
   /** Tour 3, PCN-164 : d'où viennent les valeurs (`mentionValeurs`) ; absent : les vendeurs. */
   mention?: string;
 }
@@ -366,18 +375,19 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 }
 
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
-function CellulePrix({ l, taux, onRelire }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void> }) {
+function CellulePrix({ l, taux, onRelire, onEscalader }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void> }) {
+  const escalader = onEscalader && !l.ecarte && l.aEscalader?.length ? <BoutonEscalader onEscalader={() => onEscalader(l.articleId)} raison={l.aEscalader.map(x => (x === 'doute' ? 'les deux lectures ne s\u2019accordent pas' : `${x} manquant`)).join(' ; ')} classe="cn-escalader-cellule" /> : null;
   /* C48-1 : l'article est lu mais son prix ne l'est pas : « Relire » est un geste du brasseur (rien ne part tout seul) */
-  if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}</>;
+  if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}{escalader}</>;
   if (estEtranger(l)) {
     const r = renduArticle(l, taux);
     const dev = (l.devise ?? '').toUpperCase();
     const orig = `${montant(l.prixCentimes)} ${dev === 'EUR' ? '€' : dev}${mentionTaxe(l.taxe)}`;
     return r && r.totalChf !== undefined
-      ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{orig}</small></>
-      : <><span className="cn-mono">{orig}</span><small className="cn-mut">{dev === 'EUR' ? 'taux ?' : 'cours ?'}</small></>;
+      ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{orig}</small>{l.quantite ? <small className="cn-mut">{l.quantite}{l.parUnite ? ` · ${l.parUnite}` : ''}</small> : null}{escalader}</>
+      : <><span className="cn-mono">{orig}</span><small className="cn-mut">{dev === 'EUR' ? 'taux ?' : 'cours ?'}</small>{l.quantite ? <small className="cn-mut">{l.quantite}</small> : null}{escalader}</>;
   }
-  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.quantite ? <small className="cn-mut">{l.quantite}{l.parUnite ? ` · ${l.parUnite}` : ''}</small> : null}{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}</>;
+  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.quantite ? <small className="cn-mut">{l.quantite}{l.parUnite ? ` · ${l.parUnite}` : ''}</small> : null}{l.prixUnite ? <small className="cn-mut">{l.prixUnite}</small> : null}{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}{escalader}</>;
 }
 
 export function Comparer(p: ComparerProps) {
@@ -512,7 +522,7 @@ export function Comparer(p: ComparerProps) {
                         const hors = l.horsSeuil?.[c.cle];
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} />
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">–</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}

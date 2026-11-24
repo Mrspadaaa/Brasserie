@@ -587,6 +587,36 @@
      "taille": 1244293
     }
    ]
+  },
+  {
+   "n": 64,
+   "lien": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+   "sauts": [
+    {
+     "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+     "status": 200,
+     "ms": 234,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 881366
+    }
+   ]
+  },
+  {
+   "n": 65,
+   "lien": "https://www.brauundrauchshop.ch/citra-136-2",
+   "sauts": [
+    {
+     "url": "https://www.brauundrauchshop.ch/citra-136-2",
+     "status": 200,
+     "ms": 532,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 297039
+    }
+   ]
   }
  ]
 }

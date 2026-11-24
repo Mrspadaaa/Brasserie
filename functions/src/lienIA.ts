@@ -4,6 +4,7 @@ import type { PageLue } from './carnetIA.js';
 import { couper, montantsDe, positionsMontant } from './lienProduit.js';
 import { bruitDeBoutique } from './lienPlateforme.js';
 import { retenir } from './lienLibelles.js';
+import { lireConditionnements, parTaille, prixParBase, uniteDeBase, type UniteQuantite } from './lienConditionnement.js';
 
 /**
  * Dernière marche de la cascade (D446) : l'IA lit le TEXTE nettoyé de la page, jamais la page brute ni son adresse (décision du 23.11 :
@@ -20,7 +21,25 @@ import { retenir } from './lienLibelles.js';
  * elle complète ce qui manque ; un désaccord sur le prix se signale (`controle` douteux), le prix schema.org reste.
  */
 
-export const TEXTE_IA_MAX = 12_000;
+/**
+ * D450 (24.11) : l'IA lit la page ENTIÈRE (plus de coupe à 12 000 caractères avant les prix : les paliers et les variantes vivent en bas de page) ; au-delà du plafond, le
+ * texte garde le bloc produit (il part du titre) puis le reste jusqu'au plafond.
+ */
+export const TEXTE_IA_MAX = 30_000;
+const UNITES: readonly string[] = ['g', 'kg', 'ml', 'cl', 'dl', 'l'];
+const nombreFr = (n: number) => String(n).replace('.', ',');
+/** Les conditionnements publiés dans le CODE de la page (JSON des variantes, lignes de variantes) : absents du texte visible, l'IA ne les voyait pas (cause racine, 24.11). */
+function blocConditionnements(html: string): string {
+  const c = lireConditionnements(html, load(html));
+  if (!c.offres.length && !c.parUnite) return '';
+  const dev = c.devise ? ` ${c.devise}` : '';
+  return [
+    'Conditionnements publiés par la page (lus dans son code) :',
+    ...c.offres.map((o) => `- ${nombreFr(o.valeur)} ${o.unite} : ${nombreFr(o.prix)}${dev}`),
+    ...(c.parUnite ? [`- prix à l'unité : ${nombreFr(c.parUnite.prix)}${dev} par ${c.parUnite.unite}`, ...(c.parUnite.paliers ?? []).map((p) => `- dès ${nombreFr(p.des)} ${c.parUnite!.unite} : ${nombreFr(p.prix)}${dev} par ${c.parUnite!.unite}`)] : []),
+    '', ''
+  ].join('\n');
+}
 
 /** Le texte de la page en Markdown, à partir du titre du produit, sans navigation ni scripts. */
 export function markdownProduit(html: string, titre?: string): string {
@@ -38,7 +57,8 @@ export function markdownProduit(html: string, titre?: string): string {
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\n{3,}/g, '\n\n').trim();
   const t = titre ? md.toLowerCase().indexOf(titre.toLowerCase().slice(0, 40)) : -1;
   const debut = t > 0 ? Math.max(0, t - 300) : 0;
-  return md.slice(debut, debut + TEXTE_IA_MAX);
+  const bloc = blocConditionnements(html);
+  return bloc + md.slice(debut, debut + TEXTE_IA_MAX - bloc.length);
 }
 
 export const LIEN_IA_SCHEMA = {
@@ -49,26 +69,30 @@ export const LIEN_IA_SCHEMA = {
     devise: { type: 'STRING', nullable: true },
     taxe: { type: 'STRING', enum: ['ht', 'ttc'], nullable: true },
     prixDes: { type: 'BOOLEAN', nullable: true },
+    quantite: { type: 'NUMBER', nullable: true },
+    unite: { type: 'STRING', enum: ['g', 'kg', 'ml', 'cl', 'dl', 'l'], nullable: true },
+    parUnite: { type: 'BOOLEAN', nullable: true },
     portSuisse: { type: 'NUMBER', nullable: true },
     portGratuit: { type: 'BOOLEAN', nullable: true },
     caracteristiques: { type: 'ARRAY', items: { type: 'OBJECT', properties: { nom: { type: 'STRING' }, valeur: { type: 'STRING' } }, required: ['nom', 'valeur'], propertyOrdering: ['nom', 'valeur'] } }
   },
   required: ['caracteristiques'],
-  propertyOrdering: ['nom', 'prix', 'devise', 'taxe', 'prixDes', 'portSuisse', 'portGratuit', 'caracteristiques']
+  propertyOrdering: ['nom', 'prix', 'devise', 'taxe', 'prixDes', 'quantite', 'unite', 'parUnite', 'portSuisse', 'portGratuit', 'caracteristiques']
 } as const;
 
 export const LIEN_IA_CONSIGNE = [
   'Tu lis le texte d\'une page produit d\'une boutique en ligne. Rends UNIQUEMENT ce qui est écrit dans ce texte, copié tel quel.',
   '- nom : le nom du produit, marque comprise si elle est écrite.',
-  '- prix : le prix de vente du produit principal pour 1 pièce (pas un prix barré, pas un accessoire, pas un prix au kg, pas une mensualité) ; devise : code ISO (CHF, EUR, GBP, USD, AUD).',
+  '- prix : le prix de vente du produit principal (pas un prix barré, pas un accessoire, pas une mensualité), pour la plus petite quantité vendue, tel qu\'il est écrit ; devise : code ISO (CHF, EUR, GBP, USD, AUD).',
+  '- quantite et unite (g, kg, ml, cl, dl, l) : la quantité à laquelle ce prix se rapporte, telle qu\'elle est écrite (« 50 g », « 5kg »). parUnite : true si le prix est donné pour UNE unité (« Preis/Gramm 0.1044 » : prix 0.1044, quantite 1, unite g, parUnite true). Aucune quantité écrite : null, jamais devinée.',
   '- taxe : « ht » si la page dit hors taxe / exkl. MwSt / zzgl. MwSt pour ce prix, « ttc » si elle dit taxe comprise / inkl. MwSt ; sinon null.',
   '- prixDes : true si le prix est « dès / ab / from » (plusieurs tailles ou variantes).',
   '- portSuisse : frais de livraison vers la Suisse seulement s\'ils sont écrits ; portGratuit : true si la livraison gratuite est écrite.',
   '- caracteristiques : au plus 12 caractéristiques techniques écrites, en commençant par ce qui décide d\'un achat (température, volume, matière, énergie, tension, fluide, refroidissement) puis volume, dimensions, puissance, poids, capacité…, la valeur avec son unité, recopiée du texte ; le nom court, écrit en français (« Largeur », « Volume », « Puissance ») même si la page est en allemand ou en anglais. Une longueur de câble est « Longueur du câble », jamais « Longueur ».',
-  'Un champ absent du texte est null (ou une liste vide). N\'invente rien, ne convertis rien, ne calcule rien.'
+  'Un champ absent du texte est null (ou une liste vide). N\'invente rien, ne convertis rien, ne calcule rien. Une liste « Conditionnements publiés par la page » en tête du texte dit les quantités et leurs prix.'
 ].join('\n');
 
-export interface ReponseIA { nom?: string | null; prix?: number | null; devise?: string | null; taxe?: 'ht' | 'ttc' | null; prixDes?: boolean | null; portSuisse?: number | null; portGratuit?: boolean | null; caracteristiques?: Array<{ nom: string; valeur: string }> }
+export interface ReponseIA { nom?: string | null; prix?: number | null; devise?: string | null; taxe?: 'ht' | 'ttc' | null; prixDes?: boolean | null; quantite?: number | null; unite?: string | null; parUnite?: boolean | null; portSuisse?: number | null; portGratuit?: boolean | null; caracteristiques?: Array<{ nom: string; valeur: string }> }
 /** L'appel au modèle, injecté : `aiTask` le lie à Gemini (budget, journal) ; les tests et le banc le simulent. */
 export type ModeleIA = 'lite' | 'fort' | 'neon';
 /**
@@ -107,7 +131,7 @@ function gratuitPourLaSuisse(texte: string): boolean {
 }
 
 /** La garde : ne garde que ce qui est écrit dans le texte envoyé. Rend aussi ce qui a été retiré (pour le statut `douteux`). */
-export interface Gardee { nom?: string; prix?: number; devise?: string; taxe?: 'ht' | 'ttc'; prixDes?: true; portSuisse?: number; portGratuit?: true; caracteristiques: Array<{ nom: string; valeur: string }> }
+export interface Gardee { nom?: string; prix?: number; devise?: string; taxe?: 'ht' | 'ttc'; prixDes?: true; /** PX : la quantité de ce prix, écrite dans le texte ; `parUnite` : le prix est celui d'UNE unité */ quantite?: { valeur: number; unite: UniteQuantite }; parUnite?: true; portSuisse?: number; portGratuit?: true; caracteristiques: Array<{ nom: string; valeur: string }> }
 export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: string[] } {
   const retire: string[] = [];
   const nt = norm(texte), nb = new Set(nombres(texte));
@@ -121,6 +145,12 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
       if (/^[A-Z]{3}$/.test(dev) && (ecrites.has(dev) || !ecrites.size)) g.devise = dev; else if (ecrites.size === 1) g.devise = [...ecrites][0];
       if (r.taxe) g.taxe = r.taxe;
       if (r.prixDes) g.prixDes = true;
+      const u = typeof r.unite === 'string' ? r.unite.toLowerCase() : '';
+      if (typeof r.quantite === 'number' && r.quantite > 0 && UNITES.includes(u)) {
+        const unite = u as UniteQuantite;
+        const ecrite = new RegExp(`(?<![\\d.,])${String(r.quantite).replace('.', '[.,]')}\\s?${unite}(?![a-zà-ÿ0-9])`, 'i').test(texte);
+        if (ecrite || (r.parUnite === true && r.quantite === 1)) { g.quantite = { valeur: r.quantite, unite }; if (r.parUnite === true) g.parUnite = true; } else retire.push('quantité');
+      }
     } else retire.push('prix');
   }
   if (typeof r.portSuisse === 'number' && r.portSuisse >= 0) { if (positionsMontant(texte, r.portSuisse).some((i) => pourLaSuisse(texte.slice(Math.max(0, i - 100), i + 100)))) g.portSuisse = r.portSuisse; else retire.push('port'); }
@@ -136,11 +166,35 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
   return { gardee: g, retire };
 }
 
-/** Faut-il l'IA ? Seulement sur une page lue, quand le nom ou le prix manque ou est douteux, ou que les caractéristiques manquent. */
+/**
+ * Faut-il l'IA ? D450 (24.11, « ils doivent s'accorder ») : TOUJOURS, sur une page lue. Chaque lien est lu par les données structurées ET par l'IA sur la page
+ * entière ; deux lectures qui s'accordent valent ; qui se contredisent : « douteux », dit (jamais une valeur gagnante en silence).
+ */
 export function iaUtile(p: PageLue): boolean {
-  if (p.statut !== 'lue') return false;
-  const prixDouteux = p.etapes?.some((e) => e.nom === 'prix' && e.statut === 'douteux');
-  return p.nom === undefined || p.prix === undefined || !!prixDouteux || caracteristiquesTechniques(p) < CARACT_SUFFISANTES;
+  return p.statut === 'lue';
+}
+
+const petit = (a: number, b: number) => Math.abs(a - b) <= Math.max(0.011, Math.abs(b) * 0.0005);
+/**
+ * PX (D450) : la lecture de l'IA s'accorde-t-elle avec celle de la page ? Avec une quantité : le même couple (quantité, prix) existe sur la page (le conditionnement retenu, un des
+ * conditionnements publiés ou le prix à l'unité) ; sans quantité : le même prix que le prix retenu (ou son TTC). `true` si l'IA ne lit pas de prix ou la page n'en a pas.
+ */
+export function accordPrix(p: PageLue, g: Gardee): boolean {
+  if (p.prix === undefined || g.prix === undefined) return true;
+  const base = (valeur: number, unite: UniteQuantite) => valeur * ({ g: 0.001, kg: 1, ml: 0.001, cl: 0.01, dl: 0.1, l: 1 } as const)[unite];
+  if (g.quantite) {
+    const couples: Array<{ valeur: number; unite: UniteQuantite; prix: number }> = [
+      ...(p.conditionnement ? [{ ...p.conditionnement, prix: p.prix }] : []),
+      ...(p.offres ?? []),
+      ...(p.prixUnite ? [{ valeur: 1, unite: p.prixUnite.unite, prix: p.prixUnite.prix }, ...(p.prixUnite.paliers ?? []).map((x) => ({ valeur: x.des, unite: p.prixUnite!.unite, prix: x.prix * x.des }))] : [])
+    ];
+    const unitaire = g.parUnite === true ? g.quantite : undefined;
+    if (couples.some((c) => uniteDeBase(c.unite) === uniteDeBase(g.quantite!.unite) && petit(base(c.valeur, c.unite), base(g.quantite!.valeur, g.quantite!.unite)) && petit(c.prix, g.prix!))) return true;
+    /* un prix par unité de la page, lu pour une autre unité (0,1044 par g, la page dit au kg) : le même prix au kilo */
+    if (unitaire && p.conditionnement && petit(prixParBase(g.prix!, unitaire.unite), p.prix)) return true;
+    return false;
+  }
+  return petit(g.prix, p.prix) || (p.prixTTC !== undefined && petit(g.prix, p.prixTTC));
 }
 
 /** Sous ce nombre de mesures lues sur la page, l'IA complète (elle ne coûte que ~0,001 CHF sur Flash-Lite) : poids et dimensions seuls laissent souvent le volume ou la puissance. */
@@ -196,7 +250,7 @@ function fusion(base: Gardee, plus: Gardee): Gardee {
   const out: Gardee = { caracteristiques: [] };
   const nom = base.nom ?? plus.nom; if (nom) out.nom = nom;
   const prix = base.prix !== undefined ? base : plus;
-  if (prix.prix !== undefined) { out.prix = prix.prix; if (prix.devise) out.devise = prix.devise; if (prix.taxe) out.taxe = prix.taxe; if (prix.prixDes) out.prixDes = true; }
+  if (prix.prix !== undefined) { out.prix = prix.prix; if (prix.devise) out.devise = prix.devise; if (prix.taxe) out.taxe = prix.taxe; if (prix.prixDes) out.prixDes = true; if (prix.quantite) out.quantite = prix.quantite; if (prix.parUnite) out.parUnite = true; }
   const port = base.portSuisse !== undefined || base.portGratuit ? base : plus;
   if (port.portSuisse !== undefined) out.portSuisse = port.portSuisse;
   if (port.portGratuit) out.portGratuit = true;
@@ -225,7 +279,7 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: [] as string[] };
   /* T30-11 : ce que l'étape dit est pour le brasseur : jamais « lite », « fort » ni un nom de modèle */
   const modeles: string[] = [direct ? 'IA plus forte' : ''];
-  const contredit = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
+  const contredit = !accordPrix(p, gardee);
   const prixEnDoute = (p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix');
   /* Relecture automatique : un champ qui compte reste absent ou douteux après Flash-Lite. Une panne (budget, délai) ne s'escalade pas :
      elle se répéterait et coûterait. */
@@ -267,11 +321,17 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
   /* C48-5 : le plafond (24) se prend après le tri de l'essentiel : une température trouvée par l'IA ne tombe pas derrière 24 lignes de la page */
   if (nouvelles.length) { out.valeurs = retenir([...(out.valeurs ?? []), ...nouvelles], 24); ajouts.push(`${nouvelles.length} caract.`); }
-  const contreditFinal = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
-  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
+  const contreditFinal = !accordPrix(p, gardee);
+  /* PX : la page n'avait pas de prix, l'IA en lit un avec sa quantité : le prix à l'unité devient le prix du kilo (R40), sinon le prix garde sa quantité (R39) */
+  if (out.prix === gardee.prix && gardee.quantite && !out.conditionnement) {
+    if (gardee.parUnite && gardee.quantite.valeur === 1) { out.prixUnite = { prix: gardee.prix!, unite: gardee.quantite.unite }; out.prix = prixParBase(gardee.prix!, gardee.quantite.unite); out.conditionnement = { valeur: 1, unite: uniteDeBase(gardee.quantite.unite) }; }
+    else out.conditionnement = { ...gardee.quantite };
+    delete out.prixDes;
+  }
+  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length || gardee.prix !== undefined ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : gardee.prix !== undefined && !contreditFinal ? 'prix confirmé par la lecture de la page entière' : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {
     const i = etapes.findIndex((e) => e.nom === 'controle');
-    const d = `prix : l'IA lit ${gardee.prix}, les données ${p.prix}`;
+    const d = `prix : la lecture de la page entière dit ${gardee.prix}${gardee.quantite ? ` pour ${gardee.quantite.valeur} ${gardee.quantite.unite}` : ' (sans quantité)'}, les données ${p.prix}${p.conditionnement ? ` pour ${p.conditionnement.valeur} ${p.conditionnement.unite}` : ''}`;
     if (i >= 0) etapes[i] = { nom: 'controle', statut: 'douteux', detail: [etapes[i].statut === 'douteux' ? etapes[i].detail : '', d].filter(Boolean).join(' ; ') };
   }
   out.etapes = etapes;

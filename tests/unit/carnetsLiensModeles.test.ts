@@ -175,7 +175,7 @@ describe('champsManquants, fraisEcrits, iaUtile', () => {
     expect(fraisEcrits('Livraison offerte au prix de CHF 289.00', [289])).toBe(false); // le prix du produit n'est pas un port
   });
   it('l\'IA est utile aussi quand le nom manque', () => {
-    expect(iaUtile(page({ valeurs: [...MESURES] }))).toBe(false);
+    expect(iaUtile(page({ valeurs: [...MESURES] }))).toBe(true); // D450 (24.11) : une page lue, même complète, est toujours relue par l'IA, pour s'accorder avec les données
     expect(iaUtile(page({ nom: undefined }))).toBe(true);
   });
 });

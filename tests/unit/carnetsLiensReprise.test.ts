@@ -146,7 +146,7 @@ describe('option `escalade` : l\'étape IA va directement à Neon (D449, 24.11)'
     expect(appels).toEqual(['neon']);
     appels.length = 0;
     await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 4 })), ia, ...SANS_IA });
-    expect(appels).toEqual([]);
+    expect(appels).toEqual(['lite']); // D450 : une page complète est lue aussi par l'IA (Flash-Lite), sans escalade
   });
 
   it('une panne de Neon ne se rejoue pas (aucun second appel)', async () => {

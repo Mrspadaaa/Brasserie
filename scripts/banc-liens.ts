@@ -35,6 +35,10 @@ export interface Verite {
   prix: number | null; prixInconnu?: boolean; devise: string | null; ttc: boolean | null; prixTTC?: number; prixDes?: boolean;
   photo: boolean; caract: Array<{ nom: string; valeur: string }>; dispo: string | null;
   livraisonCH: { prix: number; devise: string } | 'gratuite' | 'refusee' | null;
+  /** PX (24.11, R39 à R41) : la quantité à laquelle le prix lu se rapporte, les conditionnements publiés et, pour un prix donné à l'unité, ce prix et ses paliers. */
+  conditionnement?: { valeur: number; unite: string };
+  offres?: Array<{ valeur: number; unite: string; prix: number }>;
+  prixParUnite?: { prix: number; unite: string; paliers?: Array<{ des: number; prix: number }> };
 }
 
 export function verites(): Verite[] {
@@ -76,7 +80,31 @@ const proche = (a: number | undefined, b: number | undefined) => a !== undefined
 const chiffres = (t: string) => (norm(t).match(/\d+(?:[.,]\d+)?/g) ?? []).map((x) => x.replace(',', '.').replace(/\.0+$/, ''));
 
 type Note = '=' | '✗' | '·' | '?' | '';
-export interface Ligne { ia?: { chf: number; ms: number; appels: number; inconnus: number }; sansJsonLd?: boolean; n: number; genres: string[]; statut: string; nom: Note; prix: Note; photo: Note; caract: Note; ttc: Note; livraison: Note; inventions: string[]; ms: number; lu: unknown }
+export interface Ligne { ia?: { chf: number; ms: number; appels: number; inconnus: number }; sansJsonLd?: boolean; n: number; genres: string[]; statut: string; nom: Note; prix: Note; photo: Note; caract: Note; ttc: Note; livraison: Note; /** conditionnement du prix (R39) : « = » dit et juste, « ? » non dit, « ✗ » faux ; vide : la vérité n'en attend pas */ cond: Note; inventions: string[]; ms: number; lu: unknown }
+
+/** R39 : le prix lu porte sa quantité. Juste = le conditionnement du prix, chaque offre publiée et, si la page donne un prix à l'unité, ce prix et ses paliers. */
+function noterCond(v: Verite, l: any): { note: Note; faux: string[] } {
+  if (!v.conditionnement && !v.offres?.length && !v.prixParUnite) return { note: '', faux: [] };
+  const faux: string[] = [];
+  const c = l?.conditionnement as { valeur: number; unite: string } | undefined;
+  if (v.conditionnement) {
+    if (!c) return { note: '?', faux };
+    if (!(proche(c.valeur, v.conditionnement.valeur) && c.unite === v.conditionnement.unite)) faux.push(`conditionnement ${c.valeur} ${c.unite}`);
+  }
+  const lues: Array<{ valeur: number; unite: string; prix: number }> = l?.offres ?? [];
+  let manque = false;
+  for (const o of v.offres ?? []) {
+    const m = lues.find((x) => x.unite === o.unite && proche(x.valeur, o.valeur));
+    if (!m) manque = true; else if (!proche(m.prix, o.prix)) faux.push(`offre ${o.valeur} ${o.unite} à ${m.prix}`);
+  }
+  if (v.prixParUnite) {
+    const u = l?.prixUnite as { prix: number; unite: string; paliers?: Array<{ des: number; prix: number }> } | undefined;
+    if (!u) manque = true;
+    else if (!(u.unite === v.prixParUnite.unite && proche(u.prix, v.prixParUnite.prix))) faux.push(`prix à l'unité ${u.prix}/${u.unite}`);
+    else for (const p of v.prixParUnite.paliers ?? []) { const m = (u.paliers ?? []).find((x) => proche(x.des, p.des)); if (!m) manque = true; else if (!proche(m.prix, p.prix)) faux.push(`palier ${p.des} à ${m.prix}`); }
+  }
+  return { note: faux.length ? '✗' : manque ? '?' : '=', faux };
+}
 
 /** Note une lecture contre sa vérité. « = » juste et rempli, « · » absent honnête, « ? » manquant, « ✗ » faux (= invention). */
 export function noter(v: Verite, l: any, ms = 0): Ligne {
@@ -136,7 +164,9 @@ export function noter(v: Verite, l: any, ms = 0): Ligne {
   else livraison = proche(liv.prix, v.livraisonCH.prix) && liv.devise === v.livraisonCH.devise ? '=' : '✗';
   if (livraison === '✗') inventions.push('livraison');
 
-  return { n: v.n, genres: v.genres, statut: l?.statut ?? '?', nom, prix, photo, caract, ttc, livraison, inventions, ms, lu: l };
+  const cond = noterCond(v, l);
+  inventions.push(...cond.faux);
+  return { n: v.n, genres: v.genres, statut: l?.statut ?? '?', nom, prix, photo, caract, ttc, livraison, cond: cond.note, inventions, ms, lu: l };
 }
 
 export function taux(lignes: Ligne[], verite: Map<number, Verite>) {
@@ -155,6 +185,7 @@ export function taux(lignes: Ligne[], verite: Map<number, Verite>) {
     caracteristiques: pct(caractAttendues.filter((l) => l.caract === '=').length, caractAttendues.length),
     htDit: pct(ttcFaux.filter((l) => l.ttc === '=').length, ttcFaux.length),
     livraisonCH: pct(livraisons.filter((l) => l.livraison === '=').length, livraisons.length),
+    conditionnement: pct(lignes.filter((l) => l.cond === '=').length, lignes.filter((l) => l.cond !== '').length),
     inventions: lignes.reduce((s, l) => s + l.inventions.length, 0),
     liensAvecInvention: lignes.filter((l) => l.inventions.length).map((l) => `${l.n}:${l.inventions.join('+')}`)
   };
@@ -170,7 +201,7 @@ const JOURNAL_IA = path.join(MISSION, 'ia-journal.jsonl');
 const MODELES_IA = { lite: { id: GEMINI_LITE_MODEL, niveau: 'minimal' as const }, fort: { id: INVOICE_STRONG_MODEL, niveau: 'low' as const }, neon: { id: LIEN_NEON_MODEL, niveau: 'low' as const } };
 export const PLAFOND_SORTIE_IA = 1500;
 /** La voie qui dépense : ses lignes du journal portent `voie`, et le budget (`--budget`) est CUMULÉ sur toutes ses lignes, pas par lancement. */
-const VOIE_IA = 'liens-modeles';
+const VOIE_IA = (() => { const i = process.argv.indexOf('--voie'); return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : 'liens-modeles'; })();
 
 export interface BancIA {
   pour(n: number): AppelIA;
@@ -295,9 +326,9 @@ async function main() {
   for (let i = 0; i < vs.length; i += lot) await Promise.all(vs.slice(i, i + lot).map(lire1));
   lignes.sort((a, b) => a.n - b.n);
   const parN = new Map(vs.map((v) => [v.n, v]));
-  console.log('n  | statut       | nom | prix | photo | caract | HT | livr. | inventions');
+  console.log('n  | statut       | nom | prix | photo | caract | HT | livr. | cond. | inventions');
   for (const l of lignes) {
-    console.log(`${String(l.n).padStart(2)} | ${l.statut.padEnd(12)} |  ${l.nom || ' '}  |  ${l.prix || ' '}   |   ${l.photo || ' '}   |   ${l.caract || ' '}    | ${l.ttc || ' '}  |   ${l.livraison || ' '}   | ${l.inventions.join(', ')}`);
+    console.log(`${String(l.n).padStart(2)} | ${l.statut.padEnd(12)} |  ${l.nom || ' '}  |  ${l.prix || ' '}   |   ${l.photo || ' '}   |   ${l.caract || ' '}    | ${l.ttc || ' '}  |   ${l.livraison || ' '}   |   ${l.cond || ' '}   | ${l.inventions.join(', ')}`);
     if (args.includes('--detail')) console.log('     ', JSON.stringify(l.lu).slice(0, 600));
   }
   const t = taux(lignes, parN);
@@ -324,7 +355,7 @@ function comparer([a, b]: string[]) {
   const champs: Array<[string, keyof Ligne]> = [['prix', 'prix'], ['nom', 'nom'], ['photo', 'photo'], ['caractéristiques', 'caract'], ['HT dit', 'ttc'], ['devise/frais (livraison CH)', 'livraison']];
   const out: string[] = [`COMPARAISON ${a} -> ${b}`, `| champ | ${a} | ${b} |`, '|---|---|---|'];
   const ligne = (nom: string, cle: string) => out.push(`| ${nom} | ${A.taux[cle]} | ${B.taux[cle]} |`);
-  ligne('prix', 'prixAffiche'); ligne('nom', 'nom'); ligne('photo', 'photoAffichee'); ligne('caractéristiques', 'caracteristiques'); ligne('HT dit', 'htDit'); ligne('devise/frais (livraison CH)', 'livraisonCH');
+  ligne('prix', 'prixAffiche'); ligne('nom', 'nom'); ligne('photo', 'photoAffichee'); ligne('caractéristiques', 'caracteristiques'); ligne('HT dit', 'htDit'); ligne('devise/frais (livraison CH)', 'livraisonCH'); ligne('conditionnement (R39)', 'conditionnement');
   out.push(`| inventions | ${A.taux.inventions} ${JSON.stringify(A.taux.liensAvecInvention)} | ${B.taux.inventions} ${JSON.stringify(B.taux.liensAvecInvention)} |`);
   out.push('', 'Liens changés (note avant -> après) :');
   const parB = new Map(B.lignes.map((l) => [l.n, l]));

@@ -1,0 +1,255 @@
+{
+ "le": "2026-11-24T18:23:05.014Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 4,
+  "parModele": {
+   "lite": 2,
+   "fort": 2
+  },
+  "depenseChf": 0.02345,
+  "cumuleVoieChf": 0.02345,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 0,
+  "textesMax": 6466,
+  "ms": [
+   964,
+   950,
+   2621,
+   4378
+  ],
+  "msParModele": {
+   "lite": [
+    964,
+    950
+   ],
+   "fort": [
+    2621,
+    4378
+   ]
+  }
+ },
+ "taux": {
+  "liens": 2,
+  "prixSansJsonLd": "1/2 (50 %)",
+  "caracteristiquesSansJsonLd": "1/1 (100 %)",
+  "photoSansJsonLd": "2/2 (100 %)",
+  "nom": "2/2 (100 %)",
+  "prixAffiche": "1/2 (50 %)",
+  "photoAffichee": "2/2 (100 %)",
+  "caracteristiques": "1/1 (100 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/0 (0 %)",
+  "conditionnement": "0/2 (0 %)",
+  "inventions": 1,
+  "liensAvecInvention": [
+   "65:prix 0.1 CHF"
+  ]
+ },
+ "lignes": [
+  {
+   "n": 64,
+   "genres": [
+    "houblon",
+    "conditionnements",
+    "prix-solde",
+    "ttc"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "cond": "?",
+   "inventions": [],
+   "ms": 3837,
+   "lu": {
+    "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "domaine": "motlerhops.fr",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "CITRA® (US)",
+    "prix": 3.72,
+    "devise": "EUR",
+    "dispo": "en-stock",
+    "vendeur": "MotlerHops",
+    "photo": "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303",
+    "photos": [
+     "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "motlerhops.fr"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 3,72 EUR"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 4 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Origine",
+      "valeur": "États-Unis"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "50 g, 250 g et 500 g"
+     },
+     {
+      "nom": "Taux d'acides alpha",
+      "valeur": "10 % - 15 %"
+     },
+     {
+      "nom": "Utilisation",
+      "valeur": "amérisant, aromatique, houblonnage à cru (dry hop)"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.009632,
+    "ms": 3571,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 65,
+   "genres": [
+    "houblon",
+    "prix-au-gramme",
+    "paliers",
+    "suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "cond": "?",
+   "inventions": [
+    "prix 0.1 CHF"
+   ],
+   "ms": 5571,
+   "lu": {
+    "url": "https://www.brauundrauchshop.ch/citra-136-2",
+    "domaine": "brauundrauchshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra 13.6%",
+    "prix": 0.1,
+    "devise": "CHF",
+    "prixDes": true,
+    "vendeur": "Brau- und Rauchshop",
+    "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg",
+    "photos": [
+     "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauundrauchshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "douteux",
+      "detail": "la fiche du site dit 0,10 CHF, la page 245,70 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : la fiche du site dit 0,10 CHF, la page 245,70 CHF ; prix : l'IA lit 245.7, les données 0.1"
+     },
+     {
+      "nom": "ia",
+      "statut": "douteux",
+      "detail": "relu par une IA plus forte ; ajouté : 2 caract. ; l'IA lit 245.7 CHF, la page publie 0.1 CHF"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Arômes",
+      "valeur": "citron vert, mangue, fruits tropicaux"
+     },
+     {
+      "nom": "Citra",
+      "valeur": "13,6 %"
+     },
+     {
+      "nom": "Origine",
+      "valeur": "USA"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.013816,
+    "ms": 5342,
+    "appels": 2,
+    "inconnus": 0
+   }
+  }
+ ]
+}

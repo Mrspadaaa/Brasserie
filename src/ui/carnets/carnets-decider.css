@@ -188,6 +188,7 @@
 /* C48-2 : le libellé de ligne passe à la ligne entre ses mots, jamais au milieu (« Dimension / s ») : un mot long élargit sa colonne au lieu d'être coupé */
 .cn-comparer .cn-tableau-comparer tbody th { white-space: normal; min-width: 72px; max-width: 112px; line-height: 1.25; overflow-wrap: normal; word-break: normal; }
 .cn-comparer .cn-relire-cellule { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 14px; }
+.cn-comparer .cn-escalader-cellule { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 14px; color: var(--c-ia, var(--ink)); }
 .cn-comparer .cn-tableau-comparer td { white-space: normal; vertical-align: top; }
 @media (min-width: 900px) { .cn-comparer .cn-tableau-comparer tbody th { max-width: 190px; } }
 

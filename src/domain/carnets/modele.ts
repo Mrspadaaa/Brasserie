@@ -62,6 +62,15 @@ export interface ChangeArticle { taux: number; date: string; source: 'BCE' }
  */
 export interface Veille { active: boolean; depuis: string; releveLe?: string }
 
+/** PX (R39) : une quantité de poids ou de volume, telle que la page l'écrit. */
+export type UniteQuantite = 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l';
+const UNITES_QUANTITE: readonly string[] = ['g', 'kg', 'ml', 'cl', 'dl', 'l'];
+export interface ConditionnementArticle { valeur: number; unite: UniteQuantite }
+/** Le prix à l'unité tel que la page l'écrit : `prix` (unités de la devise, fractionnaire) pour 1 `unite` ; paliers : à partir de `des` `unite`. */
+export interface PrixUniteArticle { prix: number; unite: UniteQuantite; paliers?: { des: number; prix: number }[] }
+/** Un conditionnement publié par la page et son prix (centimes de la devise de l'article). */
+export interface OffreArticle { valeur: number; unite: UniteQuantite; prixCentimes: number }
+
 /** Un article (un produit d'un vendeur). Tout est facultatif sauf `id`, `valeurs` et `lecture` : l'inconnu est absent. */
 export interface Article {
   id: string;
@@ -71,6 +80,14 @@ export interface Article {
   prixCentimes?: number;
   /** « dès » : la page publie plusieurs prix, `prixCentimes` est le plus bas (jamais présenté comme LE prix). */
   prixDes?: true;
+  /** PX (R39, R41) : la quantité à laquelle `prixCentimes` se rapporte (50 g ; 1 kg pour un prix donné au gramme, converti) ; absent : la page ne la dit pas. */
+  conditionnement?: ConditionnementArticle;
+  /** PX (R40) : le prix donné à l'unité par la page (0,1044 CHF/g, 0,08 dès 1 000 g), gardé tel quel à côté du prix au kilo. */
+  prixUnite?: PrixUniteArticle;
+  /** D450 : les deux lectures de la page (données structurées, IA sur la page entière) se contredisent ; dit pourquoi. Absent : elles s'accordent, ou une seule a lu. */
+  doute?: string;
+  /** PX (R41) : tous les conditionnements publiés (50 g, 250 g, 500 g, 1 kg) avec leur prix. */
+  offres?: OffreArticle[];
   devise?: string;
   vendeur?: string;
   pays?: string;
@@ -302,6 +319,21 @@ function lireLivraison(v: unknown): LivraisonArticle | undefined {
   });
   return Object.keys(l).length ? l : undefined;
 }
+const uniteQuantite = (v: unknown): UniteQuantite | undefined => (typeof v === 'string' && UNITES_QUANTITE.includes(v) ? (v as UniteQuantite) : undefined);
+function lireConditionnement(v: unknown): ConditionnementArticle | undefined {
+  const u = estObjet(v) ? uniteQuantite(v.unite) : undefined;
+  return estObjet(v) && u && nombreFini(v.valeur) && v.valeur > 0 ? { valeur: v.valeur, unite: u } : undefined;
+}
+function lirePrixUnite(v: unknown): PrixUniteArticle | undefined {
+  const u = estObjet(v) ? uniteQuantite(v.unite) : undefined;
+  if (!estObjet(v) || !u || !nombreFini(v.prix) || !(v.prix > 0)) return undefined;
+  const paliers = Array.isArray(v.paliers) ? v.paliers.filter((p): p is { des: number; prix: number } => estObjet(p) && nombreFini(p.des) && p.des > 0 && nombreFini(p.prix) && p.prix > 0).map(p => ({ des: p.des, prix: p.prix })) : [];
+  return { prix: v.prix, unite: u, ...(paliers.length ? { paliers } : {}) };
+}
+function lireOffres(v: unknown): OffreArticle[] | undefined {
+  const l = Array.isArray(v) ? v.flatMap((o): OffreArticle[] => { const u = estObjet(o) ? uniteQuantite(o.unite) : undefined; return estObjet(o) && u && nombreFini(o.valeur) && o.valeur > 0 && nombreFini(o.prixCentimes) && o.prixCentimes > 0 ? [{ valeur: o.valeur, unite: u, prixCentimes: Math.round(o.prixCentimes) }] : []; }) : [];
+  return l.length ? l : undefined;
+}
 function lireChange(v: unknown): ChangeArticle | undefined {
   return estObjet(v) && nombreFini(v.taux) && v.taux > 0 && texteNonVide(v.date) ? { taux: v.taux, date: v.date, source: 'BCE' } : undefined;
 }
@@ -317,6 +349,8 @@ function lireArticle(v: unknown): Article | null {
     id: v.id, url: optTexte(v.url), domaine: optTexte(v.domaine), nom: optTexte(v.nom),
     prixCentimes: nombreFini(v.prixCentimes) && v.prixCentimes >= 0 ? Math.round(v.prixCentimes) : undefined,
     prixDes: v.prixDes === true && nombreFini(v.prixCentimes) ? true : undefined,
+    doute: optTexte(v.doute),
+    conditionnement: prixOk ? lireConditionnement(v.conditionnement) : undefined, prixUnite: prixOk ? lirePrixUnite(v.prixUnite) : undefined, offres: prixOk ? lireOffres(v.offres) : undefined,
     taxe: prixOk && (v.taxe === 'ht' || v.taxe === 'ttc') ? v.taxe : undefined,
     prixTTCCentimes: prixOk && nombreFini(v.prixTTCCentimes) && v.prixTTCCentimes > 0 ? Math.round(v.prixTTCCentimes) : undefined,
     livraison: lireLivraison(v.livraison), change: prixOk ? lireChange(v.change) : undefined,

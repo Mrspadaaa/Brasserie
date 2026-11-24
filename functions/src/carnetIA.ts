@@ -44,6 +44,10 @@ export interface PageLue {
   devise?: string;
   /** « dès » : plusieurs prix sont publiés, le plus bas est donné. */
   prixDes?: boolean;
+  /** PX (R39 à R41) : la quantité à laquelle `prix` se rapporte (50 g ; 1 kg pour un prix donné au gramme, converti), le prix à l'unité tel que la page l'écrit (0,1044 CHF/g, paliers) et les conditionnements publiés. */
+  conditionnement?: { valeur: number; unite: 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l' };
+  prixUnite?: { prix: number; unite: 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l'; paliers?: Array<{ des: number; prix: number }> };
+  offres?: Array<{ valeur: number; unite: 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l'; prix: number }>;
   /** `retire` : la page dit le produit plus disponible (BL-15). */
   dispo?: 'en-stock' | 'rupture' | 'retire' | 'sur-commande';
   /** Le délai d'un article sur commande (« expédié sous 28 jours »), tel que la page le dit. */

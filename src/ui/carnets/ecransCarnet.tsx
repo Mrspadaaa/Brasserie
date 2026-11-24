@@ -82,6 +82,22 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     if (r) p.onMessage?.(r.avis);
   };
 
+  /**
+   * ESCALADER-SUR-MANQUE : comme « Relire », mais la page est relue par l'IA forte (Neon, D449) ; un prix douteux ou manquant est remplacé par la lecture, jamais
+   * un prix posé par le brasseur ni un prix lu qui s'accorde. Éteinte ou hors ligne : le dit, ne lit rien.
+   */
+  const escalader = async (articleId: string): Promise<void> => {
+    const c = ouvert;
+    const a = c?.carnet.articles.find(x => x.id === articleId);
+    if (!c || !a?.url) return;
+    if (mode === 'eteint') { p.onMessage?.('L’IA est éteinte : la page ne se relit pas.'); return; }
+    if (!enLigne) { p.onMessage?.('Hors ligne : la page se relit au retour du réseau.'); return; }
+    const appels = p.appels ?? (mode === 'production' ? appelsReels : appelsSimules());
+    const page = await appels.lire(a.url, new AbortController().signal, { escalade: true });
+    const r = appliquer(relireArticle(magasin.lire(), { carnetId: c.id, articleId, page, le: maintenant().toISOString(), escalade: true }));
+    if (r) p.onMessage?.(r.avis);
+  };
+
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
@@ -102,7 +118,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const suivant = voisin(1), precedent = voisin(-1);
     ecran = a ? <FicheArticle key={a.id} taux={tauxEur} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
       {...(suivant ? { onSuivant: suivant } : {})} {...(precedent ? { onPrecedent: precedent } : {})}
-      {...(a.url && a.lecture === 'lue' ? { onRelire: () => relire(a.id) } : {})}
+      {...(a.url && a.lecture === 'lue' ? { onRelire: () => relire(a.id), onEscalader: () => escalader(a.id) } : {})}
       onPrix={centimes => {
         const r = appliquer(poserPrixArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, centimes }));
         const doc = r?.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined;
@@ -117,7 +133,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
   } else if (vue.sorte === 'comparer') {
     ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
-      onRelire={relire} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
+      onRelire={relire} onEscalader={escalader} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;

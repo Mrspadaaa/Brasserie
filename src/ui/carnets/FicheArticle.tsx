@@ -25,6 +25,8 @@ import { memeCaracteristique, trierParDecision } from '../../../functions/src/li
 import { parsePrix } from '../../domain/finance/upgradeRing';
 import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
+import { BoutonEscalader } from './BoutonEscalader';
+import { articleAEscalader, raisonEscalade } from '../../domain/carnets/manques';
 import { Insec, liesParNbsp } from './insecable';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
@@ -56,6 +58,8 @@ export interface FicheArticleProps {
   onPrix?: (centimes: number) => void;
   /** C48-1 : relire la page d'un article lu sans prix (geste du brasseur) ; la lecture dit sa fin en rendant la main. */
   onRelire?: () => void | Promise<void>;
+  /** ESCALADER-SUR-MANQUE : relire avec l'IA forte quand un champ manque ou que les deux lectures se contredisent ; absent : pas de bouton. */
+  onEscalader?: () => void | Promise<void>;
   /** L-16 : l'article suivant ou précédent du carnet (balayer, ou ‹ ›). */
   onSuivant?: () => void;
   onPrecedent?: () => void;
@@ -305,6 +309,7 @@ export function FicheArticle(p: FicheArticleProps) {
                     : <button type="button" className="cn-lien cn-poser-prix-ouvrir" onClick={() => setPoserPrix(true)}>Poser le prix</button>)}
                   {/* C48-1 : un article lu sans prix propose de relire sa page (le geste est le sien, jamais automatique) */}
                   {moi && !p2 && !poserPrix && p.onRelire && a.url && a.lecture === 'lue' && <BoutonRelire onRelire={p.onRelire} classe="cn-relire-prix" />}
+                  {moi && !poserPrix && p.onEscalader && articleAEscalader(a).length > 0 && <BoutonEscalader onEscalader={p.onEscalader} raison={raisonEscalade(a)} classe="cn-escalader-prix" />}
                   {o.url && <a className="cn-lien" href={o.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
                   </span>
                   {d2 && <span className="cn-mut cn-offre-detail">{d2}</span>}

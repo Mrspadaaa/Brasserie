@@ -16,6 +16,8 @@ import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { lienCanonique } from './lien';
+import { quantiteArticle } from './prixUnitaire';
+import { douteDePage } from './manques';
 import { critereMesurable, jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
@@ -101,7 +103,7 @@ export type LigneARanger = Destination & (
   | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; propose?: true; source?: 'phrase' | 'ia' }
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
-    sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
+    sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; doute?: string; conditionnement?: Article['conditionnement']; prixUnite?: Article['prixUnite']; offres?: Article['offres']; devise?: string; vendeur?: string; pays?: string;
     dispo?: string; photo?: string; photos?: string[]; taxe?: Article['taxe']; prixTTCCentimes?: number; livraison?: Article['livraison']; change?: Article['change'];
     faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
   }
@@ -164,7 +166,8 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       const a: Article = sansIndefinis({
         id: l.id ?? nouvelIdCarnet('ART'), url: l.url, domaine: l.domaine, nom: l.nom,
         prixCentimes: typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 ? Math.round(l.prixCentimes) : undefined,
-        prixDes: l.prixDes === true && typeof l.prixCentimes === 'number' ? true : undefined,
+        prixDes: l.prixDes === true && typeof l.prixCentimes === 'number' ? true : undefined, doute: l.doute,
+        ...(typeof l.prixCentimes === 'number' ? { conditionnement: l.conditionnement ? { ...l.conditionnement } : undefined, prixUnite: l.prixUnite ? copie(l.prixUnite) : undefined, offres: l.offres?.length ? copie(l.offres) : undefined } : {}),
         devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo, photos: l.photos?.length ? [...l.photos] : undefined,
         taxe: l.taxe, prixTTCCentimes: l.prixTTCCentimes, livraison: l.livraison ? { ...l.livraison } : undefined, change: l.change ? { ...l.change } : undefined,
         faconId: l.faconId && d.facons.some(f => f.id === l.faconId) ? l.faconId : undefined,
@@ -645,7 +648,7 @@ export function poserPrixArticle(etat: Etat, args: { carnetId: string; articleId
  * devise, sa taxe, son TTC et son cours ; les caractéristiques lues sur la page se rafraîchissent, celles du brasseur ne sont jamais touchées ;
  * photo, disponibilité et port ne se posent que s'ils manquaient. Rien de plus à lire : refus, rien n'est écrit.
  */
-export function relireArticle(etat: Etat, args: { carnetId: string; articleId: string; page: PageRelue; le: string }): Resultat {
+export function relireArticle(etat: Etat, args: { carnetId: string; articleId: string; page: PageRelue; le: string; /** ESCALADER-SUR-MANQUE : la lecture forte remplace un prix douteux */ escalade?: boolean }): Resultat {
   const b = new Brouillon(etat);
   const c = b.carnet(args.carnetId);
   const a = c?.carnet.articles.find(x => x.id === args.articleId);
@@ -653,12 +656,28 @@ export function relireArticle(etat: Etat, args: { carnetId: string; articleId: s
   const p = args.page;
   if (p.statut !== 'lue') return refus('La page ne se lit pas.');
   let change = 0;
-  if (a.prixCentimes === undefined && typeof p.prix === 'number' && p.prix > 0 && p.devise) {
+  /* PX (R42) : un prix « dès » sans quantité (l'ancienne lecture) n'est le prix d'aucun conditionnement : une page qui dit enfin la quantité (ou le prix à l'unité) le remplace ;
+     un prix que le brasseur a posé, ou que la page avait déjà dit avec sa quantité, ne bouge jamais. */
+  const sansQuantite = (a.prixDes === true && !a.conditionnement && !quantiteArticle({ nom: a.nom ?? '' })) || (args.escalade === true && !!a.doute);
+  const pageHonnete = typeof p.prix === 'number' && p.prix > 0 && !!p.devise && (!p.prixDes || !!p.conditionnement || !!quantiteArticle({ nom: a.nom ?? p.nom ?? '' }));
+  const attachePage = () => {
+    if (p.conditionnement) a.conditionnement = { ...p.conditionnement } as NonNullable<Article['conditionnement']>; else delete a.conditionnement;
+    if (p.prixUnite) a.prixUnite = copie(p.prixUnite) as NonNullable<Article['prixUnite']>; else delete a.prixUnite;
+    if (p.offres?.length) a.offres = p.offres.map(o => ({ valeur: o.valeur, unite: o.unite, prixCentimes: Math.round(o.prix * 100) })); else delete a.offres;
+  };
+  if (a.prixCentimes !== undefined && p.devise === (a.devise ?? 'CHF') && typeof p.prix === 'number' && Math.round(p.prix * 100) === a.prixCentimes && !sansQuantite && (p.conditionnement || p.offres?.length) && !a.conditionnement) {
+    attachePage(); change++; /* le même prix, désormais dit avec sa quantité */
+  } else if ((a.prixCentimes === undefined || (sansQuantite && pageHonnete)) && typeof p.prix === 'number' && p.prix > 0 && p.devise) {
     a.prixCentimes = Math.round(p.prix * 100); a.devise = p.devise; change++;
-    if (p.prixDes) a.prixDes = true;
+    delete a.prixDes; delete a.taxe; delete a.prixTTCCentimes; delete a.change;
+    attachePage();
+    if (p.prixDes && !p.conditionnement) a.prixDes = true;
     if (p.taxe) { a.taxe = p.taxe; if (p.taxe === 'ht' && typeof p.prixTTC === 'number' && p.prixTTC > 0) a.prixTTCCentimes = Math.round(p.prixTTC * 100); }
     if (p.change && p.change.taux > 0 && p.devise !== 'CHF') a.change = { taux: p.change.taux, date: p.change.date, source: p.change.source };
   }
+  /* D450 : le doute de la lecture suit la page relue (deux lectures qui s'accordent l'effacent) */
+  const doute = douteDePage(p.etapes);
+  if (doute !== a.doute) { if (doute) a.doute = doute; else delete a.doute; change++; }
   const luLe = p.luLe > 0 ? new Date(p.luLe).toISOString() : args.le;
   for (const v of p.valeurs ?? []) {
     const deja = a.valeurs[v.nom];
@@ -673,13 +692,13 @@ export function relireArticle(etat: Etat, args: { carnetId: string; articleId: s
     a.livraison = { ...(typeof l.prix === 'number' && l.prix >= 0 && !l.gratuite && !l.refusee ? { prixCentimes: Math.round(l.prix * 100), devise: l.devise ?? p.devise ?? 'CHF' } : {}), ...(l.gratuite ? { gratuite: true as const } : {}), ...(l.refusee ? { refusee: true as const } : {}) };
     change++;
   }
-  if (!change) return refus('Rien de plus à lire sur la page.');
+  if (!change) return refus(sansQuantite ? 'Le prix de la page est un « dès » sans quantité (ni conditionnement, ni prix au gramme) : rien de précis à lire. Posez le prix du conditionnement choisi.' : 'Rien de plus à lire sur la page.');
   a.lecture = 'lue';
   poser(b, c);
   return b.resultat('✓ Page relue');
 }
 /** Ce que `relireArticle` lit d'une page (un `PageLue` du serveur). */
-export type PageRelue = Pick<PageLueV, 'statut' | 'prix' | 'devise' | 'prixDes' | 'taxe' | 'prixTTC' | 'change' | 'valeurs' | 'photos' | 'dispo' | 'dispoDelai' | 'livraison' | 'luLe'>;
+export type PageRelue = Pick<PageLueV, 'statut' | 'nom' | 'conditionnement' | 'prixUnite' | 'offres' | 'prix' | 'devise' | 'prixDes' | 'taxe' | 'prixTTC' | 'change' | 'valeurs' | 'photos' | 'dispo' | 'dispoDelai' | 'livraison' | 'luLe' | 'etapes'>;
 
 /* ---------- choisir (R07, R34) ---------- */
 

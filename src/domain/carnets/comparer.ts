@@ -7,6 +7,7 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
+import { articleAEscalader } from './manques';
 import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { aromesEnFrancais, estLigneAromes } from '../../../functions/src/aromesFrancais';
@@ -333,6 +334,12 @@ function comparerSur(a: number | null, b: number | null, sens: Colonne['sens']):
 
 /* ---------- tableau ---------- */
 
+/** « 0,1044 CHF/g » : le prix à l'unité de la page, jusqu'à quatre décimales (un gramme coûte des centimes fractionnaires). */
+export function texteDuPrixUnite(u: { prix: number; unite: string }, devise: string): string {
+  const n = u.prix.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 4 }).replace(/[\u202f\u00a0 ]/g, '\u00a0');
+  return `${n}\u00a0${devise}/${u.unite}`;
+}
+
 export interface LigneTableau {
   articleId: string;
   nom: string;
@@ -349,6 +356,10 @@ export interface LigneTableau {
   /** T28-6 : la quantité que le nom de l'article dit (« 100 g », « 1 kg ») et le prix ramené à l'unité (« 72,50 CHF/kg »). */
   quantite?: string;
   parUnite?: string;
+  /** PX (R40) : le prix à l'unité tel que la page l'écrit (« 0,1044 CHF/g »), dit à côté du prix au kilo. */
+  prixUnite?: string;
+  /** ESCALADER-SUR-MANQUE : les champs qui manquent (« prix », « nom ») ou « doute » ; absent : rien à escalader. */
+  aEscalader?: string[];
   /** D447 : la taxe dite par la page, le port vers la Suisse lu et le cours du jour (BCE) ; absents quand la page ne les donne pas. */
   taxe?: Article['taxe'];
   livraison?: Article['livraison'];
@@ -587,6 +598,8 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
       ...(classe !== null ? { prixClasse: classe } : {}), ...(quantite ? { quantite: quantite.texte } : {}), ...(parUnite ? { parUnite } : {}),
+      ...(a.prixUnite ? { prixUnite: texteDuPrixUnite(a.prixUnite, a.devise ?? 'CHF') } : {}),
+      ...(articleAEscalader(a).length ? { aEscalader: articleAEscalader(a) } : {}),
       ...(a.devise ? { devise: a.devise } : {}),
       ...(a.taxe ? { taxe: a.taxe } : {}), ...(a.livraison ? { livraison: a.livraison } : {}), ...(a.change ? { change: a.change } : {}),
       ...(dispoDe(a) ? { dispo: dispoDe(a) } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),

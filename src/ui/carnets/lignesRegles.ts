@@ -20,6 +20,16 @@ export const AVIS_IA: Record<AvisIA['sorte'], string> = {
   'hors-ligne': 'Hors ligne : rangé sur l’appareil, tel quel',
   echec: 'L’IA n’a pas répondu : rangé sur l’appareil, tel quel ; rien n’est perdu'
 };
+import { douteDePage } from '../../domain/carnets/manques';
+
+/** PX : ce que la page dit de la quantité de son prix, au format de l'article (offres en centimes). */
+function conditionnementDePage(p: NonNullable<LigneCarnet['page']>): Record<string, unknown> {
+  return {
+    ...(p.conditionnement ? { conditionnement: { ...p.conditionnement } } : {}),
+    ...(p.prixUnite ? { prixUnite: { prix: p.prixUnite.prix, unite: p.prixUnite.unite, ...(p.prixUnite.paliers?.length ? { paliers: p.prixUnite.paliers.map(x => ({ ...x })) } : {}) } } : {}),
+    ...(p.offres?.length ? { offres: p.offres.map(o => ({ valeur: o.valeur, unite: o.unite, prixCentimes: Math.round(o.prix * 100) })) } : {})
+  };
+}
 export function libelleProposee(l: Proposee['ligne']): string {
   const k = l.caracteristique;
   /* tour 3, f11 (v7-1) : l'article suit le genre de la caractéristique (avecArticle), jamais « le température mini » */
@@ -188,6 +198,9 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
           /* CRP-1, maillon 3 : le prix de la page lue de CETTE ligne, si ia.ts ne l'a pas posé */
           : prixCentimes !== undefined ? { prixCentimes, devise: p!.devise, ...(p!.prixDes ? { prixDes: true } : {}) } : {}),
         ...taxeLue, ...change, ...livraison,
+        /* PX (R39 à R41) : le prix de la page porte sa quantité, son unité et ses conditionnements ; jamais rattachés à un prix écrit par le brasseur */
+        ...(duPage ? conditionnementDePage(p!) : {}),
+        ...(lue && douteDePage(p?.etapes) ? { doute: douteDePage(p?.etapes) } : {}),
         ...(l.vendeur ? { vendeur: l.vendeur } : {}), ...(toutes.length ? { photo: toutes[0], photos: toutes } : {}),
         /* BL-15 : « plus disponible » est dit par la page (Discontinued, « retiré du catalogue ») ; jamais confondu avec une rupture */
         ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : p.dispo === 'retire' ? 'plus disponible' : p.dispo === 'sur-commande' ? ['sur commande', p.dispoDelai].filter(Boolean).join(' · ') : 'rupture' } : {}), /* E47-1 : « sur commande » (et son délai, s'il est écrit) n'est jamais dit « rupture » */

@@ -1785,5 +1785,118 @@
   "dispo": "rupture",
   "livraisonCH": null,
   "note": "Lien Shopify ?variant=67996628713702. « Produkt nicht verfügbar » : rupture, mais le prix 788,90 (HT) reste affiché, avec « CHF 852,80 inkl. MwSt. », barré 964,00 et « Du sparst CHF 175,10 ». « Verfügbare Alternativen » plus bas (866,00, 454,90…) : pièges. Le texte dit « Nachfolger von BKS-350KT ». Bandeau cookies (« Zustimmen » seul)."
+ },
+ {
+  "n": 64,
+  "lien": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+  "genres": [
+   "houblon",
+   "conditionnements",
+   "prix-solde",
+   "ttc"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "CITRA® (US)",
+   "doitContenir": [
+    "CITRA"
+   ]
+  },
+  "prix": 3.72,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": 4.38,
+  "variantes": null,
+  "photo": true,
+  "caract": [],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "conditionnement": {
+   "valeur": 50,
+   "unite": "g"
+  },
+  "offres": [
+   {
+    "valeur": 50,
+    "unite": "g",
+    "prix": 3.72
+   },
+   {
+    "valeur": 250,
+    "unite": "g",
+    "prix": 14.06
+   },
+   {
+    "valeur": 500,
+    "unite": "g",
+    "prix": 24.97
+   },
+   {
+    "valeur": 1,
+    "unite": "kg",
+    "prix": 40.69
+   }
+  ],
+  "note": "Vérité du 24.11 depuis le DOSSIER prix-houblon (relevé du persona brasseur sur la page ouverte) : Shopify, 4 conditionnements (50 g 3,72 € en solde au lieu de 4,38, 250 g, 500 g, 1 kg 40,69 €), TTC, port calculé au paiement. R39 : le prix lu porte sa quantité (50 g), jamais « dès » sans quantité."
+ },
+ {
+  "n": 65,
+  "lien": "https://www.brauundrauchshop.ch/citra-136-2",
+  "genres": [
+   "houblon",
+   "prix-au-gramme",
+   "paliers",
+   "suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Citra 13.6%",
+   "doitContenir": [
+    "Citra",
+    "13.6"
+   ]
+  },
+  "prix": 104.4,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "variantes": null,
+  "photo": true,
+  "caract": [
+   {
+    "nom": "Alpha",
+    "valeur": "13.6 %"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "conditionnement": {
+   "valeur": 1,
+   "unite": "kg"
+  },
+  "prixParUnite": {
+   "prix": 0.1044,
+   "unite": "g",
+   "paliers": [
+    {
+     "des": 1000,
+     "prix": 0.08
+    }
+   ]
+  },
+  "offres": [
+   {
+    "valeur": 5,
+    "unite": "kg",
+    "prix": 245.7
+   },
+   {
+    "valeur": 20,
+    "unite": "kg",
+    "prix": 782.15
+   }
+  ],
+  "note": "Vérité du 24.11 depuis le DOSSIER : nopCommerce, trois lignes : 5 kg 245,70 CHF et 20 kg 782,15 CHF (Preis/Pack), et Preis/Gramm 0,1044 CHF (1+ g) puis 0,08 CHF dès 1 000 g, port en sus. Le prix lu est celui du kilo converti du gramme (104,40 CHF/kg), dit avec son unité (0,1044 CHF/g) ; jamais « 0,10 »."
  }
 ]

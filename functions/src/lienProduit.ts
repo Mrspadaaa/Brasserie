@@ -5,6 +5,7 @@ import { stockStatus } from './brewerSuppliers.js';
 import { bruitDeBoutique, completerValeurs, memeMesure, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
 import { montantDit } from './lienValeurs.js';
 import { libelleFrancais, retenir } from './lienLibelles.js';
+import { lireConditionnements, parTaille, prixParBase, uniteDeBase, type OffreConditionnee, type PrixUnite, type UniteQuantite } from './lienConditionnement.js';
 
 /** Ce qu'on LIT d'une page (avant le tri) ; ce qu'on GARDE après le tri de l'essentiel est plafonné à `GARDEES` (C48-5 : le plafond ne se prend jamais dans l'ordre de la page). */
 const LUES = 60, GARDEES = 24;
@@ -37,6 +38,10 @@ export interface Extraction {
   prix?: number;
   devise?: string;
   prixDes?: true;
+  /** PX (R39 à R41) : la quantité à laquelle `prix` se rapporte (50 g ; 1 kg pour un prix donné au gramme, converti), les conditionnements publiés et le prix à l'unité tel que la page l'écrit. */
+  conditionnement?: { valeur: number; unite: UniteQuantite };
+  offres?: OffreConditionnee[];
+  prixUnite?: PrixUnite;
   /** `ht` : le prix publié est hors taxe (net) ; `ttc` : taxe comprise, dite par la page. Absent : la page ne le dit pas. */
   taxe?: 'ht' | 'ttc';
   /** Le prix taxe comprise quand la page publie les deux (le HT reste dans `prix`). */
@@ -290,6 +295,8 @@ function ecritures(m: number): string[] {
     if (f === '00') { out.add(`${groupes(sep)}${dec}–`); out.add(`${groupes(sep)}.-`); out.add(`${groupes(sep)}${dec}-`); }
   }
   if (f === '00') { out.add(groupes("'")); out.add(groupes('.')); out.add(e); }
+  /* PX : un prix à l'unité s'écrit avec plus de deux décimales (0.1044 CHF le gramme) : son écriture exacte compte aussi */
+  if (Number.isFinite(m) && Math.round(m * 100) / 100 !== m && m < 100) { const s = String(m); if (/^\d+\.\d+$/.test(s)) { out.add(s); out.add(s.replace('.', ',')); } }
   return [...out];
 }
 export function positionsMontant(visible: string, m: number): number[] {
@@ -618,7 +625,10 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const parReference = (o: Json): boolean => liste<Json>(o.priceSpecification).some((x) => x?.referenceQuantity !== undefined);
   let prixAuPoids = false;
   for (const o of offres) {
-    if (parReference(o)) { prixAuPoids = true; continue; }
+    if (parReference(o)) {
+      prixAuPoids = true; /* un prix par unité de référence (Grundpreis) n'est jamais le prix du produit : voir PX, lien 62 du banc */
+      continue;
+    }
     const specs = liste<Json>(o.priceSpecification).filter((x) => !LISTE_PRIX.test(String(x?.priceType ?? '')) && !x?.referenceQuantity);
     const devO = texte(o.priceCurrency, 3) ?? specs.map((x) => texte(x.priceCurrency, 3)).find(Boolean);
     const tva = specs.map((x) => x.valueAddedTaxIncluded).map((v) => v === true || v === 'true' ? true : v === false || v === 'false' ? false : undefined).find((v) => v !== undefined);
@@ -657,6 +667,27 @@ export function extraireProduit(html: string, url: URL): Extraction {
     if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (bloc de prix)'; }
   }
 
+  /* PX (R39 à R41, 24.11) : le prix lu porte sa quantité. Les conditionnements publiés (variantes, lignes de la page, spécification par référence) sont lus ;
+     un prix donné à l'unité (0,1044 CHF le gramme) devient le prix du kilo, dit avec son unité ; sinon le prix lu prend la quantité de l'offre qui le porte. */
+  const cd = lireConditionnements(html, $);
+  const offresCond: OffreConditionnee[] = [...cd.offres].sort(parTaille);
+  const uniteLue = cd.parUnite;
+  const deviseCond = cd.devise ?? devise ?? meta('product:price:currency') ?? meta('og:price:currency');
+  let conditionnement: { valeur: number; unite: UniteQuantite } | undefined, prixUnite: PrixUnite | undefined, noteConditionnement = '';
+  const sansDouteAuPoids = () => { const i = doutes.indexOf('prix donné au poids, sans conditionnement : non retenu'); if (i >= 0) doutes.splice(i, 1); };
+  if (uniteLue && deviseCond) {
+    prix = prixParBase(uniteLue.prix, uniteLue.unite); devise = deviseCond; prixDes = false; sourcePrix = 'conditionnement';
+    conditionnement = { valeur: 1, unite: uniteDeBase(uniteLue.unite) }; prixUnite = uniteLue; prixAuPoids = false; sansDouteAuPoids();
+    noteConditionnement = ` · 1 ${conditionnement.unite}, prix donné à l'unité`;
+  } else if (offresCond.length) {
+    const porteur = prix !== undefined ? offresCond.find((o) => egal(o.prix, prix as number)) : offresCond[0];
+    if (porteur && deviseCond) {
+      if (prix === undefined) { prix = porteur.prix; devise = deviseCond; sourcePrix = 'conditionnement'; sansDouteAuPoids(); }
+      conditionnement = { valeur: porteur.valeur, unite: porteur.unite }; prixDes = false;
+      noteConditionnement = ` · ${String(porteur.valeur).replace('.', ',')} ${porteur.unite}`;
+    }
+  }
+
   // Contrôle du prix : un prix des données structurées doit se lire sur la page ; sinon il est douteux (jamais retiré en silence).
   let prixDouteux: string | undefined;
   if (prix !== undefined && sourcePrix === 'schema.org' && visible.length > 500 && !positionsMontant(visible, prix).length) {
@@ -667,7 +698,7 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const notesTaxe = prix !== undefined ? compact($('[class*="footnote" i], [class*="vat" i], [class*="mwst" i], footer').map((_, e) => $(e).text()).get().filter((t) => /MwSt|USt|VAT|TVA|Mehrwertsteuer/i.test(t)).slice(0, 6).join(' ')) : '';
   const taxe = prix !== undefined ? taxeDe(prix, visible, tvaSchema, notesTaxe) : {};
   etapes.push(prix !== undefined
-    ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `prix ${montantDit(prix)} ${devise}${prixDes ? ' (dès)' : ''}${SOURCE_PRIX_DITE[sourcePrix] ?? ''}` }
+    ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `prix ${montantDit(prix)} ${devise}${prixDes ? ' (dès)' : ''}${noteConditionnement}${SOURCE_PRIX_DITE[sourcePrix] ?? ''}` }
     : { nom: 'prix', statut: 'absent' });
   if (prixDouteux) doutes.push(`prix : ${prixDouteux}`);
 
@@ -745,9 +776,15 @@ export function extraireProduit(html: string, url: URL): Extraction {
   if (qVariante && prix !== undefined && !QUANTITE.test(nom ?? '') && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
     valeurs.push({ nom: 'Conditionnement', valeur: qVariante[1].replace('.', ','), unite: qVariante[2].toLowerCase() === 'l' ? 'L' : qVariante[2].toLowerCase() });
   }
+  if (conditionnement && prix !== undefined && !valeurs.some((v) => /^conditionnement$/i.test(v.nom))) {
+    valeurs.push({ nom: 'Conditionnement', valeur: String(conditionnement.valeur).replace('.', ','), unite: conditionnement.unite === 'l' ? 'L' : conditionnement.unite });
+  }
   return {
     ...(nom ? { nom: couper(nom, 180) } : {}),
     ...(prix !== undefined && devise ? { prix, devise, ...(prixDes ? { prixDes: true as const } : {}) } : {}),
+    ...(prix !== undefined && conditionnement ? { conditionnement } : {}),
+    ...(prix !== undefined && prixUnite ? { prixUnite } : {}),
+    ...(offresCond.length ? { offres: offresCond } : {}),
     ...(prix !== undefined && taxe.taxe ? { taxe: taxe.taxe } : {}),
     ...(taxe.prixTTC !== undefined ? { prixTTC: taxe.prixTTC } : {}),
     ...(dispo ? { dispo } : {}),
