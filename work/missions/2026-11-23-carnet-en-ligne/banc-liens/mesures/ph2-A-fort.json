@@ -1,0 +1,611 @@
+{
+ "le": "2026-11-24T18:55:06.222Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 1,
+  "parModele": {
+   "fort": 1
+  },
+  "depenseChf": 0.00876,
+  "cumuleVoieChf": 0.12233,
+  "reserveeEngageeChf": 0,
+  "refuses": 3,
+  "rejoues": 4,
+  "textesMax": 30000,
+  "ms": [
+   3433
+  ],
+  "msParModele": {
+   "fort": [
+    3433
+   ]
+  }
+ },
+ "taux": {
+  "liens": 4,
+  "prixSansJsonLd": "3/3 (100 %)",
+  "caracteristiquesSansJsonLd": "2/2 (100 %)",
+  "photoSansJsonLd": "3/3 (100 %)",
+  "nom": "4/4 (100 %)",
+  "prixAffiche": "4/4 (100 %)",
+  "photoAffichee": "4/4 (100 %)",
+  "caracteristiques": "3/3 (100 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/2 (0 %)",
+  "conditionnement": "2/2 (100 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 45,
+   "genres": [
+    "prix-kg",
+    "variantes",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "cond": "",
+   "inventions": [],
+   "ms": 4580,
+   "lu": {
+    "url": "https://www.braupartner.de/citra-r-hopfenpellets",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra® Hopfenpellets",
+    "prix": 7.29,
+    "devise": "EUR",
+    "prixDes": true,
+    "taxe": "ttc",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622",
+    "photos": [
+     "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 7,29 EUR (dès)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "taxe comprise · frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "7 caractéristiques"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : la lecture de la page entière dit 8 pour 100 g, les données 7.29"
+     },
+     {
+      "nom": "ia",
+      "statut": "douteux",
+      "detail": "relu par une IA plus forte ; ajouté : 4 caract. ; l'IA lit 8 EUR, la page publie 7.29 EUR"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Alpha",
+      "valeur": "ca. 14,0 %"
+     },
+     {
+      "nom": "Année de récolte",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Récolte",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Acide alpha",
+      "valeur": "ca. 14,0 %"
+     },
+     {
+      "nom": "Menge immer in",
+      "valeur": "100 g-Schritten bestellbar (z.B. 100 Gramm, 200 Gramm, 300 Gramm usw.)"
+     },
+     {
+      "nom": "Origine",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "0,0011 kg"
+     },
+     {
+      "nom": "Quantité minimale",
+      "valeur": "100 Gramm"
+     },
+     {
+      "nom": "Type de houblon",
+      "valeur": "Houblon aromatique"
+     },
+     {
+      "nom": "Type de pellets",
+      "valeur": "90"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "0,0011 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false,
+   "ia": {
+    "chf": 0.009646,
+    "ms": 4389,
+    "appels": 2,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 62,
+   "genres": [
+    "prix-barre",
+    "prix-kg",
+    "js-lourd",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "cond": "",
+   "inventions": [],
+   "ms": 1139,
+   "lu": {
+    "url": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+    "domaine": "fischer-lahr.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "(340DMF600) FISCHER-LAHR® Maische-Fermenter FM60 60 Liter, Gärbehälter Edelstahl, konisch mit Boden-Restauslauf, Gärröhrchen, Innen-Thermometer, Spanndeckel, Mini-Gärtank ideal zur",
+    "dispo": "en-stock",
+    "vendeur": "LAGERVERKAUF: 60 L Edelstahl Bier- und Fermentations-Gärfass, - FISCHER-LAHR",
+    "photo": "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden.jpg",
+    "photos": [
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~2.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~3.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~4.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~5.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~6.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~7.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~8.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~9.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~10.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~11.jpg",
+     "https://www.fischer-lahr.de/media/image/product/24420/md/edelstahl-maische-fermenter-60-l-mit-konischem-boden~12.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "fischer-lahr.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24 caractéristiques : 44 du tableau de la page, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix donné au poids, sans conditionnement : non retenu"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : prix, 5 caract."
+     }
+    ],
+    "prix": 179,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "conditionnement": {
+     "valeur": 60,
+     "unite": "l"
+    },
+    "valeurs": [
+     {
+      "nom": "Contenu",
+      "valeur": "60,00 l"
+     },
+     {
+      "nom": "Volume",
+      "valeur": "60 l"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "Inox AISI 304"
+     },
+     {
+      "nom": "Matière",
+      "valeur": "V2A inox"
+     },
+     {
+      "nom": "Dimensions",
+      "valeur": "D: 40 x H: 70 cm"
+     },
+     {
+      "nom": "Bezeichnung",
+      "valeur": "Maische-Fermenter FM60"
+     },
+     {
+      "nom": "Fass-Art",
+      "valeur": "Fermenter / Gärbehälter EdelstahlBier-Lagertank"
+     },
+     {
+      "nom": "Fass-Form",
+      "valeur": "Konisch mit Boden-Restauslauf"
+     },
+     {
+      "nom": "Geeignet",
+      "valeur": "für Alkohol unter 35 %"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "Particularités",
+      "valeur": "Fermenter mit Thermometer und Gärspund"
+     },
+     {
+      "nom": "Poids",
+      "valeur": "7,20",
+      "unite": "kg"
+     },
+     {
+      "nom": "Poids de l'article",
+      "valeur": "7,20 kg"
+     },
+     {
+      "nom": "✔ Einfache Reinigung & sicherer Stand",
+      "valeur": "Breite Deckelöffnung, stabile Edelstahlgriffe, drei Standfüße mit Schutzkappen."
+     },
+     {
+      "nom": "✔ Konischer Boden mit Doppel-Ablass",
+      "valeur": "Sediment setzt sich unten ab - klare Flüssigkeit lässt sich separat abziehen."
+     },
+     {
+      "nom": "✔ Luftdichter Deckel mit Gärröhrchen",
+      "valeur": "CO₂ kann entweichen, Sauerstoff bleibt draußen - Aroma bleibt erhalten."
+     },
+     {
+      "nom": "✔ Präzise Gärkontrolle",
+      "valeur": "Integriertes Innen-Thermometer (0 - 40 °C) für konstante Temperaturüberwachung im Fass."
+     },
+     {
+      "nom": "Catégorie",
+      "valeur": "Bier-Lagertank"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "4250699446764"
+     },
+     {
+      "nom": "Numéro d'article",
+      "valeur": "340DMF600"
+     },
+     {
+      "nom": "Poids d'expédition",
+      "valeur": "9,00 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.005387,
+    "ms": 1570,
+    "appels": 1,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 64,
+   "genres": [
+    "houblon",
+    "conditionnements",
+    "prix-solde",
+    "ttc"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "cond": "=",
+   "inventions": [],
+   "ms": 1139,
+   "lu": {
+    "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "domaine": "motlerhops.fr",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "CITRA® (US)",
+    "prix": 3.72,
+    "devise": "EUR",
+    "conditionnement": {
+     "valeur": 50,
+     "unite": "g"
+    },
+    "offres": [
+     {
+      "valeur": 50,
+      "unite": "g",
+      "prix": 3.72
+     },
+     {
+      "valeur": 250,
+      "unite": "g",
+      "prix": 14.06
+     },
+     {
+      "valeur": 500,
+      "unite": "g",
+      "prix": 24.97
+     },
+     {
+      "valeur": 1,
+      "unite": "kg",
+      "prix": 40.69
+     }
+    ],
+    "dispo": "en-stock",
+    "vendeur": "MotlerHops",
+    "photo": "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303",
+    "photos": [
+     "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "motlerhops.fr"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 3,72 EUR · 50 g"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; ajouté : 2 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Conditionnement",
+      "valeur": "50",
+      "unite": "g"
+     },
+     {
+      "nom": "Origine",
+      "valeur": "États-Unis"
+     },
+     {
+      "nom": "Taux d'acides alpha",
+      "valeur": "10 % - 15 %"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.001361,
+    "ms": 911,
+    "appels": 1,
+    "inconnus": 0
+   }
+  },
+  {
+   "n": 65,
+   "genres": [
+    "houblon",
+    "prix-au-gramme",
+    "paliers",
+    "suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "cond": "=",
+   "inventions": [],
+   "ms": 1131,
+   "lu": {
+    "url": "https://www.brauundrauchshop.ch/citra-136-2",
+    "domaine": "brauundrauchshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra 13.6%",
+    "prix": 104.4,
+    "devise": "CHF",
+    "conditionnement": {
+     "valeur": 1,
+     "unite": "kg"
+    },
+    "prixUnite": {
+     "prix": 0.1044,
+     "unite": "g",
+     "paliers": [
+      {
+       "des": 1000,
+       "prix": 0.08
+      }
+     ]
+    },
+    "offres": [
+     {
+      "valeur": 5,
+      "unite": "kg",
+      "prix": 245.7
+     },
+     {
+      "valeur": 20,
+      "unite": "kg",
+      "prix": 782.15
+     }
+    ],
+    "vendeur": "Brau- und Rauchshop",
+    "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg",
+    "photos": [
+     "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauundrauchshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "fiche produit publiée par le site"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "prix 104,40 CHF · 1 kg, prix donné à l'unité"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "frais de port non publiés"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 caractéristique"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "relu par une IA plus forte ; prix confirmé par la lecture de la page entière"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Citra",
+      "valeur": "13,6 %"
+     },
+     {
+      "nom": "Conditionnement",
+      "valeur": "1",
+      "unite": "kg"
+     }
+    ]
+   },
+   "sansJsonLd": true,
+   "ia": {
+    "chf": 0.001727,
+    "ms": 918,
+    "appels": 1,
+    "inconnus": 0
+   }
+  }
+ ]
+}

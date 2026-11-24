@@ -17,8 +17,9 @@ import { lireConditionnements, parTaille, prixParBase, uniteDeBase, type UniteQu
  * (12 000 caractères, ~3 500 jetons) : le coût est connu et réservé avant l'envoi.
  *
  * Garde (rien n'est inventé) : chaque valeur rendue doit être écrite dans le texte envoyé ; un prix absent du texte, une caractéristique
- * dont un nombre n'y figure pas, sont retirés et l'étape dit `douteux`. L'IA ne remplace jamais une valeur des données structurées :
- * elle complète ce qui manque ; un désaccord sur le prix se signale (`controle` douteux), le prix schema.org reste.
+ * dont un nombre n'y figure pas, sont retirés et l'étape dit `douteux`. D450 : l'IA lit toujours la page entière, en plus des données
+ * structurées ; deux lectures qui s'accordent (`accordPrix`) valent, un désaccord de prix est dit (`controle` douteux, Escalader) : aucune des
+ * deux ne gagne en silence. Les données structurées gardent le prix retenu tant que le brasseur ne tranche pas.
  */
 
 /**
@@ -182,7 +183,11 @@ const petit = (a: number, b: number) => Math.abs(a - b) <= Math.max(0.011, Math.
 export function accordPrix(p: PageLue, g: Gardee): boolean {
   if (p.prix === undefined || g.prix === undefined) return true;
   const base = (valeur: number, unite: UniteQuantite) => valeur * ({ g: 0.001, kg: 1, ml: 0.001, cl: 0.01, dl: 0.1, l: 1 } as const)[unite];
-  if (g.quantite) {
+  /* La page ne dit aucune quantité (ni conditionnement, ni offres, ni prix à l'unité) : une quantité que l'IA lit (« 60 l », la capacité d'une cuve) n'a rien à contredire ; seul le prix se compare. */
+  const pageSansQuantite = !p.conditionnement && !p.offres?.length && !p.prixUnite;
+  /* « dès 7,29 » sans quantité (prix dégressif par palier) et l'IA lit 8 € pour 100 g, écrits dans la page : le « dès » est le plus bas de tous les prix, 8 € le contient ; ce n'est pas un désaccord. */
+  if (precisePrixDes(p, g)) return true;
+  if (g.quantite && !pageSansQuantite) {
     const couples: Array<{ valeur: number; unite: UniteQuantite; prix: number }> = [
       ...(p.conditionnement ? [{ ...p.conditionnement, prix: p.prix }] : []),
       ...(p.offres ?? []),
@@ -194,7 +199,27 @@ export function accordPrix(p: PageLue, g: Gardee): boolean {
     if (unitaire && p.conditionnement && petit(prixParBase(g.prix!, unitaire.unite), p.prix)) return true;
     return false;
   }
-  return petit(g.prix, p.prix) || (p.prixTTC !== undefined && petit(g.prix, p.prixTTC));
+  return petit(g.prix, p.prix) || (p.prixTTC !== undefined && petit(g.prix, p.prixTTC)) || memePrixAvecTaxe(g.prix, p.prix);
+}
+
+/**
+ * R39, R41 : la page publie un prix « dès » SANS quantité (le plus bas de paliers dégressifs : 7,29 € dès 1 000 g) et l'IA lit, sur la page entière, un prix AVEC sa quantité
+ * (8 € pour 100 g, le plus petit conditionnement) au moins égal à ce « dès », dans la même devise : l'IA précise le « dès », elle ne le contredit pas. La quantité est gardée
+ * contre le texte (`garder`), le prix aussi.
+ */
+export function precisePrixDes(p: PageLue, g: Gardee): boolean {
+  return p.prix !== undefined && p.prixDes === true && !p.conditionnement && !p.offres?.length && !p.prixUnite
+    && g.prix !== undefined && g.quantite !== undefined && g.prix >= p.prix - 0.011 && (!g.devise || !p.devise || g.devise === p.devise);
+}
+
+/** Taux de TVA courants (CH 8,1 / 7,7 / 2,6 %, DE/AT 19 / 20 %, FR/IT 20 / 22 %, NL/BE 21 %). */
+const TAUX_TVA = [0.081, 0.077, 0.026, 0.19, 0.2, 0.21, 0.22, 0.07, 0.08, 0.1];
+/**
+ * L'un des prix est l'autre avec une TVA courante, au centime près (3 249,99 HT et 3 867,49 TTC = ×1,19) : la page et l'IA lisent le même prix, l'une HT, l'autre TTC.
+ * Une coïncidence au centime avec un taux courant est trop rare pour cacher un vrai désaccord.
+ */
+export function memePrixAvecTaxe(a: number, b: number): boolean {
+  return TAUX_TVA.some((t) => Math.abs(a * (1 + t) - b) <= 0.011 || Math.abs(b * (1 + t) - a) <= 0.011);
 }
 
 /** Sous ce nombre de mesures lues sur la page, l'IA complète (elle ne coûte que ~0,001 CHF sur Flash-Lite) : poids et dimensions seuls laissent souvent le volume ou la puissance. */
@@ -285,8 +310,8 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
      elle se répéterait et coûterait. */
   if (!direct && !panne && (options.regleAvant ? prixEnDoute : prixEnDoute || champsManquants(p, gardee, texte).length > 0)) {
     const fort = await demander('fort');
-    modeles.push('relu par une IA plus forte');
     if (fort) {
+      modeles.push('relu par une IA plus forte'); /* dit seulement si la relecture a eu lieu : une panne (budget, délai) ne se déguise pas en relecture */
       const g2 = garder(fort, texte);
       /* le prix en doute : celui du modèle fort, s'il en lit un, prend la place ; sinon ce qui est trouvé reste, la relecture complète seulement */
       const g2Prime = (g2.gardee.prix !== undefined && prixEnDoute) || !r;
@@ -327,6 +352,14 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
     if (gardee.parUnite && gardee.quantite.valeur === 1) { out.prixUnite = { prix: gardee.prix!, unite: gardee.quantite.unite }; out.prix = prixParBase(gardee.prix!, gardee.quantite.unite); out.conditionnement = { valeur: 1, unite: uniteDeBase(gardee.quantite.unite) }; }
     else out.conditionnement = { ...gardee.quantite };
     delete out.prixDes;
+  }
+  /* R41 : le « dès » sans quantité de la page devient le prix du plus petit conditionnement que l'IA lit avec sa quantité (écrite dans la page) ; le « dès » plus bas est dit dans l'étape. */
+  if (precisePrixDes(p, gardee) && gardee.prix !== undefined && gardee.quantite) {
+    const des = p.prix;
+    out.prix = gardee.prix; delete out.prixDes; delete out.prixTTC;
+    if (gardee.parUnite && gardee.quantite.valeur === 1) { out.prixUnite = { prix: gardee.prix, unite: gardee.quantite.unite }; out.prix = prixParBase(gardee.prix, gardee.quantite.unite); out.conditionnement = { valeur: 1, unite: uniteDeBase(gardee.quantite.unite) }; }
+    else out.conditionnement = { ...gardee.quantite };
+    ajouts.push(`prix du plus petit conditionnement (${gardee.quantite.valeur} ${gardee.quantite.unite}) ; la page dit « dès ${des} »`);
   }
   etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length || gardee.prix !== undefined ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : gardee.prix !== undefined && !contreditFinal ? 'prix confirmé par la lecture de la page entière' : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {

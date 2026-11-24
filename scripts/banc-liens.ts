@@ -203,6 +203,8 @@ export const PLAFOND_SORTIE_IA = 1500;
 /** La voie qui dépense : ses lignes du journal portent `voie`, et le budget (`--budget`) est CUMULÉ sur toutes ses lignes, pas par lancement. */
 const VOIE_IA = (() => { const i = process.argv.indexOf('--voie'); return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : 'liens-modeles'; })();
 
+const SEULEMENT_LITE = (() => { const i = process.argv.indexOf('--modeles'); return i >= 0 && process.argv[i + 1] === 'lite'; })();
+
 export interface BancIA {
   pour(n: number): AppelIA;
   /** Coût (CHF) et durée (ms) des appels d'un lien, rejoués compris (le coût d'un rejeu vient du journal ou du fichier de mesure de l'appel). */
@@ -263,6 +265,8 @@ export async function bancIA(mode: 'seche' | 'reel', budgetChf: number, secretPa
         noter1(n, mesure?.chf ?? null, mesure?.ms ?? null);
         return JSON.parse(fs.readFileSync(fichierCache, 'utf8')) as ReponseIA;
       }
+      // `--modeles lite` : le banc ne mesure que la première lecture (Flash-Lite) ; la relecture forte n'est pas appelée (elle coûte dix fois plus) et se mesure à part, sur les liens en doute.
+      if (SEULEMENT_LITE && m !== 'lite') throw new Error('modèle plus fort non mesuré (--modeles lite)');
       // Arrêt net : la réservation conservatrice (1 octet = 1 jeton) doit tenir dans ce qui reste du budget de la voie, appels en vol compris.
       if (memoire.cumuleVoie + depense + engage + reserve > budgetChf) { refuses++; throw new Error(`budget du banc atteint (${budgetChf} CHF, dont ${Math.round((memoire.cumuleVoie + depense) * 1e5) / 1e5} déjà dépensés)`); }
       appels++; parModele[m] = (parModele[m] ?? 0) + 1;

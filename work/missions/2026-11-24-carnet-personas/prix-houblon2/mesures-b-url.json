@@ -1,0 +1,270 @@
+{
+ "le": "2026-11-24T18:57:51.510Z",
+ "limite": 0.2,
+ "cumulJournalVoie": 0.21052,
+ "lignes": [
+  {
+   "n": 33,
+   "lien": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+   "http": 200,
+   "ms": 1422,
+   "chf": 0.00152,
+   "jetonsPage": 2425,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 6.7,
+    "devise": "CHF",
+    "quantite": 50,
+    "unite": "g",
+    "parUnite": false,
+    "taxe": "ttc",
+    "prixDes": null,
+    "nom": "Citra Hopfenpellets"
+   },
+   "verite": {
+    "prix": 6.7,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 34,
+   "lien": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+   "http": 200,
+   "ms": 1749,
+   "chf": 0.002053,
+   "jetonsPage": 2438,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 7.25,
+    "devise": "CHF",
+    "quantite": 50,
+    "unite": "g",
+    "parUnite": false,
+    "taxe": "ttc",
+    "prixDes": null,
+    "nom": "Mosaic Hopfenpellets"
+   },
+   "verite": {
+    "prix": 7.25,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 35,
+   "lien": "https://hopfenshop.ch/produkt/citra-hopfen/",
+   "http": 200,
+   "ms": 1671,
+   "chf": 0.002373,
+   "jetonsPage": 4273,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS",
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 4,
+    "devise": "CHF",
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": null,
+    "prixDes": true,
+    "nom": "Citra"
+   },
+   "verite": {
+    "prix": 7.5,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 62,
+   "lien": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+   "http": 200,
+   "ms": 1860,
+   "chf": 0.008554,
+   "jetonsPage": 19188,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 179,
+    "devise": "EUR",
+    "quantite": 60,
+    "unite": "l",
+    "parUnite": false,
+    "taxe": "ttc",
+    "prixDes": false,
+    "nom": "FISCHER-LAHR® Maische-Fermenter FM60 60 Liter, Gärbehälter Edelstahl, konisch mit Boden-Restauslauf, Gärröhrchen, Innen-Thermometer, Spanndeckel, Mini-Gärtank ideal zur flüssigen Fermentation bzw. Hefe-Vergärung bei Wein, Bier, Most / Saft-Fermentation,"
+   },
+   "verite": {
+    "prix": 179,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 3,
+   "lien": "https://www.ggmgastro.com/de-de-eur/edelstahl-kuehlzelle-2100x1200mm-3-7m3-inkl-kuehlaggregat-kf2112e-wkaf5end",
+   "http": 200,
+   "ms": 1846,
+   "chf": 0.003663,
+   "jetonsPage": 5443,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 3249.99,
+    "devise": "EUR",
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": "ht",
+    "prixDes": null,
+    "nom": "Edelstahl Kühlzelle - 2100x1200mm - 3,7m³ - inkl. Kühlaggregat"
+   },
+   "verite": {
+    "prix": 3249.99,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 5,
+   "lien": "https://www.ggmgastro.com/en-gb-gbp/stainless-steel-commercial-sink-unit-eco-600x600mm-with-single-bowl-centre-with-undershelf-with-upstand-stk66bm1-eco",
+   "http": 200,
+   "ms": 3409,
+   "chf": 0.010073,
+   "jetonsPage": 22276,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 171.53,
+    "devise": "GBP",
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": "ht",
+    "prixDes": false,
+    "nom": "Stainless Steel Commercial Sink Unit ECO - 600x600mm - with Single Bowl Centre - with Undershelf - with Upstand"
+   },
+   "verite": {
+    "prix": 172.53,
+    "conditionnement": null
+   },
+   "juste": "✗ prix faux"
+  },
+  {
+   "n": 10,
+   "lien": "https://kegland.com.au/products/fermzilla-60l-all-rounder-pressure-rated-keg-fermenter",
+   "http": 200,
+   "ms": 1203,
+   "chf": 0.003587,
+   "jetonsPage": 7652,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 79.95,
+    "devise": "AUD",
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": null,
+    "prixDes": null,
+    "nom": "FermZilla All Rounder 60L - Includes Stand, Tank, Stainless Handle, Lid, Airlock"
+   },
+   "verite": {
+    "prix": 79.95,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 27,
+   "lien": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+   "http": 200,
+   "ms": 3113,
+   "chf": 0.001013,
+   "jetonsPage": 1094,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_ERROR"
+   ],
+   "lu": {
+    "prix": null,
+    "devise": null,
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": null,
+    "prixDes": null,
+    "nom": null
+   },
+   "verite": {
+    "prix": 72.5,
+    "conditionnement": null
+   },
+   "juste": "?"
+  },
+  {
+   "n": 29,
+   "lien": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+   "http": 200,
+   "ms": 1505,
+   "chf": 0.004026,
+   "jetonsPage": 9060,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 401,
+    "devise": "CHF",
+    "quantite": 1,
+    "unite": "kg",
+    "parUnite": null,
+    "taxe": null,
+    "prixDes": null,
+    "nom": "Spectrum CITRA 1 kg"
+   },
+   "verite": {
+    "prix": 401,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  },
+  {
+   "n": 40,
+   "lien": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+   "http": 200,
+   "ms": 7523,
+   "chf": 0.041795,
+   "jetonsPage": 105906,
+   "statuts": [
+    "URL_RETRIEVAL_STATUS_SUCCESS",
+    "URL_RETRIEVAL_STATUS_SUCCESS",
+    "URL_RETRIEVAL_STATUS_SUCCESS"
+   ],
+   "lu": {
+    "prix": 1239,
+    "devise": "CHF",
+    "quantite": null,
+    "unite": null,
+    "parUnite": null,
+    "taxe": "ttc",
+    "prixDes": null,
+    "nom": "Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm"
+   },
+   "verite": {
+    "prix": 1239,
+    "conditionnement": null
+   },
+   "juste": "= juste"
+  }
+ ]
+}

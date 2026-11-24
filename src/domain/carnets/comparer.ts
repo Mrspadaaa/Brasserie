@@ -891,12 +891,17 @@ export function compromisDe(t: Tableau | null): string | null {
   const chiffre = criteres.find(k => k.sens === 'plus' || k.sens === 'moins');
   const memeDevise = (x: LigneTableau) => (x.devise ?? 'CHF') === (premier.devise ?? 'CHF');
   const p1 = premier.prixCentimes;
+  /* R40 (PX) : classé au kilo (ou au litre), l'écart se dit au même étalon (« 5,21 CHF/kg de moins »), jamais la différence entre deux sachets de tailles différentes (3,72 € les 50 g et 8 € les 100 g : « 4,28 EUR de moins » comparait deux quantités). */
+  const parU = t.prixParUnite;
+  const cmp = (x: LigneTableau): number | undefined => (parU ? x.prixClasse : memeDevise(x) ? x.prixCentimes : undefined);
+  const c1 = cmp(premier);
+  const txtEcart = (c: number) => (parU ? `${prixTexte(c, 'CHF')}${parU === 'volume' ? '/L' : '/kg'}` : prixTexte(c, premier.devise));
   const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
   /* C50-6 : l'unité se dit une fois (« 242 L », jamais « 242 l L ») */
   const val = valeurDite;
-  if (p1 !== undefined && criteres.length > 0) {
+  if (c1 !== undefined && criteres.length > 0) {
     /* tour 3, PCN-106 : jamais une proposition sous son minimum (ou au-dessus de son maximum) */
-    const candidats = L.slice(1).filter(x => !x.horsSeuil && x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
+    const candidats = L.slice(1).filter(x => !x.horsSeuil && cmp(x) !== undefined && cmp(x)! < c1
       && ouiNon.every(k => nombreCellule(x, k) !== null && nombreCellule(x, k) === nombreCellule(premier, k)));
     if (candidats.length) {
       const perte = (x: LigneTableau) => {
@@ -905,7 +910,7 @@ export function compromisDe(t: Tableau | null): string | null {
         return a === null || b === null ? Number.POSITIVE_INFINITY : Math.abs(a - b);
       };
       const c = [...candidats].sort((x, y) => perte(x) - perte(y) || x.prixCentimes! - y.prixCentimes!)[0];
-      const parts = [`${rangF(c.rang!)}, ${prixTexte(c.prixCentimes, c.devise)}, soit ${prixTexte(p1 - c.prixCentimes!, c.devise)} de moins que la 1re`];
+      const parts = [`${rangF(c.rang!)}, ${prixTexte(c.prixCentimes, c.devise)}, soit ${txtEcart(c1 - cmp(c)!)} de moins que la 1re`];
       if (chiffre) {
         const vc = val(c, chiffre), v1 = val(premier, chiffre);
         if (vc && v1 && vc !== v1) parts.push(`${avecArticle(chiffre.nom, chiffre.sens)} ${vc} au lieu de ${v1}`);
@@ -919,8 +924,9 @@ export function compromisDe(t: Tableau | null): string | null {
   const seuls = ouiNon.filter(k => nombreCellule(premier, k) === 1 && L.slice(1).every(x => !!x.horsSeuil || nombreCellule(x, k) !== 1));
   if (seuls.length) {
     const d2 = L[1];
-    const ecart = p1 !== undefined && d2.prixCentimes !== undefined && memeDevise(d2) ? d2.prixCentimes - p1 : null;
-    const tx = ecart === null || ecart === 0 ? '' : ecart < 0 ? `, pour ${prixTexte(-ecart, premier.devise)} de plus que la 2e` : `, et ${prixTexte(ecart, premier.devise)} de moins que la 2e`;
+    const e2 = cmp(d2);
+    const ecart = c1 !== undefined && e2 !== undefined ? e2 - c1 : null;
+    const tx = ecart === null || ecart === 0 ? '' : ecart < 0 ? `, pour ${txtEcart(-ecart)} de plus que la 2e` : `, et ${txtEcart(ecart)} de moins que la 2e`;
     /* un article qui tient aussi ce critère mais hors de son seuil : « la seule » dit aussi le seuil, sinon la phrase contredit le tableau */
     const horsTenants = L.slice(1).filter(x => !!x.horsSeuil && seuls.some(k => nombreCellule(x, k) === 1));
     const seuil = !horsTenants.length ? '' : horsTenants.some(x => Object.values(x.horsSeuil!).some(v => /maximum/.test(v))) ? ' et votre maximum' : ' et votre minimum';
@@ -932,9 +938,10 @@ export function compromisDe(t: Tableau | null): string | null {
     /* C48-4 (décision du pilote (b), 24.11) : sans critère, le compromis ne recopie pas le tableau (prix, dimensions, valeurs lues y sont déjà,
        C48 : « il recopie le tableau, on n'apprend rien »). Il ne dit que ce que le tableau ne dit pas : la différence de prix, et qu'aucun
        critère ne départage. Rien à dire de plus : pas d'encadré. */
-    const autres = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
-    const moinsCher = p1 !== undefined && autres.length > 0 && autres.every(x => x.prixCentimes! >= p1);
-    const ecart = moinsCher && deuxieme.prixCentimes !== undefined && memeDevise(deuxieme) && deuxieme.prixCentimes > p1! ? prixTexte(deuxieme.prixCentimes - p1!, premier.devise) : null;
+    const autres = L.slice(1).filter(x => cmp(x) !== undefined);
+    const moinsCher = c1 !== undefined && autres.length > 0 && autres.every(x => cmp(x)! >= c1);
+    const c2 = cmp(deuxieme);
+    const ecart = moinsCher && c2 !== undefined && c2 > c1! ? txtEcart(c2 - c1!) : null;
     if (!ecart) return null;
     /* C58-4 (R32) : le gain dit, la perte aussi : ce que la 2e a de plus, avec les valeurs qui les distinguent (jamais inventées) */
     const perte = distinguerPar(t, premier, deuxieme);
@@ -944,9 +951,9 @@ export function compromisDe(t: Tableau | null): string | null {
   /* C50-5 (sa réponse « Oui », 24.11, qui remplace la phrase de g01-8) : le compromis dit ce qu'on GAGNE et ce qu'on PERD : l'écart de prix avec
      l'article voisin par le prix, contre l'écart sur le critère qui classe ou, à défaut, sur ce qui distingue les deux articles. Chaque
      valeur vient du tableau, aucune n'est inventée. */
-  const voisins = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x));
-  const rival = p1 !== undefined ? [...voisins].sort((a, b) => a.prixCentimes! - b.prixCentimes! || a.rang! - b.rang!)[0] : undefined;
-  const ecartPrix = rival && p1 !== undefined ? rival.prixCentimes! - p1 : 0;
+  const voisins = L.slice(1).filter(x => cmp(x) !== undefined);
+  const rival = c1 !== undefined ? [...voisins].sort((a, b) => cmp(a)! - cmp(b)! || a.rang! - b.rang!)[0] : undefined;
+  const ecartPrix = rival && c1 !== undefined ? cmp(rival)! - c1 : 0;
   const differe = (k: Colonne) => { if (!rival) return false; return differeEntre(rival, premier, k); };
   const dits: string[] = [];
   for (const k of criteres) {
@@ -957,9 +964,9 @@ export function compromisDe(t: Tableau | null): string | null {
     dits.push(`${avecArticle(k.nom, k.sens)} ${v}${vr && vr !== v ? ` au lieu de ${vr}` : ''}`);
   }
   if (prix) {
-    const moinsCher = voisins.length > 0 && voisins.every(x => x.prixCentimes! >= p1!);
+    const moinsCher = voisins.length > 0 && c1 !== undefined && voisins.every(x => cmp(x)! >= c1);
     const vs = rival ? rangF(rival.rang!) : '';
-    const ecart = ecartPrix === 0 ? '' : ecartPrix > 0 ? `, ${prixTexte(ecartPrix, premier.devise)} de moins que ${vs}` : `, ${prixTexte(-ecartPrix, premier.devise)} de plus que ${vs}`;
+    const ecart = ecartPrix === 0 ? '' : ecartPrix > 0 ? `, ${txtEcart(ecartPrix)} de moins que ${vs}` : `, ${txtEcart(-ecartPrix)} de plus que ${vs}`;
     dits.push(`${moinsCher ? `${prix}, la moins chère` : prix}${ecart}`);
   } else dits.push('prix non lu');
   /* aucun critère chiffré ne les départage (valeurs égales, ou non chiffrées) : ce qui les distingue, la valeur chiffrée qui diffère (le volume) */
