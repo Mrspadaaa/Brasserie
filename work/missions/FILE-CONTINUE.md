@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T18:58:57.804Z
+pause: 2026-11-24T19:00:19.721Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -32,6 +32,7 @@ pause: 2026-11-24T18:58:57.804Z
 - [ ] Tour 61 en ligne (index-CHXDhK_A.js : c59-fix, c59-fix2, aiTask) : test critique-61 (LE-1 en ligne compris) ; décision pilote C59-7 : prix rendu « ≈ » sur 3 surfaces, carte au converti (D447) : à montrer dans les mini maquettes du Carnet
 - [ ] Carnet, sa plainte du 24.11 16:46 : personas FAITS (brasseur 23 pb, compact 29 pb) ; voie maquettes en cours (work/missions/2026-11-24-carnet-personas/maquettes/) ; puis artefact privé neuf (page de choix) au brasseur, puis port de son choix ; + tableau : 2 ou 3 caractéristiques par ligne (ses mots)
 - [ ] Voie prix-houblon en cours (R39..R42 : prix avec conditionnement, CHF/kg pour comparer, Relire qui retrouve un prix, en-tête « prix EUR ») ; puis aiTask (son accord : « si il faut modifier iatask c est pas un problème ») et tour suivant ; + ESCALADER-SUR-MANQUE (Escalader dès qu un champ manque) ; + D450 (IA toujours sur la page entière, accord des deux lectures) ; + comparer lecture markdown (A) et url_context (B)
+- [ ] NOTE-EXPLOITEE (ses mots 24.11 19:29) : une note qui parle d un article est rattachée par l IA (rangement, carnetIA.ts) et devient un fait visible (dispo, délai, doute) qui pèse dans le classement ; tests rouges par une voie, correctif par une autre, après prix-houblon (mêmes fichiers)
 - [x] Écriture à l ouverture d un carnet (LE-1) : cause reprendreLectures (lecture de lien gardée rejouée seule), corrigé 6f2d66fb9, en ligne tour 60 (index-DfTdaO8-.js) ; à vérifier en ligne par le prochain critique
 - [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK

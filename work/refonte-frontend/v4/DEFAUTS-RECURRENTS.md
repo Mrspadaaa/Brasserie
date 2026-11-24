@@ -531,3 +531,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## ESCALADER-SUR-MANQUE (24.11)
 - Ses mots : « Et pourquoi il y a pas de bouton pour escaler la lecture ? » (Relire du Citra Brau- und Rauchshop : « Page relue », prix « ? »).
 - Contrôle : un article lu dont un champ attendu manque (prix « ? », nom, caractéristiques sous le seuil) montre « Escalader » (Neon, D449) sur sa fiche et dans Comparer, pas seulement sur un lien mort ; échoue sur index-CHXDhK_A.js (Escalader seulement sur lien mort, critique-47).
+
+## NOTE-EXPLOITEE (24.11)
+- Ses mots : « J'ai ajouté une notre, l'ia devrait en faire qqch » (note « Semble difficile à obtenir sur le site français » dans Houblons citra).
+- Contrôle : une note qui parle d'un article (vendeur, dispo, délai, doute, prix) est rattachée par l'IA à cet article et en devient un fait visible (fiche, ligne du tableau, Comparer, et le classement en tient compte) ; échoue sur index-CHXDhK_A.js (la note reste à part, rien ne change).

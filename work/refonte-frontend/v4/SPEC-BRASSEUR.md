@@ -2886,3 +2886,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (lecture des liens, url_context 57/57 réservé aux pages bloquées) : « ????? Bah alors ?? »
 
 - 24.11 (Carnet, tableau « rang · article · CHF », capture plaintes/2026-11-24-tableau-rang.jpg) : « Pas juste le prix, 2 ou 3 caractéristiques principales »
+
+- 24.11 19:29 (Carnet Houblons citra, note « Semble difficile à obtenir sur le site français », capture plaintes/2026-11-24-note-ia.jpg) : « J ai ajouté une notre, l ia devrait en faire qqch »
