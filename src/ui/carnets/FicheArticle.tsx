@@ -23,7 +23,7 @@ import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, tableau as calculerTableau, valeursLuesDe, type Place } from '../../domain/carnets/comparer';
 import { memeCaracteristique, trierParDecision } from '../../../functions/src/lienFusion';
 import { parsePrix } from '../../domain/finance/upgradeRing';
-import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import { dateCourte, mentionTaxe, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
 import { BoutonEscalader } from './BoutonEscalader';
 import { articleAEscalader, raisonEscalade } from '../../domain/carnets/manques';
@@ -224,6 +224,13 @@ export function FicheArticle(p: FicheArticleProps) {
   const [pour] = usePour(p.titreCarnet);
   const conds = matiere ? conditionnementsDe(regle, p.taux) : [];
   const ligneChoisie = ligneDuPour(conds, regle, pour, p.taux);
+  /* R54 (C66-4) : un houblon vendu en plusieurs conditionnements dit le prix du conditionnement COCHÉ (1 kg : 62,20), jamais celui d'un autre (le sachet de 100 g : 6,70) : le bloc Offre, le bouton Choisir et « Part dans À venir » disent le même */
+  const prixCoche: string | null = conds.length > 1 && ligneChoisie && !ligneChoisie.auGramme
+    ? (ligneChoisie.chfKg?.estime ? `≈${montant(Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100)} CHF rendu` : prixTexte(ligneChoisie.centimes, ligneChoisie.devise))
+    : null;
+  const detailCoche: string | null = prixCoche && ligneChoisie
+    ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
+    : null;
   const aromes = houblon ? aromesDe(regle) : [];
   const recolte = houblon ? recolteDe(regle) : null;
   const puceDoute = libelleDoute(regle.doute);
@@ -356,8 +363,9 @@ export function FicheArticle(p: FicheArticleProps) {
             {offres.map(o => {
               const moi = o.id === a.id;
               const t2 = prixUnique(o, p.taux);
-              const p2 = t2?.approx ? `≈${t2.montant} ${t2.devise}${t2.rendu ? ' rendu' : ''}` :prixTexte(o.prixCentimes, o.devise ?? 'CHF');
-              const d2 = detailPrix(o, p.taux);
+              const p2 = moi && prixCoche ? prixCoche : t2?.approx ? `≈${t2.montant} ${t2.devise}${t2.rendu ? ' rendu' : ''}` :prixTexte(o.prixCentimes, o.devise ?? 'CHF');
+              /* R49 : un prix donné à l'unité garde sa ligne (« 0,1044 CHF/g · 80,00 CHF/kg dès 1 kg ») */
+              const d2 = moi && detailCoche && !a.prixUnite ? detailCoche : detailPrix(o, p.taux);
               const corps = (
                 <>
                   {offres.length > 1 && <span className={`cn-radio${moi ? ' cn-radio-on' : ''}`} aria-hidden />}
@@ -425,7 +433,7 @@ export function FicheArticle(p: FicheArticleProps) {
       {!p.choisi && p.onChoisir && (
         <>
           <button type="button" className="cn-action cn-action-vert cn-large" onClick={p.onChoisir}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${texteQuantite(pour)}` : ''}</button>
-          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prix ? <>, <PrixMono texte={prix} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
+          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prixCoche ?? prix ? <>, <PrixMono texte={(prixCoche ?? prix)!} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}
     </article>

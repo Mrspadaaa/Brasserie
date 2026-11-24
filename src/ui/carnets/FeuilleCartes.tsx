@@ -6,13 +6,13 @@ import { CarteClassee, CarteMatiere, estExemple, Glisse, nombreValeur } from './
 import { teteDeClassement, type TableauV } from './Comparer';
 import { Provenance, type ArticleV, type ContenuCarnetV } from './EtatIA';
 import { colonnesCarnet, LigneARelire, lignesClassees, usePour } from './TableauCarnet';
-import { aDesPaliers, estCarnetDeMatiere, poserQuantitePour, type ArticleRegle } from './tableauRegles';
+import { aDesPaliers, classerAuKilo, estCarnetDeMatiere, poserQuantitePour, type ArticleRegle } from './tableauRegles';
 
 /**
  * `onRetirer`, `onDeplacer` et `carnetsVers` (facultatifs, ceux de CarnetOuvertProps) : avec eux, chaque carte d'un carnet de matière glisse vers la gauche
  * (Déplacer, Retirer, maquettes2/v01 « articles ») ; sans eux, la feuille est celle d'avant.
  */
-export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, onOuvrir, onVeille, taux, onTaux, onRetirer, onDeplacer, carnetsVers }: {
+export function FeuilleCartes({ carnet: k, titre, tableau: tableauBrut, aRelire, onFermer, onOuvrir, onVeille, taux, onTaux, onRetirer, onDeplacer, carnetsVers }: {
   taux?: number; onTaux?: (t: number) => void; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; onFermer: () => void; onOuvrir: (id: string) => void; onVeille?: (id: string, active: boolean) => void;
   onRetirer?: (articleId: string) => void; onDeplacer?: (articleId: string, vers: string) => void; carnetsVers?: readonly { id: string; titre: string }[];
 }) {
@@ -23,6 +23,8 @@ export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, on
   }, [onFermer]);
   const [pour] = usePour(titre);
   const [vers, setVers] = useState<string | null>(null);
+  /* R53 (C66-3) : un seul classement au kilo rendu pour tout le carnet : la carte « 1re » est la moins chère à la quantité d'achat */
+  const tableau = classerAuKilo(tableauBrut, k.articles as never, pour, taux);
   const lignes = lignesClassees(tableau, aRelire);
   /* les cartes du conditionnement (maquette v01) ne naissent que là où le prix change avec la quantité ; ailleurs la carte classée d'avant */
   const regle = k.articles as unknown as ArticleRegle[];
@@ -51,7 +53,7 @@ export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, on
             if (!a) return null;
             /* le choix du carnet ne se retire pas d'ici : son choix se revoit d'abord (BL-3) */
             const actions = onRetirer && a.id !== k.choix?.articleId
-              ? { onRetirer: () => onRetirer(a.id), ...(onDeplacer && autres.length > 0 ? { onDeplacer: () => setVers(vers === a.id ? null : a.id) } : {}) }
+              ? { onRetirer: () => { onFermer(); onRetirer(a.id); }, ...(onDeplacer && autres.length > 0 ? { onDeplacer: () => setVers(vers === a.id ? null : a.id) } : {}) }
               : undefined;
             const carte = matiere
               ? <CarteMatiere article={a} rang={l.ecarte ? null : l.rang} taux={taux} pour={pour} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} carnetTitre={titre}
@@ -68,7 +70,7 @@ export function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, on
                 {vers === a.id && onDeplacer && (
                   <div className="cn-feuille cn-articles-vers" role="menu" aria-label={`Déplacer « ${a.nom ?? 'article'} » vers`}>
                     {autres.map(c => (
-                      <button key={c.id} type="button" role="menuitem" className="cn-feuille-item cn-feuille-vers" onClick={() => { onDeplacer(a.id, c.id); setVers(null); }}>
+                      <button key={c.id} type="button" role="menuitem" className="cn-feuille-item cn-feuille-vers" onClick={() => { setVers(null); onFermer(); onDeplacer(a.id, c.id); }}>
                         <ArrowRightToLine size={18} aria-hidden /> <span className="cn-mut">dans</span> {c.titre}
                       </button>
                     ))}

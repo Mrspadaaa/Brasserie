@@ -13,7 +13,7 @@ import { etendue, pastilleFacon, sansEcarte, texteMoinsBien, type Ligne, type Se
 import { liesParNbsp } from './insecable';
 import { jetonArome } from '../../domain/levure/couleurs';
 import {
-  alphaDe, aromesCommuns, aDesPaliers, choisirMesures, colonnesMatiere, ecouterQuantitePour, estCarnetDeMatiere, largeursBarres, lignesSelonLaQuantite, meilleursPrixAuKilo,
+  alphaDe, aromesCommuns, aDesPaliers, choisirMesures, classerAuKilo, colonnesMatiere, ecouterQuantitePour, estCarnetDeMatiere, largeursBarres, lignesSelonLaQuantite, meilleursPrixAuKilo,
   phraseSelonLaQuantite, plusBasDe, poserQuantitePour, prixAuKilo, prixParMesure, quantitePour, QUANTITES_POUR, recolteDe, texteChfKg, texteQuantite, uniteExtensive, type ArticleRegle
 } from './tableauRegles';
 
@@ -144,13 +144,15 @@ export function lignesClassees(t: TableauV, aRelire: ArticleV[], sauf?: string):
   return t.lignes.filter(l => !relire.has(l.articleId)).map(l => (l.rang !== null && !l.ecarte ? { ...l, rang: ++n } : l)).filter(l => l.articleId !== sauf);
 }
 
-export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir, conclusion, taux }: { taux?: number; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; sep: Separation | null; sauf?: string; onOuvrir: (id: string) => void; conclusion?: React.ReactNode }) {
+export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire, sep, sauf, onOuvrir, conclusion, taux }: { taux?: number; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; sep: Separation | null; sauf?: string; onOuvrir: (id: string) => void; conclusion?: React.ReactNode }) {
+  const [pour] = usePour(titre);
+  /* R53 (C66-3, C65-5) : le rang, la case verte, les barres et le compromis disent le même gagnant : le moins cher au kilo rendu à la quantité d'achat */
+  const tableau = classerAuKilo(tableauBrut, k.articles as never, pour, taux);
   const lignes = lignesClassees(tableau, aRelire, sauf);
   const art = (id: string) => k.articles.find(a => a.id === id);
   /* D451 n° 7 (B7) : une matière pesée (houblon) se lit α · récolte · CHF/kg à la quantité d'achat (« pour 1 kg ») ; le reste, 2 mesures puis le prix */
   const enLiceArts = lignes.filter(l => !l.ecarte).map(l => art(l.articleId)).filter((a): a is ArticleV => !!a);
   const matiere = estCarnetDeMatiere(enLiceArts as never);
-  const [pour] = usePour(titre);
   const cols = matiere ? colonnesMatiereCarnet(enLiceArts as never) : colonnesCarnet(tableau);
   const prixKg = new Map(enLiceArts.map(a => [a.id, prixAuKilo(a as never, pour, taux)] as const));
   const meilleurs = new Map(cols.map(c => {

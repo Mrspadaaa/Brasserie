@@ -485,7 +485,7 @@ export function analyserLigne(texte: string, seule = true): LigneLocale {
   const genre = genreLocal(texte, { prix: !!prix, url: !!lien });
   const n = normaliser(texte);
   const sorte: SorteLocale = lien || prix ? 'article'
-    : genre !== 'question' && genre !== 'a-acheter' && (MOTS_CRITERE.test(n) || (quantites.length > 0 && genre === 'note')) ? 'critere'
+    : genre !== 'question' && genre !== 'a-acheter' && (MOTS_CRITERE.test(n) || (quantites.length > 0 && genre === 'note' && extraireCriteres(texte).criteres.some(k => !!k.caracteristique))) ? 'critere'
       : 'note';
   const forme = sorte === 'critere' ? critereDe(texte, seule) : mettreEnForme(texte);
   return {

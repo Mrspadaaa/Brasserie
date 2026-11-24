@@ -8,6 +8,7 @@
 import { parseDecimal } from '../../ui/numericInput';
 import { extraireCriteres, quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { articleAEscalader } from './manques';
+import { reunirDoublons } from './doublonsLus';
 import { articleHonnete, dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, prixPourUnite, quantiteArticle, textePrixUnite, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
 import { aromesEnFrancais, estLigneAromes } from '../../../functions/src/aromesFrancais';
@@ -176,7 +177,8 @@ export function valeursLuesDe(a: Pick<Article, 'valeurs'> & { nom?: string }): R
     const aAlpha = Object.keys(a.valeurs).some(k => normaliser(k) === 'alpha');
     /* C59-9 : les arômes déjà stockés en allemand ou en anglais se lisent en français (la lecture serveur le fait pour les pages lues dès maintenant) */
     const entrees = Object.entries(a.valeurs).map(([nom, x]) => ({ ...x, nom: aAlpha ? nom : nomAlpha(a.nom, nom, x), ...(estLigneAromes(nom) && typeof x.valeur === 'string' ? { valeur: aromesEnFrancais(x.valeur) } : {}), ...(estLigneStyles(nom) && typeof x.valeur === 'string' ? { valeur: stylesEnFrancais(x.valeur) } : {}), ...(x.origine !== 'vous' && estLigneOrigine(nom) && typeof x.valeur === 'string' ? { valeur: paysEnFrancais(x.valeur) } : {}) }));
-    const fusion = fusionnerCaracteristiques(entrees.filter(x => x.origine !== 'vous').map(mesureNormalisee));
+    /* C65-6 / C66-6 : une ligne par caractéristique, en français (« Année de récolte », « Récolte » et « Ernte » ne font qu'une) */
+    const fusion = reunirDoublons(fusionnerCaracteristiques(entrees.filter(x => x.origine !== 'vous').map(mesureNormalisee)));
     v = Object.fromEntries([...fusion, ...entrees.filter(x => x.origine === 'vous')].map(({ nom, ...x }) => [nom, x as Valeur]));
     LUES.set(a.valeurs, v);
   }

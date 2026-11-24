@@ -117,15 +117,18 @@ const KG: Record<string, number> = { g: 0.001, kg: 1 };
  */
 export function paliersDe(a: ArticleRegle): Palier[] {
   const masse = (v: number, u: string) => (KG[u] !== undefined ? v * KG[u] : null);
-  if (a.offres?.length) {
-    const p = a.offres.map(o => ({ kg: masse(o.valeur, o.unite), centimes: o.prixCentimes })).filter((x): x is Palier => x.kg !== null && x.kg > 0 && Number.isFinite(x.centimes));
-    if (p.length) return p.sort((x, y) => x.kg - y.kg);
-  }
+  const deOffres: Palier[] = (a.offres ?? []).map(o => ({ kg: masse(o.valeur, o.unite), centimes: o.prixCentimes })).filter((x): x is Palier => x.kg !== null && x.kg > 0 && Number.isFinite(x.centimes));
   const u = a.prixUnite;
+  let deUnite: Palier[] = [];
   if (u && KG[u.unite] !== undefined) {
     const f = KG[u.unite];
     const base = [{ des: 1, prix: u.prix }, ...(u.paliers ?? [])].sort((x, y) => x.des - y.des);
-    return base.map(b => ({ kg: b.des * f, centimes: b.prix * b.des * 100 })).filter(x => x.kg > 0 && Number.isFinite(x.centimes));
+    deUnite = base.map(b => ({ kg: b.des * f, centimes: b.prix * b.des * 100 })).filter(x => x.kg > 0 && Number.isFinite(x.centimes));
+  }
+  /* R52 (C66-2) : un prix donné à l'unité (0,1044 CHF/g, 0,08 dès 1 000 g) ET des offres publiées (5 kg, 20 kg) se complètent : les offres gardent leur prix, le kilo vient du prix à l'unité */
+  if (deOffres.length || deUnite.length) {
+    const tous = [...deOffres, ...deUnite.filter(x => !deOffres.some(o => Math.abs(o.kg - x.kg) < 1e-9))];
+    return tous.sort((x, y) => x.kg - y.kg);
   }
   const q = a.prixCentimes !== undefined ? quantiteArticle(a as never) : null;
   if (q && q.dim === 'masse' && a.prixCentimes !== undefined && !q.depuisPoids) return [{ kg: q.base, centimes: a.prixCentimes }];
@@ -190,6 +193,40 @@ export function lignesSelonLaQuantite(articles: ReadonlyArray<ArticleRegle & { i
     const prix = new Map(articles.map(a => [a.id, prixAuKilo(a, kg, taux)] as const));
     return { kg, prix, gagnants: meilleursPrixAuKilo(prix) };
   }).filter(l => [...l.prix.values()].some(p => p !== null));
+}
+
+/**
+ * R53 (C66-3, C65-5) : UN SEUL classement au kilo pour tout le carnet. Le tableau du domaine (`comparer.ts`) classe au prix du conditionnement posé par la page (Hopfenmarkt 100 g
+ * à 67 CHF/kg devant MotlerHops 50 g à 68 CHF/kg) ; les barres, le vert et le compromis lisaient le kilo rendu à la quantité d'achat (MotlerHops ≈40, Hopfenmarkt 62) : deux gagnants
+ * dans le même écran. Pour une matière pesée classée par le seul prix, les articles en lice passent au prix au kilo rendu de `pourKg` (le moins cher d'abord, l'inconnu après) ; les
+ * rangs sont refaits dans cet ordre. Un classement par critère (une caractéristique qui range avant le prix), un carnet qui n'est pas de matière, ou moins de 2 prix au kilo : le
+ * tableau reste tel que le domaine l'a rendu. Fonction pure, idempotente.
+ */
+export function classerAuKilo<T extends { lignes: ReadonlyArray<{ articleId: string; rang: number | null; ecarte?: unknown }>; rangeParNoms?: readonly string[] }>(
+  t: T, articles: ReadonlyArray<ArticleRegle & { id: string }>, pourKg: number, taux?: number
+): T {
+  if ((t.rangeParNoms ?? []).some(n => n !== 'le prix')) return t;
+  const enLice = t.lignes.filter(l => l.rang !== null && !l.ecarte);
+  const arts = enLice.map(l => articles.find(a => a.id === l.articleId)).filter((a): a is ArticleRegle & { id: string } => !!a);
+  if (arts.length !== enLice.length || arts.length < 2 || !estCarnetDeMatiere(arts)) return t;
+  const kilos = new Map(arts.map(a => [a.id, prixAuKilo(a, pourKg, taux)?.chf ?? null] as const));
+  if ([...kilos.values()].filter(v => v !== null).length < 2) return t;
+  const ordre = [...enLice].sort((x, y) => {
+    const a = kilos.get(x.articleId) ?? null, b = kilos.get(y.articleId) ?? null;
+    if (a === null || b === null) return a === b ? 0 : a === null ? 1 : -1;
+    return Math.round(a) - Math.round(b);
+  });
+  let n = 0;
+  const reste = t.lignes.filter(l => !(l.rang !== null && !l.ecarte));
+  return { ...t, lignes: [...ordre.map(l => ({ ...l, rang: ++n })), ...reste] };
+}
+
+/** « 50 g à 1 kg », « 1 g à 20 kg » : ce que vend le vendeur, du plus petit conditionnement au plus gros (maquette v01, « vendu par ») ; `null` : aucun conditionnement lisible. */
+export function venduPar(a: ArticleRegle): string | null {
+  const p = paliersDe(a);
+  if (!p.length) return null;
+  const dit = (kg: number) => (kg < 1 ? `${Math.round(kg * 1000)} g` : `${String(Math.round(kg * 100) / 100).replace('.', ',')} kg`);
+  return p.length === 1 ? dit(p[0].kg) : `${dit(p[0].kg)} à ${dit(p[p.length - 1].kg)}`;
 }
 
 /** « 1 et 5 kg, MotlerHops ; 20 kg, Brau (39 CHF/kg). » : qui gagne à chaque quantité ; les quantités voisines du même gagnant se réunissent. `null` : un seul gagnant partout. */

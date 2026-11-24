@@ -24,7 +24,7 @@ import { Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
 import {
   aDesPaliers, compromisMatiere, departager, ditDiffèrent, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
-  prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, type ArticleRegle
+  classerAuKilo, prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
 } from './tableauRegles';
 import './carnets-decider.css';
 import './comparer-compact.css';
@@ -431,8 +431,15 @@ function CellulePrix({ l, taux, onRelire, onEscalader, prixKg }: { l: LigneT; ta
   return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.quantite ? <small className="cn-mut">{l.quantite}{l.parUnite ? ` · ${l.parUnite}` : ''}</small> : null}{l.prixUnite ? <small className="cn-mut">{l.prixUnite}</small> : null}{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}{escalader}</>;
 }
 
+/* C66-5 : les lignes que la page lit en vrac, « Conditionnement g 100 / 50 / ? », ne disent rien d'un houblon vendu en plusieurs sachets : la ligne « vendu par » les remplace */
+const CONDITIONNEMENT_NU = /^(?:conditionnement|taille de l.emballage|emballage|verpackung|gebinde)/i;
+const NOM_ALPHA = /(?:^|[^a-z])alpha(?:[^a-z]|$)|^α/i;
+const sansAccentNom = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+
 export function Comparer(p: ComparerProps) {
-  const t = p.tableau;
+  /* R53 (C66-3) : le même classement au kilo rendu que les cartes et le tableau (la colonne ①, le bouton Choisir, les barres et le compromis disent le même gagnant) */
+  const [pour] = usePour(p.titre);
+  const t = p.tableau && p.articles ? classerAuKilo(p.tableau, p.articles as never, pour, p.taux) : p.tableau;
   const actifs = t ? t.lignes.filter(l => !l.ecarte) : [];
   const ecartes = t ? t.lignes.filter(l => l.ecarte) : [];
   const ordre = [...actifs, ...ecartes];
@@ -483,13 +490,19 @@ export function Comparer(p: ComparerProps) {
   /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
   const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
   /* n° 17 : une caractéristique dont personne n'a la valeur n'a pas de ligne (une rangée de « – » ne compare rien) ; elle se nomme dessous */
-  const lignesVues = t ? cols.filter(c => c.cle.startsWith('__') || t.lignes.some(l => l.cellules[c.cle] !== undefined)) : [];
-  const sansValeurLue = t ? cols.filter(c => !lignesVues.includes(c)) : [];
+  const lignesLues = t ? cols.filter(c => c.cle.startsWith('__') || (!(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom))) && t.lignes.some(l => l.cellules[c.cle] !== undefined))) : [];
+  /* v01 : « vendu par 50 g à 1 kg » juste après le prix, pour un carnet de matière dont un article dit ses conditionnements ; l'inconnu reste « ? » */
+  const venduParDe = new Map(enLice.map(a => [a.id, matiere ? venduPar(a as never) : null] as const));
+  const iPrix = lignesLues.findIndex(c => c.cle === '__prix');
+  const lignesVues = matiere && [...venduParDe.values()].some(Boolean) && iPrix >= 0
+    ? [...lignesLues.slice(0, iPrix + 1), { cle: '__vendu', nom: 'vendu par', sens: 'texte' as Sens, critere: false } as ColonneVue, ...lignesLues.slice(iPrix + 1)]
+    : lignesLues;
+  const texteDe = (l: LigneT, c: ColonneVue): string | null => (c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : texteCellule(l, c));
+  const sansValeurLue = t ? cols.filter(c => !lignesLues.includes(c) && !(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom)))) : [];
   /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
   const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
   const colEntete = lignesVues.find(c => c.critere) ?? lignesVues.find(c => /volume/i.test(c.nom));
   /* D451 (maquettes2/v01) : un carnet de matière pesée se compare au kilo rendu, à la quantité d'achat du carnet ; le reste se compare à ses mesures. */
-  const [pour] = usePour(p.titre);
   const kilos = new Map(enLice.map(a => [a.id, matiere ? prixAuKilo(a, pour, p.taux) : null] as const));
   const prixKgDe = new Map([...kilos].flatMap(([id, pk]) => (pk ? [[id, texteChfKg(pk)] as const] : [])));
   const meilleursKg = meilleursPrixAuKilo(kilos);
@@ -504,10 +517,10 @@ export function Comparer(p: ComparerProps) {
   const phraseQuantite = quantites.length ? phraseSelonLaQuantite(quantites, id => { const a = enLice.find(x => x.id === id); return a ? vendeurCourt(a) : ''; }) : null;
   /* « 5 diffèrent » d'abord, « 18 identiques ▸ » repliés (B12) : ce qui classe (prix, critère) reste en vue même identique */
   const [identiquesDepliees, setIdentiquesDepliees] = React.useState(false);
-  const comparables = lignesVues.map(c => ({ c, cle: c.cle, cellules: actifs.map(l => texteCellule(l, c) ?? null) }));
-  /* l'ordre des lignes ne change pas (offre en tête, ordre de la fiche) : les identiques se replient sur place et une ligne dépliante les dit en bas ; un seul égal ne se replie pas */
+  const comparables = lignesVues.map(c => ({ c, cle: c.cle, cellules: actifs.map(l => texteDe(l, c) ?? null) }));
+  /* l'ordre des lignes ne change pas (offre en tête, ordre de la fiche) : les identiques se replient sur place et une ligne dépliante les dit en bas ; C66-5 : pour un houblon, une seule ligne égale se replie aussi (v01, « 1 identique ▸ ») ; ailleurs, un seul égal ne se replie pas (carnetsGreffeP2Cartes) */
   const separes = actifs.length >= 2 ? departager(comparables, new Set([cleEpinglee, ...lignesVues.filter(c => c.critere).map(c => c.cle)])) : null;
-  const identiques = separes && separes.identiques.length >= 2 ? separes.identiques : [];
+  const identiques = separes && separes.identiques.length >= (matiere ? 1 : 2) ? separes.identiques : [];
   const diffèrent = separes && identiques.length ? separes.diffèrent : comparables;
   const lignesAffichees = comparables;
   const premier = actifs.find(l => l.rang === 1);
@@ -579,20 +592,21 @@ export function Comparer(p: ComparerProps) {
               </thead>
               <tbody>
                 {lignesAffichees.map(({ c }) => {
-                  const meilleurs = matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, c);
+                  /* C66-5 : le meilleur est coché sur CHAQUE ligne chiffrée qui diffère : le kilo rendu, et l'alpha le plus haut (le prix n'est pas la seule ligne cochée) */
+                  const meilleurs = matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, matiere && NOM_ALPHA.test(sansAccentNom(c.nom)) ? { ...c, sens: 'plus' } : c);
                   const replie = identiques.some(x => x.cle === c.cle) && !identiquesDepliees;
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
                   /* C50-6 : l'unité se dit une fois, dans l'en-tête de la ligne (g01-8 « O₂ ppb ») ; une valeur qui la porte déjà (« 0 à 8 °C ») la dit seule, et la cellule qui ne la porte pas la garde pour le lecteur d'écran */
                   const unite = c.unite && !c.cle.startsWith('__') ? c.unite : undefined;
                   const porteUnite = (txt: string | null) => !!unite && !!txt && txt.includes(unite);
-                  const uniteEntete = unite && !ordre.some(l => porteUnite(texteCellule(l, c))) ? unite : undefined;
+                  const uniteEntete = unite && !ordre.some(l => porteUnite(texteDe(l, c))) ? unite : undefined;
                   return (
                     <React.Fragment key={c.cle}>
                     <tr hidden={replie || undefined} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
                       <th scope="row" title={libelle !== c.nom ? c.nom : undefined} data-mot-long={aMotLong(libelle) ? true : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.cle.startsWith('__') ? (c.unite ? <span className="cn-mut"> {c.unite}</span> : null) : uniteEntete ? <span className="cn-mut"> {uniteEntete}</span> : null}</th>
                       {ordre.map(l => {
-                        const txt = texteCellule(l, c);
+                        const txt = texteDe(l, c);
                         const v = c.cle === '__prix' || c.cle.startsWith('__') ? undefined : l.cellules[c.cle];
                         const genre = txt ? genreCellule(c, v, txt) : null;
                         /* n° 18 : « non » lu sur sa façon (« ne tient pas 80 °C ») ; doute D-122 : « sous votre minimum » */

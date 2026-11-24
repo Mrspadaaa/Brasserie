@@ -11,7 +11,7 @@
  * Une valeur inconnue n'est jamais rendue 0 : elle est absente, ou dite « non publié ».
  */
 import React from 'react';
-import { articleHonnete } from '../../domain/carnets/prixUnitaire';
+import { articleHonnete, quantiteArticle } from '../../domain/carnets/prixUnitaire';
 import { ExternalLink, Eye, Link2, TriangleAlert } from 'lucide-react';
 import { alphaDe, conditionnementsDe, ligneDuPour, prixAuKilo, puceDoute, QUANTITES_POUR, recolteDe, texteChfKg, textePrixConditionnement, vendeurCourt, type ArticleRegle } from './tableauRegles';
 import { libelleEcarte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
@@ -180,7 +180,8 @@ export function CarteArticle(p: CarteArticleProps) {
           {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{vues.join(' · ')}{reste > 0 ? <span className="cn-mut"> · +{reste}</span> : null}</span>}
           {(prix || dispoDe(a)) && (
             <span className="cn-ligne cn-article-pied">
-              {prix && <PrixTexte a={a} taux={p.taux} converti />}
+              {/* C66-7 (C65-4) : un prix lu avec son conditionnement (« 50 g · 73,80 CHF/kg », calculé sur le rendu) est le MÊME prix du sachet partout : le rendu (≈4), jamais le converti nu (≈3) ; sans quantité, le converti de D447 */}
+              {prix && <PrixTexte a={a} taux={p.taux} converti={!((a.conditionnement || a.offres?.length) && quantiteArticle(a as never))} />}
               {dispoDe(a) && <span className={`cn-pastille ${dispoClasse(dispoDe(a)!)}`}>{dispoDe(a)}</span>}
             </span>
           )}
