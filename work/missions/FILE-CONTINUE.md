@@ -43,5 +43,5 @@ pause: 2026-11-24T14:00:02.125Z
 
 ## En attente de lui
 - [x] Tags en-ligne tour27..44 retirés de GitHub (24.11, son accord)
-- [attente] Q-4 du Calendrier : vitesse du défilement au bord, sur son téléphone
+- [ ] Q-4 : « Trop lente sur le calendrier » (24.11) : défilement au bord ×2,5, ajouté à la voie poignees
 - [x] PR ouverte : https://github.com/Mrspadaaa/Brasserie/pull/204 (branche claude/reprise-soir-24-11, sans captures de l app réelle) ; à remettre à jour après chaque lot
