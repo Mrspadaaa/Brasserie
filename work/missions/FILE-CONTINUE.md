@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause:
+pause: 2026-11-24T16:08:03.685Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -28,7 +28,7 @@ pause:
 - [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
-- [ ] C58 (BLOQUANT C58-2 d abord : le correctif C56-3 coupe le nombre lui-même, « 5 » / « 0 L », « 2 » / « 0 mm » ; C56-3 et C50-5 rouverts ; C55-2 retombé : le critère 50 L ne classe plus) : c58-tests puis c58-fix, tour 59, critique-59
+- [ ] Tour 59 en ligne (index-BoCN8sbd.js : c58-fix) : test critique-59
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
