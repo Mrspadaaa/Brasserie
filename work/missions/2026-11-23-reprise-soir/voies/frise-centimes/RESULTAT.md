@@ -1,4 +1,4 @@
-PRÊT À METTRE EN LIGNE (hash en dernière ligne) — C46-5 : tout montant d'une chose du Calendrier et d'À venir dit ses centimes
+PRÊT À METTRE EN LIGNE 77f0fa60d — C46-5 : tout montant d'une chose du Calendrier et d'À venir dit ses centimes
 
 ## 1. Inventaire : qui écrit un montant, avec quel formateur (avant / après)
 
@@ -42,7 +42,9 @@ src/domain/calendrierCaisse.ts (`libelleMouvement`, `lectureSemaine.tete`/`ligne
 - tsc : 2 erreurs connues seulement (seedData GanttTask, virtual:pwa-register) — `tsc.log`.
 - Tests calendrier (29 fichiers touchés ou liés) : 1 échec trouvé (`calendrierAjout.test.ts` : regex attendait « −157 » entier ; le texte dit maintenant « −157,85 », la règle) ; regex élargie à `(?:,\d\d)?`. Voir `tests-cal.log`.
 - `npx vitest run tests/unit/proprietes` : 8 fichiers, 76 tests verts (`tests-prop.log`).
-- Suite complète tests/unit : voir `tests-tout.log`.
+- Suite complète tests/unit (`tests-tout.log`) : 12 311 verts, 5 échecs sans lien avec les montants du Calendrier : `hopReclasserIA`, `designTokens` (degré de palette), `gemini38LiveProof`, `geminiModelRouting`, `stock/murDonnees` (ordre Fumé/Sucres, src/domain/stock : interdit). `rejeu-649b/virgule-transversale` : 29 violations dont les miennes sont `francsExacts(…) CHF` (FeuilleAjout x3, useDonneesCalendrier x1) mais aussi `chf(…) CHF`, `francs(r.cents) CHF` du domaine, EssaiPrix, murAutres : le contrôle ne reconnaît pas ces formateurs de centimes, il échouait déjà avant (mêmes lignes de `chf`/`francs`) ; non repris ici.
+- Registre : `node scripts/agents/controle-bugs.mjs` → BUGS OK : 2221 bugs, 510 ouverts, 202 sources ; C46-5 « corrigé en local 94ef0d465 ».
+- Commits : 94ef0d465 (code, test, RESULTAT), 77f0fa60d (ligne C46-5 de BUGS.md seule).
 - Pas de capture locale (consigne de la voie) : preuve en ligne par le pilote et le critique : ouvrir le Calendrier, un achat à 79,95 CHF, frise : bulle Achats « −79,95 » au-dessus de la carte « −79,95 » ; en-tête « CHF à dépenser » sans débordement.
 
 ## Doutes et limites
