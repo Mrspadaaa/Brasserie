@@ -2864,3 +2864,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Calendrier, capture : flèche sur la fin de la barre « Fruty » au bord droit de l écran) : « Parcontre le fait que maintenant tout est au bord, l actionnable est du coup plus difficile sur mobile. Rentre la zone plus accessible »
 
 - 24.11 (Calendrier, Q-4 vitesse du défilement au bord) : « Trop lente sur le calendrier »
+
+- 24.11 (Carnet, C50-5 : « faut-il que le compromis de Comparer dise ce qu on gagne et ce qu on perd ? ») : « Oui »

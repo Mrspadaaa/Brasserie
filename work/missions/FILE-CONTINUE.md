@@ -27,7 +27,7 @@ pause: 2026-11-24T14:00:02.125Z
 - [x] Tour 54 : critique-54, 5 problèmes (0 B), corrigés 4/5
 - [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
 - [ ] Tour 56 en ligne (index-2b8uLKQZ.js : c55-fix, aiTask) : test critique-56
-- [attente] C50-5 : la phrase du compromis vient de sa maquette g01-8 ; à lui montrer en mini maquettes s'il faut dire gain et perte
+- [ ] C50-5 : OUI (24.11) : le compromis de Comparer dit ce qu on gagne et ce qu on perd (écart de prix contre écart sur le critère), même avec critère ; à grouper avec les constats de critique-56
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
