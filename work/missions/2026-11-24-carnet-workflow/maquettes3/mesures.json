@@ -1,0 +1,254 @@
+{
+ "v01": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "saisie": {
+   "zone": 55,
+   "rempli": 55
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 73
+  },
+  "relecture": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 55
+  }
+ },
+ "v02": {
+  "liste": {
+   "zone": 77,
+   "rempli": 76
+  },
+  "saisie": {
+   "zone": 45,
+   "rempli": 45
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 72
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 69
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 66
+  },
+  "relecture": {
+   "zone": 77,
+   "rempli": 60
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 72
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 63
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 62
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 77
+  }
+ },
+ "v03": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "saisie": {
+   "zone": 37,
+   "rempli": 37
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 63
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 60
+  },
+  "relecture": {
+   "zone": 77,
+   "rempli": 64
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 61
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 54
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 48
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 60
+  }
+ },
+ "v04": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "saisie": {
+   "zone": 32,
+   "rempli": 32
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 75
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 72
+  },
+  "relecture": {
+   "zone": 77,
+   "rempli": 70
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 61
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 55
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 53
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 73
+  }
+ },
+ "v05": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "saisie": {
+   "zone": 44,
+   "rempli": 44
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "relecture": {
+   "zone": 77,
+   "rempli": 56
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 60
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 53
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 51
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 55
+  }
+ },
+ "v06": {
+  "liste": {
+   "zone": 77,
+   "rempli": 77
+  },
+  "saisie": {
+   "zone": 52,
+   "rempli": 52
+  },
+  "vapeur": {
+   "zone": 82,
+   "rempli": 59
+  },
+  "fuite": {
+   "zone": 82,
+   "rempli": 68
+  },
+  "resolu": {
+   "zone": 82,
+   "rempli": 67
+  },
+  "relecture": {
+   "zone": 77,
+   "rempli": 61
+  },
+  "afaire": {
+   "zone": 77,
+   "rempli": 64
+  },
+  "co2": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "malt": {
+   "zone": 82,
+   "rempli": 57
+  },
+  "epreuve": {
+   "zone": 77,
+   "rempli": 62
+  }
+ }
+}
