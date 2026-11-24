@@ -134,8 +134,8 @@ describe('T28-4 : « Escalader » montre son attente, puis son résultat ; bouto
 
 describe('T28-6 : le prix se classe à la même quantité (CHF/kg)', () => {
   it('la quantité se lit dans le nom ; jamais devinée ni ambiguë', () => {
-    expect(quantiteArticle({ nom: 'Citra 1 kg' })).toMatchObject({ dim: 'masse', base: 1, texte: '1 kg' });
-    expect(quantiteArticle({ nom: 'Mosaic Pellets T90 100 g' })).toMatchObject({ dim: 'masse', base: 0.1, texte: '100 g' });
+    expect(quantiteArticle({ nom: 'Citra 1 kg' })).toMatchObject({ dim: 'masse', base: 1, texte: '1 kg' });
+    expect(quantiteArticle({ nom: 'Mosaic Pellets T90 100 g' })).toMatchObject({ dim: 'masse', base: 0.1, texte: '100 g' });
     expect(quantiteArticle({ nom: 'Moût 2,5 L' })).toMatchObject({ dim: 'volume', base: 2.5 });
     expect(quantiteArticle({ nom: 'Mosaic 5 x 100 g' })).toBeNull();
     expect(quantiteArticle({ nom: 'Dosage 20 g/L' })).toBeNull();
@@ -168,8 +168,9 @@ describe('T28-6 : le prix se classe à la même quantité (CHF/kg)', () => {
   });
   it('la quantité se dit à côté du prix : « 1 kg · 72,50 CHF/kg »', () => {
     const a = { id: 'C', nom: 'Citra 1 kg', prixCentimes: 7250, devise: 'CHF', valeurs: {}, lecture: 'lue' } as unknown as ArticleV;
-    expect(detailPrix(a)).toMatch(/^1 kg · 72,50 CHF\/kg/);
-    expect(texteParUnite({ nom: 'Mosaic 100 g', prixCentimes: 725 }, 725, 'CHF')).toBe('72,50 CHF/kg');
+    /* C53 (R17) : espace insécable entre le nombre et l'unité */
+    expect(detailPrix(a)).toMatch(/^1 kg · 72,50 CHF\/kg/);
+    expect(texteParUnite({ nom: 'Mosaic 100 g', prixCentimes: 725 }, 725, 'CHF')).toBe('72,50 CHF/kg');
     expect(detailPrix({ ...a, nom: 'Citra' } as ArticleV)).toBeNull();
   });
 });

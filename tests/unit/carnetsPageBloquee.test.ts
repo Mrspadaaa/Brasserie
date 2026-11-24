@@ -62,7 +62,7 @@ describe('page bloquée lue par Google : les vraies réponses du banc', () => {
     const p = await lireLien(lien, { fetchPage: bloquee(lien).fetchPage, maintenant: 1, cours: COURS, pageBloquee: async () => lecture });
     expect(p).toMatchObject({ statut: 'lue', nom: 'KWC Spültischmischer Domo mit ausziehbarer Brause', prix: 429, devise: 'CHF' });
     expect(p.change).toBeUndefined();
-    expect(p.valeurs?.map((v) => v.nom)).toEqual(['Ausladung', 'Hauteur']);
+    expect(p.valeurs?.map((v) => v.nom)).toEqual(['Hauteur', 'Ausladung']);
     expect(p.photo).toBeUndefined();
   });
 

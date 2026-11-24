@@ -31,10 +31,10 @@ describe('T28-14 : la fiche d\'un houblon commence par ce que le brasseur cherch
     'Pays de récolte': v('USA'), 'Type de houblon': v('Houblon mixte'), Farnésène: v('0,2 %'), Caryophyllène: v('7,2 %'),
     Alpha: v('11,4 %'), Récolte: v('2025'), 'Huiles totales': v('0,8', 'ml/100 g'), Myrcène: v('47,9 %'), Bêta: v('3,4 %')
   };
-  it('alpha, récolte, huiles totales en tête ; le reste garde l\'ordre de la page', () => {
+  it('C53 (R16) : les acides ensemble (alpha, bêta), la récolte, les huiles totales, chaque huile par part décroissante ; le reste par son nom', () => {
     const n = noms(fiche(mosaic(valeurs)));
-    expect(n.slice(0, 3)).toEqual(['Alpha', 'Récolte', 'Huiles totales']);
-    expect(n.slice(3)).toEqual(['Pays de récolte', 'Type de houblon', 'Farnésène', 'Caryophyllène', 'Myrcène', 'Bêta']);
+    expect(n.slice(0, 4)).toEqual(['Alpha', 'Bêta', 'Récolte', 'Huiles totales']);
+    expect(n.slice(4)).toEqual(['Myrcène', 'Caryophyllène', 'Farnésène', 'Pays de récolte', 'Type de houblon']);
   });
   it('les noms de la page d\'avant (Alpha, Erntejahr, Total oil) passent aussi, et « 0.8ml » se dit « 0,8 ml/100 g »', () => {
     const c = fiche(mosaic({ Farnesene: v('0.2%'), Caryophyllene: v('7.2%'), Alpha: v('11.4%'), 'Total oil': v('0.8ml'), Erntejahr: v('2025') }));

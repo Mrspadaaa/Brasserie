@@ -110,20 +110,10 @@ export function matiereSansVolume(a: Pick<ArticleV, 'nom' | 'valeurs'>): boolean
 }
 
 /**
- * T28-14 (L04, penser-brasseur) : la fiche d'un houblon dit d'abord l'alpha, la récolte, les huiles totales ; le reste garde l'ordre de la
- * page. Sans alpha dans les valeurs, ce n'est pas un houblon : l'ordre de la page ne bouge pas. Les noms d'avant la traduction
- * (« Alpha », « Erntejahr », « Total oil ») passent aussi : les articles déjà rangés gardent ceux de leur lecture.
+ * T28-14, C53 (R16) : l'ordre de la grille d'un houblon (acides ensemble, récolte, huiles totales puis chaque huile par part) est celui de
+ * `rangDeDecision` (functions/src/lienFusion.ts), le même que la carte et la lecture serveur. Ici seulement : les huiles totales se disent pour 100 g.
  */
-const ALPHA = /^alpha\b/;
-const RECOLTE = /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/;
 const HUILES = /^(?:huiles? totales?|total oils?|gesamtol)\b/;
-const SUITE_HOUBLON: readonly RegExp[] = [/^(?:pays|herkunft|origine|origin)\b/, /^(?:type de houblon|hopfentyp|hop type)\b/, /^farnes/, /^caryophyll/, /^humulen/, /^myrcen/, /^(?:beta|bêta)\b/];
-function ordreHoublon(cases: Case[]): Case[] {
-  if (!cases.some(c => ALPHA.test(normaliser(c.nom)))) return cases;
-  /* C52 (R12) : le reste d'un houblon a lui aussi un ordre fixe (pays, type, huiles, bêta), jamais celui de la page ; hors de cette liste, le nom */
-  const poids = (c: Case) => { const n = normaliser(c.nom); return ALPHA.test(n) ? 0 : RECOLTE.test(n) ? 1 : HUILES.test(n) ? 2 : (i => (i < 0 ? SUITE_HOUBLON.length : i) + 3)(SUITE_HOUBLON.findIndex(r => r.test(n))); };
-  return cases.map((c, i) => ({ c, i })).sort((x, y) => poids(x.c) - poids(y.c) || x.i - y.i).map(x => x.c);
-}
 /** « 0.8ml » ou « 0,8 » + « ml » : les huiles totales d'un houblon se disent pour 100 g (« 0,8 ml/100 g »). */
 function huilesDites(v: ValeurV): { texte: string; unite: string } | null {
   const brut = typeof v.valeur === 'string' ? v.valeur : typeof v.valeur === 'number' ? String(v.valeur) : '';
@@ -177,8 +167,9 @@ export function FicheArticle(p: FicheArticleProps) {
      à l'autre) ; la caractéristique du critère d'abord, puis ce qui décide */
   const criteresNoms = (k?.criteres ?? (p.critere ? [p.critere] : [])).flatMap(c => (c.caracteristique ? [c.caracteristique.nom] : []));
   const lues = Object.entries(valeursLuesDe(a as never) as Record<string, ValeurV>);
-  const ordonnees = trierParDecision(lues.map(e => ({ nom: e[0], e })), criteresNoms).map(x => x.e);
-  const cases: Case[] = ordreHoublon(ordonnees.filter(([nom]) => !(heros && memeCaracteristique(heros.nom, nom)) && normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
+  /* C53 (R16) : par GROUPES (acides, récolte, huiles par part, puis énergie, dimensions…) : l'ordre est celui de `rangDeDecision`, rien d'autre */
+  const ordonnees = trierParDecision(lues.map(e => ({ nom: e[0], e })), criteresNoms, undefined, x => x.e[1].valeur).map(x => x.e);
+  const cases: Case[] = (ordonnees.filter(([nom]) => !(heros && memeCaracteristique(heros.nom, nom)) && normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
     const huiles = HUILES.test(normaliser(nom)) ? huilesDites(v) : null;
     if (huiles) return { nom, texte: huiles.texte, unite: huiles.unite, rang: rangDe(nom), exemple: v.origine === 'exemple' };
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;

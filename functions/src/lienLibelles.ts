@@ -13,7 +13,7 @@
  */
 
 import { nomEtUnite, nombreSeul, valeurFrancaise } from './lienValeurs.js';
-import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, cleDeNom, RANG_INCONNU } from './lienFusion.js';
+import { estIdentifiant, estSecondaire, fusionnerCaracteristiques, rangDeDecision, parPartDHuile, cleDeNom, RANG_INCONNU } from './lienFusion.js';
 
 export { estIdentifiant };
 
@@ -301,8 +301,10 @@ export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) =
   /* C50-4, C52 (R12) : à rang égal, l'ordre de la décision (`rangDeDecision`), puis le NOM (connu ou non), jamais l'ordre de la page : deux pages du
      même vendeur donnent la même suite. `parNom = false` : la traduction d'un article déjà rangé garde l'ordre de sa page (la fiche et la carte
      remettent leur ordre : `trierParDecision`). */
-  return valeurs.map((v, i) => ({ v, i, r: rangDe(nomDe(v)), f: rangDeDecision(nomDe(v)), k: cleDeNom(nomDe(v)) }))
-    .sort((a, b) => a.r - b.r || a.f - b.f || (parNom ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0)) || a.i - b.i).map((x) => x.v);
+  /* C53 (R16) : l'ordre est celui des GROUPES de `rangDeDecision` (acides, huiles, énergie, dimensions…), seul ; le secondaire y est déjà en dernier ;
+     les huiles d'un houblon se rangent par part décroissante */
+  return valeurs.map((v, i) => ({ v, i, n: nomDe(v), f: rangDeDecision(nomDe(v)), k: cleDeNom(nomDe(v)) }))
+    .sort((a, b) => a.f - b.f || parPartDHuile(a.n, a.v.valeur, b.n, b.v.valeur) || (parNom ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0)) || a.i - b.i).map((x) => x.v);
 }
 
 /**

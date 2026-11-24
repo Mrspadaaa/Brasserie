@@ -33,7 +33,9 @@ const VALEUR_BOUTIQUE = /\b(?:jours?\s+de\s+retour|retour\s+de\s+\d+|\d+\s*tage\
 const VALEUR_ABSENTE = /^(?:non\s+publi[ée]e?s?|non\s+renseign[ée]e?|k\.?\s?A\.?|n\/?a|nicht\s+(?:angegeben|verf[üu]gbar)|inconnu|unbekannt|—|–|-|\?)$/i;
 export function bruitDeBoutique(nom: string, valeur: string): boolean {
   const n = compact(nom), v = compact(valeur);
-  return estSupposition(n) || NOM_BOUTIQUE.test(n) || (/,/.test(n) && n.length > 24) || n.split(' ').length > 6 || VALEUR_BOUTIQUE.test(v) || VALEUR_ABSENTE.test(v);
+  /* C53 (R16) : l'indication entre parenthèses ou crochets (« Dimensions intérieures (L x P x H) », « Volume utile [Litres] ») ne compte pas dans les mots du nom */
+  const motsDuNom = n.replace(/\([^)]*\)|\[[^\]]*\]/g, ' ').split(/\s+/).filter(Boolean).length;
+  return estSupposition(n) || NOM_BOUTIQUE.test(n) || (/,/.test(n) && n.length > 24) || motsDuNom > 6 || VALEUR_BOUTIQUE.test(v) || VALEUR_ABSENTE.test(v);
 }
 const premierMot = (nom: string) => norm(nom).replace(/\[.*?\]|\(.*?\)/g, ' ').split(/[^a-z0-9]+/).find((m) => m.length >= 4) ?? '';
 /** Même mesure écrite deux fois sous deux noms (« Volume utile [Litres] 429 » et « Volume de réfrigération [Litres] 429 ») : même valeur chiffrée, même premier mot. */

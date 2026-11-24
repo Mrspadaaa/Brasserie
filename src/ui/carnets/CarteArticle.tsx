@@ -213,7 +213,14 @@ export function CarteArticle(p: CarteArticleProps) {
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
-        {(() => { const autres = valeursLues(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
+        {(() => {
+          /* C53-2 : la carte d'un houblon dit la tête de la fiche (alpha, récolte, huiles totales), puis « +N » : jamais les dix valeurs ni une huile mineure */
+          const lues = valeursLuesOrdonnees(a as never) as Record<string, ValeurV>;
+          const autres = valeursLues(lues, carac?.nom);
+          const houblon = Object.keys(lues).some(k => /^alpha\b/i.test(k));
+          const vues = houblon ? autres.slice(0, VALEURS_VUES_MAX) : autres, reste = autres.length - vues.length;
+          return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{vues.join(' · ')}{reste > 0 ? <span className="cn-mut"> · +{reste}</span> : null}</span> : null;
+        })()}
         <span className="cn-ligne cn-article-pied">
           {mesure && carac ? (
             <span className="cn-pastille cn-pastille-vert"><span className="cn-mono">{mesure.texte}</span>{mesure.unite ? ` ${mesure.unite}` : ''}{p.rang ? ` · ${rangTexte(p.rang)}` : ''}</span>

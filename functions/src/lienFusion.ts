@@ -123,23 +123,41 @@ export const estSecondaire = (nom: string): boolean => estIdentifiant(nom) || SE
  * dimensions, la performance, la porte, la couleur. Clés normalisées. Un nom absent de la liste vient après les dimensions, dans l'ordre
  * de la page.
  */
+/*
+ * C53 (R16) : l'ordre est PAR GROUPES, jamais alphabétique à l'intérieur d'un groupe de mesures. Houblon : les acides ensemble (alpha, bêta,
+ * cohumulone), la récolte, puis les huiles totales et chaque huile par part décroissante. Appareil : ce qui décide (température, volume,
+ * matière, induction), l'énergie ensemble (puissance, performance, consommation, tension), le froid, puis les dimensions ensemble
+ * (extérieures, intérieures, porte : hauteur et largeur côte à côte), la construction (isolation, tôle), la couleur en dernier.
+ * Les noms d'avant la traduction (« Erntejahr », « Total oil ») passent aussi : les articles déjà rangés gardent ceux de leur lecture.
+ */
+const HUILE_DE_HOUBLON = /^(?:myrcen|humulen|caryophyll|farnes)/;
 const ORDRE: readonly RegExp[] = [
+  /^alpha\b/,
+  /^beta(?! ?glucan)\b/,
+  /^cohumulone\b/,
+  /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/,
+  /^(?:huiles? totales?|total oils?|gesamtol)\b/,
+  HUILE_DE_HOUBLON,
   /^(?:temperature|plage de temperature)(?! (?:ambiante|de stockage|de congelation))/,
   /^(?:volume|capacite|contenance|contenu)(?! utile (?:refrig|cong))/,
-  /^(?:matiere|materiau)/,
+  /^(?:matiere|materiau)(?! du produit)/,
   /^(?:induction|compatib)/,
-  /^(?:puissance|consommation|classe d.effic|energie|moteur)/,
+  /^(?:puissance|performance|consommation|classe d.effic|energie|moteur)/,
   /^(?:tension|branchement|raccordement)/,
   /^(?:type de refroidissement|refroidissement|refrigeration$)/,
   /^(?:fluide|refrigerant|type de refrigerant)/,
   /^mode de fonctionnement/,
+  /^materiau du produit/,
+  /^temperature/,
+  /^(?:dimensions(?! int)|(?:hauteur|largeur|profondeur|longueur)(?! de (?:la )?porte))/,
   /^dimensions int/,
-  /^dimensions/,
-  /^performance/,
-  /^(?:largeur de (?:la )?porte|porte)/,
+  /^(?:(?:hauteur|largeur) de (?:la )?porte|porte)/,
+  /^(?:epaisseur|densite)/,
   /^couleur/
 ];
-export const RANG_INCONNU = 10.5;
+const RANG_DE_PORTE = ORDRE.findIndex(r => r.test('hauteur de la porte'));
+/** Un nom que la liste ne connaît pas vient après la porte (les dimensions restent ensemble), avant la construction et la couleur. */
+export const RANG_INCONNU = RANG_DE_PORTE + 0.5;
 const INCONNU = RANG_INCONNU, DERNIER = 90;
 /** Le rang de décision d'un nom (plus petit = plus tôt) ; le secondaire est rejeté en dernier. */
 export function rangDeDecision(nom: string): number {
@@ -149,15 +167,32 @@ export function rangDeDecision(nom: string): number {
   return i < 0 ? INCONNU : i;
 }
 
+/** Une huile essentielle de houblon (myrcène, humulène, caryophyllène, farnésène) : elle se range par sa part, la plus lourde d'abord. */
+export const estHuileDeHoublon = (nom: string): boolean => HUILE_DE_HOUBLON.test(cleDeNom(nom));
+/** « 59,8 % », « 59.8 », 59,8 : le nombre d'une valeur ; `null` si elle n'en dit pas (jamais 0). */
+export function partNumerique(valeur: unknown): number | null {
+  if (typeof valeur === 'number') return Number.isFinite(valeur) ? valeur : null;
+  if (typeof valeur !== 'string') return null;
+  const m = /-?\d+(?:[.,]\d+)?/.exec(valeur);
+  return m ? Number(m[0].replace(',', '.')) : null;
+}
+/** Deux huiles de houblon : la part la plus lourde d'abord (0 si l'une des deux n'en dit pas : le nom départage alors). */
+export function parPartDHuile(nomX: string, vx: unknown, nomY: string, vy: unknown): number {
+  if (!estHuileDeHoublon(nomX) || !estHuileDeHoublon(nomY)) return 0;
+  const px = partNumerique(vx), py = partNumerique(vy);
+  return px === null || py === null ? 0 : py - px;
+}
+
 /**
  * Trie par ordre de décision, stable. Les noms à rang égal, connus ou non, se départagent par leur nom (jamais par l'ordre de la page : deux
  * pages du même vendeur donnent le même ordre, même pour un nom que la liste ne connaît pas : tour 52). `premiers` : les noms que le critère du carnet désigne,
- * toujours en tête (le critère, puis ce qui décide).
+ * toujours en tête (le critère, puis ce qui décide). `valeurDe` : la valeur d'une entrée, pour ranger les huiles d'un houblon par part (C53-1).
  */
-export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string) => number = rangDeDecision): T[] {
+export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string) => number = rangDeDecision, valeurDe?: (c: T) => unknown): T[] {
   const cle = (c: T) => (premiers.some(p => memeCaracteristique(p, c.nom)) ? -1 : rang(c.nom));
   return liste.map((c, i) => ({ c, i, r: cle(c) })).sort((x, y) => {
     if (x.r !== y.r) return x.r - y.r;
+    if (valeurDe) { const p = parPartDHuile(x.c.nom, valeurDe(x.c), y.c.nom, valeurDe(y.c)); if (p) return p; }
     /* C52 (R12) : à rang égal, connu OU NON, le nom départage ; l'ordre de la page ne sert qu'à deux noms identiques */
     const kx = cleDeNom(x.c.nom), ky = cleDeNom(y.c.nom);
     return kx < ky ? -1 : kx > ky ? 1 : x.i - y.i;

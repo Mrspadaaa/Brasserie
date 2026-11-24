@@ -42,7 +42,7 @@ export function quantiteArticle(a: Pick<Article, 'nom'>): QuantiteArticle | null
     const n = Number(m[1].replace(',', '.'));
     if (!u || !Number.isFinite(n) || n <= 0) continue;
     if (LOT.test(nom.slice(0, m.index))) return null;
-    trouvees.push({ dim: u.dim, base: n * u.f, texte: `${m[1].replace('.', ',')} ${u.affiche}` });
+    trouvees.push({ dim: u.dim, base: n * u.f, texte: `${m[1].replace('.', ',')} ${u.affiche}` }); /* C53 (R17) : « 50 L » ne se coupe pas entre le nombre et l'unité */
   }
   if (!trouvees.length) return null;
   const premiere = trouvees[0];
@@ -94,5 +94,6 @@ export function texteParUnite(a: Pick<Article, 'nom' | 'prixCentimes'>, centimes
   if (!p || !q || centimesAffiches === undefined) return null;
   const parUnite = centimesAffiches / q.base / 100;
   const nombre = parUnite.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/ | /g, ' ');
-  return `${nombre} ${devise}/${p.dim === 'masse' ? 'kg' : 'L'}`;
+  /* C53 (R17, C53-4) : espace insécable entre le nombre et l'unité : « 10,40 CHF/L » ne se coupe jamais sur deux lignes */
+  return `${nombre} ${devise}/${p.dim === 'masse' ? 'kg' : 'L'}`;
 }

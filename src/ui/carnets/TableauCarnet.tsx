@@ -1,7 +1,7 @@
 /** Le tableau du carnet ouvert (h05-3) et la ligne d'un lien à relire, sortis de CarnetOuvert.tsx. */
 import React, { useLayoutEffect, useRef } from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
-import { trierParDecision } from '../../../functions/src/lienFusion';
+import { cleDeNom, rangDeDecision, trierParDecision } from '../../../functions/src/lienFusion';
 import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../domain/carnets/comparer';
 import { dispoDe } from '../../domain/carnets/modele';
 import { convertiChf, estEtranger } from '../../domain/carnets/prixRendu';
@@ -27,7 +27,9 @@ export function colonnesCarnet(t: TableauV): ColonneVue[] {
   /* C50-2 : sans critère qui classe, la colonne montre ce qui DISTINGUE les articles (jamais « Tension 230 V » pour tous) ; la 1re seulement si aucune ne distingue */
   const distingue = (c: ColonneVue) => new Set(t.lignes.filter(l => !l.ecarte).map(l => texteCellule(l, c)).filter(Boolean)).size > 1;
   /* ... et d'abord celle qui décide le plus (volume avant dimensions : `rangDeDecision`) */
-  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? trierParDecision(mesures.filter(distingue))[0] ?? mesures[0];
+  /* C53 (R16) : la fiche dit les dimensions extérieures avant les intérieures ; UNE colonne de tableau garde les intérieures (la place utile d'une chambre froide) */
+  const rangColonne = (nom: string) => (/^dimensions int/.test(cleDeNom(nom)) ? rangDeDecision('dimensions') - 0.5 : rangDeDecision(nom));
+  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? trierParDecision(mesures.filter(distingue), [], rangColonne)[0] ?? mesures[0];
   /* L-19 (prix en francs et en euros, « Prix en euros ») : l'en-tête disait « EUR » au-dessus de 3 350 CHF. Monnaies mêlées : l'en-tête
      dit CHF, chaque prix d'une autre monnaie dit la sienne (TableauCarnet). */
   const devises = new Set(t.lignes.filter(l => l.prixCentimes !== undefined).map(l => l.devise ?? 'CHF'));

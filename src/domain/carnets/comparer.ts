@@ -9,7 +9,7 @@ import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
-import { fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
+import { cleDeNom, fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -120,9 +120,16 @@ export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeu
 /**
  * C52 (R12) : les mêmes valeurs lues, dans l'ordre de la décision (celui de la fiche : `trierParDecision`, le nom départage, jamais l'ordre
  * de la page) : deux articles du même genre se disent dans la même suite sur la carte comme sur la fiche. `premiers` : les noms du critère.
+ * C53 (R16, C53-2) : la carte d'un houblon reprend la TÊTE de la fiche, dans cet ordre : alpha, récolte, huiles totales (les trois que la carte
+ * dit), puis le reste dans l'ordre de la fiche ; jamais une huile mineure à leur place. Un article sans alpha n'est pas touché.
  */
+const TETE_DE_HOUBLON: readonly RegExp[] = [/^alpha\b/, /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/, /^(?:huiles? totales?|total oils?|gesamtol)\b/];
 export function valeursLuesOrdonnees(a: Pick<Article, 'valeurs'>, premiers: readonly string[] = []): Record<string, Valeur> {
-  return Object.fromEntries(trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers).map(x => x.e));
+  const rangees = trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers, undefined, x => x.e[1].valeur).map(x => x.e);
+  const tete = (e: [string, Valeur]) => TETE_DE_HOUBLON.findIndex(r => r.test(cleDeNom(e[0])));
+  if (!rangees.some(e => tete(e) === 0)) return Object.fromEntries(rangees);
+  const dans = (e: [string, Valeur]) => (tete(e) < 0 ? TETE_DE_HOUBLON.length : tete(e));
+  return Object.fromEntries(rangees.map((e, i) => ({ e, i })).sort((x, y) => dans(x.e) - dans(y.e) || x.i - y.i).map(x => x.e));
 }
 
 /** La valeur lue sous ce nom, ou sous un synonyme de la même famille (« Capacité » lue « Volume ») ; `undefined` si rien n'est lu. */

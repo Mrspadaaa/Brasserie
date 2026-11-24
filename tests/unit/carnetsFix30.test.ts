@@ -86,8 +86,9 @@ describe('T28-6 : « 1er pour le prix » se calcule au kilo, la quantité se dit
   });
   it('chaque ligne dit sa quantité et son prix au kilo', () => {
     const [a, b] = t().lignes;
-    expect(a).toMatchObject({ quantite: '1 kg', parUnite: '72,50 CHF/kg' });
-    expect(b).toMatchObject({ quantite: '100 g', parUnite: '90,00 CHF/kg' });
+    /* C53 (R17) : espace insécable entre le nombre et l'unité */
+    expect(a).toMatchObject({ quantite: '1 kg', parUnite: '72,50 CHF/kg' });
+    expect(b).toMatchObject({ quantite: '100 g', parUnite: '90,00 CHF/kg' });
   });
   it('sans quantité dite : le prix tel quel, aucune quantité inventée', () => {
     const tab = tableau(donnees([art('A', { prixCentimes: 500 }), art('B', { prixCentimes: 300 })]))!;
@@ -251,7 +252,8 @@ describe('T28-12, T28-13 : les noms et valeurs déjà rangés se disent en fran�
   const v = (valeur: string | number, unite?: string, origine: 'page' | 'vous' = 'page') => ({ valeur, ...(unite ? { unite } : {}), origine });
   it('libellés anglais du fermenteur et du houblon', () => {
     const r = valeursEnFrancais({ 'Full volume': v('30', 'L'), 'Height with extension legs': v('1.435', 'm'), 'Top opening': v('20', 'cm'), 'Dump valve size': v('2', 'in'), 'Total oil': v('1.8ml'), Farnesene: v('7', '%'), Beta: v('4.5', '%') });
-    expect(Object.keys(r)).toEqual(['Volume total', 'Hauteur avec pieds d’extension', 'Ouverture supérieure', 'Taille de la vanne de vidange', 'Huiles totales', 'Farnésène', 'Bêta']);
+    /* C53 (R16) : un article déjà rangé est dit par groupes (acides, huiles, puis volume et dimensions) ; l'ordre de la page ne sert qu'aux noms hors groupe */
+    expect(Object.keys(r)).toEqual(['Bêta', 'Huiles totales', 'Farnésène', 'Volume total', 'Hauteur avec pieds d’extension', 'Ouverture supérieure', 'Taille de la vanne de vidange']);
   });
   it('valeurs allemandes et décimales à la suisse : « Kühlschrank ohne Gefrierfach », « 143.50 cm » → « 143,5 cm »', () => {
     const r = valeursEnFrancais({ Typ: v('Kühlschrank ohne Gefrierfach'), 'Höhe': v('143.50', 'cm'), Hopfentyp: v('Mehrzweckhopfen'), Alpha: v('11.4', '%') });
