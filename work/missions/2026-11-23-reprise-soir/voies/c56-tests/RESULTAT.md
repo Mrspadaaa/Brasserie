@@ -1,4 +1,4 @@
-TESTS ROUGES 28 rouges / 41 au total (R27 10, R28 3, R29 9, R30 6 ; 13 verts justifiés) — hash : voir la dernière ligne
+TESTS ROUGES 28 rouges / 41 au total (R27 10, R28 3, R29 9, R30 6 ; 13 verts justifiés) 7fbffb6a2
 
 # RESULTAT c56-tests
 
