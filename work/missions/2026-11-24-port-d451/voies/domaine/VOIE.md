@@ -7,6 +7,7 @@
 ## Économie
 - Mécanique : aucune.
 - Gestes : sans écran (voie de domaine) ; la preuve est Vitest et tsc.
+- Captures 390 et 1280 ouvertes : sans objet ici (aucun écran touché) ; elles reviennent aux voies d écran.
 
 ## À faire
 1. Plan court en tête de RESULTAT.md : chaque type et fonction de PLAN § Interfaces, son fichier, son test.
