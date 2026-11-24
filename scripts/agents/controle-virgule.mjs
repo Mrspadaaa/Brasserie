@@ -12,6 +12,9 @@
  *  2. Pour chaque `{expr} unité` de src/**.ts(x) : l'expression est sûre si elle appelle un formateur à
  *     virgule, si elle est prouvée entière (Math.round sans division, .length, toFixed(0), constante entière…),
  *     ou si la ligne porte `// virgule-ok : <raison>`. `.toFixed(n)` et `String(x)` sans virgule sont des échecs.
+ *     Aussi sûrs (voie virgule, 24.11) : un formateur qui scinde au point et recolle par un gabarit `${e},${d}` ;
+ *     une constante d'espace (`const NB = ' '`, `${nf(q)}${NB}kg`) ; une `const` dont toutes les branches sont
+ *     entières ou null (`const k = c ? Math.round(x) : null`). Un nombre au point décimal reste une violation.
  *  3. Hors champ : les exports texte (listés dans EXPORTS_TEXTE) gardent le point, et les valeurs d'un champ de saisie
  *     (value=, defaultValue=) ne sont pas des affichages.
  *
@@ -46,6 +49,17 @@ const UNITE_RE = UNITES.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(
 const MOTIF = new RegExp(`\\{((?:[^{}]|\\{[^{}]*\\})*)\\}[ \\u00a0\\u202f]?(${UNITE_RE})(?![A-Za-zÀ-ÿ0-9_\\-’'])`, 'g');
 
 const COMMA_TOKEN = /(?:replace\(\s*['"`]\.['"`]\s*,\s*['"`],['"`]\s*\)|\.split\(\s*['"`]\.['"`]\s*\)\s*\.join\(\s*['"`],['"`]\s*\)|toLocaleString\(\s*['"`]fr|NumberFormat\(\s*['"`]fr|replaceAll\(\s*['"`]\.['"`]\s*,\s*['"`],['"`])/;
+
+/**
+ * Forme « scinder au point, recoller par un gabarit à virgule » : `const [e, d] = x.toFixed(2).split('.')` puis
+ * `${e},${d}`. La virgule est dans le gabarit, entre deux interpolations collées. Les DEUX marques sont exigées :
+ * un `split('.')` seul, ou un `${a}, ${b}` (liste), ne rend pas un formateur sain ; `${e}.${d}` non plus.
+ */
+const SPLIT_POINT = /\.split\(\s*['"`]\.['"`]\s*\)/;
+const GABARIT_VIRGULE = /\}\s*,\$\{/;
+function virguleDecimale(code) {
+  return COMMA_TOKEN.test(code) || (SPLIT_POINT.test(code) && GABARIT_VIRGULE.test(code));
+}
 
 export function listerSources(dossier = 'src') {
   const sortie = [];
@@ -99,7 +113,7 @@ export function indexerFormateurs(fichiers) {
       for (const m of code.matchAll(/([A-Za-z_$][\w$]*)\s*\(/g)) d.appels.add(m[1]);
       // `montantFr.format(x)` : le formateur est l'objet Intl, défini plus haut dans le fichier.
       for (const m of code.matchAll(/([A-Za-z_$][\w$]*)\.format\(/g)) d.appels.add(m[1]);
-      d.sain = COMMA_TOKEN.test(code);
+      d.sain = virguleDecimale(code);
       defs.push(d);
     }
   }
@@ -191,7 +205,92 @@ function appelleUnFormateur(expr, sains) {
     if (/^(?:Units\.format)$/.test(chemin)) return true;
   }
   // toLocaleString('fr…') / Intl.NumberFormat('fr…') écrits en ligne.
-  return COMMA_TOKEN.test(expr);
+  return virguleDecimale(expr);
+}
+
+/** Dernière instruction `const|let|var id = …` écrite AVANT la ligne `avantLigne` (portée la plus proche en pratique). */
+function derniereDefinition(id, lignes, avantLigne) {
+  const def = new RegExp(`(?:^|[^\\w$.])(const|let|var)\\s+${id.replace(/\$/g, '\\$')}\\b[^=\\n]*=(?!=)`);
+  // Une définition d'une autre fonction (franchie en remontant) n'est pas dans la portée de l'usage : passé une
+  // fonction de premier niveau, seules les constantes de module (colonne 0) restent visibles.
+  let horsFonction = false;
+  for (let i = Math.min(avantLigne, lignes.length - 1); i >= 0; i--) {
+    const m = def.exec(lignes[i]);
+    if (!m) {
+      if (/^(?:export\s+)?(?:default\s+)?(?:async\s+)?function\b|^(?:export\s+)?const\s+[\w$]+\b[^=]*=\s*(?:async\s*)?(?:\([^)]*\)|[\w$]+)\s*(?::[^=]+)?=>/.test(lignes[i])) horsFonction = true;
+      continue;
+    }
+    if (horsFonction && /^\s/.test(lignes[i])) continue;
+    // L'instruction seule : de `=` au premier `;` en fin de ligne (6 lignes au plus).
+    let fin = i;
+    while (fin < Math.min(i + 5, lignes.length - 1) && !/;\s*(?:\/\/.*)?$/.test(lignes[fin])) fin++;
+    const bloc = lignes.slice(i, fin + 1).join(' ');
+    const rhs = bloc.slice(bloc.indexOf('=', m.index + m[0].length - 1) + 1).replace(/;\s*(?:\/\/.*)?$/, '').trim();
+    return { mot: m[1], rhs };
+  }
+  return null;
+}
+
+/** `const NB = ' '` : une constante dont la valeur n'est que de l'espace (insécable, fine…) n'est pas un nombre. */
+const LITTERAL_ESPACE = /^(['"`])(?:[\s   ]|\\u00a0|\\u202f|\\u2009|\\xa0|\\u\{a0\})+\1$/;
+function constanteEspace(expr, lignes, avantLigne) {
+  const id = /^\s*([A-Za-z_$][\w$]*)\s*$/.exec(expr);
+  if (!id) return false;
+  const d = derniereDefinition(id[1], lignes, avantLigne);
+  return !!d && d.mot === 'const' && LITTERAL_ESPACE.test(d.rhs);
+}
+
+/** Sépare un ternaire de plus haut niveau `cond ? a : b` (parenthèses, crochets, accolades, chaînes respectés) ; sinon null. */
+function scinderTernaire(s) {
+  let prof = 0, quote = null, q = -1;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (quote) { if (c === '\\') i++; else if (c === quote) quote = null; continue; }
+    if (c === '\'' || c === '"' || c === '`') { quote = c; continue; }
+    if ('([{'.includes(c)) prof++;
+    else if (')]}'.includes(c)) prof--;
+    else if (prof === 0 && c === '?') {
+      if (s[i + 1] === '?') { i++; continue; }      // `??`
+      if (s[i + 1] === '.') continue;                // `?.`
+      q = i; break;
+    }
+  }
+  if (q < 0) return null;
+  // Le `:` qui ferme ce `?` : on compte les `?` ternaires ouverts depuis q.
+  let ouverts = 0; prof = 0; quote = null;
+  for (let i = q; i < s.length; i++) {
+    const c = s[i];
+    if (quote) { if (c === '\\') i++; else if (c === quote) quote = null; continue; }
+    if (c === '\'' || c === '"' || c === '`') { quote = c; continue; }
+    if ('([{'.includes(c)) prof++;
+    else if (')]}'.includes(c)) prof--;
+    else if (prof === 0 && c === '?' && s[i + 1] !== '?' && s[i + 1] !== '.' && s[i - 1] !== '?') ouverts++;
+    else if (prof === 0 && c === ':') { ouverts--; if (ouverts === 0) return { vrai: s.slice(q + 1, i), faux: s.slice(i + 1) }; }
+  }
+  return null;
+}
+
+/** Une branche qui ne s'affiche jamais comme nombre : `null`, `undefined`, ou un entier prouvé. */
+function brancheEntiere(b) {
+  const t = b.trim().replace(/^\((.*)\)$/s, '$1').trim();
+  if (/^(?:null|undefined)$/.test(t)) return true;
+  const tern = scinderTernaire(t);
+  if (tern) return brancheEntiere(tern.vrai) && brancheEntiere(tern.faux);
+  return ENTIER.some(r => r.test(t));
+}
+
+/**
+ * `{kppm} ppm` où `const kppm = cond ? Math.round(x) : null;` : la variable est un entier prouvé à sa définition.
+ * Seule une `const` (pas de réaffectation possible) dont TOUTES les branches sont entières ; `Math.round(x * 10) / 10` reste fautif.
+ */
+function variableEntiere(expr, lignes, avantLigne) {
+  const id = /^\s*([A-Za-z_$][\w$]*)\s*$/.exec(expr);
+  if (!id) return false;
+  const d = derniereDefinition(id[1], lignes, avantLigne);
+  if (!d || d.mot !== 'const') return false;
+  // `cond ? a : b` : la condition est ignorée, seules les branches s'affichent ; `a ?? b` : les deux opérandes.
+  const parties = d.rhs.split(/\s\?\?\s/);
+  return parties.every(p => brancheEntiere(p));
 }
 
 /** Un nom déjà du texte (`texte`, `label`…) n'est pas un nombre brut : il vient d'un formateur ou d'une phrase. */
@@ -238,6 +337,8 @@ export function analyserFichier(rel, texte, sains) {
       if (appelleUnFormateur(expr, sains)) continue;
       if (DEJA_TEXTE.test(expr.trim()) || variableFormatee(expr, lignes, sains)) continue;
       if (ENTIER.some(r => r.test(expr))) continue;
+      // Une constante d'espace (`${NB}kg`) ou une `const` entière prouvée (`const k = … ? Math.round(x) : null`).
+      if (constanteEspace(expr, lignes, i) || variableEntiere(expr, lignes, i)) continue;
       violations.push({ fichier: rel, ligne: i + 1, expr: expr.trim(), unite: m[2], texte: ligne.trim().slice(0, 140) });
     }
   });

@@ -1,0 +1,42 @@
+— NÉGATIFS : toujours signalés
+OK   signalé  : nombre au point, variable calculée (division)
+OK   signalé  : Math.round(x*10)/10 : un décimal
+OK   signalé  : toFixed(1) en variable
+OK   signalé  : constante qui porte un chiffre, pas de l’espace
+OK   signalé  : constante d’espace en let (réaffectable)
+OK   signalé  : constante d’espace définie APRÈS l’usage
+OK   signalé  : ternaire dont une branche est décimale
+OK   signalé  : const entière mais inconnue : paramètre
+OK   signalé  : const entière d’une AUTRE fonction (function)
+OK   signalé  : const entière d’un AUTRE composant (flèche)
+OK   signalé  : const entière en let (réaffectable)
+OK   signalé  : formateur au point : split + ${e}.${d}
+OK   signalé  : formateur : split + liste « e, d »
+OK   signalé  : formateur : split seul
+OK   signalé  : formateur inconnu
+OK   signalé  : nombre brut au point
+OK   signalé  : littéral décimal
+OK   signalé  : litres au point
+OK   signalé  : String(t)
+OK   signalé  : gabarit % brut
+— POSITIFS : plus signalés
+OK   accepté  : forme 1 : constante d’espace insécable (murAutres.ts)
+OK   accepté  : forme 1 bis : constante écrite en échappement
+OK   accepté  : forme 2 : chf = split + ,${d} (EssaiPrix.tsx)
+OK   accepté  : forme 3 : const x = cond ? Math.round(…) : null (WaterRadar.tsx)
+OK   accepté  : forme 3 bis : ternaire imbriqué, branches entières ou null
+OK   accepté  : forme 3 dans une fonction, constante d’espace de module au-dessus
+OK   accepté  : forme 3 ter : const x = Math.round(…) simple
+OK   accepté  : forme 3 quater : ?? entre deux entiers
+— MORD : le contrôle d’avant signale les 3 formes
+OK   signalé avant : forme 1 : constante d’espace insécable (murAutres.ts)
+OK   signalé avant : forme 1 bis : constante écrite en échappement
+OK   signalé avant : forme 2 : chf = split + ,${d} (EssaiPrix.tsx)
+OK   signalé avant : forme 3 : const x = cond ? Math.round(…) : null (WaterRadar.tsx)
+OK   signalé avant : forme 3 bis : ternaire imbriqué, branches entières ou null
+OK   signalé avant : forme 3 dans une fonction, constante d’espace de module au-dessus
+OK   signalé avant : forme 3 ter : const x = Math.round(…) simple
+OK   signalé avant : forme 3 quater : ?? entre deux entiers
+— SRC : le contrôle sur src/
+OK   controler() sur src/ : 0 violation(s)
+TÉMOINS OK
