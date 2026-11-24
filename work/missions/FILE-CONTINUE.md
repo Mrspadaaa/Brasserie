@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T19:43:08.363Z
+pause: 2026-11-24T19:46:04.347Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -32,7 +32,7 @@ pause: 2026-11-24T19:43:08.363Z
 - [x] Tour 61 : critique-61, 7 problèmes (2 B), corrigés 12/14 ; changement de « Houblons citra » à 18:17Z = son Relire de 19:17 (sa capture)
 - [ ] C61 : c61-tests (R43..R46) en cours, puis c61-fix, tour 64, critique-64 (avec BD-1, prix, Citra)
 - [ ] Tours 62-63 à tester en ligne (BD-1, prix, Citra rejoués sur ZZ) : critique après c61-fix
-- [ ] Carnet compact : passe 1 classée par lui (maquettes/CLASSEMENT-1.md, aucun 1, « trop focus sur ces quelques exemples », chat à garder) ; passe 2 en cours (maquettes2, tous genres de carnet), puis nouvelle page de choix (artefact neuf)
+- [attente] Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
 - [ ] NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; voie note-tests puis note-fix après prix-houblon (mêmes fichiers) ; affichage et poids sur le rang : axe des mini maquettes
 - [ ] LIEN-PAS-PRODUIT (ses mots 24.11) : un lien d information (frais d envoi, conditions, guide) n est pas un article ; l IA le range comme information et le rattache au vendeur ou aux articles (frais d envoi → prix rendu) ; avec la synthèse NOTE-EXPLOITEE

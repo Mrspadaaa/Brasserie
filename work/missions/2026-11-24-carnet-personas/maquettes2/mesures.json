@@ -1,0 +1,278 @@
+{
+ "v01": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 82
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 59
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 61
+  }
+ },
+ "v02": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 81
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 72
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 60
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 70
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 53
+  }
+ },
+ "v03": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 67
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 71
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 67
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 60
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 67
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 60
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 51
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 56
+  }
+ },
+ "v04": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 60
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 52
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 53
+  }
+ },
+ "v05": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 57
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 57
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 59
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 64
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 61
+  }
+ },
+ "v06": {
+  "liste": {
+   "zone": 77,
+   "rempli": 71
+  },
+  "memo": {
+   "zone": 82,
+   "rempli": 69
+  },
+  "probleme": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "recolte": {
+   "zone": 82,
+   "rempli": 55
+  },
+  "idee": {
+   "zone": 82,
+   "rempli": 56
+  },
+  "carnet": {
+   "zone": 82,
+   "rempli": 61
+  },
+  "carnet-froid": {
+   "zone": 82,
+   "rempli": 57
+  },
+  "articles": {
+   "zone": 82,
+   "rempli": 58
+  },
+  "fiche": {
+   "zone": 82,
+   "rempli": 65
+  },
+  "comparer": {
+   "zone": 82,
+   "rempli": 51
+  },
+  "comparer-sans": {
+   "zone": 82,
+   "rempli": 56
+  }
+ }
+}

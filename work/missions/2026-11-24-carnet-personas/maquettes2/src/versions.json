@@ -1,0 +1,56 @@
+[
+ {
+  "v": "v01",
+  "nom": "Fil de messages",
+  "genre": "fil",
+  "liste": "icone",
+  "cmp": "v01",
+  "sans": "v01",
+  "parti": "Un carnet s'ouvre sur ses notes en bulles, comme le chat ; l'IA range chaque note d'une étiquette (à faire, coût, cause). Liste avec petite icône. Comparer v01, sans critère v01."
+ },
+ {
+  "v": "v02",
+  "nom": "En-tête du genre",
+  "genre": "entete",
+  "liste": "deux",
+  "cmp": "v03",
+  "sans": "v08",
+  "parti": "Quatre cases propres au genre (problème : quand, brassin, cause, état ; récolte : cueilli, frais → sec, état, α), lues dans ses notes ; ses notes dessous. Liste photo + icône. Comparer v03, sans critère v08 avec valeurs."
+ },
+ {
+  "v": "v03",
+  "nom": "À retenir",
+  "genre": "retenir",
+  "liste": "photo",
+  "cmp": "v08",
+  "sans": "v02",
+  "parti": "Trois phrases « à retenir » tirées de ses notes, les points ouverts en jetons, puis ses notes telles quelles. Liste en photos. Comparer v08 valeurs + barres, sans critère v02."
+ },
+ {
+  "v": "v04",
+  "nom": "Frise datée",
+  "genre": "frise",
+  "liste": "icone",
+  "cmp": "v01",
+  "sans": "v08",
+  "parti": "Une frise datée : symptôme, provisoire, cause, puis ce qui vient (en orange). Liste avec icône. Comparer v01, sans critère v08 avec valeurs."
+ },
+ {
+  "v": "v05",
+  "nom": "Reste à faire",
+  "genre": "reste",
+  "liste": "deux",
+  "cmp": "v03",
+  "sans": "v01",
+  "parti": "Ce qui reste à faire en tête, cochable ; le fait replié en une ligne ; ses notes dessous. Liste photo + icône. Comparer v03, sans critère v01."
+ },
+ {
+  "v": "v06",
+  "nom": "Photos d'abord",
+  "genre": "photos",
+  "liste": "photo",
+  "cmp": "v08",
+  "sans": "v02",
+  "parti": "Une bande de photos datées en tête (sol, vanne, cônes), ses notes légendées dessous ; une idée sans photo le dit. Liste en photos. Comparer v08 valeurs + barres, sans critère v02."
+ }
+]
