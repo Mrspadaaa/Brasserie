@@ -447,3 +447,14 @@
 {"date":"2026-11-24T11:53:20.576Z","tache":"lireLien","url":"galaxus KS240L (C53-4 rejeu)","modele":"serveur (aiTask tour 54, DS2r2c1L)","cout_chf":0.01,"voie":"critique-54"}
 {"date":"2026-11-24T11:53:47.556Z","tache":"ranger","texte":"ZZ TEST — houblon Citra","modele":"serveur (aiTask tour 54, DS2r2c1L)","cout_chf":0.002,"voie":"critique-54"}
 {"date":"2026-11-24T11:54:12.573Z","tache":"lireLien","url":"hopfenmarkt Citra (C53-1, C53-2 rejeu)","modele":"serveur (aiTask tour 54, DS2r2c1L)","cout_chf":0.01,"voie":"critique-54"}
+{"date":"2026-11-24T12:40:25.190Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.002,"voie":"critique-55"}
+{"date":"2026-11-24T12:40:48.962Z","tache":"lireLien","url":"ggmgastro 4,06 m3 (C54-2 rejeu)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:41:16.979Z","tache":"lireLien","url":"ggmgastro 2,6 m3 (C54-2 rejeu)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:41:43.949Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.002,"voie":"critique-55"}
+{"date":"2026-11-24T12:42:09.031Z","tache":"lireLien","url":"brewstore marmite 50 L (C53-4, C54-3 rejeu)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:42:32.787Z","tache":"lireLien","url":"galaxus KS240L (C54-3 rejeu)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:42:59.774Z","tache":"ranger","texte":"ZZ TEST — houblon Citra","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.002,"voie":"critique-55"}
+{"date":"2026-11-24T12:43:19.771Z","tache":"lireLien","url":"hopfenmarkt Citra (C53-1, C53-2 rejeu)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:54:13.875Z","tache":"ranger","texte":"ZZ TEST — marmite d’au moins 50 L","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.002,"voie":"critique-55"}
+{"date":"2026-11-24T12:54:38.148Z","tache":"lireLien","url":"brewstore marmite 50 L (C54-3 rejeu, critère)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T12:55:05.771Z","tache":"lireLien","url":"galaxus KS240L (C54-3 rejeu, critère)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}

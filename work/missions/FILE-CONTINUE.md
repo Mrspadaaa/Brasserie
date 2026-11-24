@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T13:02:53.647Z
+pause: 2026-11-24T13:31:41.052Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -25,7 +25,8 @@ pause: 2026-11-24T13:02:53.647Z
 - [x] Tour 52 : critique-52, 5 problèmes (0 B), corrigés 9/10
 - [x] Tour 53 : critique-53, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 54 : critique-54, 5 problèmes (0 B), corrigés 4/5
-- [ ] Tour 55 en ligne (index-Bz-J0D8o.js : c54-fix, aiTask) : test critique-55
+- [x] Tour 55 : critique-55, 4 problèmes (0 B), corrigés 4/4
+- [ ] C55 : c55-tests (R23..R26) puis c55-fix, tour 56, test en ligne
 - [attente] C50-5 : la phrase du compromis vient de sa maquette g01-8 ; à lui montrer en mini maquettes s'il faut dire gain et perte
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
