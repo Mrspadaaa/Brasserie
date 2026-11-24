@@ -1,0 +1,31 @@
+{
+ "paquet": "https://brasserie-l-affinee.web.app/assets/index-JrS2YtfY.js",
+ "synthese": "0,00 / 265,40",
+ "caisse": "1 145,00 CHF | libre 1 145,00",
+ "depart": "Solde de départ CHF aujourd’hui 1 145,00 août sept. oct. nov. 1 août 2026 V",
+ "operations": "265,40 / 0,00 / 265,40",
+ "zzOps": [],
+ "depenser": "−463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes",
+ "cadre": "23 nov. 2026 – 3 janv. 2027",
+ "periode": "6 sem. · période, liste, tri et filtre",
+ "ls": "{\"app\":\"{\\\"genre\\\":\\\"tout\\\"}\",\"locale\":{\"genre\":\"dates\",\"du\":\"2026-11-23\",\"au\":\"2027-01-03\"}}",
+ "vraies": [
+  "De ma poche, 23 nov., S48, +1 200",
+  "Extincteur, proposé, 31 déc., S53, −80",
+  "Fruty, 20 déc., S51, −2,40 + à venir, J0 / 56 · prête 14 févr., courses : Malt Maris Otter le 13 déc. · −2",
+  "Hefe, 21 nov., S47, −5,44 + à venir, pas brassée · prête le 23 janv., courses : Pilsner Malz le 24 nov. · −5",
+  "Impôt sur la bière · 2 brassins, 24 nov., S48",
+  "Jhhh, proposé, 23 nov., S48, J0 / 15 · prête 8 déc.",
+  "Milk Stout, 1 mai, S18, coût à venir, J207 / 255 · prête 11 janv.",
+  "NEIPA Test, 3 sept., S36, coût à venir, J82 / 104 · prête 16 déc.",
+  "Ttt, 15 oct., S42, −3,52 + à venir, pas brassée · prête le 17 déc., courses : Pilsner Malz le 24 nov. · −4",
+  "Ttt, 22 nov., S47, −3,52 + à venir, pas brassée · prête le 9 déc., courses : Pilsner Malz le 24 nov. · −4",
+  "consomable ( masque gant), 19 nov., S47, −23",
+  "lol, 24 nov., S48, −600",
+  "neipa v3, 10 nov., S46, coût à venir, J14 / 101 · prête 19 févr.",
+  "neipa v3, 11 nov., S46, coût à venir, J13 / 25 · prête 6 déc.",
+  "neipa v3, proposé, 23 nov., S48, J0 / 12 · prête 5 déc.",
+  "vi, 12 oct., S42"
+ ],
+ "zzCal": []
+}
