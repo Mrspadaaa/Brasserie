@@ -1,0 +1,29 @@
+{
+  "_source": "Deux houblons réécrits à la main (aucune donnée personnelle). citra : les valeurs du test en ligne du tour 53 (C53-1), dans l'ordre de la page ; mosaic : une autre répartition des huiles, pour que l'ordre « part décroissante » ne puisse pas être celui d'une liste de noms écrite en dur (ici le caryophyllène passe avant l'humulène).",
+  "citra": [
+    { "nom": "Alpha", "valeur": "12,8", "unite": "%" },
+    { "nom": "Récolte", "valeur": "2025" },
+    { "nom": "Huiles totales", "valeur": "2,1", "unite": "ml/100 g" },
+    { "nom": "Pays", "valeur": "États-Unis" },
+    { "nom": "Type de houblon", "valeur": "Aroma" },
+    { "nom": "Farnésène", "valeur": "0,1", "unite": "%" },
+    { "nom": "Caryophyllène", "valeur": "7,4", "unite": "%" },
+    { "nom": "Humulène", "valeur": "13", "unite": "%" },
+    { "nom": "Myrcène", "valeur": "59,8", "unite": "%" },
+    { "nom": "Bêta", "valeur": "4", "unite": "%" },
+    { "nom": "Cohumulone", "valeur": "24,2", "unite": "%" }
+  ],
+  "mosaic": [
+    { "nom": "Alpha", "valeur": "11,5", "unite": "%" },
+    { "nom": "Récolte", "valeur": "2025" },
+    { "nom": "Huiles totales", "valeur": "1,6", "unite": "ml/100 g" },
+    { "nom": "Pays", "valeur": "États-Unis" },
+    { "nom": "Type de houblon", "valeur": "Aroma" },
+    { "nom": "Farnésène", "valeur": "0,5", "unite": "%" },
+    { "nom": "Caryophyllène", "valeur": "12", "unite": "%" },
+    { "nom": "Humulène", "valeur": "9", "unite": "%" },
+    { "nom": "Myrcène", "valeur": "45", "unite": "%" },
+    { "nom": "Bêta", "valeur": "3,6", "unite": "%" },
+    { "nom": "Cohumulone", "valeur": "24", "unite": "%" }
+  ]
+}
