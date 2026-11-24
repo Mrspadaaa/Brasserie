@@ -2894,3 +2894,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Carnet, sa note) : « Et aussi elle a plus d action sur ma note, catégorisé, classifie, ectt.. lance un critique, besoin et autres Persona là dessus pour voir ce que l on peut faire de cette note »
 
 - 24.11 (Carnet, liens) : « Aussi un lien peut être ajouté dans que ce soit un produit à comparer, comme l a pas l exemple un lien sur les frais d envoi »
+
+- 24.11 19:30 (Carnet Houblons citra, 2 captures annotées : plaintes/2026-11-24-espace-gaspille.jpg barre en rouge tout le haut (onglets, sous-onglets, titre, « 2 articles à comparer · Brasserie »), le lien en clair, « Quand », le champ Ajouter et le bas ; plaintes/2026-11-24-espace-utile.jpg entoure le tableau des articles et la note) : « L espace est mal utiliser... »

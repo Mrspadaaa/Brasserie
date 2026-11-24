@@ -11,3 +11,7 @@ Ses choix du Carnet (règle n° 1, ne rien retirer de ce qu'il a choisi sans le 
 
 ## Ajout du pilote (24.11) : tableau du carnet
 - Ses mots (capture work/missions/2026-11-23-reprise-soir/plaintes/2026-11-24-tableau-rang.jpg, tableau « rang · article · CHF ») : « Pas juste le prix, 2 ou 3 caractéristiques principales ». Chaque version montre, par ligne du tableau, 2 ou 3 caractéristiques qui décident (houblon : alpha, récolte, prix au kilo ; chambre froide : volume, température, prix), avec qui gagne, sans perdre la compacité.
+
+## Contrat réécrit (24.11 19:30) : ses deux captures annotées
+- Ses mots : « L espace est mal utiliser... ». work/missions/2026-11-23-reprise-soir/plaintes/2026-11-24-espace-gaspille.jpg : il barre en rouge comme inutile tout le haut (onglets Articles…Matériel, sous-onglets Parc…Réalisés, titre et crayon, « 2 articles à comparer · Brasserie »), le lien en clair « votre lien : « https://… » », la ligne « Quand », le champ « Ajouter à … », le bas. 2026-11-24-espace-utile.jpg : il entoure ce qui compte : le tableau des articles et sa note.
+- Chaque version : au repos d un carnet ouvert, le tableau (avec 2 ou 3 caractéristiques) et la note (rattachée) prennent l écran ; le reste se replie, se fond ou passe derrière un geste ; mesure la part de donnée sur chaque version (cible ≥ 70 %, viser plus).
