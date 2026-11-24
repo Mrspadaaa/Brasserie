@@ -2878,3 +2878,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 (Carnet, lecture des liens) : « https://www.brauundrauchshop.ch/citra-136-2 Mais ce genre de lien doit être lue correctement, et surtout on doit comparé les bonnes données »
 
 - 24.11 (Carnet, après Relire sans prix) : « Et pourquoi il y a pas de bouton pour escaler la lecture ? »
+
+- 24.11 (lecture des liens, règle « l IA ne remplace jamais un champ trouvé ») : « Alors ça c était pas une bonne idée, ils doivent d accorder. C est plutôt au les deux sont d accord c est bon,ai non il y a un problème. Mais pourquoi on utilise pas la même manière que toi tu utilises pour lire les pages ? »
