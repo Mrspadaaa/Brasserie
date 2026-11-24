@@ -1,0 +1,30 @@
+{
+  "_source": "Voie c58-tests (24.11) : articles réécrits à la main (aucun lien réel, aucune donnée personnelle) d'après les captures du tour 58 (voies/critique-58/cap/A-carnet.png, A-articles-0.png, R-frigorifique.png, A-comparer-3.png, M-comparer-0.png, XJ-titre.png, XA-offre.png, C4-fin.png, C6-fin.png). Les prix, volumes et écarts sont ceux des captures (2 697,74 et 2 987,51 CHF ; 2,6 et 4,06 m³) ; vendeurs et noms de pages fictifs. Les carnets « marmite », « cellule » et « houblon » sont dans tests/fixtures/c56/carnets.json.",
+  "chambre": {
+    "titre": "Chambre froide",
+    "articles": [
+      { "id": "CF1", "nom": "Chambre froide ZZ 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus", "vendeur": "gastro-exemple.com", "pays": "DE", "dispo": "en stock", "prixCentimes": 269774,
+        "lignes": [ { "nom": "Volume", "valeur": "2,6", "unite": "m³" }, { "nom": "Température", "valeur": "0 à 8 °C" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "CF2", "nom": "Chambre froide ZZ 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus", "vendeur": "gastro-exemple.com", "pays": "DE", "dispo": "en stock", "prixCentimes": 298751,
+        "lignes": [ { "nom": "Volume", "valeur": "4,06", "unite": "m³" }, { "nom": "Température", "valeur": "0 à 8 °C" }, { "nom": "Tension", "valeur": "230 V" } ] }
+    ]
+  },
+  "joint": {
+    "titre": "ZZ TEST — joint torique 20 mm",
+    "articles": [
+      { "id": "J1", "nom": "Joint torique ZZ 20 mm EPDM", "vendeur": "joints-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 450,
+        "lignes": [ { "nom": "Diamètre", "valeur": "20", "unite": "mm" } ] },
+      { "id": "J2", "nom": "Joint torique ZZ 20 mm silicone", "vendeur": "joints-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 690,
+        "lignes": [ { "nom": "Diamètre", "valeur": "20", "unite": "mm" } ] }
+    ]
+  },
+  "tuyau": {
+    "titre": "ZZ TEST — tuyau silicone 8 mm, 5 m",
+    "articles": [
+      { "id": "T1", "nom": "Tuyau silicone ZZ 8 mm", "vendeur": "brew-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 1250,
+        "lignes": [ { "nom": "Diamètre", "valeur": "8", "unite": "mm" }, { "nom": "Longueur", "valeur": "5", "unite": "m" } ] },
+      { "id": "T2", "nom": "Tuyau silicone ZZ 8 mm alimentaire", "vendeur": "brew-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 1790,
+        "lignes": [ { "nom": "Diamètre", "valeur": "8", "unite": "mm" }, { "nom": "Longueur", "valeur": "5", "unite": "m" } ] }
+    ]
+  }
+}
