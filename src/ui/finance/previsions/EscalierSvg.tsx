@@ -2,6 +2,7 @@ import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
 import { graduations, groupesRecurrents, joursEntre, motEtiquette, NOM_PLAN_MAX, nomProjet, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
 import { mesurerTexte, obstaclesDeCourbe, oublierMesures, placerEtiquettes, pointDAccroche, type Demande, type Mesure, type Rect } from './placement';
+import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
 /** Style d'une étiquette, par source (D8) : seule la facture est neutre pleine ; plan, récurrent, tendance, projet non testé = pointillé bleu « Prévu ». */
@@ -15,8 +16,9 @@ export const hauteurEscalier = (marches: number) => Math.min(500, 280 + 55 * mar
 /** Le nom entier d'une sortie (fiche, liste, aria-label) ; l'étiquette dessinée, elle, n'en garde que le mot-clé. */
 export const nomLong = (item: ForecastItem) => {
   if (item.source === 'trend') return 'dépenses courantes';
-  if (item.source === 'brew') { const p = item.label.split(' · '); return `${p[0]} · ${p[1] ?? ''}`.trim(); }
-  return item.label.split(' · ')[0];
+  const label = sansPrefixeDouble(item.label); // R18 (C53-5) : « ZZ TEST — ZZ TEST — achat » se lit « ZZ TEST — achat »
+  if (item.source === 'brew') { const p = label.split(' · '); return `${p[0]} · ${p[1] ?? ''}`.trim(); }
+  return label.split(' · ')[0];
 };
 /** Texte complet, lu par les lecteurs d'écran : « Frigo −3 000,00, 15.11 ». */
 export const libelleLong = (item: ForecastItem) => `${nomLong(item)} ${item.direction === 'out' ? montant(-item.amountCents) : montantSigne(item.amountCents)}, ${jourCourt(item.date)}`;
@@ -50,6 +52,11 @@ export const texteLot = (items: ForecastItem[]) => {
     return `${nomProjet(nomLong(tete), NOM_PLAN_MAX)} + ${noms.length - 1} autre${noms.length > 2 ? 's' : ''} ${m}, ${jourCourt(items[0].date)}`;
   }
   return mots.length === 1 ? `${mots[0]} (${items.length} fois) ${m}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
+};
+/** Forme courte d'un lot (repli quand son nom ne tient pas) : le nombre de sorties, la somme, le jour. Le nom se lit dans la liste du lot. */
+export const texteLotCourt = (items: ForecastItem[]) => {
+  const total = items.reduce((s, i) => s + i.amountCents, 0), partiel = items.some(i => i.partial?.length);
+  return `${items.length} sorties ${partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total)}, ${jourCourt(items[0].date)}`;
 };
 /** Les sorties d'une marche qui partagent son étiquette : au moins deux, hors projet testé (qui garde sa fiche) et hors récurrence déjà regroupée. */
 export const sortiesDuLot = (items: ForecastItem[], testeId: string | null | undefined, groupes: Map<string, GroupeRecurrent>): ForecastItem[] => {
@@ -143,6 +150,9 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
         const styles = [...new Set(lot.map(i => styleDe(i, testeId)))], style: StyleEtiquette = styles.length === 1 ? styles[0] : lot.some(i => styleDe(i, testeId) === 'brassin') ? 'brassin' : 'prevu';
         const l1 = texteLot(lot), id = `lot:${m.date}`, total = lot.reduce((s, i) => s + i.amountCents, 0);
         demandes.push({ id, priorite: style === 'brassin' ? 80 : 10, poids: Math.min(99, Math.round(total / 1000)), ordre: ordre++, w: lt(l1, 13, false, 600) + 16, h: 20, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
+        // R18 (C53-5) : un lot dont le nom ne tient pas garde sa marche nommée par sa forme courte (« 2 sorties −159,95, 08.12 ») plutôt que de disparaître
+        const c1 = texteLotCourt(lot);
+        compacts.set(id, { l1: c1, w: lt(c1, 13, false, 600) + 16, h: 20 });
         infos.set(id, { item: lot[0], style, l1, lot, partiel: lot.some(i => i.partial?.length), aria: `${lot.length} sorties le ${jourCourt(m.date)} : ${lot.map(i => `${nomLong(i)} ${i.partial?.length ? 'au moins ' : ''}${montant(-i.amountCents)}`).join(', ')}` });
       }
       for (const item of m.items) {

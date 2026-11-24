@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ajouterJours, francs, francsExacts, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
+import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
 
 /**
  * La courbe de l'en-tête (E02, z2s/w3s) : libre et caisse sur 52 semaines, un point par semaine, les mouvements nommés avec leur montant,
@@ -283,8 +284,12 @@ function toucheLeTrace(courbe: readonly SoldeSemaine[], g: Geo, b: Boite, marge 
  *   fenêtre, le point du creux, le chiffre clé).
  * Un nom qui ne tient pas n'est pas posé : sa marche reste, la lecture au doigt le nomme (c2-b).
  */
-export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = [], mise: MisePlacee | null = null, etoiles: readonly EtoileCourbe[] = [],
+export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = [], mise: MisePlacee | null = null, etoilesBrutes: readonly EtoileCourbe[] = [],
   lignesSous: readonly number[] = []): Etiquette[] {
+  /* R18 (C53-5) : un préfixe n'est jamais doublé dans une étiquette (« ZZ TEST — ZZ TEST — achat » se lit « ZZ TEST — achat ») ; le nom en base garde sa forme.
+     Les noms nettoyés servent partout ensuite (regroupement du même jour, récurrents, étoiles), donc deux écritures au préfixe doublé se fondent comme au tour 52. */
+  const courbe: readonly SoldeSemaine[] = courbeBrute.map(s => ({ ...s, mouvements: s.mouvements.map(m => ({ ...m, nom: sansPrefixeDouble(m.nom) })) }));
+  const etoiles: readonly EtoileCourbe[] = etoilesBrutes.map(e => ({ ...e, nom: sansPrefixeDouble(e.nom) }));
   type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number; court?: string };
   const parNom = new Map<string, Article>();
   /* K51-1 : des mouvements de noms différents, payés le même jour dans le même sens, font UNE marche. Un seul nom avec son montant ne dirait pas la marche

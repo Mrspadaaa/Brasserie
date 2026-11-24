@@ -1,6 +1,7 @@
 import type { ForecastItem } from '../../../domain/finance/forecast';
 import { forecastHorizonEnd } from '../../../domain/finance/forecast';
 import { ajouterJours } from '../../../domain/finance/brewForecast';
+import { sansPrefixeDouble } from '../../../domain/finance/nomAffiche';
 
 /**
  * Prévisions (p5b) : l'escalier. Fonctions pures, centimes entiers, aucune horloge (`debut` passé).
@@ -70,7 +71,7 @@ export function motCle(titre: string, brassin = false): string {
  * trop long, il est raccourci par la fin avec « … ». Même règle pour « Avec … » / « Sans … » des cartes de Prévisions.
  */
 export function nomProjet(titre: string, max = 14): string {
-  const nom = titre.trim().replace(/\s+/g, ' '), signes = [...nom];
+  const nom = sansPrefixeDouble(titre.trim().replace(/\s+/g, ' ')), signes = [...nom]; // R18 : un préfixe jamais doublé
   return signes.length <= max ? nom : `${signes.slice(0, Math.max(1, max - 1)).join('').trimEnd()}…`;
 }
 /** Le mot posé sur une étiquette : « dépenses » pour la tendance, le nom du projet tel quel, sinon le mot-clé de p5b. */
@@ -82,7 +83,7 @@ export function nomProjet(titre: string, max = 14): string {
 export const NOM_PLAN_MAX = 32;
 export const motEtiquette = (item: { source: string; label: string }): string =>
   item.source === 'trend' ? 'dépenses' : item.source === 'equipment' ? nomProjet(item.label)
-    : item.source === 'plan' ? nomProjet(item.label, NOM_PLAN_MAX) : motCle(item.label, item.source === 'brew');
+    : item.source === 'plan' ? nomProjet(item.label, NOM_PLAN_MAX) : motCle(sansPrefixeDouble(item.label), item.source === 'brew');
 
 /**
  * Au-delà de 10 sorties, une récurrence (même plan, même montant, au moins 3 fois) se regroupe en une seule étiquette (« loyer −400 ×9, le 25 »),
