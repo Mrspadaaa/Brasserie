@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T16:08:03.685Z
+pause: 2026-11-24T16:24:50.484Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -29,6 +29,7 @@ pause: 2026-11-24T16:08:03.685Z
 - [x] Tour 56 : critique-56, 6 problèmes (0 B), corrigés 4/4
 - [x] Tour 58 : critique-58, 6 problèmes (1 B), corrigés 8/9
 - [ ] Tour 59 en ligne (index-BoCN8sbd.js : c58-fix) : test critique-59
+- [ ] Carnet, sa plainte du 24.11 16:46 : critiques persona brasseur et compact (work/missions/2026-11-24-carnet-personas/), puis synthèse, mini maquettes des écarts à ses choix (skill maquettes, artefact neuf), puis port ; prix des houblons (LIEN-PRIX-JUSTE)
 - [ ] Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
