@@ -1,5 +1,12 @@
 # État des tâches — 23.11 soir, après le tour 26 (b44b191d3, index-Bl2OF9G2.js)
 
+## Reprise (24.11 après-midi, session pilote f97e7359)
+- File de travail : work/missions/FILE-CONTINUE.md (hook Stop continuer.mjs : le pilote ne s arrête pas tant qu une ligne « - [ ] » reste). Tours 45 à 57 en ligne (tag local seulement depuis le 45 ; tags 27..44 retirés de GitHub, dépôt PUBLIC). Dernier : tour 57 index-JrS2YtfY.js (poignées au bord, Q-4 défilement ×2,5).
+- Méthode depuis le 24.11 : règle (pas exemple) + grep des équivalents ; tests rouges écrits par une voie cNN-tests, correctif par une autre cNN-fix ; chaque test en ligne (critique-NN) rejoue aussi les corrigés ; son carnet « chambre froide » regardé seulement.
+- Décisions : D449 (Escalader = Neon ; Hydrogen auto dès qu un champ manque) ; repères du Calendrier en francs entiers ; S53 sans année (sa réponse) ; C50-5 oui (compromis gain/perte) ; réglette de Choisir (g05-11) gardée ; marche nommée par l écriture la plus lourde.
+- En cours : critique-57 (Calendrier), c56-tests puis c56-fix (R27..R30), puis tour 58. Reste : voir FILE-CONTINUE.md. Dépense IA du 24.11 ≈ 0,7 CHF (journal).
+- PR #204 = instantané de 266ba9905 sans captures ; les tours 45..57 n y sont pas (push à son accord).
+
 ## Reprise (24.11 nuit, session pilote f97e7359 ; mission work/missions/2026-11-23-reprise-soir/MISSION.md)
 - En ligne : tour 44 (tag en-ligne/2026-11-23-tour44, index-Cz4Lt44o.js ; tours 27 à 44), aiTask mise à jour aux tours 28, 30, 34. deploy-leger.sh : ligne T sur tour44 → passer à tour45. Méthode (brasseur, 23.11) : « les seul vrai tests sont ceux sur la vrai app » : déployer chaque lot, puis test d'écran en ligne par un critique Opus sur ZZ TEST (Chrome de débug 9222, jamais fermé), soldes et période du Calendrier remis à l'identique.
 - Fait et vérifié en ligne : étapes de lecture d'un lien (D448) ; T25-8, T26-1..4, BL-7, T28 (sauf restes), T30, frise : cœur reconstruit (d3, état unique ; 26 fonctions gardées, relecture), bord à bord et traits continus, menu +, saisie : coche sans justificatif, date en direct, avis de version en bas ; écritures : E35, E38, E40 en grande partie.
