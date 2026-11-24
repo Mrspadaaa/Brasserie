@@ -9,7 +9,7 @@ import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
 import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
 import { convertirLongueur, estLongueur, mmSansUnite, separerUnite, uniteDeColonneLongueur } from './longueurs';
-import { fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, uniteCanonique } from '../../../functions/src/lienFusion';
+import { fusionnerCaracteristiques, memeCaracteristique, mesureNormalisee, trierParDecision, uniteCanonique } from '../../../functions/src/lienFusion';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -115,6 +115,14 @@ export function valeursLuesDe(a: Pick<Article, 'valeurs'>): Record<string, Valeu
     LUES.set(a.valeurs, v);
   }
   return v;
+}
+
+/**
+ * C52 (R12) : les mêmes valeurs lues, dans l'ordre de la décision (celui de la fiche : `trierParDecision`, le nom départage, jamais l'ordre
+ * de la page) : deux articles du même genre se disent dans la même suite sur la carte comme sur la fiche. `premiers` : les noms du critère.
+ */
+export function valeursLuesOrdonnees(a: Pick<Article, 'valeurs'>, premiers: readonly string[] = []): Record<string, Valeur> {
+  return Object.fromEntries(trierParDecision(Object.entries(valeursLuesDe(a)).map(e => ({ nom: e[0], e })), premiers).map(x => x.e));
 }
 
 /** La valeur lue sous ce nom, ou sous un synonyme de la même famille (« Capacité » lue « Volume ») ; `undefined` si rien n'est lu. */

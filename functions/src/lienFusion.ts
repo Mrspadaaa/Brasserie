@@ -150,15 +150,16 @@ export function rangDeDecision(nom: string): number {
 }
 
 /**
- * Trie par ordre de décision, stable. Les noms connus à rang égal se départagent par leur nom (jamais par l'ordre de la page : deux pages du
- * même vendeur donnent le même ordre) ; les inconnus gardent l'ordre de la page. `premiers` : les noms que le critère du carnet désigne,
+ * Trie par ordre de décision, stable. Les noms à rang égal, connus ou non, se départagent par leur nom (jamais par l'ordre de la page : deux
+ * pages du même vendeur donnent le même ordre, même pour un nom que la liste ne connaît pas : tour 52). `premiers` : les noms que le critère du carnet désigne,
  * toujours en tête (le critère, puis ce qui décide).
  */
 export function trierParDecision<T extends { nom: string }>(liste: readonly T[], premiers: readonly string[] = [], rang: (nom: string) => number = rangDeDecision): T[] {
   const cle = (c: T) => (premiers.some(p => memeCaracteristique(p, c.nom)) ? -1 : rang(c.nom));
   return liste.map((c, i) => ({ c, i, r: cle(c) })).sort((x, y) => {
     if (x.r !== y.r) return x.r - y.r;
-    if (x.r >= 0 && x.r < INCONNU) return cleDeNom(x.c.nom) < cleDeNom(y.c.nom) ? -1 : cleDeNom(x.c.nom) > cleDeNom(y.c.nom) ? 1 : x.i - y.i;
-    return x.i - y.i;
+    /* C52 (R12) : à rang égal, connu OU NON, le nom départage ; l'ordre de la page ne sert qu'à deux noms identiques */
+    const kx = cleDeNom(x.c.nom), ky = cleDeNom(y.c.nom);
+    return kx < ky ? -1 : kx > ky ? 1 : x.i - y.i;
   }).map(x => x.c);
 }

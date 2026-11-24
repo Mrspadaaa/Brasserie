@@ -277,7 +277,7 @@ export function valeursEnFrancais(valeurs: Record<string, Valeur>): Record<strin
   for (const [nom, v] of entrees) if (v.origine === 'vous' || typeof v.valeur === 'boolean') sortie[nom] = v;
   /* E47-5 (rouvert en ligne) : l'essentiel (volume, matière, induction, énergie, consommation, température) d'abord, les numéros en dernier, QUEL QUE
      SOIT l'ordre dans lequel l'article a été gardé (ordre de la page, ou de Firestore) : la fiche et le résumé de la carte lisent cet ordre. */
-  return Object.fromEntries(prioriserValeurs(Object.entries(sortie).map(([nom, v]) => ({ nom, valeur: '', v }))).map(x => [x.nom, x.v]));
+  return Object.fromEntries(prioriserValeurs(Object.entries(sortie).map(([nom, v]) => ({ nom, valeur: '', v })), (x) => x.nom, false).map(x => [x.nom, x.v]));
 }
 
 /** CRP-2, CRB-9 (à la lecture, rien n'est réécrit) : entités décodées, « Couleur : » sans ses deux-points, nom sans le titre du carnet. */

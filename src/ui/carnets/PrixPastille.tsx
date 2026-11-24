@@ -40,6 +40,7 @@ export function PrixPastille(p: PrixPastilleProps) {
   const a = p.article;
   /* T28-6 : la quantité se dit à côté du prix (« 100 g », « 1 kg ») ; le prix par kilo est dans la ligne de détail */
   const quantite = quantiteArticle(a);
+  const parUnite = a.prixCentimes === undefined ? null : texteParUnite(a, a.prixCentimes, a.devise ?? 'CHF');
   const eur = estEtranger(a);
   const r = rendu(a, p.taux);
   const port = portDit(a);
@@ -61,8 +62,9 @@ export function PrixPastille(p: PrixPastilleProps) {
     <span className="cn-pastille-prix">
       {a.prixDes ? <small>dès</small> : null}
       <span className="cn-mono">{montant(a.prixCentimes)}</span>
-      {quantite && <small className="cn-pastille-qte" data-quantite>{quantite.texte}</small>}
       <small>{a.devise ?? 'CHF'}{mentionTaxe(a.taxe)} {a.origine === 'vous' ? <Pencil size={12} aria-label="saisi" /> : <Link2 size={12} aria-label="lu" />}</small>
+      {/* C52-2 : la quantité ne se glisse jamais entre le montant et sa devise (« 520 / 50 L / CHF ») : elle se dit avec le prix unitaire entier, « 50 L · 10,40 CHF/L » */}
+      {quantite && parUnite && <small className="cn-pastille-qte" data-quantite>{quantite.texte} · {parUnite}</small>}
       {port ? <small className="cn-pastille-port">{port}</small> : null}
     </span>
   );

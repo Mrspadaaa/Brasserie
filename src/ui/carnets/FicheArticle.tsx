@@ -117,9 +117,11 @@ export function matiereSansVolume(a: Pick<ArticleV, 'nom' | 'valeurs'>): boolean
 const ALPHA = /^alpha\b/;
 const RECOLTE = /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/;
 const HUILES = /^(?:huiles? totales?|total oils?|gesamtol)\b/;
+const SUITE_HOUBLON: readonly RegExp[] = [/^(?:pays|herkunft|origine|origin)\b/, /^(?:type de houblon|hopfentyp|hop type)\b/, /^farnes/, /^caryophyll/, /^humulen/, /^myrcen/, /^(?:beta|bêta)\b/];
 function ordreHoublon(cases: Case[]): Case[] {
   if (!cases.some(c => ALPHA.test(normaliser(c.nom)))) return cases;
-  const poids = (c: Case) => { const n = normaliser(c.nom); return ALPHA.test(n) ? 0 : RECOLTE.test(n) ? 1 : HUILES.test(n) ? 2 : 3; };
+  /* C52 (R12) : le reste d'un houblon a lui aussi un ordre fixe (pays, type, huiles, bêta), jamais celui de la page ; hors de cette liste, le nom */
+  const poids = (c: Case) => { const n = normaliser(c.nom); return ALPHA.test(n) ? 0 : RECOLTE.test(n) ? 1 : HUILES.test(n) ? 2 : (i => (i < 0 ? SUITE_HOUBLON.length : i) + 3)(SUITE_HOUBLON.findIndex(r => r.test(n))); };
   return cases.map((c, i) => ({ c, i })).sort((x, y) => poids(x.c) - poids(y.c) || x.i - y.i).map(x => x.c);
 }
 /** « 0.8ml » ou « 0,8 » + « ml » : les huiles totales d'un houblon se disent pour 100 g (« 0,8 ml/100 g »). */
@@ -292,9 +294,10 @@ export function FicheArticle(p: FicheArticleProps) {
                   {offres.length > 1 && <span className={`cn-radio${moi ? ' cn-radio-on' : ''}`} aria-hidden />}
                   <span className="cn-sp">
                     <b>{[o.vendeur, o.pays].filter(Boolean).join(' · ') || o.domaine}</b>
-                    {/* C50-9 : « en stock » ne se coupe jamais en deux (une disponibilité courte tient sur une ligne) */}
-                    {dispoDe(o) && <span className={`cn-mut${dispoDe(o)!.length <= 16 ? ' cn-nowrap' : ''}`}>{dispoDe(o)}</span>}
+                    {/* C52-3 : une vraie espace entre le vendeur, la disponibilité et le prix (jamais « ggmgastro.com2 987,51 CHF ») : le texte seul les sépare, pas le CSS */}
+                    {dispoDe(o) && <>{' '}{/* C50-9 : « en stock » ne se coupe jamais en deux (une disponibilité courte tient sur une ligne) */}<span className={`cn-mut${dispoDe(o)!.length <= 16 ? ' cn-nowrap' : ''}`}>{dispoDe(o)}</span></>}
                   </span>
+                  {' '}
                   {p2 && <PrixMono texte={p2} />}
                   {!p2 && moi && <span className="cn-mut cn-nowrap">prix ?</span>}
                 </>

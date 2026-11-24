@@ -297,10 +297,12 @@ function sansDoublonDeVolume<T extends Valeur>(valeurs: T[]): T[] {
 const ESSENTIEL = /^(?:mati[eè]re|mat[eé]riau|induction|compatib|classe d.effic|consommation|volume|capacit[eé]|puissance|moteur|tension|plage de temp[eé]rature|temp[eé]rature|mode de fonctionnement|[eé]nergie|fluide|r[eé]frig[eé]rant|refroidissement|type de refroidissement)/i;
 const rangDe = (nom: string): number => (estSecondaire(nom) ? 2 : ESSENTIEL.test(nom) && !/^volume utile (?:r[eé]frig|cong)/i.test(nom) ? 0 : 1);
 /** `nomDe` : le nom sur lequel le rang se juge (la lecture brute juge sur le libellé français, sans changer le nom écrit). */
-export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) => string = (v) => v.nom): T[] {
-  /* C50-4 : à rang égal, l'ordre de la décision (`rangDeDecision`) ; les noms connus se départagent par leur nom, jamais par l'ordre de la page */
+export function prioriserValeurs<T extends Valeur>(valeurs: T[], nomDe: (v: T) => string = (v) => v.nom, parNom = true): T[] {
+  /* C50-4, C52 (R12) : à rang égal, l'ordre de la décision (`rangDeDecision`), puis le NOM (connu ou non), jamais l'ordre de la page : deux pages du
+     même vendeur donnent la même suite. `parNom = false` : la traduction d'un article déjà rangé garde l'ordre de sa page (la fiche et la carte
+     remettent leur ordre : `trierParDecision`). */
   return valeurs.map((v, i) => ({ v, i, r: rangDe(nomDe(v)), f: rangDeDecision(nomDe(v)), k: cleDeNom(nomDe(v)) }))
-    .sort((a, b) => a.r - b.r || a.f - b.f || (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0) || a.i - b.i).map((x) => x.v);
+    .sort((a, b) => a.r - b.r || a.f - b.f || (parNom ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : (a.f < RANG_INCONNU ? (a.k < b.k ? -1 : a.k > b.k ? 1 : 0) : 0)) || a.i - b.i).map((x) => x.v);
 }
 
 /**

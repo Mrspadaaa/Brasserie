@@ -195,7 +195,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                     const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
                     const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
                     const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
-                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite ? <small className="cn-mut cn-tab-q">{l.quantite}</small> : null}</span>;
+                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? (c.cle === '__prix' ? <span className="cn-mono">{v}</span> : <ValeurCarnet txt={v} unite={c.unite} />) : <span className="cn-inconnu" aria-label="inconnu">–</span>}{c.cle === '__prix' && v && l.quantite && l.parUnite ? <small className="cn-mut cn-tab-q">{l.quantite} · {l.parUnite}</small> : null}</span>;
                   })}
                 </button>
               );

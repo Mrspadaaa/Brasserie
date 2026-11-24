@@ -12,7 +12,7 @@
  */
 import React from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
-import { libelleEcarte, trouverValeur, valeursLuesDe } from '../../domain/carnets/comparer';
+import { libelleEcarte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
 import { memeCaracteristique } from '../../../functions/src/lienFusion';
 import { dispoDe } from '../../domain/carnets/modele';
 import { montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
@@ -162,7 +162,7 @@ export function CarteArticle(p: CarteArticleProps) {
     /* sans `luSurPage` ni `verdict` du geste, ils se lisent sur l'article (critique 5, n° 6 : la carte ne maigrit jamais) */
     const verdict = p.verdict ?? verdictDe(a, p.critere) ?? undefined;
     const sujet = sujetDuVerdict(verdict);
-    const valeurs = valeursLues(valeursLuesDe(a as never) as Record<string, ValeurV>, sujet);
+    const valeurs = valeursLues(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, sujet);
     const lu = luEnBref((p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet), a.valeurs);
     const vues = valeurs.slice(0, VALEURS_VUES_MAX), reste = valeurs.length - vues.length;
     const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
@@ -213,7 +213,7 @@ export function CarteArticle(p: CarteArticleProps) {
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
-        {(() => { const autres = valeursLues(valeursLuesDe(a as never) as Record<string, ValeurV>, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
+        {(() => { const autres = valeursLues(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
         <span className="cn-ligne cn-article-pied">
           {mesure && carac ? (
             <span className="cn-pastille cn-pastille-vert"><span className="cn-mono">{mesure.texte}</span>{mesure.unite ? ` ${mesure.unite}` : ''}{p.rang ? ` · ${rangTexte(p.rang)}` : ''}</span>
@@ -292,9 +292,13 @@ export function CarteClassee(p: CarteClasseeProps) {
         {t !== null ? <span className="cn-chip-valeur" title={p.carac?.nom}><span className="cn-mono">{t}</span>{uniteAjoutee ? <span> {uniteAjoutee}</span> : null}</span>
           : p.carac ? <span className="cn-mut cn-classee-carac">{p.carac.nom} : non publié</span> : null}
         {t !== null && p.carac && <span className="cn-mut cn-classee-carac">{p.carac.nom}</span>}
-        <span className="cn-reglette" aria-hidden>
-          {pos !== null && <><span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} /></>}
-        </span>
+        {/* C52-1 : la jauge ne se dessine que pour une valeur chiffrée placée entre les bornes ; une plage (« 0 à 8 °C »), des dimensions ou
+            une valeur inconnue n'ont pas de position : pas de piste vide, qui se lirait comme une valeur nulle (« Veiller » reste à droite) */}
+        {pos !== null && (
+          <span className="cn-reglette" aria-hidden>
+            <span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} />
+          </span>
+        )}
         {/* C50-8 : « Veiller » et son interrupteur vont ensemble, jamais coupés : le pied passe à la ligne avant de pousser l'interrupteur hors de l'écran */}
         <span className="cn-classee-veille"><span>Veiller</span><Bascule active={!!a.veille?.active} onChange={x => p.onVeille?.(x)} etiquette={`Veiller ${a.nom ?? ''}`.trim()} /></span>
       </div>
