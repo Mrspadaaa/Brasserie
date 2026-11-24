@@ -10,8 +10,8 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 - Garde-fou : trois arrêts d'affilée sans changement de ce fichier laissent passer l'arrêt.
 
 actif: oui
-session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T15:02:51.000Z
+session: libre-apres f97e7359-a046-4072-af48-f44ecac2f73e
+pause:
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
