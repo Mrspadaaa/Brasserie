@@ -1,0 +1,7 @@
+# Dossier maquettes3
+
+- Ses mots, à lire EN ENTIER : ../SES-MOTS.md (le workflow : trop de vapeur … « Tâche fermé grâce à l'achat du steam condenseur. Toujours disponible pour voir pourquoi j'ai pris ça et bien catégorisé, sous catégorisé » ; inspection électrique ; écoulement qui fuit ; notes courtes ; Todo ; « Ça doit être "ludique" … si c'est pas facile, visuel, fun, ça résoud pas la problématique »).
+- État de l'art : ../ETAT-DE-L-ART.md (11 outils, cycles de vie, recommandations).
+- Ce qu'il a dit des passes 1 et 2 du Carnet compact : ../../2026-11-24-carnet-personas/maquettes/CLASSEMENT-1.md (« Trop focus sur ces quelques exemples », garder le « chat » d'écriture visible, liste en arbre v03 avec icône ou photo, Articles v02, fiche v02 avec photo en petit, Comparer avec barres en complément) ; passe 2 : ../../2026-11-24-carnet-personas/maquettes2/ (6 versions par genre : fil, en-tête du genre, à retenir, frise, reste à faire, photos) : réemploie ses morceaux.
+- Ce qui existe déjà dans l'app à garder ou brancher : notes et rangement par l'IA (domaines, D437), articles, Comparer, Choisir, prix au kilo, « Escalader », Calendrier et « À venir » (un achat prévu fin du mois y apparaît), la synthèse des personas sur une note rattachée (../../2026-11-24-carnet-personas/note/SYNTHESE.md).
+- Règles dures : 390 × 844 d'abord ; part de donnée ≥ 70 % ; barre du bas gardée ; aucune donnée inventée présentée comme réelle (exemples marqués « exemple ») ; règle n° 1 : ses choix déjà faits restent, un écart se montre comme variante.
