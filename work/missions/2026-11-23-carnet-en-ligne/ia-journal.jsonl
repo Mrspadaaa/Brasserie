@@ -458,3 +458,13 @@
 {"date":"2026-11-24T12:54:13.875Z","tache":"ranger","texte":"ZZ TEST — marmite d’au moins 50 L","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.002,"voie":"critique-55"}
 {"date":"2026-11-24T12:54:38.148Z","tache":"lireLien","url":"brewstore marmite 50 L (C54-3 rejeu, critère)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
 {"date":"2026-11-24T12:55:05.771Z","tache":"lireLien","url":"galaxus KS240L (C54-3 rejeu, critère)","modele":"serveur (aiTask tour 55, Bz-J0D8o)","cout_chf":0.01,"voie":"critique-55"}
+{"date":"2026-11-24T13:36:14.737Z","tache":"ranger","texte":"ZZ TEST — cellule à 4 °C","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.002,"voie":"critique-56"}
+{"date":"2026-11-24T13:36:38.512Z","tache":"lireLien","url":"ggmgastro 4,06 m3 (rejeu)","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.01,"voie":"critique-56"}
+{"date":"2026-11-24T13:37:05.557Z","tache":"lireLien","url":"ggmgastro 2,6 m3 (rejeu)","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.01,"voie":"critique-56"}
+{"date":"2026-11-24T13:37:32.509Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.002,"voie":"critique-56"}
+{"date":"2026-11-24T13:37:58.554Z","tache":"lireLien","url":"brewstore marmite 50 L (R24, R25 rejeu)","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.01,"voie":"critique-56"}
+{"date":"2026-11-24T13:38:25.159Z","tache":"lireLien","url":"galaxus KS240L (R25 rejeu)","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.01,"voie":"critique-56"}
+{"date":"2026-11-24T13:38:52.057Z","tache":"ranger","texte":"ZZ TEST — houblon Citra","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.002,"voie":"critique-56"}
+{"date":"2026-11-24T13:39:12.131Z","tache":"lireLien","url":"hopfenmarkt Citra (C53 rejeu)","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.01,"voie":"critique-56"}
+{"date":"2026-11-24T13:39:39.243Z","tache":"ranger","texte":"ZZ TEST — tuyau silicone 8 mm, 5 m","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.002,"voie":"critique-56"}
+{"date":"2026-11-24T13:40:55.874Z","tache":"ranger (Relire)","texte":"ZZ TEST — tuyau silicone 8 mm, 5 m","modele":"serveur (aiTask tour 56, 2b8uLKQZ)","cout_chf":0.002,"voie":"critique-56"}
