@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-24T09:21:15Z
+pause: 2026-11-24T10:28:40.682Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -21,10 +21,10 @@ pause: 2026-11-24T09:21:15Z
 - [x] Tour 47 : test critique-47, 6 problèmes (0 B), E45 vérifiés, E47-1..5 versés
 - [x] Tour 48 en ligne (index-DJIfW4-y.js, carnet-c46)
 - [x] Tour 49 : critique-49, 3 problèmes (0 B), 7/9 corrigés confirmés
-- [ ] Tour 51 en ligne (index-Br_hbvJ9.js, frise-centimes) : test critique-51
-- [ ] C50 : c50-tests (règles R6..R11) puis c50-fix, tour 52, test en ligne qui rejoue les corrigés
+- [x] Tour 51 : critique-51, 2 problèmes (0 B), C46-5 vérifié en ligne
+- [ ] Tour 52 en ligne (index-CoUp1JRM.js : c50-fix, rouges, aiTask) : test critique-52
 - [attente] C50-5 : la phrase du compromis vient de sa maquette g01-8 ; à lui montrer en mini maquettes s'il faut dire gain et perte
-- [ ] Tests unitaires rouges hors voies : hopReclasserIA, designTokens, gemini38LiveProof, geminiModelRouting, stock/murDonnees (déjà rouges avant ? sinon cause) ; virgule-transversale : 4 violations neuves de frise-centimes (francsExacts … CHF) à retirer, puis les 25 anciennes
+- [ ] virgule-transversale : corriger controle-virgule.mjs (7 faux positifs : stock, atelier, WaterRadar), décision du pilote : corriger le contrôle
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
 - [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
