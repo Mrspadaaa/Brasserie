@@ -131,7 +131,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       carnet={ouvert.carnet as never} onOffre={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} /> : null;
   } else if (vue.sorte === 'comparer') {
-    ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length}
+    ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length} articles={ouvert.carnet.articles as never}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onRelire={relire} onEscalader={escalader} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;

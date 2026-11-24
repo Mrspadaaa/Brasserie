@@ -325,7 +325,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {cartes && p.tableau && (
         <FeuilleCartes carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} onFermer={() => setCartes(false)}
-          onOuvrir={id => { setCartes(false); p.onOuvrirArticle(id); }} onVeille={p.onVeille} taux={p.taux} onTaux={p.onTaux} />
+          onOuvrir={id => { setCartes(false); p.onOuvrirArticle(id); }} onVeille={p.onVeille} taux={p.taux} onTaux={p.onTaux}
+          onRetirer={p.onRetirerArticle} onDeplacer={p.onDeplacerArticle} carnetsVers={p.carnetsVers} />
       )}
     </article>
   );

@@ -362,7 +362,7 @@ export function compromisMatiere(articles: ReadonlyArray<ArticleRegle & { id: st
   if (ag !== null && as !== null && as - ag > 0.049) pertes.push(`tu perds ${(Math.round((as - ag) * 10) / 10).toLocaleString('fr-CH', { maximumFractionDigits: 1 })} point d’α`);
   if (douteSurDispo(gagnant.a.doute)) pertes.push('la dispo est douteuse');
   const nom = (gagnant.a.vendeur ?? gagnant.a.domaine ?? gagnant.a.nom ?? 'le moins cher').trim();
-  return `${nom}, ${ecart} CHF de moins au kilo${pertes.length ? ` ; ${pertes.join(' et ')}` : ''}.`;
+  return `${nom}, ${Math.round(ecart)} CHF de moins au kilo${pertes.length ? ` ; ${pertes.join(' et ')}` : ''}.`;
 }
 
 /** Le texte du bouton Choisir de Comparer : « Choisir · MotlerHops, 1 kg » (matière pesée) ; sinon « Choisir la 4,06 m³ » (la valeur de tête du 1er) ou « Choisir ». */
