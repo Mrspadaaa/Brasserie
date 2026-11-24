@@ -291,6 +291,7 @@ span.cnp-tuile { cursor: default; }
 .cnp-recherche input { flex: 1 1 auto; min-width: 0; border: 0; background: transparent; color: var(--c-ink); font-size: 16px; min-height: 40px; outline: none; }
 .cnp-fiche { margin-top: 8px; border: 2px solid var(--p-vous-bord); border-radius: 16px; padding: 10px 12px; background: var(--c-bg); }
 .cnp-fiche-tete { display: flex; align-items: center; gap: 8px; }
+.cnp-fiche-tete > .cn-sp { display: flex; flex-direction: column; min-width: 0; }
 .cn-ouvert .cnp-fiche-titre { font-size: 17px !important; }
 .cnp-q { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 4px 10px; margin: 8px 0 0; }
 .cnp-q dt { color: var(--c-mut); font-weight: 600; }

@@ -41,7 +41,8 @@ src/ui/carnets : CarnetOuvert.tsx, carnetOuvertTypes.ts, ouvertCalculs.ts, carne
 - Banc : `?preview=carnets` (CarnetsPreview, hors Possède) monte CarnetsVue, qui ne passe ni messages ni rappels : il ne montre donc pas le fil. J'ai monté les écrans de la voie sur un banc propre (banc/banc.tsx) : même composants, fixture du suivi, gestes branchés sur le domaine.
 - `git status --short` : rien hors Possède de mon fait (les fichiers non suivis de src/asset, src/fermenter, etc. et work/ étaient là avant).
 
-## Captures (ouvertes : a-vapeur, b-resolu, b-ecoulement, c-relecture si présente ; les autres prises, NON ouvertes)
+## Captures (ouvertes : a-vapeur, b-resolu, b-ecoulement, c-relecture ; les autres, dont 1280 (d-resolu) et sombre (e-*), prises ou en cours, NON ouvertes)
+Relecture 390 comparée à v01-relecture : même fiche, mêmes lignes ; défaut corrigé après la capture : le titre et le chemin de la fiche se collaient (colonne).
 Défauts vus et corrigés : jetons à × permanents (bruit : maintenant deux touchers « Retirer »), fil dans une carte à filets (classe `cn-notes` retirée), ⋯ qui passait à la ligne (pris en coin), total « ≈ 910 CHF » à la ligne à 390 (resserré, à revérifier). Défaut non corrigé : à 390 le titre « ZZ TEST — … » de la fixture passe sur deux lignes (le préfixe est de la fixture).
 
 DEMANDE EXECUTANT :
