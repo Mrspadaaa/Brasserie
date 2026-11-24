@@ -28,3 +28,4 @@ Voir (leçon L11) et [[agents-sans-openai]].
 - Relais (08.11, dans le fil de la pilote : « Le relais de l'autre branche suffit.... ») : son accord relayé mot pour mot par la session de monitoring vaut accord écrit ; ne pas lui faire répéter un oui déjà donné ailleurs.
 - Restent à son oui (direct ou relayé) : modifier ou retirer ses vraies écritures (en lot surtout : l'outil le refuse sans accord explicite), push, PR, merge, règles Firestore.
 - Ne pas s'arrêter (24.11 : « créé un mécanisme qui ne te fais pas arrêté ») : file `work/missions/FILE-CONTINUE.md`, hook Stop `.claude/hooks/continuer.mjs` ; tant qu'une ligne « - [ ] » reste, le tour continue ; l'irréversible passe en « - [attente] » groupé au récap.
+- Pause du hook continuer : elle couvre UN seul arrêt (consommée) ; le 24.11, une pause encore active a laissé le pilote s'arrêter après la fin des agents (« Tu es arrêté ? »).

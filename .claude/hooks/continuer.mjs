@@ -27,7 +27,8 @@ if (sess === 'libre' || (sess.startsWith('libre-apres ') && sess.slice(12).trim(
 } else if (sess && sess !== id) process.exit(0);
 
 const pause = Date.parse(champ('pause'));
-if (Number.isFinite(pause) && pause > Date.now()) process.exit(0);
+// Une pause couvre UN seul arrêt (l'attente d'un agent) : consommée ici, elle ne laisse pas s'arrêter le tour suivant (24.11 : « Tu es arrêté ? »).
+if (Number.isFinite(pause) && pause > Date.now()) { fs.writeFileSync(fichier, t.replace(/^pause:.*$/m, 'pause:')); process.exit(0); }
 
 const ouvertes = t.split('\n').filter((l) => /^\s*- \[ \]/.test(l)).map((l) => l.replace(/^\s*- \[ \]\s*/, ''));
 if (!ouvertes.length) process.exit(0);
