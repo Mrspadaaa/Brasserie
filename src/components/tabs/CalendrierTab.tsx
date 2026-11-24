@@ -8,6 +8,7 @@ import { usePlusPage } from '../../ui/plusPage';
 import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrier/useDonneesCalendrier';
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
+import { avisADire } from '../../domain/carnets/avisCalendrier';
 import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
 import { useCadre } from '../../ui/calendrier/cadre/useCadre';
 import { libelleDuree, SEMAINES_ANNEE, type AxeCourbe, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
@@ -633,7 +634,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
       setMessage(null); setMenu(null); setSelectionId(chose.id);
       /* T11-1 : le geste qui l'a posée (Carnet › « Au calendrier ») se dit ici, avec Annuler, comme les gestes du Calendrier */
       const defaire = v.annuler;
-      if (defaire && v.texte) montrer({ role: 'status', texte: v.texte, ancre: chose.id, annuler: async () => { setSelectionId(null); setMessage(null); await defaire(); } });
+      /* C46-3 : l'avis ne se dit qu'une fois ; le Calendrier remonté au retour du Carnet ne le redit pas (montant et Annuler d'avant) */
+      if (defaire && v.texte && avisADire(v.at)) montrer({ role: 'status', texte: v.texte, ancre: chose.id, annuler: async () => { setSelectionId(null); setMessage(null); await defaire(); } });
       return;
     }
     const icone = modele.icones.find(i => i.genre === 'idee' && i.ouvre?.id === v.id);

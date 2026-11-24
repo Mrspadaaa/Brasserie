@@ -91,9 +91,11 @@ export function lignesEtapes(etapes: readonly EtapeLien[] = [], o: { fini?: bool
 
 export interface CompteEtapes { trouves: number; douteux: number; absents: number; faites: number; total: number; arreteA?: number }
 export function compterEtapes(lignes: readonly LigneEtape[]): CompteEtapes {
-  const n = (s: StatutVu[]) => lignes.filter(l => s.includes(l.statut)).length;
-  const echec = lignes.findIndex(l => l.statut === 'echec');
-  return { trouves: n(['trouve']), douteux: n(['douteux']), absents: n(['absent', 'echec']), faites: n(['trouve', 'douteux', 'absent', 'echec']), total: lignes.length,
+  /* C46-6 (D448) : le rangement (7e ligne pendant que l'IA range) n'est pas une étape de lecture : le total reste six pendant et après */
+  const lues = lignes.filter(l => l.cle !== 'rangement');
+  const n = (s: StatutVu[]) => lues.filter(l => s.includes(l.statut)).length;
+  const echec = lues.findIndex(l => l.statut === 'echec');
+  return { trouves: n(['trouve']), douteux: n(['douteux']), absents: n(['absent', 'echec']), faites: n(['trouve', 'douteux', 'absent', 'echec']), total: lues.length,
     ...(echec >= 0 ? { arreteA: echec + 1 } : {}) };
 }
 

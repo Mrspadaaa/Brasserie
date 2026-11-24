@@ -25,6 +25,7 @@ import { FeuilleNote } from './FeuilleNote';
 import { PictoObjet, pictoDe } from './pictos';
 import { RenommerCarnet } from './RenommerCarnet';
 import type { ArticleV } from './EtatIA';
+import { prixEstChoisi } from '../../domain/carnets/prixChoisi';
 import { jourIso } from './lignesRegles';
 import type { ActionsCarnet } from './actionsCarnet';
 import type { Appliquer, AvisIA, Boite, CarnetsVueProps, Etat, FinancesCarnet, Retour, RetourNeuf, Supprime, Vue } from './carnetsTypes';
@@ -185,7 +186,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
         aujourdhui={jourIso(maintenant())}
         onDater={(lundi, precision) => dater(c, lundi, precision)}
         {...(sortieFinie(c) ? {} : { onAuCalendrier: () => void auCalendrier(c) })}
-        prix={{ centimes: prixDuCarnet(c), semblable: prixSemblable({ nom: c.title }, achatsPasses), propose: prixPropose(c) }}
+        prix={{ centimes: prixDuCarnet(c), choisi: prixEstChoisi(c, prixDuCarnet(c)), semblable: prixSemblable({ nom: c.title }, achatsPasses), propose: prixPropose(c) }}
         onDomaine={d => { appliquer(poserDomaine(magasin.lire(), { carnetId: c.id, domaine: d })); }}
         onPrix={x => {
           const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' });

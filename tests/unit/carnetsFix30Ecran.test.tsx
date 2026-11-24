@@ -85,6 +85,8 @@ describe('T30-10 : l’étape qui tourne se voit jusqu’au rangement', () => {
     const pages = { ...FIN, etapes: FIN.etapes!.map(e => ({ ...e, statut: 'trouve' as const })), rangement: true as const };
     const { container } = render(<LectureLien lecture={pages} phase="en-cours" />);
     expect(container.textContent).toContain('Rangement');
-    expect(container.textContent).toMatch(/Lecture · 6 sur 7/);
+    /* C46-6 (D448) : le rangement n'est pas une septième étape de lecture ; le total reste six, comme à la fin (« 6 étapes sur 6 ») */
+    expect(container.textContent).toMatch(/Lecture · 6 sur 6/);
+    expect(container.textContent).not.toMatch(/sur 7/);
   });
 });

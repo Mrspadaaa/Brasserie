@@ -31,12 +31,14 @@ export function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'
   const plage = plageDate(lundiPose ?? p.aujourdhui, p.aujourdhui);
   const [changerPrix, setChangerPrix] = useState(false);
   const pose = p.prix?.centimes;
+  /* C46-4 (Q-1 A) : le prix de l'article choisi remplace l'estimé ; il ne s'appelle plus « estimé » */
+  const mot = p.prix?.choisi ? '' : ' estimé';
   const semblable = p.prix?.semblable;
   const garder = (x: number) => { p.onPrix?.(x); setChangerPrix(false); };
   const [ouvert, setOuvert] = useState(false);
   const propose = p.prix?.propose;
   if (!ouvert) {
-    const resume = [quand ?? 'pas encore daté', pose !== undefined ? `${montant(pose)} CHF estimé` : quand && p.onPrix ? 'prix ?' : null].filter(Boolean).join(' · ');
+    const resume = [quand ?? 'pas encore daté', pose !== undefined ? `${montant(pose)} CHF${mot}` : quand && p.onPrix ? 'prix ?' : null].filter(Boolean).join(' · ');
     return (
       <section className={`cn-rubrique cn-quand${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
         <button type="button" className="cn-rubrique-tete cnq-replie" aria-expanded={false} data-quand-replie="" onClick={() => setOuvert(true)}>
@@ -48,7 +50,7 @@ export function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'
   return (
     <section className={`cn-rubrique cn-quand${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
       <p className="cn-rubrique-tete"><button type="button" className="cnq-replier" aria-expanded onClick={() => setOuvert(false)}><CalendarDays size={p.picto} aria-hidden /> <b>Quand</b></button> <span className="cn-mut">· {quand ?? 'pas encore daté'}</span>
-        {quand && pose !== undefined && <span className="cn-mut"> · {montant(pose)} CHF estimé</span>}
+        {quand && pose !== undefined && <span className="cn-mut"> · {montant(pose)} CHF{mot}</span>}
         {quand && pose !== undefined && p.onPrix && <> <button type="button" className="cn-lien" aria-expanded={changerPrix} onClick={() => setChangerPrix(v => !v)}>Prix</button></>}</p>
       <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" className="cn-horizons" onChoisir={(_, lundi) => p.onDater(lundi)} />
       <div className="cn-quand-frise" data-quand-frise data-valeur={lundiPose ?? undefined} data-vide={lundiPose || tire ? undefined : ''}>

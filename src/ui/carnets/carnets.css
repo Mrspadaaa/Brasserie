@@ -62,6 +62,8 @@
 .cn-second { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--c-zone) !important; color: var(--c-zonet) !important; font-weight: 600; }
 .cn-puce { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--c-line2) !important; font-size: 15px; white-space: nowrap; }
 .cn-puce[aria-pressed=true] { background: var(--c-zone) !important; border-color: var(--c-zone) !important; color: rgb(var(--cave-950)); font-weight: 600; }
+/* C46-1 : le mot en gris d'une puce (« · budget », « · lu ») prend la couleur de la puce pressée : gris sur vert foncé ne se lisait plus */
+.cn-puce[aria-pressed=true] .cn-mut { color: inherit; }
 .cn-puce-ia { border-color: var(--c-ia) !important; color: var(--c-ia) !important; }
 .cn-rang-boutons { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .cn-entree { min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; }
@@ -682,6 +684,8 @@
 .cn-liste .cn-carnet-tx { gap: 0; }
 .cn-liste .cn-carnet-titre { font-size: 15px; line-height: 18px; -webkit-line-clamp: 1; }
 .cn-liste .cn-carnet-tx > span { font-size: 14px; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* C46-2 : la ligne trouvée par la recherche passe sur deux lignes (domaines.css : line-clamp 2) ; sur une seule, l'ellipse coupait le mot cherché */
+.cn-liste .cn-carnet-tx > .cnd-cite { white-space: normal; }
 .cn-liste .cn-carnet-tx > span ~ span:not(.cn-pastille):not(.cn-compte-ligne) { display: none; }
 .cn-liste .cn-carnet-tx:has(> .cn-compte-ligne) > span:not(.cn-compte-ligne):not(.cn-pastille) { display: none; }
 .cn-liste .cn-cite.cn-deux-lignes { display: block; -webkit-line-clamp: unset; }

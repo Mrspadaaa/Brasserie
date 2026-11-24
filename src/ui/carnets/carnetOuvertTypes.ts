@@ -72,7 +72,7 @@ export interface CarnetOuvertProps {
   /** K2 (côté Carnet) : « Au calendrier › », la chose posée à aujourd'hui si elle n'a pas de date, puis la bascule au Calendrier. */
   onAuCalendrier?: () => void;
   /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */
-  prix?: { centimes?: number; semblable?: { centimes: number; source: string } | null; propose?: import('../../domain/carnets/prixPropose').PrixPropose | null };
+  prix?: { centimes?: number; /** C46-4 : ce prix est celui de l'article choisi (plus « estimé ») */ choisi?: boolean; semblable?: { centimes: number; source: string } | null; propose?: import('../../domain/carnets/prixPropose').PrixPropose | null };
   onPrix?: (centimes: number) => void;
   /**
    * L-20 (23.11, M3-1) : retirer un critère (`supprimerLigne`, cible `critere`), par ⋯ de la ligne Critère. Absent : pas de ⋯ (rien

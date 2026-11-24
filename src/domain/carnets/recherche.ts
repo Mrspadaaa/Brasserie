@@ -21,14 +21,19 @@ export interface CarnetCherche {
 /** La requête pliée (sans accent, minuscule, espaces resserrés) ; vide si rien à chercher. */
 export const requete = (q: string): string => plier(q).replace(/\s+/g, ' ').trim();
 
-const AVANT = 24, LONGUEUR = 70;
+/* C46-2 : la carte cite la ligne sur deux lignes de ~45 signes (« article : » compris) ; le mot trouvé s'ouvre tôt dans la première (AVANT petit)
+   et la coupe tombe sur des espaces, jamais au milieu d'un mot. */
+const AVANT = 18, LONGUEUR = 60;
 
-/** La ligne citée autour du mot : au plus ~70 signes, « … » où elle est coupée ; les positions suivent la coupe. */
+/** La ligne citée autour du mot : au plus ~60 signes, « … » où elle est coupée sur un espace ; les positions suivent la coupe. */
 export function extrait(texte: string, debut: number, fin: number): { texte: string; debut: number; fin: number } {
   const t = texte.replace(/\s+/g, ' ');
   if (t.length <= LONGUEUR) return { texte: t, debut, fin };
-  const de = Math.max(0, debut - AVANT);
-  const a = Math.min(t.length, Math.max(fin, de + LONGUEUR));
+  let de = Math.max(0, debut - AVANT);
+  /* le début recule ou avance jusqu'au mot entier suivant : jamais « …ique à air » coupé en son milieu */
+  if (de > 0 && t[de - 1] !== ' ') { const s = t.indexOf(' ', de); de = s >= 0 && s < debut ? s + 1 : debut; }
+  let a = Math.min(t.length, Math.max(fin, de + LONGUEUR));
+  if (a < t.length && t[a] !== ' ') { const s = t.lastIndexOf(' ', a); a = s >= fin ? s : (() => { const n = t.indexOf(' ', a); return n >= 0 ? n : t.length; })(); }
   const pre = de > 0 ? '…' : '', post = a < t.length ? '…' : '';
   return { texte: `${pre}${t.slice(de, a)}${post}`, debut: debut - de + pre.length, fin: fin - de + pre.length };
 }

@@ -53,9 +53,10 @@ const heure = (ms?: number) => (ms ? new Date(ms).toLocaleTimeString('fr-CH', { 
 
 /** La barre par étape (v03) : un segment par étape, sa couleur dit son état ; lue d'un coup d'œil, sans texte. */
 function Segments({ lignes }: { lignes: readonly LigneEtape[] }) {
+  const c = compterEtapes(lignes);
   return (
-    <span className="cnl-segments" data-booster="segments-etapes" role="img" aria-label={`${compterEtapes(lignes).faites} étapes faites sur ${lignes.length}`}>
-      {lignes.map(l => <i key={l.cle} data-statut={l.statut} />)}
+    <span className="cnl-segments" data-booster="segments-etapes" role="img" aria-label={`${c.faites} étapes faites sur ${c.total}`}>
+      {lignes.filter(l => l.cle !== 'rangement').map(l => <i key={l.cle} data-statut={l.statut} />)}
     </span>
   );
 }
