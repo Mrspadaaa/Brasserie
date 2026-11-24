@@ -2898,3 +2898,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 24.11 19:30 (Carnet Houblons citra, 2 captures annotées : plaintes/2026-11-24-espace-gaspille.jpg barre en rouge tout le haut (onglets, sous-onglets, titre, « 2 articles à comparer · Brasserie »), le lien en clair, « Quand », le champ Ajouter et le bas ; plaintes/2026-11-24-espace-utile.jpg entoure le tableau des articles et la note) : « L espace est mal utiliser... »
 
 - 24.11 (Carnet compact, classement de la page de choix) : voir work/missions/2026-11-24-carnet-personas/maquettes/CLASSEMENT-1.md (mot pour mot) ; ses mots de fin : « Trop focus sur ces quelques exemples... SI par exemple je veux juste mettre un Momo sur comment c est passé mon sol »
+
+- 24.11 (Carnet, genres) : « Ou un problème de matériels lors du brassage Ou même. Une récolte de houblons Trouve et cherche des exemples et réponds au besoin »
