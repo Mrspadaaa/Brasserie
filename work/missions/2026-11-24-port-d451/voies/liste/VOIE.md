@@ -7,6 +7,7 @@
 - Prérequis : voies domaine, ia, greffe-p2, probleme, afaire commitées.
 
 ## Économie
+- Gestes : gestes et contrôles groupés en un script puppeteer par lot ; captures à demi-échelle sauf jugement de détail.
 - Captures 390 (téléphone surtout, en défilant) et 1280 (peu), thème clair, de chaque état et geste touché, OUVERTES avant de rendre ; côte à côte avec la maquette (règle n° 1).
 - Mécanique : aucune ; plus de 3 captures à refaire : `DEMANDE EXECUTANT`.
 - Gestes (pilote, en ligne, ZZ TEST) : coup d'œil (chaque case filtre) ; Arbre, À faire, 🔔 ; déplier un sous-domaine ;

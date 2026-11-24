@@ -5,6 +5,7 @@
 - Prérequis : voie liste en ligne et regardée par le pilote. Hors Carnet : dernière, à part, un seul commit révocable.
 
 ## Économie
+- Gestes : gestes et contrôles groupés en un script puppeteer par lot ; captures à demi-échelle sauf jugement de détail.
 - Mécanique : aucune.
 - Gestes (pilote, en ligne) : depuis Matériel, ▾ ouvre Articles, Recompter, Courses, Fûts (chacun atteint, puis retour) ;
   Parc, À venir, Carnets, Réalisés ; le bouton d'action suit le sous-onglet (`onSubTabChange`) ; « Ouvrir le carnet »
