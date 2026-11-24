@@ -1,3 +1,45 @@
+OK — 28 tests écrits depuis R1..R5 : 21 rouges, 7 verts justifiés ; src/ et functions/ intacts
+
 # RESULTAT c48-tests
 
-(tenu au fil)
+## Endroits du code où chaque règle s'applique (grep fait avant d'écrire)
+- **R1 (prix lu, « Relire »)** : lecture du prix dans `functions/src/lienProduit.ts` (`extraireProduit` : schema.org, Open Graph, puis `prixSousTitre` = premier montant dans les 700 caractères APRÈS le titre) ; `functions/src/lireLien.ts` (`lirePage`) ; passage à l'article `src/ui/carnets/lignesRegles.ts` (`depuisIA`) ; affichage « prix ? » / « Poser le prix » dans `FicheArticle.tsx` (offre) et « ? » hachuré `CellulePrix` de `Comparer.tsx`. Aucun « Relire » sur une fiche ou une cellule d'un article déjà lu sans prix (le seul « Relire » existant est celui du bandeau d'échec, `Bandeau.tsx`).
+- **R2 (libellé jamais coupé au milieu d'un mot)** : en-tête du tableau du carnet `enteteCourt` (`TableauCarnet.tsx`, `slice(0, 8)` + « . » : « Dimensio. ») ; libellés de ligne de Comparer, `tbody th` (`carnets-decider.css:188` `overflow-wrap: break-word`, d'où « Dimension / s ») ; libellé de la caractéristique sur la carte de la feuille Articles, `.cn-classee-carac` (`carnets.css:477`, ellipse + nowrap) ; valeur d'une cellule du tableau (`TableauCarnet.tsx` + `carnets.css:729`, « 1640 x 1340 / x 1850 mm » passe à la ligne aux espaces). Sans règle fautive : `.cn-tab-cols .cn-tab-num` (`overflow-wrap: normal`), `dl.cn-carac dt` de la fiche.
+- **R3 (un seul classement)** : en-tête « Classé par » de `Comparer.tsx` (`prixClasse`, `criteresQuiClassent` ; met « Prix ? » en tête alors que le tri est par critère puis prix) ; « Classés par ce qui compte » de `FeuilleCartes.tsx` (`colonnesCarnet` + `critere`) ; colonnes du tableau du carnet `colonnesCarnet` ; calcul du rang `rangePar` / `rangeParDetail` / `tableau` dans `comparer.ts`.
+- **R4 (synthèse sans les valeurs du tableau)** : `compromisDe` (`comparer.ts`, trois branches : moins cher, la seule à tenir, repli « la 1re, … » qui récite) ; encart « Compromis » de `Comparer.tsx` qui montre tel quel le compromis de l'IA (`p.compromis`). Encadré « Le critère sépare… » (`separationDe`, `ouvertCalculs.ts`) : ne cite aucune valeur, rien à tester.
+- **R5 (ce qui décide d'abord, rien de perdu)** : plafond de lecture 24 (`lienProduit.ts` `caracteristiques`, boucles `li`, `out.slice(0, 24)`) ; reconnaissance des puces sans libellé et des valeurs du titre (« 4,06 m³ », « 230V », « R290 », « Air pulsé » : aucune lue ; « Température de 0 °C à 8 °C » lue sous le nom « Température de ») ; tri `prioriserValeurs` / regex `ESSENTIEL` de `lienLibelles.ts` (ne connaît pas « Mode de fonctionnement », « Fluide frigorigène », « Refroidissement ») ; fusion de l'IA `lienIA.ts` (`[...valeurs, ...nouvelles].slice(0, 24)` ; `fusion` `.slice(0, 12)` ; `garder` `.slice(0, 12)`).
+
+## Fichiers écrits
+- `tests/unit/c48Regles.test.tsx` (28 tests, jsdom, aucun réseau ni Gemini).
+- `tests/fixtures/c48/chambre-froide-1800.html` (page écrite à la main d'après la page lue le 21.11 : prix hors TVA 2 763,65 et TTC 2 987,51 CHF, 12 caractéristiques réelles, puces « Température de 0 °C à 8 °C / Air pulsé / 230V / R290 », titre avec 4,06 m³).
+- Ce dossier : `tests-rouge.log`, RESULTAT.md. Aucun fichier de `src/` ni de `functions/` modifié (`git status` : rien de ` M` dans src et functions).
+
+## Sortie décisive : `tests-rouge.log`
+`Tests 21 failed | 7 passed (28)` — rouge par règle :
+- R1 : 4 rouges (prix écrit avant le titre ; prix écrit à plus de 700 caractères sous le titre ; « Relire » absent de la fiche ; « Relire » absent de Comparer) ; 3 verts.
+- R2 : 5 rouges (`enteteCourt` « Dimensio. » ; en-tête rendu ; `tbody th` ; `.cn-classee-carac` ; valeur de cellule sur une ligne) ; 1 vert.
+- R3 : 3 rouges (« prix ? » contre « dimensions intérieures » ; « prix » contre « volume » ; critère de tête contre `rangeParDetail`) ; 1 vert.
+- R4 : 4 rouges (`compromisDe` ×3 ; compromis de l'IA récité) ; 1 vert.
+- R5 : 5 rouges (lecture de la page ; nom « Température de » ; plafond de 24 en lecture ; plafond de 24 à la fusion de l'IA ; 10 gardés sur 25) ; 1 vert.
+
+## Les 7 verts, justifiés
+Ils tiennent un endroit déjà juste et gardent le correctif de le casser : (1) prix hors TVA sous le titre lu avec son TTC ; (2) `depuisIA` 276365 centimes, `ht`, TTC 298751 ; (3) une fiche qui a son prix ne dit pas « Relire le prix » ; (4) libellé de ligne de Comparer rendu entier (garde contre une correction qui couperait en JS) ; (5) 1re colonne du tableau du carnet = critère qui classe ; (6) un compromis qui dit un gain et une perte reste affiché (garde contre un filtre trop large) ; (7) la couleur et l'épaisseur de tôle ne passent pas devant la température ni le volume (l'ordre actuel les tient, `ESSENTIEL` connaît « température » et « volume »).
+
+## Essais
+Un lancement de mise au point (chemins de fixture sous jsdom : `new URL(import.meta.url)` donne `C:\tests\…`, remplacé par un chemin relatif), puis le lancement officiel. Une exploration à part (script jetable, supprimé) a montré quels balisages de page échouent : prix avant le titre, prix à plus de 700 caractères du titre, prix en attribut seul.
+
+## Doutes et limites
+- **Page réelle non rejouée** : je n'ai pas le HTML de ggmgastro.com ; la cause réelle de « prix ? » (C48-1) est inconnue. Les deux balisages rouges (avant le titre, plus de 700 caractères) sont des causes plausibles d'après le code, pas prouvées. Un prix en attribut seul (`data-price`) n'est pas testé (le texte visible fait foi). Le correctif doit d'abord capturer la vraie page.
+- **Nom `onRelire`** : le contrat de test pour « Relire » (FicheArticle, Comparer). Le test ne regarde que le mot « Relire » dans le rendu ; une autre prop convient si le test est adapté par le pilote, pas par le correcteur.
+- **Détection « coupé au milieu d'un mot »** : jeton terminé par « . » ou « … » dont le début (5 lettres au moins) est un préfixe strict d'un mot du nom. « Dim. int. » passe. Les tests CSS (`tbody th`, `.cn-classee-carac`) interdisent `overflow-wrap: break-word|anywhere`, `word-break: break-all`, `hyphens: auto`, `text-overflow: ellipsis` sur ces libellés : la mise en page réelle (jsdom ne mesure rien) reste à voir à 390 px par la capture du correcteur. Sans la coupe forcée, un mot de 14 lettres (« fonctionnement ») doit tenir dans sa colonne ou passer en libellé court : le correcteur choisit.
+- **« Valeur sur une ligne »** (C48-6) : le test accepte soit des espaces insécables dans la valeur, soit la classe `cn-nowrap` ou `white-space: nowrap` en ligne.
+- **Fusion `lienIA.fusion` (plafond 12) et `garder` (12)** : non testées une à une ; le déclenchement de la 2e lecture dépend de `champsManquants`. Le plafond de 24 de la fusion l'est (escalade directe).
+- **C48-5, « lignes identiques repliées »** (10 lignes sur 12 identiques dans Comparer) : absent de R5 du dossier, donc non testé. Voir la décision.
+- Le tableau du carnet et Comparer ne sont pas testés sur la ligne « Volume » tirée du titre (seulement la lecture : `lirePage` doit fournir « Volume 4,06 m³ »).
+
+DÉCISION À PRENDRE : (a) R3 contre la maquette choisie de Comparer (A1 / g01-8 : le prix épinglé en tête de « Classé par », CRB-14 : ligne prix toujours en tête). Mes tests R3 exigent que le critère de tête DIT par Comparer soit celui du calcul du rang et d'Articles ; avec deux prix lus, cela retire « Prix » de la tête de la chaîne « Classé par ». Options : 1) la chaîne suit le vrai tri (critère, puis prix), la ligne Prix reste épinglée en haut du tableau ; 2) le prix devient vraiment le premier critère de tri quand il est lu (change `tableau`, `rangePar`) ; 3) ne toucher que le cas « prix inconnu » (garder mes tests 1 seulement). Recommandation : 1 (le tri actuel est critère puis prix, `rangePar`). Test 2 et 3 de R3 à adapter si 2 ou 3 est choisi.
+DÉCISION À PRENDRE : (b) R4 contre la maquette g01-8 « Compromis : la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h » : cette phrase choisie répète des valeurs du tableau. Les tests R4 appliquent la règle du dossier à la lettre (aucune valeur du tableau ; l'écart « 268,05 CHF » reste permis). Options : 1) règle à la lettre (la phrase de la maquette change) ; 2) règle réservée au cas sans critère (le repli « la 1re, … » récite le tableau), la phrase avec critère garde ses valeurs. Recommandation : 2, car c'est celle de la maquette choisie du brasseur (règle n° 1) ; dans ce cas, le 2e et le 3e test de `compromisDe` (prix seul ; critère Volume) sont à resserrer.
+DÉCISION À PRENDRE : (c) ajouter la règle « les lignes identiques d'un Comparer se replient » (C48-5, 10 lignes sur 12 identiques) ? Recommandation : oui si le brasseur la veut ; elle rejoint E47-5, mais sa forme (repli, ligne unique « identiques ») est un choix d'écran à montrer en maquettes.
+
+CONNAISSANCE : sous jsdom, `new URL('../x', import.meta.url)` ne rend pas un chemin de fichier (`C:\tests\…`) : lire les fixtures par un chemin relatif à la racine (`readFileSync('tests/fixtures/…')`). Sur la lecture des liens : `prixSousTitre` ne cherche qu'à 700 caractères sous le titre et jamais avant lui ; `lienProduit` plafonne les caractéristiques à 24 dans l'ordre de la page avant tout tri.
+LEÇON PROPOSÉE : aucune
