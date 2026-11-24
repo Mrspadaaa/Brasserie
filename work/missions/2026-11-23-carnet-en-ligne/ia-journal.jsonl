@@ -590,3 +590,12 @@
 {"date":"2026-11-24T20:18:52.675Z","tache":"rangerCarnet","texte":"ZZ TEST — écoulement qui fuit","modele":"serveur (aiTask, en ligne ; coût mesuré par getBrewerAiBudget : 0,012 CHF le rangement)","cout_chf":0.012,"voie":"exemples carnet-workflow"}
 {"date":"2026-11-24T20:19:23.081Z","tache":"rangerCarnet","texte":"ZZ TEST — CO2 qui baisse vite dans un fût","modele":"serveur (aiTask, en ligne ; coût mesuré par getBrewerAiBudget : 0,012 CHF le rangement)","cout_chf":0.012,"voie":"exemples carnet-workflow"}
 {"date":"2026-11-24T20:19:53.509Z","tache":"rangerCarnet","texte":"ZZ TEST — levure lente à démarrer","modele":"serveur (aiTask, en ligne ; coût mesuré par getBrewerAiBudget : 0,012 CHF le rangement)","cout_chf":0.012,"voie":"exemples carnet-workflow"}
+{"date":"2026-11-24T21:17:44.277Z","tache":"ranger","texte":"ZZ TEST — c65 pellets T90 aromatiques","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.002,"voie":"critique-65"}
+{"date":"2026-11-24T21:18:14.383Z","tache":"lireLien","url":"motlerhops Citra (tour 65)","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.01,"voie":"critique-65"}
+{"date":"2026-11-24T21:19:08.528Z","tache":"lireLien","url":"brauundrauchshop Citra (tour 65, quitter pendant)","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.01,"voie":"critique-65"}
+{"date":"2026-11-24T21:19:57.230Z","tache":"lireLien","url":"hopfenmarkt Citra (tour 65)","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.01,"voie":"critique-65"}
+{"date":"2026-11-24T21:22:12.829Z","tache":"ranger","texte":"ZZ TEST — c65 marmite de brassage 50 L","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.002,"voie":"critique-65"}
+{"date":"2026-11-24T21:23:27.571Z","tache":"lireLien","url":"brewstore marmite 50 L (tour 65)","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.01,"voie":"critique-65"}
+{"date":"2026-11-24T21:25:00.703Z","tache":"lireLien","url":"galaxus KS240L (tour 65)","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.01,"voie":"critique-65"}
+{"date":"2026-11-24T21:28:34.450Z","tache":"ranger (Relire, carnet ZZ)","texte":"ZZ TEST — c65 joint torique 20 mm","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.002,"voie":"critique-65"}
+{"date":"2026-11-24T21:34:13.013Z","tache":"rangerCarnet (message dans un carnet ouvert)","texte":"Joint torique 20 mm : en racheter deux, l'ancien est fendu","modele":"serveur (aiTask tour 65, BTs27oam)","cout_chf":0.002,"voie":"critique-65","appels":1}
