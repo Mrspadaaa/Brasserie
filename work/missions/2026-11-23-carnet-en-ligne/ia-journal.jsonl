@@ -405,3 +405,12 @@
 {"date":"2026-11-24T07:44:58.966Z","tache":"lireLien","url":"brewstore lien mort (ZZ, pour Escalader)","modele":"serveur (aiTask tour 47, BxvQ1J-z)","cout_chf":0.01,"voie":"critique-47"}
 {"date":"2026-11-24T07:45:15.713Z","tache":"lireLien escalade (modèle fort)","url":"brewstore lien mort (ZZ, pour Escalader)","modele":"serveur (aiTask tour 47, BxvQ1J-z)","cout_chf":0.03,"voie":"critique-47"}
 {"date":"2026-11-24T07:49:01.004Z","tache":"correction","note":"critique-47 : la 1re ligne lireLien Galaxus 115 L (frappe restée à « h ») n’a rien envoyé, coût 0 ; total estimé du tour ≈ 0,06 CHF (1 rangement, 4 lectures, 1 escalade)","cout_chf":0,"voie":"critique-47"}
+{"date":"2026-11-24T08:18:57.853Z","tache":"ranger","texte":"ZZ TEST — table de travail en bois","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.002,"voie":"critique-49"}
+{"date":"2026-11-24T08:19:45.632Z","tache":"lireLien","url":"landi schwerlastregal (C46, ZZ TEST — table)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:21:54.805Z","tache":"ranger","texte":"ZZ TEST — marmite de brassage 50 L","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.002,"voie":"critique-49"}
+{"date":"2026-11-24T08:22:18.678Z","tache":"lireLien","url":"brewstore marmite 50 L (E47-1)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:23:32.508Z","tache":"lireLien","url":"galaxus KS240L (E47)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:23:53.651Z","tache":"lireLien","url":"galaxus 115 L retiré (E47-2, 3e article)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:25:41.604Z","tache":"lireLien","url":"galaxus KS240L (E47), reprise","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:26:14.912Z","tache":"lireLien","url":"galaxus 115 L retiré (E47-2, 3e article), reprise","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":0.01,"voie":"critique-49"}
+{"date":"2026-11-24T08:33:20Z","tache":"correction","texte":"lireLien galaxus KS240L (E47) 1er essai : lien non envoyé (focus perdu, artefact de script), coût 0 ; le collage suivant a concaténé deux URL (page 404, arrêt à 1 sur 6, article retiré)","modele":"serveur (aiTask tour 49, Bk3VRdwH)","cout_chf":-0.01,"voie":"critique-49"}
