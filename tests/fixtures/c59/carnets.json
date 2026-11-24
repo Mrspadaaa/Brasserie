@@ -1,0 +1,39 @@
+{
+  "_source": "Voie c59-tests (24.11) : articles réécrits à la main (aucun lien réel, aucune donnée personnelle) d'après les captures du tour 59 (voies/critique-59/cap/M-comparer-0.png, M-articles-0.png, H-articles-0.png, H-comparer-0.png, H-F1-0.png) et le relevé des deux pages Citra (work/missions/2026-11-24-carnet-personas/brasseur/RESULTAT.md : Brau- und Rauchshop 0,1044 CHF le gramme, 0,08 CHF/g dès 1 000 g ; MotlerHops 3,72 € le sachet de 50 g, 250 g et 500 g aussi). Vendeurs et prix des articles de la marmite fictifs, valeurs des captures.",
+  "marmite": {
+    "titre": "ZZ TEST — marmite de brassage 50 L",
+    "critere": { "texte": "Marmite de brassage 50 L", "nom": "Volume utile", "unite": "L", "sens": "plus" },
+    "articles": [
+      { "id": "K1", "nom": "Kibernetik KS240L Kühlschrank freistehend 242 L", "vendeur": "Galaxus-exemple", "pays": "CH", "dispo": "en stock", "prixCentimes": 30200, "devise": "CHF",
+        "lignes": [ { "nom": "Volume utile", "valeur": "242", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "W1", "nom": "Maischekessel ZZ 50 L", "vendeur": "braustore-exemple.ch", "pays": "CH", "dispo": "sur commande", "prixCentimes": 52000, "devise": "CHF",
+        "lignes": [ { "nom": "Volume utile", "valeur": "50", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "W2", "nom": "Marmite de brassage inox ZZ 60 L", "vendeur": "braustore-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 61000, "devise": "CHF",
+        "lignes": [ { "nom": "Volume utile", "valeur": "60", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "W3", "nom": "Marmite de brassage inox ZZ 45 L", "vendeur": "braustore-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 41000, "devise": "CHF",
+        "lignes": [ { "nom": "Volume utile", "valeur": "45", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] },
+      { "id": "F50", "nom": "Frigo vitrine ZZ 50 L", "vendeur": "froid-exemple.ch", "pays": "CH", "dispo": "en stock", "prixCentimes": 25000, "devise": "CHF",
+        "lignes": [ { "nom": "Volume utile", "valeur": "50", "unite": "L" }, { "nom": "Tension", "valeur": "230 V" } ] }
+    ]
+  },
+  "houblons": {
+    "titre": "ZZ TEST — houblons citra",
+    "articles": [
+      { "id": "H1", "nom": "Citra 13.6%", "vendeur": "Brau- und Rauchshop", "pays": "CH", "dispo": "en stock", "prixCentimes": 10, "prixDes": true, "devise": "CHF", "taxe": "ht",
+        "lignes": [ { "nom": "Citra", "valeur": "13,6", "unite": "%" }, { "nom": "Arômes", "valeur": "Limette, Mango, tropische Früchte" }, { "nom": "Origine", "valeur": "USA" } ] },
+      { "id": "H2", "nom": "Citra US", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock", "prixCentimes": 372, "devise": "EUR", "taxe": "ttc", "change": { "taux": 0.93, "date": "2026-11-24", "source": "BCE" },
+        "lignes": [ { "nom": "Poids", "valeur": "50 g, 250 g et 500 g" }, { "nom": "Origine", "valeur": "États-Unis" } ] }
+    ]
+  },
+  "houblonsAvecQuantite": {
+    "titre": "ZZ TEST — houblons citra, garde-fou",
+    "articles": [
+      { "id": "Q1", "nom": "Citra 13.6% 1 kg", "vendeur": "Brau- und Rauchshop", "pays": "CH", "dispo": "en stock", "prixCentimes": 8000, "devise": "CHF", "taxe": "ht", "lignes": [] },
+      { "id": "Q2", "nom": "Citra US 50 g", "vendeur": "MotlerHops", "pays": "FR", "dispo": "en stock", "prixCentimes": 372, "devise": "EUR", "taxe": "ttc", "change": { "taux": 0.93, "date": "2026-11-24", "source": "BCE" }, "lignes": [] }
+    ]
+  },
+  "pagesHtml": {
+    "brau": "<!doctype html><html lang=\"de-CH\"><head><meta charset=\"utf-8\"><title>Citra 13.6% | Brau- und Rauchshop</title><script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"name\":\"Citra 13.6%\",\"sku\":\"CIT-136\",\"offers\":{\"@type\":\"Offer\",\"priceCurrency\":\"CHF\",\"price\":\"0.1044\",\"availability\":\"https://schema.org/InStock\",\"priceSpecification\":[{\"@type\":\"UnitPriceSpecification\",\"priceCurrency\":\"CHF\",\"price\":\"0.1044\",\"referenceQuantity\":{\"@type\":\"QuantitativeValue\",\"value\":1,\"unitCode\":\"GRM\"}},{\"@type\":\"UnitPriceSpecification\",\"priceCurrency\":\"CHF\",\"price\":\"0.08\",\"eligibleQuantity\":{\"@type\":\"QuantitativeValue\",\"minValue\":1000,\"unitCode\":\"GRM\"},\"referenceQuantity\":{\"@type\":\"QuantitativeValue\",\"value\":1,\"unitCode\":\"GRM\"}}]}}</script></head><body><main><h1>Citra 13.6%</h1><div class=\"product-detail-price-container\"><span class=\"product-detail-price\">0,1044 CHF*</span><span class=\"price-unit-content\">Inhalt: 1 Gramm</span></div><div class=\"price-graduation\">ab 1000 Gramm: 0,08 CHF* pro Gramm</div><p>Aroma: Limette, Mango, tropische Früchte. Alpha 13,6 %.</p></main></body></html>",
+    "motler": "<!doctype html><html lang=\"fr\"><head><meta charset=\"utf-8\"><title>Citra US – MotlerHops</title><script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"ProductGroup\",\"name\":\"Citra US\",\"productGroupID\":\"citra-us\",\"hasVariant\":[{\"@type\":\"Product\",\"name\":\"Citra US - 50 g\",\"sku\":\"CIT-50\",\"offers\":{\"@type\":\"Offer\",\"priceCurrency\":\"EUR\",\"price\":\"3.72\",\"availability\":\"https://schema.org/InStock\"}},{\"@type\":\"Product\",\"name\":\"Citra US - 250 g\",\"sku\":\"CIT-250\",\"offers\":{\"@type\":\"Offer\",\"priceCurrency\":\"EUR\",\"price\":\"13.90\",\"availability\":\"https://schema.org/InStock\"}},{\"@type\":\"Product\",\"name\":\"Citra US - 500 g\",\"sku\":\"CIT-500\",\"offers\":{\"@type\":\"Offer\",\"priceCurrency\":\"EUR\",\"price\":\"25.80\",\"availability\":\"https://schema.org/InStock\"}}]}</script></head><body><main><h1>Citra US</h1><div class=\"price\"><span class=\"price-item\">3,72 €</span></div><p>Variantes : 50 g, 250 g, 500 g</p></main></body></html>"
+  }
+}
