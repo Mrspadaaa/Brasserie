@@ -2950,3 +2950,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 après-midi (Carnet, deux vues) : « Je sais pas si c'est une bonne idée mais il y aurait 2 version, une version Raw text avec juste mes note, et une version ultra organiser, boostée par l'ai et super visuel Ça serait une voie à regarder aussi »
 - 25.11 (page « Carnet, pas un chat ») : « Fait passer les critiques et fait au moins 3 itération »
 - 25.11 : « Critique et persona »
+- 25.11 soir (page « Carnet, pas un chat », après 3 itérations ; il recolle son classement passe 3 du 24.11) : « Aucune ne semble vraiment mieux que celle présentée... Il y a pas eu d'interation sur mes notes ?? »
