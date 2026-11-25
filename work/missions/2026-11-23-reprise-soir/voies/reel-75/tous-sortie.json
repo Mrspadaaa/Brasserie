@@ -1,0 +1,851 @@
+{
+ "C01": {
+  "titre": "Houblons citra",
+  "code": "C01",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nHoublons citra\n2 articles à comparer\nBrasserie\n▾\nArticles\n2\nComparer\nrang · article\nα\nCHF/kg\n1\nCITRA® (US)\nMotlerHops\n10–15\n≈73,9\n?\nCitra 13.6%\nBrau\n13,6\nà relire\nArômes\nlus sur les pages\n\ncitron vert\nmangue\nfruits tropicaux\n\n24 nov.\n\nbrauundrauchshop.ch · Citra 13.6%\n\n16:45\n\nSemble difficile à obtenir sur le site français\n\n19:29\nQuand\n· pas encore daté\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Brasserie, changer @144,157 118x32",
+   "Articles 2 @12,202 91x30",
+   "Comparer @111,202 88x30",
+   "Articles, actions @334,195 44x44",
+   "1CITRA® (US)MotlerHops10–15≈73,9 @13,269 364x41",
+   "?Citra 13.6%Brau13,6à relire @13,311 364x41",
+   "Note : Semble difficile à obtenir sur le site français, actions @341,540 36x32",
+   "Quand · pas encore daté @12,608 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "lignes": [
+   "1CITRA® (US)MotlerHops10–15≈73,9",
+   "?Citra 13.6%Brau13,6à relire"
+  ],
+  "fiches": [
+   {
+    "txt": [
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Houblons citra\n1re sur 2\nCITRA® (US)\n\nMotlerHops\n\nα\n10–15 %\n\nOffre\nMotlerHops\nen stock\n≈4 CHF rendu\nOuvrir\n50 g · 73,80 CHF/kg · 3,72 € · douane, port et envoi non comptés\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nOrigine\nÉtats-Unis\nPoids\n50 g, 250 g et 500 g\nDisponibilité\nen stock\n\nNon publié par le vendeur : Arômes\n\nVeille du prix, tous les 3 jours\nChoisir · MotlerHops, 1 kg\n\nPart dans À venir : CITRA® (US), MotlerHops, ≈4 CHF rendu, en stock, avec le pourquoi.\n\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Houblons citra\n1re sur 2\nCITRA® (US)\n\nMotlerHops\n\nα\n10–15 %\n\nOffre\nMotlerHops\nen stock\n≈4 CHF rendu\nOuvrir\n50 g · 73,80 CHF/kg · 3,72 € · douane, port et envoi non comptés\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nOrigine\nÉtats-Unis\nPoids\n50 g, 250 g et 500 g\nDisponibilité\nen stock\n\nNon publié par le vendeur : Arômes\n\nVeille du prix, tous les 3 jours\nChoisir · MotlerHops, 1 kg\n\nPart dans À venir : CITRA® (US), MotlerHops, ≈4 CHF rendu, en stock, avec le pourquoi.\n\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+    ],
+    "b": [
+     "Actualiser @196,765 62x28",
+     "Retour au tableau de bord @8,6 86x28",
+     "Période précédente @137,3 34x34",
+     "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+     "Période suivante @259,3 34x34",
+     "Rechercher (⌘K) @298,6 28x28",
+     "Plus : saisie au nom de Gaëtan @330,2 52x36",
+     "Matériel @17,50 79x28",
+     "Parc @105,50 38x28",
+     "À venir11 @145,50 75x28",
+     "Carnets32 @221,50 80x28",
+     "Réalisés5 @303,50 74x28",
+     "Articles · Houblons citra @12,91 182x44",
+     "Article suivant @328,91 44x44",
+     "Modifier le prix @236,350 44x44",
+     "Veille du prix, tous les 3 jours @295,620 64x44",
+     "Choisir · MotlerHops, 1 kg @12,673 360x44",
+     "Photo @226,745 34x34",
+     "Dicter @264,745 34x34",
+     "Bord @0,804 65x40",
+     "Finances @65,804 65x40",
+     "Calendrier @130,804 66x40",
+     "Brassins @195,804 65x40",
+     "Stocks, 11 articles à commander @260,804 65x40",
+     "Clients @325,804 65x40",
+     "Actions rapides @322,736 56x56"
+    ],
+    "choisir": {
+     "bouton": "Choisir · MotlerHops, 1 kg",
+     "ecranChoisir": true,
+     "txt": [
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nCITRA® (US)\nMotlerHops · en stock\n50 g · 73,80 CHF/kg · 3,72 € · douane, port et envoi non comptés\n≈4 CHF\nOuvrir\nSes autres valeurs\nAlpha\t10–15 %\nOrigine\tÉtats-Unis\nMotlerHops : en stock\nPourquoi \n · proposé, à corriger\nChoisir chez MotlerHops\nÉcarter\n\nPart dans À venir : ≈4 CHF, en stock, MotlerHops, avec le pourquoi.\n\n2\nCitra 13.6%\nBrau- und Rauchshop\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nCITRA® (US)\nMotlerHops · en stock\n50 g · 73,80 CHF/kg · 3,72 € · douane, port et envoi non comptés\n≈4 CHF\nOuvrir\nSes autres valeurs\nAlpha\t10–15 %\nOrigine\tÉtats-Unis\nMotlerHops : en stock\nPourquoi \n · proposé, à corriger\nChoisir chez MotlerHops\nÉcarter\n\nPart dans À venir : ≈4 CHF, en stock, MotlerHops, avec le pourquoi.\n\n2\nCitra 13.6%\nBrau- und Rauchshop\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+     ]
+    }
+   },
+   {
+    "txt": [
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Houblons citra\n2e sur 2\nCitra 13.6%\n\nBrau- und Rauchshop\n\nα\n13,6 %\n\ncitron vert\nmangue\nfruits tropicaux\n\nOffre\nBrau- und Rauchshop\nprix ?\nPoser le prix\nRelire\nEscalader\nOuvrir\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nArômes\ncitron vert, mangue, fruits tropicaux\nOrigine\nÉtats-Unis\nParticulièrement adapté pour\nales et IPA américaines\nVeille du prix, tous les 3 jours\nChoisir · Brau- und Rauchshop\n\nPart dans À venir : Citra 13.6%, Brau- und Rauchshop, avec le pourquoi.\n\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Houblons citra\n2e sur 2\nCitra 13.6%\n\nBrau- und Rauchshop\n\nα\n13,6 %\n\ncitron vert\nmangue\nfruits tropicaux\n\nOffre\nBrau- und Rauchshop\nprix ?\nPoser le prix\nRelire\nEscalader\nOuvrir\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nArômes\ncitron vert, mangue, fruits tropicaux\nOrigine\nÉtats-Unis\nParticulièrement adapté pour\nales et IPA américaines\nVeille du prix, tous les 3 jours\nChoisir · Brau- und Rauchshop\n\nPart dans À venir : Citra 13.6%, Brau- und Rauchshop, avec le pourquoi.\n\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+    ],
+    "b": [
+     "Actualiser @196,765 62x28",
+     "Retour au tableau de bord @8,6 86x28",
+     "Période précédente @137,3 34x34",
+     "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+     "Période suivante @259,3 34x34",
+     "Rechercher (⌘K) @298,6 28x28",
+     "Plus : saisie au nom de Gaëtan @330,2 52x36",
+     "Matériel @17,50 79x28",
+     "Parc @105,50 38x28",
+     "À venir11 @145,50 75x28",
+     "Carnets32 @221,50 80x28",
+     "Réalisés5 @303,50 74x28",
+     "Articles · Houblons citra @12,91 182x44",
+     "Article précédent @328,91 44x44",
+     "Poser le prix @98,364 87x44",
+     "Relire @197,364 63x44",
+     "Escalader @272,364 89x44",
+     "Veille du prix, tous les 3 jours @295,630 64x44",
+     "Choisir · Brau- und Rauchshop @12,683 360x44",
+     "Photo @226,745 34x34",
+     "Dicter @264,745 34x34",
+     "Bord @0,804 65x40",
+     "Finances @65,804 65x40",
+     "Calendrier @130,804 66x40",
+     "Brassins @195,804 65x40",
+     "Stocks, 11 articles à commander @260,804 65x40",
+     "Clients @325,804 65x40",
+     "Actions rapides @322,736 56x56"
+    ],
+    "choisir": {
+     "bouton": "Choisir · Brau- und Rauchshop",
+     "ecranChoisir": true,
+     "txt": [
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nCitra 13.6%\nBrau- und Rauchshop\nOuvrir\nSes autres valeurs\nAlpha\t13,6 %\nOrigine\tÉtats-Unis\n\nArômes\ncitron vert, mangue, fruits tropicaux\nBrau- und Rauchshop\nPourquoi \n · proposé, à corriger\nChoisir chez Brau- und Rauchshop\nÉcarter\n\nPart dans À venir : Brau- und Rauchshop, avec le pourquoi.\n\n1\nCITRA® (US)\nMotlerHops\n3,72\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nCitra 13.6%\nBrau- und Rauchshop\nOuvrir\nSes autres valeurs\nAlpha\t13,6 %\nOrigine\tÉtats-Unis\n\nArômes\ncitron vert, mangue, fruits tropicaux\nBrau- und Rauchshop\nPourquoi \n · proposé, à corriger\nChoisir chez Brau- und Rauchshop\nÉcarter\n\nPart dans À venir : Brau- und Rauchshop, avec le pourquoi.\n\n1\nCITRA® (US)\nMotlerHops\n3,72\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+     ]
+    }
+   }
+  ],
+  "comparer": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nComparer\n\n2 articles\n\nClassé par\nPrix\n\n5 diffèrent\t\nCITRA® (US)\nMotlerHops\n\t\nCitra 13.6%\nBrau- und Rauchshop\n\n\nprix CHF\t≈73,9\t?\nRelire\nEscalader\nvendu par\t50 g\t?\ndispo\ten stock\t?\nAlpha\t10 % - 15 %\t13,6 %\nArômes\t?\tcitron vert, mangue, fruits tropicaux\n\n1 identique\n▸\nÉtats-Unis\n\n≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », douane, port et envoi non comptés, estimé\n\nValeurs annoncées par les vendeurs\n\nChoisir · MotlerHops, 1 kg\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nHoublons citra\nÀ comparer\nComparer\n\n2 articles\n\nClassé par\nPrix\n\n5 diffèrent\t\nCITRA® (US)\nMotlerHops\n\t\nCitra 13.6%\nBrau- und Rauchshop\n\n\nprix CHF\t≈73,9\t?\nRelire\nEscalader\nvendu par\t50 g\t?\ndispo\ten stock\t?\nAlpha\t10 % - 15 %\t13,6 %\nArômes\t?\tcitron vert, mangue, fruits tropicaux\n\n1 identique\n▸\nÉtats-Unis\n\n≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », douane, port et envoi non comptés, estimé\n\nValeurs annoncées par les vendeurs\n\nChoisir · MotlerHops, 1 kg\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nHoublons citra\n2 articles à comparer\nBrasserie\n▾\nArticles\n2\nComparer\nrang · article\nα\nCHF/kg\n1\nCITRA® (US)\nMotlerHops\n10–15\n≈73,9\n?\nCitra 13.6%\nBrau\n13,6\nà relire\nArômes\nlus sur les pages\n\ncitron vert\nmangue\nfruits tropicaux\n\n24 nov.\n\nbrauundrauchshop.ch · Citra 13.6%\n\n16:45\n\nSemble difficile à obtenir sur le site français\n\n19:29\n\nQuand\n· pas encore daté\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nnov.\ndéc.\nAu calendrier\nAjouter à Houblons citra…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C02": {
+  "titre": "Chambre froide",
+  "code": "C02",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nChambre froide\n2 articles à comparer\nBrasserie\n▾\nArticles\n2\nComparer\nrang · article\nVolume\nDimensions intérieures\nCHF\n1\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nen stock · TTC\n2,6 m³\n1340 ×\n1040 ×\n1850 mm\n2 697,74\n2\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nen stock · TTC\n4,06 m³\n1640 ×\n1340 ×\n1850 mm\n2 987,51\nPrix au m³\nmoins = mieux\n1\n4,06 m³\n736\n2\n2,6 m³\n1 038\n21 nov.\n\nggmgastro.com · 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n\n21:07\n\nggmgastro.com · 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n\n21:08\n23 – 24 nov.\n\nZZ TEST — M3 — cellule de garde 2,6 m3\n\ngastro-held.ch\n\nFûts déplacés dans la chambre froide en attendant.\n\nQuand\n· pas encore daté\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nChambre froide\n2 articles à comparer\nBrasserie\n▾\nArticles\n2\nComparer\nrang · article\nVolume\nDimensions intérieures\nCHF\n1\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nen stock · TTC\n2,6 m³\n1340 ×\n1040 ×\n1850 mm\n2 697,74\n2\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nen stock · TTC\n4,06 m³\n1640 ×\n1340 ×\n1850 mm\n2 987,51\nPrix au m³\nmoins = mieux\n1\n4,06 m³\n736\n2\n2,6 m³\n1 038\n21 nov.\n\nggmgastro.com · 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n\n21:07\n\nggmgastro.com · 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n\n21:08\n23 – 24 nov.\n\nZZ TEST — M3 — cellule de garde 2,6 m3\n\ngastro-held.ch\n\nFûts déplacés dans la chambre froide en attendant.\n\nQuand\n· pas encore daté\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @328,85 44x44",
+   "Domaine : Brasserie, changer @144,157 118x32",
+   "Articles 2 @12,202 91x30",
+   "Comparer @111,202 88x30",
+   "Articles, actions @328,195 44x44",
+   "11500 x 1200 mm - 2,6 m³ - groupe frigorifique inclusen stock · TTC 2, @13,283 358x154",
+   "21800 x 1500 mm - 4,06 m³ - groupe frigorifique inclusen stock · TTC 4 @13,437 358x154",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "lignes": [
+   "11500 x 1200 mm - 2,6 m³ - groupe frigorifique inclusen stock · TTC 2,6 m³ 1340 ",
+   "21800 x 1500 mm - 4,06 m³ - groupe frigorifique inclusen stock · TTC 4,06 m³ 164"
+  ],
+  "fiches": [
+   {
+    "txt": [
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Chambre froide\n1re sur 2\nphoto de la page collée\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nOffre\nggmgastro.com\nen stock\n2 697,74 CHF\nOuvrir\nTTC · port offert\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nTempérature\n0 à 8 °C\nVolume\n2,6 m³\nPerformance\n550 Watt\nBranchement\n1N~/PE\nTension\n230 V\nType de refroidissement\nAir pulsé\nFluide frigorigène\nR290\nQuantité de frigorigène\n0,13 kg\nMode de fonctionnement\nÉlectricité\nMatériau du produit\nTôle d'acier galvanisée, peinte en plastique\nDimensions du produit\n1500 x 1200 x 2010 mm\nLargeur de l'unité\n450 mm\nDimensions intérieures (L x P x H)\n1340 x 1040 x 1850 mm\nHauteur de la porte\n1845 mm\nLargeur de la porte\n700 mm\nExécution/équipement\navec groupe frigorifique\ndensité d'isolation\n42 kg/m³\nÉpaisseur de l'isolation\n80 mm\nÉpaisseur du matériel\n0,50 mm\nCouleur\nRAL 9002\nVeille du prix, tous les 3 jours\nChoisir\n\nPart dans À venir : 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus, 2 697,74 CHF, en stock, avec le pourquoi.\n\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Chambre froide\n1re sur 2\nphoto de la page collée\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nOffre\nggmgastro.com\nen stock\n2 697,74 CHF\nOuvrir\nTTC · port offert\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nTempérature\n0 à 8 °C\nVolume\n2,6 m³\nPerformance\n550 Watt\nBranchement\n1N~/PE\nTension\n230 V\nType de refroidissement\nAir pulsé\nFluide frigorigène\nR290\nQuantité de frigorigène\n0,13 kg\nMode de fonctionnement\nÉlectricité\nMatériau du produit\nTôle d'acier galvanisée, peinte en plastique\nDimensions du produit\n1500 x 1200 x 2010 mm\nLargeur de l'unité\n450 mm\nDimensions intérieures (L x P x H)\n1340 x 1040 x 1850 mm\nHauteur de la porte\n1845 mm\nLargeur de la porte\n700 mm\nExécution/équipement\navec groupe frigorifique\ndensité d'isolation\n42 kg/m³\nÉpaisseur de l'isolation\n80 mm\nÉpaisseur du matériel\n0,50 mm\nCouleur\nRAL 9002\nVeille du prix, tous les 3 jours\nChoisir\n\nPart dans À venir : 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus, 2 697,74 CHF, en stock, avec le pourquoi.\n\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+    ],
+    "b": [
+     "Actualiser @196,765 62x28",
+     "Retour au tableau de bord @8,6 86x28",
+     "Période précédente @137,3 34x34",
+     "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+     "Période suivante @259,3 34x34",
+     "Rechercher (⌘K) @298,6 28x28",
+     "Plus : saisie au nom de Gaëtan @330,2 52x36",
+     "Matériel @17,50 79x28",
+     "Parc @105,50 38x28",
+     "À venir11 @145,50 75x28",
+     "Carnets32 @221,50 80x28",
+     "Réalisés5 @303,50 74x28",
+     "Articles · Chambre froide @12,91 188x44",
+     "Article suivant @328,91 44x44",
+     "Modifier le prix @236,385 44x44",
+     "Photo @226,745 34x34",
+     "Dicter @264,745 34x34",
+     "Bord @0,804 65x40",
+     "Finances @65,804 65x40",
+     "Calendrier @130,804 66x40",
+     "Brassins @195,804 65x40",
+     "Stocks, 11 articles à commander @260,804 65x40",
+     "Clients @325,804 65x40",
+     "Actions rapides @322,736 56x56"
+    ],
+    "choisir": {
+     "bouton": "Choisir",
+     "ecranChoisir": true,
+     "txt": [
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nen stock\nTTC · port offert\n2 697,74 CHF\nOuvrir\nSes autres valeurs\tplace parmi les 2\nPrix\t2 697,74 CHF\t1er sur 2\n\n‹ moins cher · 2 698 CHF\n2 988 CHF\n\nTempérature\t0 à 8 °C\nVolume\t2,6 m³\nPerformance\t550 Watt\nBranchement\t1N~/PE\nTension\t230 V\nType de refroidissement\tAir pulsé\nFluide frigorigène\tR290\n+ 13 autres valeurs\nPourquoi \n · proposé, à corriger\nChoisir\nÉcarter\n\nPart dans À venir : 2 697,74 CHF, en stock, avec le pourquoi.\n\n2\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n2 987,51\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nen stock\nTTC · port offert\n2 697,74 CHF\nOuvrir\nSes autres valeurs\tplace parmi les 2\nPrix\t2 697,74 CHF\t1er sur 2\n\n‹ moins cher · 2 698 CHF\n2 988 CHF\n\nTempérature\t0 à 8 °C\nVolume\t2,6 m³\nPerformance\t550 Watt\nBranchement\t1N~/PE\nTension\t230 V\nType de refroidissement\tAir pulsé\nFluide frigorigène\tR290\n+ 13 autres valeurs\nPourquoi \n · proposé, à corriger\nChoisir\nÉcarter\n\nPart dans À venir : 2 697,74 CHF, en stock, avec le pourquoi.\n\n2\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n2 987,51\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+     ]
+    }
+   },
+   {
+    "txt": [
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Chambre froide\n2e sur 2\nphoto de la page collée\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nOffre\nggmgastro.com\nen stock\n2 987,51 CHF\nOuvrir\nTTC · port offert\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nTempérature\n0 à 8 °C\nVolume\n4,06 m³\nPerformance\n550 Watt\nBranchement\n1N~/PE\nTension\n230 V\nType de refroidissement\nAir pulsé\nFluide frigorigène\nR290\nQuantité de frigorigène\n0,13 kg\nMode de fonctionnement\nÉlectricité\nMatériau du produit\nTôle d'acier galvanisée, peinte en plastique\nDimensions du produit\n1800 x 1500 x 2010 mm\nLargeur de l'unité\n450 mm\nDimensions intérieures (L x P x H)\n1640 x 1340 x 1850 mm\nHauteur de la porte\n1845 mm\nLargeur de la porte\n700 mm\nExécution/équipement\navec groupe frigorifique\ndensité d'isolation\n42 kg/m³\nÉpaisseur de l'isolation\n80 mm\nÉpaisseur du matériel\n0,50 mm\nCouleur\nRAL 9002\nVeille du prix, tous les 3 jours\nChoisir\n\nPart dans À venir : 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus, 2 987,51 CHF, en stock, avec le pourquoi.\n\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+     "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nArticles · Chambre froide\n2e sur 2\nphoto de la page collée\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nOffre\nggmgastro.com\nen stock\n2 987,51 CHF\nOuvrir\nTTC · port offert\nCaractéristiques\nlues sur la fiche du vendeur, 24 nov.\nTempérature\n0 à 8 °C\nVolume\n4,06 m³\nPerformance\n550 Watt\nBranchement\n1N~/PE\nTension\n230 V\nType de refroidissement\nAir pulsé\nFluide frigorigène\nR290\nQuantité de frigorigène\n0,13 kg\nMode de fonctionnement\nÉlectricité\nMatériau du produit\nTôle d'acier galvanisée, peinte en plastique\nDimensions du produit\n1800 x 1500 x 2010 mm\nLargeur de l'unité\n450 mm\nDimensions intérieures (L x P x H)\n1640 x 1340 x 1850 mm\nHauteur de la porte\n1845 mm\nLargeur de la porte\n700 mm\nExécution/équipement\navec groupe frigorifique\ndensité d'isolation\n42 kg/m³\nÉpaisseur de l'isolation\n80 mm\nÉpaisseur du matériel\n0,50 mm\nCouleur\nRAL 9002\nVeille du prix, tous les 3 jours\nChoisir\n\nPart dans À venir : 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus, 2 987,51 CHF, en stock, avec le pourquoi.\n\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+    ],
+    "b": [
+     "Actualiser @196,765 62x28",
+     "Retour au tableau de bord @8,6 86x28",
+     "Période précédente @137,3 34x34",
+     "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+     "Période suivante @259,3 34x34",
+     "Rechercher (⌘K) @298,6 28x28",
+     "Plus : saisie au nom de Gaëtan @330,2 52x36",
+     "Matériel @17,50 79x28",
+     "Parc @105,50 38x28",
+     "À venir11 @145,50 75x28",
+     "Carnets32 @221,50 80x28",
+     "Réalisés5 @303,50 74x28",
+     "Articles · Chambre froide @12,91 188x44",
+     "Article précédent @328,91 44x44",
+     "Modifier le prix @236,385 44x44",
+     "Photo @226,745 34x34",
+     "Dicter @264,745 34x34",
+     "Bord @0,804 65x40",
+     "Finances @65,804 65x40",
+     "Calendrier @130,804 66x40",
+     "Brassins @195,804 65x40",
+     "Stocks, 11 articles à commander @260,804 65x40",
+     "Clients @325,804 65x40",
+     "Actions rapides @322,736 56x56"
+    ],
+    "choisir": {
+     "bouton": "Choisir",
+     "ecranChoisir": true,
+     "txt": [
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nen stock\nTTC · port offert\n2 987,51 CHF\nOuvrir\nSes autres valeurs\tplace parmi les 2\nPrix\t2 987,51 CHF\t2e sur 2\n\n‹ moins cher · 2 698 CHF\n2 988 CHF\n\nTempérature\t0 à 8 °C\nVolume\t4,06 m³\nPerformance\t550 Watt\nBranchement\t1N~/PE\nTension\t230 V\nType de refroidissement\tAir pulsé\nFluide frigorigène\tR290\n+ 13 autres valeurs\nPourquoi \n · proposé, à corriger\nChoisir\nÉcarter\n\nPart dans À venir : 2 987,51 CHF, en stock, avec le pourquoi.\n\n1\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n2 697,74\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+      "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nen stock\nTTC · port offert\n2 987,51 CHF\nOuvrir\nSes autres valeurs\tplace parmi les 2\nPrix\t2 987,51 CHF\t2e sur 2\n\n‹ moins cher · 2 698 CHF\n2 988 CHF\n\nTempérature\t0 à 8 °C\nVolume\t4,06 m³\nPerformance\t550 Watt\nBranchement\t1N~/PE\nTension\t230 V\nType de refroidissement\tAir pulsé\nFluide frigorigène\tR290\n+ 13 autres valeurs\nPourquoi \n · proposé, à corriger\nChoisir\nÉcarter\n\nPart dans À venir : 2 987,51 CHF, en stock, avec le pourquoi.\n\n1\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n2 697,74\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+     ]
+    }
+   }
+  ],
+  "comparer": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\nComparer\n\n2 articles\n\nClassé par\nPrix\n\n4 diffèrent\t\n1\n2,6 m³\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n\t\n2\n4,06 m³\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n\n\nprix CHF\t2 697,74\nTTC\n\t2 987,51\nTTC\n\nVolume\t2,6 m³\t4,06 m³\nDimensions du produit\t\n1500 ×\n1200 ×\n2010 mm\n\t\n1800 ×\n1500 ×\n2010 mm\n\nDimensions intérieures (L x P x H)\t\n1340 ×\n1040 ×\n1850 mm\n\t\n1640 ×\n1340 ×\n1850 mm\n\n\n18 identiques\n▸\nen stock, 0 à 8 °C, 550 Watt, 1N~/PE, 230 V, Air pulsé, R290, 0,13 kg, Électricité, Tôle d'acier galvanisée, peinte en plastique, 450, 1 845, 700, avec groupe frigorifique, 42 kg/m³, 80, 0,5, RAL 9002\nEn barres\nen plus des valeurs · prix au m³ · moins = mieux\n1\n4,06 m³\n736\n2\n2,6 m³\n1 038\n\nCompromis : la 1re, la moins chère : 289,77 CHF de moins que la 2e, mais la 2e a le volume 4,06 m³ au lieu de 2,6 m³ \n\nValeurs annoncées par les vendeurs\n\nChoisir\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nChambre froide\nÀ comparer\nComparer\n\n2 articles\n\nClassé par\nPrix\n\n4 diffèrent\t\n1\n2,6 m³\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n\t\n2\n4,06 m³\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n\n\nprix CHF\t2 697,74\nTTC\n\t2 987,51\nTTC\n\nVolume\t2,6 m³\t4,06 m³\nDimensions du produit\t\n1500 ×\n1200 ×\n2010 mm\n\t\n1800 ×\n1500 ×\n2010 mm\n\nDimensions intérieures (L x P x H)\t\n1340 ×\n1040 ×\n1850 mm\n\t\n1640 ×\n1340 ×\n1850 mm\n\n\n18 identiques\n▸\nen stock, 0 à 8 °C, 550 Watt, 1N~/PE, 230 V, Air pulsé, R290, 0,13 kg, Électricité, Tôle d'acier galvanisée, peinte en plastique, 450, 1 845, 700, avec groupe frigorifique, 42 kg/m³, 80, 0,5, RAL 9002\nEn barres\nen plus des valeurs · prix au m³ · moins = mieux\n1\n4,06 m³\n736\n2\n2,6 m³\n1 038\n\nCompromis : la 1re, la moins chère : 289,77 CHF de moins que la 2e, mais la 2e a le volume 4,06 m³ au lieu de 2,6 m³ \n\nValeurs annoncées par les vendeurs\n\nChoisir\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nChambre froide\n2 articles à comparer\nBrasserie\n▾\nArticles\n2\nComparer\nrang · article\nVolume\nDimensions intérieures\nCHF\n1\n1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\nen stock · TTC\n2,6 m³\n1340 ×\n1040 ×\n1850 mm\n2 697,74\n2\n1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\nen stock · TTC\n4,06 m³\n1640 ×\n1340 ×\n1850 mm\n2 987,51\nPrix au m³\nmoins = mieux\n1\n4,06 m³\n736\n2\n2,6 m³\n1 038\n21 nov.\n\nggmgastro.com · 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus\n\n21:07\n\nggmgastro.com · 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus\n\n21:08\n23 – 24 nov.\n\nZZ TEST — M3 — cellule de garde 2,6 m3\n\ngastro-held.ch\n\nFûts déplacés dans la chambre froide en attendant.\n\nQuand\n· pas encore daté\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nnov.\ndéc.\nAu calendrier\nAjouter à Chambre froide…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C03": {
+  "titre": "Achat brasserie : moulin à malt + bac etc.",
+  "code": "C03",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nAchat brasserie : moulin à malt + bac etc.\nBrasserie\n▾\n\nBudget 300 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nAchat brasserie : moulin à malt + bac etc. Budget du Planning : 300 CHF À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\n24 nov.\n\nAchat prévu fin du mois.\n\nQuand\n· passé · S29 · 300 CHF estimé\nAjouter à Achat brasserie : moulin à malt + bac etc.…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Brasserie, changer @12,157 118x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements), ac @341,305 36x32",
+   "Note : Pas encore fait au 20.11.2026, actions @341,439 36x32",
+   "Quand · passé · S29 · 300 CHF estimé @12,558 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nAchat brasserie : moulin à malt + bac etc.\nBrasserie\n▾\n\nBudget 300 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nAchat brasserie : moulin à malt + bac etc. Budget du Planning : 300 CHF À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\n24 nov.\n\nAchat prévu fin du mois.\n\nQuand\n· passé · S29\n· 300 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\njuin\njuil.\naoût\nAu calendrier\nAjouter à Achat brasserie : moulin à malt + bac etc.…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C04": {
+  "titre": "Embouteillage — station complète (2027)",
+  "code": "C04",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nEmbouteillage — station complète (2027)\nBrasserie\n▾\n\nBudget 2 500 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nEmbouteillage — station complète (2027) Budget du Planning : 2 500 CHF À faire du 01.05.2027 au 01.07.2027 (Planning, Équipements)\n\nQuand\n· S26 · 2 500 CHF estimé\nAjouter à Embouteillage — station complète (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Brasserie, changer @12,157 118x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 01.05.2027 au 01.07.2027 (Planning, Équipements), ac @341,305 36x32",
+   "Quand · S26 · 2 500 CHF estimé @12,416 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nEmbouteillage — station complète (2027)\nBrasserie\n▾\n\nBudget 2 500 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nEmbouteillage — station complète (2027) Budget du Planning : 2 500 CHF À faire du 01.05.2027 au 01.07.2027 (Planning, Équipements)\n\nQuand\n· S26\n· 2 500 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\njuin\njuil.\naoût\nAu calendrier\nAjouter à Embouteillage — station complète (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C05": {
+  "titre": "Frigo + congel",
+  "code": "C05",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nFrigo + congel\nBrasserie\n▾\n\nBudget 400 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nFrigo + congel Budget du Planning : 400 CHF À faire du 01.08.2026 au 01.05.2027 (Planning, Équipements)\n\n23 nov.\n\ngalaxus.ch\n\n13:07\n\ndigitec.ch\n\n13:07\n\nbrack.ch\n\n13:08\n\nbrack.ch\n\n13:08\nQuand\n· S17 · 400 CHF estimé\nAjouter à Frigo + congel…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Brasserie, changer @12,157 118x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 01.08.2026 au 01.05.2027 (Planning, Équipements), ac @341,305 36x32",
+   "Quand · S17 · 400 CHF estimé @12,677 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nFrigo + congel\nBrasserie\n▾\n\nBudget 400 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nFrigo + congel Budget du Planning : 400 CHF À faire du 01.08.2026 au 01.05.2027 (Planning, Équipements)\n\n23 nov.\n\ngalaxus.ch\n\n13:07\n\ndigitec.ch\n\n13:07\n\nbrack.ch\n\n13:08\n\nbrack.ch\n\n13:08\n\nQuand\n· S17\n· 400 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\navr.\nmai\njuin\nAu calendrier\nAjouter à Frigo + congel…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C06": {
+  "titre": "Hotte recyclage",
+  "code": "C06",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nHotte recyclage\nLocal\n▾\n\nBudget 200 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nHotte recyclage Budget du Planning : 200 CHF À faire du 27.06.2026 au 24.08.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S35 · 200 CHF estimé\nAjouter à Hotte recyclage…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,157 94x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 27.06.2026 au 24.08.2026 (Planning, Équipements), ac @341,305 36x32",
+   "Note : Pas encore fait au 20.11.2026, actions @341,418 36x32",
+   "Quand · passé · S35 · 200 CHF estimé @12,469 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nHotte recyclage\nLocal\n▾\n\nBudget 200 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nHotte recyclage Budget du Planning : 200 CHF À faire du 27.06.2026 au 24.08.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S35\n· 200 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\naoût\nsept.\noct.\nAu calendrier\nAjouter à Hotte recyclage…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C07": {
+  "titre": "Sol — matières premières + outils (peut faire en 2x)",
+  "code": "C07",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nSol — matières premières + outils (peut faire en 2x)\nLocal\n▾\n\nBudget 500 CHF · du Planning\n\n3 sept.\n\nSol — matières premières + outils (peut faire en 2x) Budget du Planning : 500 CHF À faire du 20.05.2026 au 22.09.2026 (Planning, Structure)\n\n20 nov.\n\nEn cours au 20.11.2026\n\n25 nov.\n\nZZ TEST — c69 mémo : le sol époxy du local a bien tenu au nettoyage à la soude, aucune cloque\n\nrattaché : « sol époxy du local »\n\nQuand\n· passé · S21 · 500 CHF · budget\nAjouter à Sol — matières premières + outils (peut faire en 2x)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,177 94x32",
+   "Note : À faire du 20.05.2026 au 22.09.2026 (Planning, Structure), acti @341,275 36x32",
+   "Note : En cours au 20.11.2026, actions @341,409 36x32",
+   "Quand · passé · S21 · 500 CHF · budget @12,589 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nSol — matières premières + outils (peut faire en 2x)\nLocal\n▾\n\nBudget 500 CHF · du Planning\n\n3 sept.\n\nSol — matières premières + outils (peut faire en 2x) Budget du Planning : 500 CHF À faire du 20.05.2026 au 22.09.2026 (Planning, Structure)\n\n20 nov.\n\nEn cours au 20.11.2026\n\n25 nov.\n\nZZ TEST — c69 mémo : le sol époxy du local a bien tenu au nettoyage à la soude, aucune cloque\n\nrattaché : « sol époxy du local »\n\nQuand\n· passé · S21\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\navr.\nmai\njuin\nPrix estimé ?\n500 CHF\n· budget\n100 CHF\n200 CHF\n500 CHF\n1 000 CHF\n5 000 CHF\nAu calendrier\nAjouter à Sol — matières premières + outils (peut faire en 2x)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C08": {
+  "titre": "Jalon — Peut brasser au local (sans autorisation vente)",
+  "code": "C08",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nJalon — Peut brasser au local (sans autorisation vente)\nLocal\n▾\n3 sept.\n\nJalon — Peut brasser au local (sans autorisation vente) Jalon du Planning, sans date\n\nQuand\n· pas encore daté\nAjouter à Jalon — Peut brasser au local (sans autorisation vente)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,177 94x32",
+   "Note : Jalon du Planning, sans date, actions @341,251 36x32",
+   "Quand · pas encore daté @12,341 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nJalon — Peut brasser au local (sans autorisation vente)\nLocal\n▾\n3 sept.\n\nJalon — Peut brasser au local (sans autorisation vente) Jalon du Planning, sans date\n\nQuand\n· pas encore daté\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nnov.\ndéc.\nAu calendrier\nAjouter à Jalon — Peut brasser au local (sans autorisation vente)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C09": {
+  "titre": "2ème évier (2027)",
+  "code": "C09",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\n2ème évier (2027)\nLocal\n▾\n\nBudget 400 CHF · du Planning\n\n3 sept.\n\n2ème évier (2027) Budget du Planning : 400 CHF À faire du 01.09.2027 au 01.11.2027 (Planning, Plomberie)\n\nQuand\n· 1 sept. 2027 · 400 CHF · budget\nAjouter à 2ème évier (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,157 94x32",
+   "Note : À faire du 01.09.2027 au 01.11.2027 (Planning, Plomberie), acti @341,255 36x32",
+   "Quand · 1 sept. 2027 · 400 CHF · budget @12,345 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\n2ème évier (2027)\nLocal\n▾\n\nBudget 400 CHF · du Planning\n\n3 sept.\n\n2ème évier (2027) Budget du Planning : 400 CHF À faire du 01.09.2027 au 01.11.2027 (Planning, Plomberie)\n\nQuand\n· 1 sept. 2027\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\naoût\nsept.\noct.\nPrix estimé ?\n400 CHF\n· budget\n100 CHF\n200 CHF\n500 CHF\n1 000 CHF\n5 000 CHF\nAu calendrier\nAjouter à 2ème évier (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C10": {
+  "titre": "Installation électrique 27A (2027)",
+  "code": "C10",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nInstallation électrique 27A (2027)\nLocal\n▾\n\nBudget 1 500 CHF · du Planning\n\n3 sept.\n\nInstallation électrique 27A (2027) Budget du Planning : 1 500 CHF À faire du 01.05.2027 au 01.07.2027 (Planning, Électricité)\n\nQuand\n· 1 mai 2027 · 1 500 CHF · budget\nAjouter à Installation électrique 27A (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,157 94x32",
+   "Note : À faire du 01.05.2027 au 01.07.2027 (Planning, Électricité), ac @341,255 36x32",
+   "Quand · 1 mai 2027 · 1 500 CHF · budget @12,366 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nInstallation électrique 27A (2027)\nLocal\n▾\n\nBudget 1 500 CHF · du Planning\n\n3 sept.\n\nInstallation électrique 27A (2027) Budget du Planning : 1 500 CHF À faire du 01.05.2027 au 01.07.2027 (Planning, Électricité)\n\nQuand\n· 1 mai 2027\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\navr.\nmai\njuin\nPrix estimé ?\n1 500 CHF\n· budget\n100 CHF\n200 CHF\n500 CHF\n1 000 CHF\n5 000 CHF\nAu calendrier\nAjouter à Installation électrique 27A (2027)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C11": {
+  "titre": "Extincteur",
+  "code": "C11",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nExtincteur\nLocal\n▾\n\nBudget 80 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nExtincteur Budget du Planning : 80 CHF À faire du 21.09.2026 au 31.12.2026 (Planning, Sécurité)\n\nQuand\n· S53 · 80 CHF estimé\nAjouter à Extincteur…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Local, changer @12,157 94x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 21.09.2026 au 31.12.2026 (Planning, Sécurité), actio @341,305 36x32",
+   "Quand · S53 · 80 CHF estimé @12,395 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nExtincteur\nLocal\n▾\n\nBudget 80 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nExtincteur Budget du Planning : 80 CHF À faire du 21.09.2026 au 31.12.2026 (Planning, Sécurité)\n\nQuand\n· S53\n· 80 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\ndéc.\njanv.\nfévr.\nAu calendrier\nAjouter à Extincteur…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C12": {
+  "titre": "Armoire de rangement malte",
+  "code": "C12",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement malte\nMeuble\n▾\n\nBudget 200 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement malte Budget du Planning : 200 CHF À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\n23 nov.\n\nlandi.ch\n\nQuand\n· passé · S29 · 200 CHF estimé\nAjouter à Armoire de rangement malte…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Meuble, changer @12,157 106x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements), ac @341,305 36x32",
+   "Note : Pas encore fait au 20.11.2026, actions @341,418 36x32",
+   "Quand · passé · S29 · 200 CHF estimé @12,538 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement malte\nMeuble\n▾\n\nBudget 200 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement malte Budget du Planning : 200 CHF À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\n23 nov.\n\nlandi.ch\n\nQuand\n· passé · S29\n· 200 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\njuin\njuil.\naoût\nAu calendrier\nAjouter à Armoire de rangement malte…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C13": {
+  "titre": "Armoire de rangement extérieur",
+  "code": "C13",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement extérieur\nMeuble\n▾\n\nBudget 100 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement extérieur Budget du Planning : 100 CHF À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S39 · 100 CHF estimé\nAjouter à Armoire de rangement extérieur…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Meuble, changer @12,157 106x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements), ac @341,305 36x32",
+   "Note : Pas encore fait au 20.11.2026, actions @341,418 36x32",
+   "Quand · passé · S39 · 100 CHF estimé @12,469 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement extérieur\nMeuble\n▾\n\nBudget 100 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement extérieur Budget du Planning : 100 CHF À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S39\n· 100 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\nsept.\noct.\nAu calendrier\nAjouter à Armoire de rangement extérieur…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C14": {
+  "titre": "Armoire de rangement toxique",
+  "code": "C14",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement toxique\nMeuble\n▾\n\nBudget 100 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement toxique Budget du Planning : 100 CHF À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S39 · 100 CHF estimé\nAjouter à Armoire de rangement toxique…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Meuble, changer @12,157 106x32",
+   "Dans À venirVoir @12,219 366x44",
+   "Note : À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements), ac @341,305 36x32",
+   "Note : Pas encore fait au 20.11.2026, actions @341,418 36x32",
+   "Quand · passé · S39 · 100 CHF estimé @12,469 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nArmoire de rangement toxique\nMeuble\n▾\n\nBudget 100 CHF · du Planning\n\nDans À venir\nVoir\n3 sept.\n\nArmoire de rangement toxique Budget du Planning : 100 CHF À faire du 24.08.2026 au 21.09.2026 (Planning, Équipements)\n\n20 nov.\n\nPas encore fait au 20.11.2026\n\nQuand\n· passé · S39\n· 100 CHF estimé\nPrix\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\nsept.\noct.\nAu calendrier\nAjouter à Armoire de rangement toxique…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C15": {
+  "titre": "Conformité — dossiers SAAV + SEn + assurances",
+  "code": "C15",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nConformité — dossiers SAAV + SEn + assurances\nPapiers\n▾\n\nBudget 850 CHF · du Planning\n\n3 sept.\n\nConformité — dossiers SAAV + SEn + assurances Budget du Planning : 850 CHF À faire du 01.12.2027 au 31.12.2027 (Planning, Administratif)\n\nQuand\n· 1 déc. 2027 · 850 CHF · budget\nAjouter à Conformité — dossiers SAAV + SEn + assurances…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Papiers, changer @12,177 107x32",
+   "Note : À faire du 01.12.2027 au 31.12.2027 (Planning, Administratif),  @341,275 36x32",
+   "Quand · 1 déc. 2027 · 850 CHF · budget @12,386 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nConformité — dossiers SAAV + SEn + assurances\nPapiers\n▾\n\nBudget 850 CHF · du Planning\n\n3 sept.\n\nConformité — dossiers SAAV + SEn + assurances Budget du Planning : 850 CHF À faire du 01.12.2027 au 31.12.2027 (Planning, Administratif)\n\nQuand\n· 1 déc. 2027\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nPlus tard\nnov.\ndéc.\njanv.\nPrix estimé ?\n850 CHF\n· budget\n100 CHF\n200 CHF\n500 CHF\n1 000 CHF\n5 000 CHF\nAu calendrier\nAjouter à Conformité — dossiers SAAV + SEn + assurances…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ },
+ "C16": {
+  "titre": "Jalon — Conformité complète — Peut vendre officiellement",
+  "code": "C16",
+  "carnet": [
+   "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nJalon — Conformité complète — Peut vendre officiellement\nPapiers\n▾\n3 sept.\n\nJalon — Conformité complète — Peut vendre officiellement Jalon du Planning, sans date\n\nQuand\n· pas encore daté\nAjouter à Jalon — Conformité complète — Peut vendre officiellement…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  ],
+  "boutons": [
+   "Actualiser @196,765 62x28",
+   "Retour au tableau de bord @8,6 86x28",
+   "Période précédente @137,3 34x34",
+   "Période : Tout l’historique. Choisir la plage @171,3 88x34",
+   "Période suivante @259,3 34x34",
+   "Rechercher (⌘K) @298,6 28x28",
+   "Plus : saisie au nom de Gaëtan @330,2 52x36",
+   "Matériel @17,50 79x28",
+   "Parc @105,50 38x28",
+   "À venir11 @145,50 75x28",
+   "Carnets32 @221,50 80x28",
+   "Réalisés5 @303,50 74x28",
+   "Carnets @12,85 69x44",
+   "Plus @334,85 44x44",
+   "Domaine : Papiers, changer @12,177 107x32",
+   "Note : Jalon du Planning, sans date, actions @341,251 36x32",
+   "Quand · pas encore daté @12,341 366x32",
+   "Photo @226,745 34x34",
+   "Dicter @264,745 34x34",
+   "Bord @0,804 65x40",
+   "Finances @65,804 65x40",
+   "Calendrier @130,804 66x40",
+   "Brassins @195,804 65x40",
+   "Stocks, 11 articles à commander @260,804 65x40",
+   "Clients @325,804 65x40",
+   "Actions rapides @322,736 56x56"
+  ],
+  "quand": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nIdée · 3 sept.\nJalon — Conformité complète — Peut vendre officiellement\nPapiers\n▾\n3 sept.\n\nJalon — Conformité complète — Peut vendre officiellement Jalon du Planning, sans date\n\nQuand\n· pas encore daté\n\nAujourd'hui\n1 mois\n3 mois\n6 mois\n1 an\nnov.\ndéc.\nAu calendrier\nAjouter à Jalon — Conformité complète — Peut vendre officiellement…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+  "guet": {
+   "enreg": [],
+   "ecritures": []
+  }
+ }
+}

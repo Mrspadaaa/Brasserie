@@ -1,0 +1,49 @@
+{
+ "filtreDepart": false,
+ "f1": {
+  "x": 65.140625,
+  "y": 102,
+  "t": "8je cherche",
+  "pressed": "false"
+ },
+ "avant": true,
+ "repli": {
+  "x": 112,
+  "y": 194,
+  "t": "▾Brassage3",
+  "pressed": null
+ },
+ "apres": false,
+ "deplie": {
+  "x": 112,
+  "y": 194,
+  "t": "▸Brassage3ZZ TEST — malt pilsner en rupture chez le fourniss",
+  "pressed": null
+ },
+ "apres2": true,
+ "filtreFin": false,
+ "res": {
+  "x": 314.84375,
+  "y": 102,
+  "t": "5résolus 2026",
+  "pressed": "false"
+ },
+ "tres": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\n8\nje cherche\n0\ndécidés\n0\nnotés\n5\nrésolus 2026\nArbre\nÀ faire\n6\n0\n\nFiltre : résolus 2026\n\nRésolus 2026\n5\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nRésolu\nRangement / étagères inox & déménagement\nRésolu\nRobinetterie & tuyaux raccords (fait par soi-même)\nRésolu\nAchat & installation évier principal + douchette\nRésolu\nRefaire évier — bloqué (attendre vis pieds)\nRésolu\nAnciennes notes de l’Atelier · 3\nUne idée, un problème…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+ "res1": {
+  "x": 112,
+  "y": 227.4375,
+  "t": "Sol, murs & évacuation (béton, revêtement, peinture food-saf",
+  "pressed": null
+ },
+ "tres1": "🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nCarnets\nRésolu · 20 nov.\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nLocal\n▾\n\nBudget 3 500 CHF · du Planning\n\n3 sept.\n\nSol, murs & évacuation (béton, revêtement, peinture food-safe) Budget du Planning : 3 500 CHF À faire du 08.12.2025 au 21.12.2025 (Planning, Structure)\n\nQuand\n· passé · S50 · 3 500 CHF · budget\nAjouter à Sol, murs & évacuation (béton, revêtement, peinture food-safe)…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+ "filtreFin2": false,
+ "guet": {
+  "enreg": [],
+  "ecritures": []
+ },
+ "bloques": [
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/syncFinancialLedger",
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity",
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/syncFinancialLedger"
+ ]
+}
