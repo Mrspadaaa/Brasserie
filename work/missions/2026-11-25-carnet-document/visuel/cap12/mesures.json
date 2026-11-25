@@ -120,124 +120,148 @@
   "erreurs": []
  },
  "v2-ecoulement": {
-  "mots": 18,
+  "mots": 20,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-citra": {
   "mots": 12,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-co2": {
-  "mots": 19,
+  "mots": 21,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-pilsner": {
-  "mots": 13,
+  "mots": 14,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-fete": {
   "mots": 22,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-assurance": {
-  "mots": 20,
+  "mots": 17,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-cave": {
   "mots": 18,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-chaudiere": {
-  "mots": 25,
+  "mots": 22,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-sureau": {
   "mots": 12,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-bouteilles": {
-  "mots": 22,
+  "mots": 21,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-bar": {
   "mots": 20,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v2-levure": {
   "mots": 15,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 50,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v3-ecoulement": {
   "mots": 21,
@@ -648,243 +672,291 @@
   "erreurs": []
  },
  "v6-ecoulement": {
-  "mots": 25,
+  "mots": 27,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-citra": {
   "mots": 11,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-co2": {
-  "mots": 22,
+  "mots": 28,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-pilsner": {
-  "mots": 15,
+  "mots": 16,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-fete": {
-  "mots": 22,
+  "mots": 24,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-assurance": {
-  "mots": 20,
+  "mots": 19,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-cave": {
   "mots": 20,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-chaudiere": {
-  "mots": 27,
+  "mots": 28,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
-  "hDoc": 847,
+  "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-sureau": {
-  "mots": 12,
+  "mots": 14,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-bouteilles": {
-  "mots": 23,
+  "mots": 22,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-bar": {
-  "mots": 20,
+  "mots": 22,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v6-levure": {
-  "mots": 13,
+  "mots": 16,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 48,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-ecoulement": {
   "mots": 29,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-citra": {
-  "mots": 11,
+  "mots": 14,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-co2": {
   "mots": 30,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-pilsner": {
   "mots": 15,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-fete": {
-  "mots": 28,
+  "mots": 25,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-assurance": {
-  "mots": 21,
+  "mots": 20,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-cave": {
+  "mots": 20,
+  "horsX": 0,
+  "chev": 0,
+  "coupe": 0,
+  "petit": 0,
+  "utile": 46,
+  "hDoc": 844,
+  "scrollX": false,
+  "erreurs": [],
+  "note": ""
+ },
+ "v7-chaudiere": {
+  "mots": 27,
+  "horsX": 0,
+  "chev": 0,
+  "coupe": 0,
+  "petit": 0,
+  "utile": 46,
+  "hDoc": 844,
+  "scrollX": false,
+  "erreurs": [],
+  "note": ""
+ },
+ "v7-sureau": {
+  "mots": 15,
+  "horsX": 0,
+  "chev": 0,
+  "coupe": 0,
+  "petit": 0,
+  "utile": 46,
+  "hDoc": 844,
+  "scrollX": false,
+  "erreurs": [],
+  "note": ""
+ },
+ "v7-bouteilles": {
+  "mots": 29,
+  "horsX": 0,
+  "chev": 0,
+  "coupe": 0,
+  "petit": 0,
+  "utile": 46,
+  "hDoc": 844,
+  "scrollX": false,
+  "erreurs": [],
+  "note": ""
+ },
+ "v7-bar": {
   "mots": 23,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
- },
- "v7-chaudiere": {
-  "mots": 30,
-  "horsX": 0,
-  "chev": 0,
-  "coupe": 0,
-  "utile": 46,
-  "hDoc": 844,
-  "scrollX": false,
-  "erreurs": []
- },
- "v7-sureau": {
-  "mots": 18,
-  "horsX": 0,
-  "chev": 0,
-  "coupe": 0,
-  "utile": 46,
-  "hDoc": 844,
-  "scrollX": false,
-  "erreurs": []
- },
- "v7-bouteilles": {
-  "mots": 30,
-  "horsX": 0,
-  "chev": 0,
-  "coupe": 0,
-  "utile": 46,
-  "hDoc": 844,
-  "scrollX": false,
-  "erreurs": []
- },
- "v7-bar": {
-  "mots": 26,
-  "horsX": 0,
-  "chev": 0,
-  "coupe": 0,
-  "utile": 46,
-  "hDoc": 844,
-  "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  },
  "v7-levure": {
   "mots": 20,
   "horsX": 0,
   "chev": 0,
   "coupe": 0,
+  "petit": 0,
   "utile": 46,
   "hDoc": 844,
   "scrollX": false,
-  "erreurs": []
+  "erreurs": [],
+  "note": ""
  }
 }

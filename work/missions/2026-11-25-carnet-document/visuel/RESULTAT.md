@@ -1,4 +1,84 @@
-OK — correction 1 : v1, v2, v3, v6 corrigées, v7 recette faite, 12 cas ≤ 30 mots
+OK — correction 2 : v7, v6, v2 corrigées, 40/41 problèmes, 12 cas ≤ 30 mots
+
+## Correction 2 (nuit du 25.11)
+
+### Écartées (une ligne chacune)
+- **v1, carte mentale** : écartée, sous 6 chez deux juges sur trois (5,5 et 5,5). Le centre unique attribue au carnet la date d'une tâche, et la carte cache les listes. Rien de neuf à greffer.
+- **v3, chemin** : écartée (5,5 et 5,8). Le rail sépare la date de la chose datée. Sa greffe « Brassin J-8 » passe dans le commun.
+
+### Fichiers écrits
+- `visuel/v7.html` :
+  - jauge du coût total en tête de la table, et « ✓ Prendre Fournisseur B » ;
+  - tuile « n/m trouvé » ;
+  - fait rangé en ✓ ;
+  - J-n nommé et gradué ;
+  - ✕ sur « ✦ conseillé » ;
+  - bulle sous l'élément touché ;
+  - Aide avec « non » et « plus tard » ;
+  - citra sans table ;
+  - IA absente sur la lecture réelle.
+- `visuel/v6.html` et `visuel/v2.html` : leurs bloquants et les communs (détail dans CORRECTION-2-FAIT.md).
+- `visuel/reponses/enrichi2.js` (ajout) : les communs des 3 variantes.
+- `visuel/reponses/local-reel.js` (ajout) : la lecture sans IA, produite par le vrai `analyseLocale.ts` et `tacheDatee.ts`.
+- `visuel/CORRECTION-2-FAIT.md` : chaque problème, fait ou non fait, et l'écart de la lecture locale.
+- Captures :
+  - `visuel/cap12/{v2,v6,v7}-<cas>.png` : 36, au repos ;
+  - `cap12/mesures.json` ;
+  - `visuel/cap/{v2,v6,v7}-{ecoulement,bouteilles,chaudiere}-{repos,ligne,aide,refus,sansia}.png` : 45 ;
+  - `cap/v7-{ecoulement-ia-ligne,bouteilles-prendre,ecoulement-sansconseil,ecoulement-piste}.png` ;
+  - `cap/v7-{co2,pilsner,cave,assurance,citra}-sansia.png`.
+- Scripts, hors livrable, dans le scratchpad `c2/` : `cap-c2.cjs`, `patch*.cjs`, `local.ts`.
+
+### Sortie décisive : mots au premier écran au repos · px de la première info utile (390 × 844, titre exclu, placeholder compté)
+| cas | v2 | v6 | v7 |
+|---|---|---|---|
+| ecoulement | 20 · 50 px | 27 · 48 px | 29 · 46 px |
+| citra | 12 · 50 px | 11 · 48 px | 14 · 46 px |
+| co2 | 21 · 50 px | 28 · 48 px | 30 · 46 px |
+| pilsner | 14 · 50 px | 16 · 48 px | 15 · 46 px |
+| fete | 22 · 50 px | 24 · 48 px | 25 · 46 px |
+| assurance | 17 · 50 px | 19 · 48 px | 20 · 46 px |
+| cave | 18 · 50 px | 20 · 48 px | 20 · 46 px |
+| chaudiere | 22 · 50 px | 28 · 48 px | 27 · 46 px |
+| sureau | 12 · 50 px | 14 · 48 px | 15 · 46 px |
+| bouteilles | 21 · 50 px | 22 · 48 px | 29 · 46 px |
+| bar | 20 · 50 px | 22 · 48 px | 23 · 46 px |
+| levure | 15 · 50 px | 16 · 48 px | 20 · 46 px |
+
+- **Maxima** : v2 22 mots et 50 px ; v6 28 mots et 48 px ; v7 30 mots (CO2) et 46 px.
+- **Contrôles sur les 36 écrans au repos** : 0 débordement horizontal, 0 chevauchement de cibles, 0 texte coupé, 0 cible sous 24 px, 0 erreur de page.
+- **Après un geste (v7)**, le texte ajouté, sa ligne citée exclue, reste ≤ 30 mots :
+  - ligne : 37, 40 et 35 au total ;
+  - Aide : 45, 40 et 42 au total ;
+  - refus : 28, 32 et 29 au total.
+- **v6, Aide** : 2 chevauchements. Ce sont les cartes en pile, voulues.
+- **IA absente** : 42 à 57 mots. Ses lignes sont affichées en entier, sur 2 lignes au plus (demande CN3), donc au-dessus de 30 (voir la décision).
+
+### Captures (toutes ouvertes, en planches côte à côte : 12 au repos, 9 de gestes, 2 v7 en plus)
+`visuel/cap12/{v2,v6,v7}-<cas>.png` ; `visuel/cap/{v2,v6,v7}-<cas>-<geste>.png` ; `visuel/cap/v7-*.png`.
+
+### Défauts vus et laissés (mineurs, hors contrat)
+- **v2** :
+  - « 0/1 trouvé » ;
+  - demi-tuiles ;
+  - « Appeler / le / technicien » sur 3 lignes.
+- **v6** : le héros reste grand, et « 👑 Fournisseur B par 600 » est toujours là, car c'est un mineur et seuls les bloquants étaient demandés.
+- **v7** :
+  - CO2 à 30 mots pile ;
+  - le héros « Choisi » ne surligne pas sa colonne.
+
+### Prédiction
+« La chaudière dit enfin que c'est le brassage qui est demain, et les barres des bouteilles avec "Prendre B", c'est direct. Mais sans IA, il me met la chaudière comme une tâche ? »
+
+DÉCISION À PRENDRE :
+1. Le texte en IA absente dépasse 30 mots (42 à 57), parce que ses lignes sont montrées en entier pour ne perdre aucune valeur (CN3). Faut-il accepter ces lignes entières ou les couper ?
+2. La lecture locale réelle (`genreLocal`) met ☐ sur un nom en -re ou -er (chaudière, levure, pilsner, rencontré) : 4 cas sur 12 ont un faux héros sans IA. Faut-il corriger l'app (détail dans CORRECTION-2-FAIT.md) ? La maquette le montre tel quel.
+CONNAISSANCE : pour lire ce que l'app fait vraiment, esbuild bundle un petit script TS qui importe `src/domain/...` et tourne sous node (vite-node échoue : vite-plugin-pwa manque au worktree).
+LEÇON PROPOSÉE : un ✕ ajouté dans une puce qui est déjà un `<button>` casse le DOM (un bouton dans un bouton se ferme tout seul) et décale toute une grille. Un actionneur dans un actionneur passe par `span role=button`, ou bien le conteneur devient un `div role=button`.
+
+---
+
+## Correction 1 (archive)
 
 ## Correction 1 (nuit du 25.11)
 
