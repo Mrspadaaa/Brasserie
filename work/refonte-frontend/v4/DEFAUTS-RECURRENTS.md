@@ -553,6 +553,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## CARNET-SES-DONNEES-EXISTANTES (25.11)
 - Ses mots : « Les critiques ont vraiment validé ça ???? Il  y a énormément de problème ??? » (captures plaintes/2026-11-25-citra-fiche.jpg, -citra-carnet.jpg ; son carnet « Houblons citra », lu le 24.11, tour 73).
 - Défaut : ses carnets existants, lus avant les correctifs, s'affichent mal : CHF/kg « ? » au tableau alors que la fiche dit 73,80 CHF/kg ; rang 1 sans prix au kilo ; α en chasse fixe espacée (« 10  -  15 ») ; fiche : α géant, bloc Offre vide, ≈4 CHF pour 50 g alors que 250 g et 500 g sont listés sans prix, α redit dans Caractéristiques ; liens en clair dans le fil (Disparaît n° 5 de D451).
+- Aussi (25.11, « Mais les notes sont complètement en vrac ? Je comprends pas, qu'est-ce qui c'est passé ??? », plaintes/2026-11-25-notes-vrac.jpg) : un carnet écrit avant le port D451 montre son fil en bulles brutes : ni options (« Autre fournisseur… 4 CHF de plus »), ni état (« Commandé… » = résolu), ni tâche, et son titre redit en 1re bulle. Un fil ancien doit être rangé : analyse locale gratuite à l'ouverture, IA proposée d'un toucher (coût dit), jamais d'écriture sans son geste.
 - Contrôle : chaque test d'écran juge AUSSI ses carnets réels existants (lecture seule), champ par champ, contre la maquette choisie ; une donnée ancienne se recalcule ou se dit « à relire », jamais « ? » à côté d'une valeur connue. Échoue sur index-L94x-z-O.js.
 
 ## CHAMP-CARNET-REPLIE (25.11)
