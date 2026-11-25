@@ -1,6 +1,6 @@
 // R90 (CARNET-LISTE-COMPACTE, sa plainte du 25.11) : à 390 × 844, la liste des carnets doit donner l'écran à ses LIGNES.
 //   Zone utile = sous l'en-tête de l'app, au-dessus du champ « Une idée, un problème… » et de la barre du bas.
-//   Mesure (avec ET sans le filtre « je cherche ») : part de la zone utile occupée par les lignes de carnets (`button.cnl-pb`),
+//   Mesure (avec ET sans le filtre « je cherche ») : part de la zone utile occupée par la donnée de l'arbre : lignes de carnets (`button.cnl-pb`) et en-têtes de domaine et de sous-domaine (`.cnl-dn`, `.cnl-sd` : la classification qu'il a demandée, pilote 25.11),
 //   et nombre de lignes ENTIÈRES visibles sans défiler. Seuils : ≥ 70 % et ≥ 7 lignes. Sortie : « LISTE OK … » ou « LISTE KO <mesures> » (code 1).
 // Banc : voies/c74-tests/banc (CarnetsVue réel, fixture du suivi + 6 carnets d'exemple, données simulées ; en-tête et barre du bas = deux cadres vides marqués).
 // Serveur : celui de dev de Vite (config sans vite-plugin-pwa), lancé ici s'il ne répond pas, et arrêté à la fin.
@@ -48,7 +48,7 @@ function mesurerDansLaPage() {
   const haut = Math.max(enteteApp ? r(enteteApp).bottom : 0, r(racine).top);
   const bas = r(champ).top;
   const utile = bas - haut;
-  const lignes = [...document.querySelectorAll('button.cnl-pb')].filter((b) => { const x = r(b); return b.offsetParent !== null && x.height > 0 && !b.closest('[hidden]'); });
+  const lignes = [...document.querySelectorAll('button.cnl-pb, .cnl-sd, .cnl-dn')].filter((b) => { const x = r(b); return b.offsetParent !== null && x.height > 0 && !b.closest('[hidden]'); });
   let occupe = 0, entieres = 0, partielles = 0;
   for (const b of lignes) {
     const x = r(b);
