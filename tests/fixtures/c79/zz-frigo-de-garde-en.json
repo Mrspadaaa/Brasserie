@@ -1,0 +1,154 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:17:46.252335000Z",
+  "majMessages": [
+   "2026-11-24T20:20:50.204127000Z",
+   "2026-11-24T20:29:01.180415000Z",
+   "2026-11-24T20:29:07.012223000Z",
+   "2026-11-24T20:29:13.030191000Z",
+   "2026-11-24T20:29:18.644255000Z"
+  ]
+ },
+ "carnet": {
+  "type": "carnet",
+  "carnet": {
+   "facons": [],
+   "creeLe": "2026-11-24T20:20:49.821Z",
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   },
+   "notes": [
+    {
+     "texte": "Devis à comparer avant décembre.",
+     "messageId": "MSG-c79-24",
+     "genre": "a-acheter",
+     "id": "NOTE-c79-19"
+    }
+   ],
+   "version": 1,
+   "suivi": {
+    "evenements": [
+     {
+      "vers": "cherche",
+      "de": "note",
+      "origine": "vous",
+      "id": "EVT-c79-10",
+      "le": "2026-11-25T12:17:45.950Z",
+      "sorte": "etat"
+     }
+    ],
+    "etat": "cherche"
+   },
+   "photos": [],
+   "criteres": [],
+   "phrase": "ZZ TEST — frigo de garde en panne",
+   "articles": []
+  },
+  "status": "idea",
+  "title": "ZZ TEST — frigo de garde en panne",
+  "id": "CARNET-c79-05"
+ },
+ "messages": [
+  {
+   "title": "ZZ TEST — frigo de garde en panne",
+   "type": "carnet-message",
+   "status": "done",
+   "id": "MSG-c79-25",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "CARNET-c79-05",
+      "carnetId": "CARNET-c79-05",
+      "cible": "carnet"
+     }
+    ],
+    "texte": "ZZ TEST — frigo de garde en panne",
+    "rangement": "locale",
+    "le": "2026-11-24T20:20:49.821Z",
+    "depuis": "liste"
+   }
+  },
+  {
+   "title": "Le 21 nov., frigo de garde à 14 °C au lieu de 2 °C, 6 fûts dedans.",
+   "status": "done",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "CRIT-c79-01",
+      "cible": "critere",
+      "carnetId": "CARNET-c79-05"
+     }
+    ],
+    "texte": "Le 21 nov., frigo de garde à 14 °C au lieu de 2 °C, 6 fûts dedans.",
+    "le": "2026-11-24T20:29:00.706Z",
+    "depuis": "CARNET-c79-05",
+    "rangement": "locale"
+   },
+   "type": "carnet-message",
+   "id": "MSG-c79-26"
+  },
+  {
+   "carnetMessage": {
+    "depuis": "CARNET-c79-05",
+    "rangement": "locale",
+    "texte": "Fûts déplacés dans la chambre froide en attendant.",
+    "le": "2026-11-24T20:29:06.534Z",
+    "effets": [
+     {
+      "id": "NOTE-c79-20",
+      "carnetId": "CARNET-c79-06",
+      "cible": "note"
+     }
+    ]
+   },
+   "title": "Fûts déplacés dans la chambre froide en attendant.",
+   "id": "MSG-c79-27",
+   "status": "done",
+   "type": "carnet-message"
+  },
+  {
+   "status": "done",
+   "carnetMessage": {
+    "rangement": "locale",
+    "depuis": "CARNET-c79-05",
+    "texte": "Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-05",
+      "cible": "article",
+      "id": "ART-c79-03"
+     }
+    ],
+    "le": "2026-11-24T20:29:12.507Z"
+   },
+   "type": "carnet-message",
+   "id": "MSG-c79-28",
+   "title": "Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF."
+  },
+  {
+   "type": "carnet-message",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-05",
+    "rangement": "locale",
+    "le": "2026-11-24T20:29:18.348Z",
+    "texte": "Devis à comparer avant décembre.",
+    "effets": [
+     {
+      "id": "NOTE-c79-19",
+      "carnetId": "CARNET-c79-05",
+      "cible": "note"
+     }
+    ]
+   },
+   "title": "Devis à comparer avant décembre.",
+   "id": "MSG-c79-24",
+   "status": "done"
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

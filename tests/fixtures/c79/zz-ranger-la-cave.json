@@ -1,0 +1,168 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:59:39.197103000Z",
+  "majMessages": [
+   "2026-11-24T20:22:38.229679000Z",
+   "2026-11-24T20:31:43.008047000Z",
+   "2026-11-24T20:31:48.823007000Z",
+   "2026-11-25T12:59:39.197103000Z"
+  ]
+ },
+ "carnet": {
+  "title": "ZZ TEST — ranger la cave",
+  "carnet": {
+   "notes": [
+    {
+     "genre": "a-faire",
+     "messageId": "MSG-c79-54",
+     "id": "NOTE-c79-37",
+     "texte": "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux."
+    },
+    {
+     "genre": "note",
+     "texte": "Prévu le samedi 6 déc. au matin.",
+     "messageId": "MSG-c79-55",
+     "id": "NOTE-c79-38"
+    },
+    {
+     "genre": "note",
+     "id": "NOTE-c79-39",
+     "texte": "Ranger la cave le samedi 6 déc. au matin",
+     "messageId": "MSG-c79-56"
+    }
+   ],
+   "taches": [
+    {
+     "origine": "ia",
+     "id": "TACHE-c79-02",
+     "messageId": "MSG-c79-56",
+     "creeeLe": "2026-11-25T12:59:38.999Z",
+     "texte": "Ranger la cave le samedi 6 déc. au matin",
+     "precision": "mois",
+     "echeance": "2026-11-30"
+    }
+   ],
+   "version": 1,
+   "facons": [],
+   "genre": {
+    "valeur": "memo",
+    "origine": "vous"
+   },
+   "creeLe": "2026-11-24T20:22:37.964Z",
+   "phrase": "ZZ TEST — ranger la cave",
+   "criteres": [],
+   "suivi": {
+    "evenements": [
+     {
+      "vers": "ajoutee",
+      "sorte": "tache",
+      "tacheId": "TACHE-c79-02",
+      "origine": "ia",
+      "messageId": "MSG-c79-56",
+      "id": "EVT-c79-16",
+      "le": "2026-11-25T12:59:38.999Z"
+     }
+    ],
+    "etat": "note"
+   },
+   "articles": [],
+   "photos": []
+  },
+  "type": "carnet",
+  "status": "idea",
+  "id": "CARNET-c79-12"
+ },
+ "messages": [
+  {
+   "title": "ZZ TEST — ranger la cave",
+   "status": "done",
+   "carnetMessage": {
+    "effets": [
+     {
+      "cible": "carnet",
+      "carnetId": "CARNET-c79-12",
+      "id": "CARNET-c79-12"
+     }
+    ],
+    "texte": "ZZ TEST — ranger la cave",
+    "rangement": "locale",
+    "le": "2026-11-24T20:22:37.964Z",
+    "depuis": "liste"
+   },
+   "id": "MSG-c79-57",
+   "type": "carnet-message"
+  },
+  {
+   "carnetMessage": {
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-12",
+      "id": "NOTE-c79-37",
+      "cible": "note"
+     }
+    ],
+    "depuis": "CARNET-c79-12",
+    "texte": "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux.",
+    "le": "2026-11-24T20:31:42.677Z",
+    "rangement": "locale"
+   },
+   "title": "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux.",
+   "status": "done",
+   "id": "MSG-c79-54",
+   "type": "carnet-message"
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-55",
+   "status": "done",
+   "carnetMessage": {
+    "texte": "Prévu le samedi 6 déc. au matin.",
+    "rangement": "locale",
+    "effets": [
+     {
+      "id": "NOTE-c79-38",
+      "carnetId": "CARNET-c79-12",
+      "cible": "note"
+     }
+    ],
+    "depuis": "CARNET-c79-12",
+    "le": "2026-11-24T20:31:48.519Z"
+   },
+   "title": "Prévu le samedi 6 déc. au matin."
+  },
+  {
+   "carnetMessage": {
+    "le": "2026-11-25T12:57:31.142Z",
+    "depuis": "CARNET-c79-12",
+    "effets": [
+     {
+      "cible": "note",
+      "id": "NOTE-c79-39",
+      "carnetId": "CARNET-c79-12"
+     }
+    ],
+    "rangement": "ia",
+    "texte": "Ranger la cave le samedi 6 déc. au matin."
+   },
+   "type": "carnet-message",
+   "status": "done",
+   "title": "Ranger la cave le samedi 6 déc. au matin.",
+   "id": "MSG-c79-56"
+  }
+ ],
+ "articles": [],
+ "taches": [
+  {
+   "origine": "ia",
+   "id": "TACHE-c79-02",
+   "messageId": "MSG-c79-56",
+   "creeeLe": "2026-11-25T12:59:38.999Z",
+   "texte": "Ranger la cave le samedi 6 déc. au matin",
+   "precision": "mois",
+   "echeance": "2026-11-30"
+  }
+ ],
+ "propositions": null,
+ "plan": null
+}

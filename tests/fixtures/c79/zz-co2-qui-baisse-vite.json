@@ -1,0 +1,212 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:56:52.363215000Z",
+  "majMessages": [
+   "2026-11-24T20:19:29.045215000Z",
+   "2026-11-25T12:09:17.572383000Z",
+   "2026-11-25T12:12:51.240367000Z",
+   "2026-11-24T20:27:09.722527000Z",
+   "2026-11-24T20:27:15.128207000Z"
+  ]
+ },
+ "carnet": {
+  "type": "carnet",
+  "id": "CARNET-c79-04",
+  "title": "ZZ TEST — CO2 qui baisse vite dans un fût",
+  "status": "idea",
+  "carnet": {
+   "criteres": [],
+   "photos": [],
+   "articles": [],
+   "creeLe": "2026-11-24T20:19:22.987Z",
+   "domaine": {
+    "origine": "ia",
+    "valeur": "brasserie"
+   },
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   },
+   "notes": [
+    {
+     "genre": "note",
+     "id": "NOTE-c79-14",
+     "messageId": "MSG-c79-19",
+     "texte": "Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22."
+    },
+    {
+     "messageId": "MSG-c79-20",
+     "genre": "note",
+     "texte": "CO2 qui baisse vite dans un fût",
+     "id": "NOTE-c79-15"
+    },
+    {
+     "texte": "Test à l’eau savonneuse : bulles au raccord gaz.",
+     "genre": "note",
+     "id": "NOTE-c79-16",
+     "messageId": "MSG-c79-21"
+    },
+    {
+     "genre": "note",
+     "id": "NOTE-c79-17",
+     "texte": "Raccord gaz changé, à revérifier dans une semaine.",
+     "messageId": "MSG-c79-22"
+    }
+   ],
+   "version": 1,
+   "facons": [
+    {
+     "origine": "vous",
+     "nom": "Pistes : joint du couvercle, raccord gaz ou régulateur.",
+     "suivi": {
+      "historique": [
+       {
+        "etat": "retenue",
+        "le": "2026-11-25T12:56:52.126Z",
+        "origine": "vous"
+       }
+      ],
+      "etat": "retenue"
+     },
+     "id": "NOTE-c79-18",
+     "messageId": "MSG-c79-23",
+     "etat": "retenue"
+    }
+   ],
+   "suivi": {
+    "evenements": [
+     {
+      "le": "2026-11-25T12:16:21.049Z",
+      "vers": "decide",
+      "de": "cherche",
+      "sorte": "etat",
+      "origine": "vous",
+      "id": "EVT-c79-08"
+     },
+     {
+      "origine": "vous",
+      "le": "2026-11-25T12:56:52.126Z",
+      "de": "piste",
+      "sorte": "option",
+      "optionId": "NOTE-c79-18",
+      "vers": "retenue",
+      "id": "EVT-c79-09"
+     }
+    ],
+    "etat": "decide"
+   },
+   "phrase": "ZZ TEST — CO2 qui baisse vite dans un fût"
+  }
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "title": "ZZ TEST — CO2 qui baisse vite dans un fût",
+   "id": "MSG-c79-20",
+   "carnetMessage": {
+    "texte": "ZZ TEST — CO2 qui baisse vite dans un fût",
+    "effets": [
+     {
+      "cible": "carnet",
+      "carnetId": "CARNET-c79-04",
+      "id": "CARNET-c79-04"
+     },
+     {
+      "cible": "note",
+      "carnetId": "CARNET-c79-04",
+      "id": "NOTE-c79-15"
+     }
+    ],
+    "rangement": "ia",
+    "titrePropose": {
+     "titre": "Fuite de CO2 fût",
+     "carnetId": "CARNET-c79-04"
+    },
+    "depuis": "liste",
+    "le": "2026-11-24T20:19:22.987Z"
+   }
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-19",
+   "carnetMessage": {
+    "texte": "Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22.",
+    "depuis": "CARNET-c79-04",
+    "rangement": "locale",
+    "le": "2026-11-24T20:26:57.531Z",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-04",
+      "cible": "note",
+      "id": "NOTE-c79-14"
+     }
+    ]
+   },
+   "status": "done",
+   "title": "Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22."
+  },
+  {
+   "status": "done",
+   "title": "Pistes : joint du couvercle, raccord gaz ou régulateur.",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-04",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-04",
+      "cible": "facon",
+      "id": "NOTE-c79-18"
+     }
+    ],
+    "rangement": "locale",
+    "texte": "Pistes : joint du couvercle, raccord gaz ou régulateur.",
+    "le": "2026-11-24T20:27:03.390Z"
+   },
+   "id": "MSG-c79-23",
+   "type": "carnet-message"
+  },
+  {
+   "carnetMessage": {
+    "rangement": "locale",
+    "effets": [
+     {
+      "id": "NOTE-c79-16",
+      "cible": "note",
+      "carnetId": "CARNET-c79-04"
+     }
+    ],
+    "texte": "Test à l’eau savonneuse : bulles au raccord gaz.",
+    "le": "2026-11-24T20:27:09.219Z",
+    "depuis": "CARNET-c79-04"
+   },
+   "status": "done",
+   "title": "Test à l’eau savonneuse : bulles au raccord gaz.",
+   "type": "carnet-message",
+   "id": "MSG-c79-21"
+  },
+  {
+   "carnetMessage": {
+    "rangement": "locale",
+    "le": "2026-11-24T20:27:14.608Z",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-04",
+      "cible": "note",
+      "id": "NOTE-c79-17"
+     }
+    ],
+    "texte": "Raccord gaz changé, à revérifier dans une semaine.",
+    "depuis": "CARNET-c79-04"
+   },
+   "status": "done",
+   "id": "MSG-c79-22",
+   "type": "carnet-message",
+   "title": "Raccord gaz changé, à revérifier dans une semaine."
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

@@ -1,0 +1,206 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:14:38.039583000Z",
+  "majMessages": [
+   "2026-11-24T20:21:17.020815000Z",
+   "2026-11-24T20:29:44.979631000Z",
+   "2026-11-24T20:29:50.714159000Z",
+   "2026-11-25T12:07:55.016223000Z",
+   "2026-11-24T20:30:02.508383000Z"
+  ]
+ },
+ "carnet": {
+  "type": "carnet",
+  "carnet": {
+   "phrase": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+   "suivi": {
+    "resolu": {
+     "le": "2026-11-25T12:14:37.778Z"
+    },
+    "etat": "resolu",
+    "evenements": [
+     {
+      "origine": "vous",
+      "le": "2026-11-25T12:14:34.625Z",
+      "optionId": "FACON-c79-01",
+      "sorte": "option",
+      "vers": "retenue",
+      "id": "EVT-c79-02",
+      "de": "piste"
+     },
+     {
+      "le": "2026-11-25T12:14:34.625Z",
+      "origine": "vous",
+      "sorte": "etat",
+      "vers": "decide",
+      "optionId": "FACON-c79-01",
+      "id": "EVT-c79-03",
+      "de": "cherche"
+     },
+     {
+      "sorte": "resolu",
+      "le": "2026-11-25T12:14:37.778Z",
+      "vers": "resolu",
+      "id": "EVT-c79-04",
+      "de": "decide",
+      "origine": "vous"
+     }
+    ]
+   },
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   },
+   "photos": [],
+   "criteres": [],
+   "facons": [
+    {
+     "origine": "vous",
+     "suivi": {
+      "historique": [
+       {
+        "le": "2026-11-25T12:14:34.625Z",
+        "origine": "vous",
+        "etat": "retenue"
+       }
+      ],
+      "etat": "retenue"
+     },
+     "raison": "en stock",
+     "id": "FACON-c79-01",
+     "messageId": "MSG-c79-05",
+     "nom": "Autre fournisseur · +4 CHF le sac",
+     "etat": "retenue"
+    }
+   ],
+   "notes": [
+    {
+     "messageId": "MSG-c79-06",
+     "genre": "note",
+     "texte": "Pilsner 25 kg en rupture jusqu’à mi-décembre.",
+     "id": "NOTE-c79-04"
+    },
+    {
+     "genre": "note",
+     "messageId": "MSG-c79-07",
+     "texte": "Brassin du 3 déc. à décaler ou à faire avec un autre malt.",
+     "id": "NOTE-c79-05"
+    },
+    {
+     "genre": "note",
+     "texte": "Commandé 2 sacs chez l’autre, brassin maintenu.",
+     "messageId": "MSG-c79-08",
+     "id": "NOTE-c79-06"
+    }
+   ],
+   "version": 1,
+   "articles": [],
+   "creeLe": "2026-11-24T20:21:16.493Z"
+  },
+  "title": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+  "status": "idea",
+  "id": "CARNET-c79-02"
+ },
+ "messages": [
+  {
+   "status": "done",
+   "carnetMessage": {
+    "texte": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+    "depuis": "liste",
+    "le": "2026-11-24T20:21:16.493Z",
+    "effets": [
+     {
+      "id": "CARNET-c79-02",
+      "carnetId": "CARNET-c79-02",
+      "cible": "carnet"
+     }
+    ],
+    "rangement": "locale"
+   },
+   "type": "carnet-message",
+   "title": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+   "id": "MSG-c79-09"
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-06",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-02",
+    "rangement": "locale",
+    "texte": "Pilsner 25 kg en rupture jusqu’à mi-décembre.",
+    "effets": [
+     {
+      "id": "NOTE-c79-04",
+      "cible": "note",
+      "carnetId": "CARNET-c79-02"
+     }
+    ],
+    "le": "2026-11-24T20:29:44.648Z"
+   },
+   "status": "done",
+   "title": "Pilsner 25 kg en rupture jusqu’à mi-décembre."
+  },
+  {
+   "carnetMessage": {
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-02",
+      "cible": "note",
+      "id": "NOTE-c79-05"
+     }
+    ],
+    "texte": "Brassin du 3 déc. à décaler ou à faire avec un autre malt.",
+    "depuis": "CARNET-c79-02",
+    "rangement": "locale",
+    "le": "2026-11-24T20:29:50.422Z"
+   },
+   "id": "MSG-c79-07",
+   "type": "carnet-message",
+   "status": "done",
+   "title": "Brassin du 3 déc. à décaler ou à faire avec un autre malt."
+  },
+  {
+   "id": "MSG-c79-05",
+   "type": "carnet-message",
+   "title": "Autre fournisseur : en stock, 4 CHF de plus le sac.",
+   "status": "done",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "FACON-c79-01",
+      "cible": "facon",
+      "carnetId": "CARNET-c79-02"
+     }
+    ],
+    "texte": "Autre fournisseur : en stock, 4 CHF de plus le sac.",
+    "le": "2026-11-24T20:29:56.338Z",
+    "depuis": "CARNET-c79-02",
+    "rangement": "locale"
+   }
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-08",
+   "title": "Commandé 2 sacs chez l’autre, brassin maintenu.",
+   "carnetMessage": {
+    "texte": "Commandé 2 sacs chez l’autre, brassin maintenu.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-02",
+      "id": "NOTE-c79-06",
+      "cible": "note"
+     }
+    ],
+    "depuis": "CARNET-c79-02",
+    "rangement": "locale",
+    "le": "2026-11-24T20:30:02.224Z"
+   },
+   "status": "done"
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

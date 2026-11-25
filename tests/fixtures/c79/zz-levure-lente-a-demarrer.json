@@ -1,0 +1,206 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:29:57.485951000Z",
+  "majMessages": [
+   "2026-11-24T20:19:56.830591000Z",
+   "2026-11-24T20:27:41.189727000Z",
+   "2026-11-25T12:18:38.189167000Z",
+   "2026-11-24T20:27:52.844687000Z",
+   "2026-11-24T20:27:58.655679000Z"
+  ]
+ },
+ "carnet": {
+  "type": "carnet",
+  "carnet": {
+   "photos": [],
+   "version": 1,
+   "articles": [],
+   "facons": [
+    {
+     "messageId": "MSG-c79-29",
+     "etat": "ouverte",
+     "origine": "vous",
+     "nom": "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.",
+     "id": "NOTE-c79-21"
+    }
+   ],
+   "phrase": "ZZ TEST — levure lente à démarrer",
+   "domaine": {
+    "origine": "ia",
+    "valeur": "brasserie"
+   },
+   "creeLe": "2026-11-24T20:19:53.456Z",
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   },
+   "notes": [
+    {
+     "texte": "Levure lente à démarrer",
+     "messageId": "MSG-c79-30",
+     "id": "NOTE-c79-22",
+     "genre": "note"
+    }
+   ],
+   "suivi": {
+    "resolu": {
+     "le": "2026-11-25T12:29:57.239Z"
+    },
+    "evenements": [
+     {
+      "de": "cherche",
+      "vers": "resolu",
+      "id": "EVT-c79-11",
+      "sorte": "resolu",
+      "origine": "vous",
+      "le": "2026-11-25T12:18:41.375Z"
+     },
+     {
+      "le": "2026-11-25T12:29:45.653Z",
+      "sorte": "rouvert",
+      "vers": "cherche",
+      "origine": "vous",
+      "id": "EVT-c79-12",
+      "de": "resolu"
+     },
+     {
+      "de": "cherche",
+      "id": "EVT-c79-13",
+      "sorte": "resolu",
+      "le": "2026-11-25T12:29:57.239Z",
+      "vers": "resolu",
+      "origine": "vous"
+     }
+    ],
+    "etat": "resolu"
+   },
+   "criteres": [
+    {
+     "id": "CRIT-c79-02",
+     "origine": "locale",
+     "messageId": "MSG-c79-31",
+     "texte": "réhydrater la levure, ensemencer à 18 °C.",
+     "caracteristique": {
+      "sens": "plus",
+      "nom": "température",
+      "unite": "°C"
+     }
+    }
+   ]
+  },
+  "status": "idea",
+  "id": "CARNET-c79-07",
+  "title": "ZZ TEST — levure lente à démarrer"
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-30",
+   "status": "done",
+   "carnetMessage": {
+    "texte": "ZZ TEST — levure lente à démarrer",
+    "depuis": "liste",
+    "effets": [
+     {
+      "cible": "carnet",
+      "id": "CARNET-c79-07",
+      "carnetId": "CARNET-c79-07"
+     },
+     {
+      "cible": "note",
+      "id": "NOTE-c79-22",
+      "carnetId": "CARNET-c79-07"
+     }
+    ],
+    "rangement": "ia",
+    "le": "2026-11-24T20:19:53.456Z",
+    "titrePropose": {
+     "titre": "Levure lente à démarrer",
+     "carnetId": "CARNET-c79-07"
+    }
+   },
+   "title": "ZZ TEST — levure lente à démarrer"
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-32",
+   "carnetMessage": {
+    "le": "2026-11-24T20:27:40.715Z",
+    "effets": [
+     {
+      "id": "CRIT-c79-03",
+      "carnetId": "CARNET-c79-07",
+      "cible": "critere"
+     }
+    ],
+    "depuis": "CARNET-c79-07",
+    "texte": "Lot 12 : aucune activité 36 h après l’ensemencement, moût à 16 °C.",
+    "rangement": "locale"
+   },
+   "title": "Lot 12 : aucune activité 36 h après l’ensemencement, moût à 16 °C.",
+   "status": "done"
+  },
+  {
+   "id": "MSG-c79-29",
+   "status": "done",
+   "type": "carnet-message",
+   "title": "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.",
+   "carnetMessage": {
+    "le": "2026-11-24T20:27:46.556Z",
+    "rangement": "locale",
+    "texte": "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.",
+    "effets": [
+     {
+      "id": "NOTE-c79-21",
+      "cible": "facon",
+      "carnetId": "CARNET-c79-07"
+     }
+    ],
+    "depuis": "CARNET-c79-07"
+   }
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-33",
+   "carnetMessage": {
+    "le": "2026-11-24T20:27:52.372Z",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-07",
+      "id": "CRIT-c79-04",
+      "cible": "critere"
+     }
+    ],
+    "depuis": "CARNET-c79-07",
+    "texte": "Monté à 19 °C, la fermentation démarre le lendemain.",
+    "rangement": "locale"
+   },
+   "status": "done",
+   "title": "Monté à 19 °C, la fermentation démarre le lendemain."
+  },
+  {
+   "title": "La prochaine fois : réhydrater la levure, ensemencer à 18 °C.",
+   "carnetMessage": {
+    "le": "2026-11-24T20:27:58.207Z",
+    "texte": "La prochaine fois : réhydrater la levure, ensemencer à 18 °C.",
+    "rangement": "locale",
+    "effets": [
+     {
+      "cible": "critere",
+      "carnetId": "CARNET-c79-07",
+      "id": "CRIT-c79-02"
+     }
+    ],
+    "depuis": "CARNET-c79-07"
+   },
+   "id": "MSG-c79-31",
+   "status": "done",
+   "type": "carnet-message"
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

@@ -1,0 +1,121 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:26:49.806959000Z",
+  "majMessages": [
+   "2026-11-24T20:23:05.903807000Z",
+   "2026-11-24T20:32:15.343151000Z",
+   "2026-11-24T20:32:21.161855000Z",
+   "2026-11-24T20:32:26.929103000Z"
+  ]
+ },
+ "carnet": {
+  "id": "CARNET-c79-11",
+  "carnet": {
+   "notes": [
+    {
+     "texte": "Idées : 3 bières à la pression, dont une blanche pour l’été.",
+     "genre": "note",
+     "id": "NOTE-c79-36",
+     "messageId": "MSG-c79-50"
+    }
+   ],
+   "phrase": "ZZ TEST — fête de la bière en juin",
+   "genre": {
+    "origine": "vous",
+    "valeur": "idee"
+   },
+   "photos": [],
+   "version": 1,
+   "criteres": [],
+   "articles": [],
+   "facons": [],
+   "creeLe": "2026-11-24T20:23:05.490Z"
+  },
+  "type": "carnet",
+  "title": "ZZ TEST — fête de la bière en juin",
+  "status": "idea"
+ },
+ "messages": [
+  {
+   "carnetMessage": {
+    "texte": "ZZ TEST — fête de la bière en juin",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-11",
+      "id": "CARNET-c79-11",
+      "cible": "carnet"
+     }
+    ],
+    "depuis": "liste",
+    "rangement": "locale",
+    "le": "2026-11-24T20:23:05.490Z"
+   },
+   "type": "carnet-message",
+   "status": "done",
+   "id": "MSG-c79-51",
+   "title": "ZZ TEST — fête de la bière en juin"
+  },
+  {
+   "title": "Idées : 3 bières à la pression, dont une blanche pour l’été.",
+   "id": "MSG-c79-50",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-11",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-11",
+      "id": "NOTE-c79-36",
+      "cible": "note"
+     }
+    ],
+    "le": "2026-11-24T20:32:15.004Z",
+    "rangement": "locale",
+    "texte": "Idées : 3 bières à la pression, dont une blanche pour l’été."
+   },
+   "type": "carnet-message",
+   "status": "done"
+  },
+  {
+   "id": "MSG-c79-52",
+   "type": "carnet-message",
+   "status": "done",
+   "title": "Liste : tireuse, 2 tonnelles, gobelets consignés, 10 fûts.",
+   "carnetMessage": {
+    "texte": "Liste : tireuse, 2 tonnelles, gobelets consignés, 10 fûts.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-11",
+      "id": "CRIT-c79-06",
+      "cible": "critere"
+     }
+    ],
+    "depuis": "CARNET-c79-11",
+    "le": "2026-11-24T20:32:20.833Z",
+    "rangement": "locale"
+   }
+  },
+  {
+   "title": "Budget 1 500 CHF, stand à réserver avant mars.",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "rangement": "locale",
+    "le": "2026-11-24T20:32:26.628Z",
+    "effets": [
+     {
+      "id": "ART-c79-06",
+      "cible": "article",
+      "carnetId": "CARNET-c79-11"
+     }
+    ],
+    "texte": "Budget 1 500 CHF, stand à réserver avant mars.",
+    "depuis": "CARNET-c79-11"
+   },
+   "id": "MSG-c79-53",
+   "status": "done"
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

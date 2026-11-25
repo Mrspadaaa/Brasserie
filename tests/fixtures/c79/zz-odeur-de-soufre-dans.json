@@ -1,0 +1,187 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:38:51.557839000Z",
+  "majMessages": [
+   "2026-11-24T20:21:43.807167000Z",
+   "2026-11-24T20:30:27.618399000Z",
+   "2026-11-24T20:30:33.669103000Z",
+   "2026-11-25T12:42:00.635519000Z"
+  ]
+ },
+ "carnet": {
+  "id": "CARNET-c79-13",
+  "title": "ZZ TEST — odeur de soufre dans un lot",
+  "status": "idea",
+  "type": "carnet",
+  "carnet": {
+   "version": 1,
+   "notes": [
+    {
+     "genre": "note",
+     "messageId": "MSG-c79-58",
+     "texte": "Lot 14 de lager : odeur d’œuf pourri à J+5.",
+     "id": "NOTE-c79-40"
+    },
+    {
+     "texte": "Souvent normal avec une levure lager, ça part pendant la garde.",
+     "messageId": "MSG-c79-59",
+     "genre": "note",
+     "id": "NOTE-c79-41"
+    },
+    {
+     "texte": "Ranger la cave",
+     "messageId": "MSG-c79-60",
+     "id": "NOTE-c79-42",
+     "genre": "note"
+    },
+    {
+     "messageId": "MSG-c79-60",
+     "texte": "À sentir à nouveau dans 2 semaines, avant la mise en fût",
+     "id": "NOTE-c79-43",
+     "genre": "note"
+    }
+   ],
+   "creeLe": "2026-11-24T20:21:43.424Z",
+   "articles": [],
+   "suivi": {
+    "evenements": [
+     {
+      "origine": "vous",
+      "de": "note",
+      "vers": "decide",
+      "sorte": "etat",
+      "id": "EVT-c79-17",
+      "le": "2026-11-25T12:25:21.601Z"
+     },
+     {
+      "le": "2026-11-25T12:38:51.351Z",
+      "sorte": "tache",
+      "vers": "ajoutee",
+      "messageId": "MSG-c79-60",
+      "id": "EVT-c79-18",
+      "origine": "ia",
+      "tacheId": "TACHE-c79-03"
+     }
+    ],
+    "etat": "decide"
+   },
+   "genre": {
+    "origine": "vous",
+    "valeur": "probleme"
+   },
+   "taches": [
+    {
+     "origine": "ia",
+     "echeance": "2026-11-23",
+     "precision": "semaine",
+     "id": "TACHE-c79-03",
+     "creeeLe": "2026-11-25T12:38:51.351Z",
+     "messageId": "MSG-c79-60",
+     "texte": "Sentir à nouveau avant la mise en fût"
+    }
+   ],
+   "facons": [],
+   "phrase": "ZZ TEST — odeur de soufre dans un lot",
+   "photos": [],
+   "criteres": []
+  }
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "title": "ZZ TEST — odeur de soufre dans un lot",
+   "id": "MSG-c79-61",
+   "carnetMessage": {
+    "depuis": "liste",
+    "texte": "ZZ TEST — odeur de soufre dans un lot",
+    "rangement": "locale",
+    "effets": [
+     {
+      "cible": "carnet",
+      "id": "CARNET-c79-13",
+      "carnetId": "CARNET-c79-13"
+     }
+    ],
+    "le": "2026-11-24T20:21:43.424Z"
+   },
+   "status": "done"
+  },
+  {
+   "type": "carnet-message",
+   "title": "Lot 14 de lager : odeur d’œuf pourri à J+5.",
+   "carnetMessage": {
+    "texte": "Lot 14 de lager : odeur d’œuf pourri à J+5.",
+    "effets": [
+     {
+      "id": "NOTE-c79-40",
+      "cible": "note",
+      "carnetId": "CARNET-c79-13"
+     }
+    ],
+    "rangement": "locale",
+    "le": "2026-11-24T20:30:27.318Z",
+    "depuis": "CARNET-c79-13"
+   },
+   "id": "MSG-c79-58",
+   "status": "done"
+  },
+  {
+   "status": "done",
+   "title": "Souvent normal avec une levure lager, ça part pendant la garde.",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "NOTE-c79-41",
+      "cible": "note",
+      "carnetId": "CARNET-c79-13"
+     }
+    ],
+    "rangement": "locale",
+    "texte": "Souvent normal avec une levure lager, ça part pendant la garde.",
+    "le": "2026-11-24T20:30:33.357Z",
+    "depuis": "CARNET-c79-13"
+   },
+   "id": "MSG-c79-59"
+  },
+  {
+   "status": "done",
+   "title": "ZZ TÀ sentir à nouveau dans 2 semaines, avant la mise en fût.EST — ranger la cave",
+   "type": "carnet-message",
+   "id": "MSG-c79-60",
+   "carnetMessage": {
+    "texte": "ZZ TÀ sentir à nouveau dans 2 semaines, avant la mise en fût.EST — ranger la cave",
+    "rangement": "ia",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-13",
+      "id": "NOTE-c79-42",
+      "cible": "note"
+     },
+     {
+      "id": "NOTE-c79-43",
+      "cible": "note",
+      "carnetId": "CARNET-c79-13"
+     }
+    ],
+    "depuis": "CARNET-c79-13",
+    "le": "2026-11-25T12:36:34.013Z"
+   }
+  }
+ ],
+ "articles": [],
+ "taches": [
+  {
+   "origine": "ia",
+   "echeance": "2026-11-23",
+   "precision": "semaine",
+   "id": "TACHE-c79-03",
+   "creeeLe": "2026-11-25T12:38:51.351Z",
+   "messageId": "MSG-c79-60",
+   "texte": "Sentir à nouveau avant la mise en fût"
+  }
+ ],
+ "propositions": null,
+ "plan": null
+}

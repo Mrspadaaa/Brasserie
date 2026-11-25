@@ -1,0 +1,154 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:08:36.687711000Z",
+  "majMessages": [
+   "2026-11-24T20:20:26.804719000Z",
+   "2026-11-25T12:08:36.687711000Z",
+   "2026-11-24T20:28:29.363023000Z",
+   "2026-11-25T12:08:36.687711000Z"
+  ]
+ },
+ "carnet": {
+  "status": "idea",
+  "carnet": {
+   "version": 1,
+   "creeLe": "2026-11-24T20:20:22.401Z",
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   },
+   "photos": [],
+   "articles": [],
+   "suivi": {
+    "evenements": [
+     {
+      "de": "note",
+      "le": "2026-11-25T12:08:36.306Z",
+      "origine": "vous",
+      "vers": "resolu",
+      "sorte": "resolu",
+      "id": "EVT-c79-01",
+      "raison": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant"
+     }
+    ],
+    "resolu": {
+     "le": "2026-11-25T12:08:36.306Z",
+     "par": {
+      "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant",
+      "sorte": "texte"
+     }
+    },
+    "etat": "resolu"
+   },
+   "phrase": "ZZ TEST — pompe qui chauffe",
+   "criteres": [],
+   "facons": [],
+   "notes": [
+    {
+     "id": "NOTE-c79-01",
+     "messageId": "MSG-c79-01",
+     "texte": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+     "genre": "note"
+    },
+    {
+     "texte": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+     "genre": "note",
+     "messageId": "MSG-c79-02",
+     "id": "NOTE-c79-02"
+    },
+    {
+     "messageId": "MSG-c79-03",
+     "id": "NOTE-c79-03",
+     "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant",
+     "genre": "note"
+    }
+   ]
+  },
+  "type": "carnet",
+  "id": "CARNET-c79-01",
+  "title": "ZZ TEST — pompe qui chauffe"
+ },
+ "messages": [
+  {
+   "status": "done",
+   "carnetMessage": {
+    "depuis": "liste",
+    "texte": "ZZ TEST — pompe qui chauffe",
+    "le": "2026-11-24T20:20:22.401Z",
+    "rangement": "locale",
+    "effets": [
+     {
+      "cible": "carnet",
+      "id": "CARNET-c79-01",
+      "carnetId": "CARNET-c79-01"
+     }
+    ]
+   },
+   "type": "carnet-message",
+   "id": "MSG-c79-04",
+   "title": "ZZ TEST — pompe qui chauffe"
+  },
+  {
+   "title": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+   "id": "MSG-c79-01",
+   "carnetMessage": {
+    "rangement": "locale",
+    "effets": [
+     {
+      "id": "NOTE-c79-01",
+      "cible": "note",
+      "carnetId": "CARNET-c79-01"
+     }
+    ],
+    "le": "2026-11-24T20:28:23.203Z",
+    "texte": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+    "depuis": "CARNET-c79-01"
+   },
+   "status": "done",
+   "type": "carnet-message"
+  },
+  {
+   "title": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+   "type": "carnet-message",
+   "id": "MSG-c79-02",
+   "carnetMessage": {
+    "le": "2026-11-24T20:28:29.055Z",
+    "depuis": "CARNET-c79-01",
+    "rangement": "locale",
+    "texte": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+    "effets": [
+     {
+      "id": "NOTE-c79-02",
+      "carnetId": "CARNET-c79-01",
+      "cible": "note"
+     }
+    ]
+   },
+   "status": "done"
+  },
+  {
+   "type": "carnet-message",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-01",
+    "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant. Résolu.",
+    "effets": [
+     {
+      "id": "NOTE-c79-03",
+      "carnetId": "CARNET-c79-01",
+      "cible": "note"
+     }
+    ],
+    "le": "2026-11-24T20:28:34.902Z",
+    "rangement": "locale"
+   },
+   "status": "done",
+   "id": "MSG-c79-03",
+   "title": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant. Résolu."
+  }
+ ],
+ "articles": [],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

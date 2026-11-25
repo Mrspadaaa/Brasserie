@@ -1,0 +1,176 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:22:02.891279000Z",
+  "majMessages": [
+   "2026-11-24T20:18:27.988255000Z",
+   "2026-11-24T20:25:23.694687000Z",
+   "2026-11-24T20:25:29.544543000Z",
+   "2026-11-24T20:25:35.470511000Z",
+   "2026-11-24T20:25:41.317071000Z"
+  ]
+ },
+ "carnet": {
+  "type": "carnet",
+  "status": "idea",
+  "carnet": {
+   "notes": [
+    {
+     "messageId": "MSG-c79-34",
+     "id": "NOTE-c79-23",
+     "texte": "Inspection électrique, fusible",
+     "genre": "a-faire"
+    },
+    {
+     "id": "NOTE-c79-24",
+     "texte": "Inspection électrique le 20 nov. : tout est en ordre sauf un fusible grillé sur la ligne de la cuve.",
+     "messageId": "MSG-c79-35",
+     "genre": "note"
+    },
+    {
+     "id": "NOTE-c79-25",
+     "texte": "Besoin d’un testeur de tension pour vérifier avant de remettre.",
+     "messageId": "MSG-c79-36",
+     "genre": "note"
+    }
+   ],
+   "phrase": "ZZ TEST — inspection électrique, fusible",
+   "version": 1,
+   "photos": [],
+   "articles": [
+    {
+     "domaine": "brewtools.com",
+     "lecture": "illisible",
+     "id": "ART-c79-04",
+     "url": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+     "messageId": "MSG-c79-37",
+     "valeurs": {}
+    }
+   ],
+   "criteres": [],
+   "creeLe": "2026-11-24T20:18:23.369Z",
+   "genre": {
+    "origine": "vous",
+    "valeur": "probleme"
+   },
+   "facons": []
+  },
+  "id": "CARNET-c79-08",
+  "title": "ZZ TEST — inspection électrique, fusible"
+ },
+ "messages": [
+  {
+   "title": "ZZ TEST — inspection électrique, fusible",
+   "type": "carnet-message",
+   "status": "done",
+   "id": "MSG-c79-34",
+   "carnetMessage": {
+    "le": "2026-11-24T20:18:23.369Z",
+    "texte": "ZZ TEST — inspection électrique, fusible",
+    "rangement": "ia",
+    "depuis": "liste",
+    "effets": [
+     {
+      "id": "CARNET-c79-08",
+      "cible": "carnet",
+      "carnetId": "CARNET-c79-08"
+     },
+     {
+      "id": "NOTE-c79-23",
+      "carnetId": "CARNET-c79-08",
+      "cible": "note"
+     }
+    ]
+   }
+  },
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "id": "MSG-c79-35",
+   "title": "Inspection électrique le 20 nov. : tout est en ordre sauf un fusible grillé sur la ligne de la cuve.",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-08",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-08",
+      "cible": "note",
+      "id": "NOTE-c79-24"
+     }
+    ],
+    "texte": "Inspection électrique le 20 nov. : tout est en ordre sauf un fusible grillé sur la ligne de la cuve.",
+    "rangement": "locale",
+    "le": "2026-11-24T20:25:23.384Z"
+   }
+  },
+  {
+   "status": "done",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-08",
+    "le": "2026-11-24T20:25:29.224Z",
+    "texte": "Un fusible 5×20 mm 6,3 A à remplacer.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-08",
+      "id": "CRIT-c79-05",
+      "cible": "critere"
+     }
+    ],
+    "rangement": "locale"
+   },
+   "id": "MSG-c79-38",
+   "type": "carnet-message",
+   "title": "Un fusible 5×20 mm 6,3 A à remplacer."
+  },
+  {
+   "type": "carnet-message",
+   "title": "Besoin d’un testeur de tension pour vérifier avant de remettre.",
+   "id": "MSG-c79-36",
+   "carnetMessage": {
+    "texte": "Besoin d’un testeur de tension pour vérifier avant de remettre.",
+    "depuis": "CARNET-c79-08",
+    "le": "2026-11-24T20:25:35.021Z",
+    "rangement": "locale",
+    "effets": [
+     {
+      "cible": "note",
+      "id": "NOTE-c79-25",
+      "carnetId": "CARNET-c79-08"
+     }
+    ]
+   },
+   "status": "done"
+  },
+  {
+   "id": "MSG-c79-37",
+   "carnetMessage": {
+    "texte": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+    "le": "2026-11-24T20:25:40.517Z",
+    "depuis": "CARNET-c79-08",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-08",
+      "id": "ART-c79-04",
+      "cible": "article"
+     }
+    ],
+    "rangement": "locale"
+   },
+   "status": "done",
+   "title": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+   "type": "carnet-message"
+  }
+ ],
+ "articles": [
+  {
+   "domaine": "brewtools.com",
+   "lecture": "illisible",
+   "id": "ART-c79-04",
+   "url": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+   "messageId": "MSG-c79-37",
+   "valeurs": {}
+  }
+ ],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

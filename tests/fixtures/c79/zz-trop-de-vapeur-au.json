@@ -1,0 +1,348 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:15:36.420911000Z",
+  "majMessages": [
+   "2026-11-24T20:17:56.303439000Z",
+   "2026-11-24T20:24:17.424143000Z",
+   "2026-11-25T12:15:18.115199000Z",
+   "2026-11-25T12:15:23.057935000Z",
+   "2026-11-24T20:24:35.384335000Z",
+   "2026-11-24T20:24:41.189631000Z",
+   "2026-11-24T20:24:46.573839000Z",
+   "2026-11-24T20:24:52.391567000Z",
+   "2026-11-24T20:24:57.905407000Z"
+  ]
+ },
+ "carnet": {
+  "id": "CARNET-c79-03",
+  "title": "ZZ TEST — trop de vapeur au brassage",
+  "carnet": {
+   "version": 1,
+   "articles": [
+    {
+     "domaine": "kegland.com.au",
+     "lecture": "illisible",
+     "url": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
+     "valeurs": {},
+     "id": "ART-c79-01",
+     "messageId": "MSG-c79-10"
+    },
+    {
+     "lecture": "illisible",
+     "url": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling",
+     "domaine": "brewtools.com",
+     "messageId": "MSG-c79-11",
+     "id": "ART-c79-02",
+     "valeurs": {}
+    }
+   ],
+   "creeLe": "2026-11-24T20:17:50.764Z",
+   "notes": [
+    {
+     "messageId": "MSG-c79-12",
+     "id": "NOTE-c79-07",
+     "genre": "note",
+     "texte": "Trop de vapeur au brassage"
+    },
+    {
+     "id": "NOTE-c79-08",
+     "genre": "note",
+     "texte": "Le 18 nov., pendant l’ébullition, la salle était pleine de vapeur, ça coule sur les murs.",
+     "messageId": "MSG-c79-13"
+    },
+    {
+     "messageId": "MSG-c79-14",
+     "genre": "note",
+     "texte": "Le 2e pas en stock, à surveiller.",
+     "id": "NOTE-c79-09"
+    },
+    {
+     "messageId": "MSG-c79-15",
+     "texte": "Humidificateur finalement pas utile.",
+     "id": "NOTE-c79-10",
+     "genre": "note"
+    }
+   ],
+   "criteres": [],
+   "photos": [],
+   "facons": [
+    {
+     "suivi": {
+      "historique": [
+       {
+        "raison": "finalement pas utile",
+        "origine": "vous",
+        "le": "2026-11-25T12:15:31.060Z",
+        "etat": "ecartee"
+       }
+      ],
+      "etat": "ecartee"
+     },
+     "messageId": "MSG-c79-16",
+     "raison": "finalement pas utile",
+     "id": "NOTE-c79-11",
+     "nom": "Première idée : un humidificateur dans la salle.",
+     "origine": "vous",
+     "etat": "ecartee"
+    },
+    {
+     "etat": "retenue",
+     "id": "NOTE-c79-12",
+     "messageId": "MSG-c79-17",
+     "origine": "vous",
+     "nom": "Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide.",
+     "suivi": {
+      "etat": "retenue",
+      "historique": [
+       {
+        "origine": "vous",
+        "etat": "retenue",
+        "le": "2026-11-25T12:15:36.123Z"
+       }
+      ]
+     }
+    }
+   ],
+   "phrase": "ZZ TEST — trop de vapeur au brassage",
+   "suivi": {
+    "evenements": [
+     {
+      "raison": "finalement pas utile",
+      "de": "piste",
+      "optionId": "NOTE-c79-11",
+      "vers": "ecartee",
+      "sorte": "option",
+      "id": "EVT-c79-05",
+      "origine": "vous",
+      "le": "2026-11-25T12:15:31.060Z"
+     },
+     {
+      "le": "2026-11-25T12:15:36.123Z",
+      "vers": "retenue",
+      "sorte": "option",
+      "origine": "vous",
+      "id": "EVT-c79-06",
+      "optionId": "NOTE-c79-12",
+      "de": "piste"
+     },
+     {
+      "sorte": "etat",
+      "le": "2026-11-25T12:15:36.123Z",
+      "origine": "vous",
+      "id": "EVT-c79-07",
+      "de": "cherche",
+      "optionId": "NOTE-c79-12",
+      "vers": "decide"
+     }
+    ],
+    "etat": "decide"
+   },
+   "genre": {
+    "valeur": "probleme",
+    "origine": "vous"
+   }
+  },
+  "type": "carnet",
+  "status": "idea"
+ },
+ "messages": [
+  {
+   "id": "MSG-c79-12",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "depuis": "liste",
+    "le": "2026-11-24T20:17:50.764Z",
+    "rangement": "ia",
+    "texte": "ZZ TEST — trop de vapeur au brassage",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-03",
+      "id": "CARNET-c79-03",
+      "cible": "carnet"
+     },
+     {
+      "cible": "note",
+      "id": "NOTE-c79-07",
+      "carnetId": "CARNET-c79-03"
+     }
+    ]
+   },
+   "status": "done",
+   "title": "ZZ TEST — trop de vapeur au brassage"
+  },
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "title": "Le 18 nov., pendant l’ébullition, la salle était pleine de vapeur, ça coule sur les murs.",
+   "carnetMessage": {
+    "depuis": "CARNET-c79-03",
+    "le": "2026-11-24T20:24:17.180Z",
+    "effets": [
+     {
+      "id": "NOTE-c79-08",
+      "carnetId": "CARNET-c79-03",
+      "cible": "note"
+     }
+    ],
+    "rangement": "locale",
+    "texte": "Le 18 nov., pendant l’ébullition, la salle était pleine de vapeur, ça coule sur les murs."
+   },
+   "id": "MSG-c79-13"
+  },
+  {
+   "carnetMessage": {
+    "rangement": "locale",
+    "texte": "Première idée : un humidificateur dans la salle.",
+    "depuis": "CARNET-c79-03",
+    "effets": [
+     {
+      "id": "NOTE-c79-11",
+      "cible": "facon",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "le": "2026-11-24T20:24:23.020Z"
+   },
+   "type": "carnet-message",
+   "status": "done",
+   "id": "MSG-c79-16",
+   "title": "Première idée : un humidificateur dans la salle."
+  },
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "carnetMessage": {
+    "texte": "Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide.",
+    "le": "2026-11-24T20:24:28.840Z",
+    "depuis": "CARNET-c79-03",
+    "effets": [
+     {
+      "cible": "facon",
+      "id": "NOTE-c79-12",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "rangement": "locale"
+   },
+   "id": "MSG-c79-17",
+   "title": "Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide."
+  },
+  {
+   "carnetMessage": {
+    "rangement": "locale",
+    "depuis": "CARNET-c79-03",
+    "effets": [
+     {
+      "cible": "article",
+      "id": "ART-c79-01",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "texte": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
+    "le": "2026-11-24T20:24:34.675Z"
+   },
+   "status": "done",
+   "title": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
+   "id": "MSG-c79-10",
+   "type": "carnet-message"
+  },
+  {
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "ART-c79-02",
+      "cible": "article",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "depuis": "CARNET-c79-03",
+    "le": "2026-11-24T20:24:40.482Z",
+    "texte": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling",
+    "rangement": "locale"
+   },
+   "id": "MSG-c79-11",
+   "type": "carnet-message",
+   "status": "done",
+   "title": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling"
+  },
+  {
+   "type": "carnet-message",
+   "carnetMessage": {
+    "texte": "Le 2e pas en stock, à surveiller.",
+    "rangement": "locale",
+    "le": "2026-11-24T20:24:46.316Z",
+    "effets": [
+     {
+      "id": "NOTE-c79-09",
+      "cible": "note",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "depuis": "CARNET-c79-03"
+   },
+   "id": "MSG-c79-14",
+   "status": "done",
+   "title": "Le 2e pas en stock, à surveiller."
+  },
+  {
+   "id": "MSG-c79-18",
+   "title": "Achat prévu fin du mois.",
+   "type": "carnet-message",
+   "status": "done",
+   "carnetMessage": {
+    "le": "2026-11-24T20:24:52.148Z",
+    "texte": "Achat prévu fin du mois.",
+    "depuis": "CARNET-c79-03",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-14",
+      "id": "NOTE-c79-13",
+      "cible": "note"
+     }
+    ],
+    "rangement": "locale"
+   }
+  },
+  {
+   "id": "MSG-c79-15",
+   "status": "done",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "NOTE-c79-10",
+      "cible": "note",
+      "carnetId": "CARNET-c79-03"
+     }
+    ],
+    "le": "2026-11-24T20:24:57.668Z",
+    "depuis": "CARNET-c79-03",
+    "rangement": "locale",
+    "texte": "Humidificateur finalement pas utile."
+   },
+   "title": "Humidificateur finalement pas utile."
+  }
+ ],
+ "articles": [
+  {
+   "domaine": "kegland.com.au",
+   "lecture": "illisible",
+   "url": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
+   "valeurs": {},
+   "id": "ART-c79-01",
+   "messageId": "MSG-c79-10"
+  },
+  {
+   "lecture": "illisible",
+   "url": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling",
+   "domaine": "brewtools.com",
+   "messageId": "MSG-c79-11",
+   "id": "ART-c79-02",
+   "valeurs": {}
+  }
+ ],
+ "taches": [],
+ "propositions": null,
+ "plan": null
+}

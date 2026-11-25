@@ -1,0 +1,194 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-BrnEjugj.js, tour 79), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables (communs aux fichiers c79)",
+  "majCarnet": "2026-11-25T12:59:08.198863000Z",
+  "majMessages": [
+   "2026-11-24T20:22:11.372559000Z",
+   "2026-11-24T20:31:06.140399000Z",
+   "2026-11-24T20:31:12.009295000Z",
+   "2026-11-24T20:31:17.916447000Z",
+   "2026-11-25T12:59:08.198863000Z"
+  ]
+ },
+ "carnet": {
+  "id": "CARNET-c79-10",
+  "title": "ZZ TEST — assurance à renouveler",
+  "carnet": {
+   "notes": [
+    {
+     "genre": "note",
+     "texte": "Échéance le 31 déc.",
+     "messageId": "MSG-c79-45",
+     "id": "NOTE-c79-32"
+    },
+    {
+     "genre": "note",
+     "messageId": "MSG-c79-46",
+     "texte": "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.",
+     "id": "NOTE-c79-33"
+    },
+    {
+     "texte": "Demander une offre à un 2e assureur.",
+     "messageId": "MSG-c79-47",
+     "genre": "note",
+     "id": "NOTE-c79-34"
+    },
+    {
+     "texte": "Renouveler l’assurance avant le 31 décembre",
+     "id": "NOTE-c79-35",
+     "messageId": "MSG-c79-48",
+     "genre": "note"
+    }
+   ],
+   "version": 1,
+   "criteres": [],
+   "photos": [],
+   "genre": {
+    "valeur": "memo",
+    "origine": "vous"
+   },
+   "articles": [],
+   "suivi": {
+    "etat": "note",
+    "evenements": [
+     {
+      "vers": "ajoutee",
+      "sorte": "tache",
+      "messageId": "MSG-c79-48",
+      "le": "2026-11-25T12:59:08.029Z",
+      "origine": "ia",
+      "tacheId": "TACHE-c79-01",
+      "id": "EVT-c79-15"
+     }
+    ]
+   },
+   "taches": [
+    {
+     "creeeLe": "2026-11-25T12:59:08.029Z",
+     "texte": "Renouveler l’assurance avant le 31 décembre",
+     "echeance": "2026-11-30",
+     "precision": "mois",
+     "origine": "ia",
+     "messageId": "MSG-c79-48",
+     "id": "TACHE-c79-01"
+    }
+   ],
+   "facons": [],
+   "creeLe": "2026-11-24T20:22:10.972Z",
+   "phrase": "ZZ TEST — assurance à renouveler"
+  },
+  "type": "carnet",
+  "status": "idea"
+ },
+ "messages": [
+  {
+   "title": "ZZ TEST — assurance à renouveler",
+   "id": "MSG-c79-49",
+   "carnetMessage": {
+    "effets": [
+     {
+      "id": "CARNET-c79-10",
+      "carnetId": "CARNET-c79-10",
+      "cible": "carnet"
+     }
+    ],
+    "le": "2026-11-24T20:22:10.972Z",
+    "texte": "ZZ TEST — assurance à renouveler",
+    "rangement": "locale",
+    "depuis": "liste"
+   },
+   "status": "done",
+   "type": "carnet-message"
+  },
+  {
+   "id": "MSG-c79-45",
+   "title": "Échéance le 31 déc.",
+   "carnetMessage": {
+    "rangement": "locale",
+    "texte": "Échéance le 31 déc.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-10",
+      "cible": "note",
+      "id": "NOTE-c79-32"
+     }
+    ],
+    "le": "2026-11-24T20:31:05.800Z",
+    "depuis": "CARNET-c79-10"
+   },
+   "status": "done",
+   "type": "carnet-message"
+  },
+  {
+   "status": "done",
+   "title": "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.",
+   "id": "MSG-c79-46",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "rangement": "locale",
+    "le": "2026-11-24T20:31:11.710Z",
+    "depuis": "CARNET-c79-10",
+    "effets": [
+     {
+      "carnetId": "CARNET-c79-10",
+      "cible": "note",
+      "id": "NOTE-c79-33"
+     }
+    ],
+    "texte": "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026."
+   }
+  },
+  {
+   "type": "carnet-message",
+   "id": "MSG-c79-47",
+   "title": "Demander une offre à un 2e assureur.",
+   "carnetMessage": {
+    "le": "2026-11-24T20:31:17.616Z",
+    "rangement": "locale",
+    "texte": "Demander une offre à un 2e assureur.",
+    "depuis": "CARNET-c79-10",
+    "effets": [
+     {
+      "id": "NOTE-c79-34",
+      "carnetId": "CARNET-c79-10",
+      "cible": "note"
+     }
+    ]
+   },
+   "status": "done"
+  },
+  {
+   "id": "MSG-c79-48",
+   "title": "Renouveler l’assurance avant le 31 déc.",
+   "status": "done",
+   "type": "carnet-message",
+   "carnetMessage": {
+    "rangement": "ia",
+    "texte": "Renouveler l’assurance avant le 31 déc.",
+    "effets": [
+     {
+      "id": "NOTE-c79-35",
+      "cible": "note",
+      "carnetId": "CARNET-c79-10"
+     }
+    ],
+    "depuis": "CARNET-c79-10",
+    "le": "2026-11-25T12:58:18.446Z"
+   }
+  }
+ ],
+ "articles": [],
+ "taches": [
+  {
+   "creeeLe": "2026-11-25T12:59:08.029Z",
+   "texte": "Renouveler l’assurance avant le 31 décembre",
+   "echeance": "2026-11-30",
+   "precision": "mois",
+   "origine": "ia",
+   "messageId": "MSG-c79-48",
+   "id": "TACHE-c79-01"
+  }
+ ],
+ "propositions": null,
+ "plan": null
+}
