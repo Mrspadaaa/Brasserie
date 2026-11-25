@@ -1,0 +1,561 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 32 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'assurance' : la tâche de '« avant le 31 déc. »' garde sa date[2m > [22mla carte « tâche proposée » dit la date de la phrase (la proposition de l'IA, SIMULÉE, porte la semaine ou le mois en cours)
+[31m[1mAssertionError[22m: la carte dit : « tâche proposéeRenouveler l’assurance avant le 31 décembreÀ fairePlus tard » ; ce qu'elle ajoute au texte : « tâche proposéeÀ fairePlus tard » ; attendu : 31 déc. (ou sa semaine, du 28): expected 'tache proposeea faireplus tard' to match /\b(31|28)\s+d[ée]c/i[39m
+
+[32m- Expected:[39m 
+/\b(31|28)\s+d[ée]c/i
+
+[31m+ Received:[39m 
+"tache proposeea faireplus tard"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m126:123[22m[39m
+    [90m124| [39m    expect(k, `aucune carte « tâche proposée » : « ${lu(document.body)…
+    [90m125| [39m    const ajoute = lu(k).split(lu(k!.querySelector('p'))).join(''); //…
+    [90m126| [39m    expect(sans(ajoute), `la carte dit : « ${lu(k)} » ; ce qu'elle ajo…
+    [90m   | [39m                                                                                                                          [31m^[39m
+    [90m127| [39m  })[33m;[39m
+    [90m128| [39m  it('chemin complet : proposition → « À faire » → donnée → liste « À …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'assurance' : la tâche de '« avant le 31 déc. »' garde sa date[2m > [22mchemin complet : proposition → « À faire » → donnée → liste « À faire » : la ligne est rangée par la date de la phrase et la dit
+[31m[1mAssertionError[22m: ligne : « Renouveler l’assurance avant le 31 décembreZZ TEST — assurance à renouveler » (groupe fin-du-mois) ; sous le texte : « ZZ TEST — assurance à renouveler  » ; attendu : 31 déc. (ou sa semaine, du 28): expected 'zz test — assurance a renouveler' to match /\b(31|28)\s+d[ée]c/i[39m
+
+[32m- Expected:[39m 
+/\b(31|28)\s+d[ée]c/i
+
+[31m+ Received:[39m 
+"zz test — assurance a renouveler"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m134:124[22m[39m
+    [90m132| [39m    [35mawait[39m [34mouvrirListeAFaire[39m()[33m;[39m
+    [90m133| [39m    [35mconst[39m l [33m=[39m [34mligneAFaire[39m(c[33m.[39mtache)[33m;[39m
+    [90m134| [39m    expect(sans(l.dit), `ligne : « ${l.ligne} » (groupe ${l.groupe}) ;…
+    [90m   | [39m                                                                                                                           [31m^[39m
+    [90m135| [39m    expect(c.pasDans, `groupe « ${l.groupe} » : la date de la phrase (…
+    [90m136| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'assurance' : la tâche de '« avant le 31 déc. »' garde sa date[2m > [22mla donnée déjà écrite fausse (rangée « mois » ou « semaine » du mois en cours) s'affiche avec la date de la phrase, ou « date à revoir »
+[31m[1mAssertionError[22m: ligne : « Renouveler l’assurance avant le 31 décembreZZ TEST — assurance à renouveler » (groupe fin-du-mois) ; sous le texte : « ZZ TEST — assurance à renouveler  » ; attendu : 31 déc. (ou sa semaine, du 28), ou « date à revoir »: expected 'zz test — assurance a renouveler' to match /\b(31|28)\s+d[ée]c|date a revoir/i[39m
+
+[32m- Expected:[39m 
+/\b(31|28)\s+d[ée]c|date a revoir/i
+
+[31m+ Received:[39m 
+"zz test — assurance a renouveler"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m142:146[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'cave' : la tâche de '« le samedi 6 déc. au matin »' garde sa date[2m > [22mla carte « tâche proposée » dit la date de la phrase (la proposition de l'IA, SIMULÉE, porte la semaine ou le mois en cours)
+[31m[1mAssertionError[22m: la carte dit : « tâche proposéeRanger la cave le samedi 6 déc. au matinÀ fairePlus tard » ; ce qu'elle ajoute au texte : « tâche proposéeÀ fairePlus tard » ; attendu : 6 déc. (ou sa semaine, du 30 nov.): expected 'tache proposeea faireplus tard' to match /\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov/i[39m
+
+[32m- Expected:[39m 
+/\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov/i
+
+[31m+ Received:[39m 
+"tache proposeea faireplus tard"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m126:123[22m[39m
+    [90m124| [39m    expect(k, `aucune carte « tâche proposée » : « ${lu(document.body)…
+    [90m125| [39m    const ajoute = lu(k).split(lu(k!.querySelector('p'))).join(''); //…
+    [90m126| [39m    expect(sans(ajoute), `la carte dit : « ${lu(k)} » ; ce qu'elle ajo…
+    [90m   | [39m                                                                                                                          [31m^[39m
+    [90m127| [39m  })[33m;[39m
+    [90m128| [39m  it('chemin complet : proposition → « À faire » → donnée → liste « À …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'cave' : la tâche de '« le samedi 6 déc. au matin »' garde sa date[2m > [22mchemin complet : proposition → « À faire » → donnée → liste « À faire » : la ligne est rangée par la date de la phrase et la dit
+[31m[1mAssertionError[22m: ligne : « Ranger la cave le samedi 6 déc. au matinZZ TEST — ranger la cave » (groupe fin-du-mois) ; sous le texte : « ZZ TEST — ranger la cave  » ; attendu : 6 déc. (ou sa semaine, du 30 nov.): expected 'zz test — ranger la cave' to match /\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov/i[39m
+
+[32m- Expected:[39m 
+/\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov/i
+
+[31m+ Received:[39m 
+"zz test — ranger la cave"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m134:124[22m[39m
+    [90m132| [39m    [35mawait[39m [34mouvrirListeAFaire[39m()[33m;[39m
+    [90m133| [39m    [35mconst[39m l [33m=[39m [34mligneAFaire[39m(c[33m.[39mtache)[33m;[39m
+    [90m134| [39m    expect(sans(l.dit), `ligne : « ${l.ligne} » (groupe ${l.groupe}) ;…
+    [90m   | [39m                                                                                                                           [31m^[39m
+    [90m135| [39m    expect(c.pasDans, `groupe « ${l.groupe} » : la date de la phrase (…
+    [90m136| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'cave' : la tâche de '« le samedi 6 déc. au matin »' garde sa date[2m > [22mla donnée déjà écrite fausse (rangée « mois » ou « semaine » du mois en cours) s'affiche avec la date de la phrase, ou « date à revoir »
+[31m[1mAssertionError[22m: ligne : « Ranger la cave le samedi 6 déc. au matinZZ TEST — ranger la cave » (groupe fin-du-mois) ; sous le texte : « ZZ TEST — ranger la cave  » ; attendu : 6 déc. (ou sa semaine, du 30 nov.), ou « date à revoir »: expected 'zz test — ranger la cave' to match /\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov|…/i[39m
+
+[32m- Expected:[39m 
+/\b6\s+d[ée]c|sem\.?\s+du\s+30\s+nov|date a revoir/i
+
+[31m+ Received:[39m 
+"zz test — ranger la cave"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m142:146[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'soufre' : la tâche de '« dans 2 semaines » (écrit le 25.11)' garde sa date[2m > [22mla carte « tâche proposée » dit la date de la phrase (la proposition de l'IA, SIMULÉE, porte la semaine ou le mois en cours)
+[31m[1mAssertionError[22m: la carte dit : « tâche proposéeSentir à nouveau avant la mise en fûtÀ fairePlus tard » ; ce qu'elle ajoute au texte : « tâche proposéeÀ fairePlus tard » ; attendu : 9 déc. (ou sa semaine, du 7): expected 'tache proposeea faireplus tard' to match /\b(7|9)\s+d[ée]c/i[39m
+
+[32m- Expected:[39m 
+/\b(7|9)\s+d[ée]c/i
+
+[31m+ Received:[39m 
+"tache proposeea faireplus tard"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m126:123[22m[39m
+    [90m124| [39m    expect(k, `aucune carte « tâche proposée » : « ${lu(document.body)…
+    [90m125| [39m    const ajoute = lu(k).split(lu(k!.querySelector('p'))).join(''); //…
+    [90m126| [39m    expect(sans(ajoute), `la carte dit : « ${lu(k)} » ; ce qu'elle ajo…
+    [90m   | [39m                                                                                                                          [31m^[39m
+    [90m127| [39m  })[33m;[39m
+    [90m128| [39m  it('chemin complet : proposition → « À faire » → donnée → liste « À …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'soufre' : la tâche de '« dans 2 semaines » (écrit le 25.11)' garde sa date[2m > [22mchemin complet : proposition → « À faire » → donnée → liste « À faire » : la ligne est rangée par la date de la phrase et la dit
+[31m[1mAssertionError[22m: ligne : « Sentir à nouveau avant la mise en fûtZZ TEST — odeur de soufre dans un lot » (groupe cette-semaine) ; sous le texte : « ZZ TEST — odeur de soufre dans un lot  » ; attendu : 9 déc. (ou sa semaine, du 7): expected 'zz test — odeur de soufre dans un lot' to match /\b(7|9)\s+d[ée]c/i[39m
+
+[32m- Expected:[39m 
+/\b(7|9)\s+d[ée]c/i
+
+[31m+ Received:[39m 
+"zz test — odeur de soufre dans un lot"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m134:124[22m[39m
+    [90m132| [39m    [35mawait[39m [34mouvrirListeAFaire[39m()[33m;[39m
+    [90m133| [39m    [35mconst[39m l [33m=[39m [34mligneAFaire[39m(c[33m.[39mtache)[33m;[39m
+    [90m134| [39m    expect(sans(l.dit), `ligne : « ${l.ligne} » (groupe ${l.groupe}) ;…
+    [90m   | [39m                                                                                                                           [31m^[39m
+    [90m135| [39m    expect(c.pasDans, `groupe « ${l.groupe} » : la date de la phrase (…
+    [90m136| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · 'soufre' : la tâche de '« dans 2 semaines » (écrit le 25.11)' garde sa date[2m > [22mla donnée déjà écrite fausse (rangée « mois » ou « semaine » du mois en cours) s'affiche avec la date de la phrase, ou « date à revoir »
+[31m[1mAssertionError[22m: ligne : « Sentir à nouveau avant la mise en fûtZZ TEST — odeur de soufre dans un lot » (groupe cette-semaine) ; sous le texte : « ZZ TEST — odeur de soufre dans un lot  » ; attendu : 9 déc. (ou sa semaine, du 7), ou « date à revoir »: expected 'zz test — odeur de soufre dans un lot' to match /\b(7|9)\s+d[ée]c|date a revoir/i[39m
+
+[32m- Expected:[39m 
+/\b(7|9)\s+d[ée]c|date a revoir/i
+
+[31m+ Received:[39m 
+"zz test — odeur de soufre dans un lot"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m142:146[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR110 · « semaine du 14 déc. » (SIMULÉ : variante de la phrase réelle d'EXA-11, mois abrégé comme chez le brasseur)[2m > [22mchemin complet : la tâche est rangée au 14 déc. et la ligne le dit, la proposition de l'IA disant fin novembre
+[31m[1mAssertionError[22m: ligne : « Renouveler l’assurance la semaine du 14 déc.ZZ TEST — assurance à renouveler » (groupe fin-du-mois) ; sous le texte : « ZZ TEST — assurance à renouveler  »: expected 'zz test — assurance a renouveler' to match /\b14\s+dec/i[39m
+
+[32m- Expected:[39m 
+/\b14\s+dec/i
+
+[31m+ Received:[39m 
+"zz test — assurance a renouveler"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m155:103[22m[39m
+    [90m153| [39m    [35mawait[39m [34mouvrirListeAFaire[39m()[33m;[39m
+    [90m154| [39m    [35mconst[39m l [33m=[39m [34mligneAFaire[39m([36m/renouveler l'assurance/[39m)[33m;[39m
+    [90m155| [39m    expect(sans(l.dit), `ligne : « ${l.ligne} » (groupe ${l.groupe}) ;…
+    [90m   | [39m                                                                                                      [31m^[39m
+    [90m156| [39m    expect(['cette-semaine', 'fin-du-mois'], `groupe « ${l.groupe} »`)…
+    [90m157| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-6 : chaque bulle du fil a son ⋯ (modifier, supprimer), même rangée en façon, critère ou article, même mêlée[2m > [22mco2 : aucune bulle du fil sans ⋯
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-6 : chaque bulle du fil a son ⋯ (modifier, supprimer), même rangée en façon, critère ou article, même mêlée[2m > [22msoufre : aucune bulle du fil sans ⋯
+[31m[1mAssertionError[22m: bulles sans ⋯ (ni modifier, ni supprimer): expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Pistes : joint du couvercle, raccord gaz ou régulateur.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m167:67[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-6 : chaque bulle du fil a son ⋯ (modifier, supprimer), même rangée en façon, critère ou article, même mêlée[2m > [22mecoulement : aucune bulle du fil sans ⋯
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-6 : chaque bulle du fil a son ⋯ (modifier, supprimer), même rangée en façon, critère ou article, même mêlée[2m > [22mfete : aucune bulle du fil sans ⋯
+[31m[1mAssertionError[22m: bulles sans ⋯ (ni modifier, ni supprimer): expected [ …(2) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.",[39m
+[31m+   "Estimation 150 CHF (exemple).",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m167:67[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-6 : chaque bulle du fil a son ⋯ (modifier, supprimer), même rangée en façon, critère ou article, même mêlée[2m > [22mfrigo : aucune bulle du fil sans ⋯
+[31m[1mAssertionError[22m: bulles sans ⋯ (ni modifier, ni supprimer): expected [ …(3) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Le 21 nov., frigo de garde à 14 °C au lieu de 2 °C, 6 fûts dedans.",[39m
+[31m+   "Fûts déplacés dans la chambre froide en attendant.",[39m
+[31m+   "Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m167:67[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-2 (B) : supprimer une bulle depuis un carnet ne retire pas la note d'un autre carnet[2m > [22m« Fûts déplacés dans la chambre froide en attendant. » (frigo, sa note vit dans « Chambre froide ») : Supprimer depuis le frigo laisse la note dans Chambre froide, ou le dit avant
+[31m[1mAssertionError[22m: le ⋯ de cette bulle (sans lui, ni modifier ni supprimer : EXA-6): expected null to be truthy[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m181:86[22m[39m
+    [90m179| [39m    expect(bulle, `la bulle du message dans le fil du frigo : « ${lu(d…
+    [90m180| [39m    const plus = bulle!.querySelector('button[aria-label$="actions"]')…
+    [90m181| [39m    expect(plus, 'le ⋯ de cette bulle (sans lui, ni modifier ni suppri…
+    [90m   | [39m                                                                                     [31m^[39m
+    [90m182| [39m    fireEvent[33m.[39m[34mclick[39m(plus[33m![39m)[33m;[39m
+    [90m183| [39m    [35mawait[39m [34mattendre[39m([34m60[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-4 : la carte « Reclasser ce carnet ? » propose le critère né d'une phrase (levure : « réhydrater la levure, ensemencer à 18 °C. »)[2m > [22mla levure garde ce critère de la donnée ; la carte Reclasser est à l'écran et nomme la phrase
+[31m[1mAssertionError[22m: aucune carte « Reclasser ce carnet ? » : « ZZ TEST — levure lente à démarrerBrasserie▾NotéJe chercheDécidéRésoluRésolu en 1 jourPistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.pas pris Rangé : BrasserieRésolus en 20261Relire ira dans Réalisés Rouvrir Le fil · 8Ajouter à ZZ TE »: expected 0 to be greater than 0[39m
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m199:110[22m[39m
+    [90m197| [39m    [35mawait[39m [34mattendre[39m([34m150[39m)[33m;[39m
+    [90m198| [39m    const cartes = [...document.querySelectorAll('*')].filter(e => /re…
+    [90m199| [39m    expect(cartes.length, `aucune carte « Reclasser ce carnet ? » : « …
+    [90m   | [39m                                                                                                             [31m^[39m
+    [90m200| [39m    expect(sans(lu(cartes[0].parentElement)), 'la carte nomme la phras…
+    [90m201| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-5 : une option a un nom court, jamais la phrase entière (« Raccord gaz », « Steam condenser »)[2m > [22mco2 : hors des bulles du fil, l'écran ne nomme aucune option par sa phrase de plus de 45 caractères
+[31m[1mAssertionError[22m: options nommées par toute leur phrase hors du fil : « ZZ TEST — CO2 qui baisse vite dans un fûtBrasserie▾NotéJe chercheDécidéRésoluPistes : joint du couvercle, raccord gaz ou régulateur.retenuPourquoi Pistes : joint du couvercle, raccord gaz ou régulateur. ? Tes notes ne le disent pas.Ajouter24 – 25 nov. DécidéAjouter à ZZ TEST — CO2 qui baisse vite dans un fût… »: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Pistes : joint du couvercle, raccord gaz ou régulateur.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m214:133[22m[39m
+    [90m212| [39m    hors[33m.[39m[34mquerySelectorAll[39m([32m'[data-message]'[39m)[33m.[39m[34mforEach[39m(b [33m=>[39m b[33m.[39m[34mremove[39m())[33m;[39m
+    [90m213| [39m    [35mconst[39m texte [33m=[39m [34mlu[39m(hors)[33m;[39m
+    [90m214| [39m    expect(facons.filter(n => texte.includes(n)), `options nommées par…
+    [90m   | [39m                                                                                                                                    [31m^[39m
+    [90m215| [39m  })[33m;[39m
+    [90m216| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-5 : une option a un nom court, jamais la phrase entière (« Raccord gaz », « Steam condenser »)[2m > [22mvapeur : hors des bulles du fil, l'écran ne nomme aucune option par sa phrase de plus de 45 caractères
+[31m[1mAssertionError[22m: options nommées par toute leur phrase hors du fil : « ZZ TEST — trop de vapeur au brassageBrasserie▾NotéJe chercheDécidéRésoluPremière idée : un humidificateur dans la salle.écarté« finalement pas utile »Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide.retenuPourquoi Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide. plutôt que Première idée : un humidificateur dans la salle. ? Tes notes ne l »: expected [ …(2) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Première idée : un humidificateur dans la salle.",[39m
+[31m+   "Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m214:133[22m[39m
+    [90m212| [39m    hors[33m.[39m[34mquerySelectorAll[39m([32m'[data-message]'[39m)[33m.[39m[34mforEach[39m(b [33m=>[39m b[33m.[39m[34mremove[39m())[33m;[39m
+    [90m213| [39m    [35mconst[39m texte [33m=[39m [34mlu[39m(hors)[33m;[39m
+    [90m214| [39m    expect(facons.filter(n => texte.includes(n)), `options nommées par…
+    [90m   | [39m                                                                                                                                    [31m^[39m
+    [90m215| [39m  })[33m;[39m
+    [90m216| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-5 : une option a un nom court, jamais la phrase entière (« Raccord gaz », « Steam condenser »)[2m > [22mlevure : hors des bulles du fil, l'écran ne nomme aucune option par sa phrase de plus de 45 caractères
+[31m[1mAssertionError[22m: options nommées par toute leur phrase hors du fil : « ZZ TEST — levure lente à démarrerBrasserie▾NotéJe chercheDécidéRésoluRésolu en 1 jourPistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.pas pris Rangé : BrasserieRésolus en 20261Relire ira dans Réalisés Rouvrir Le fil · 8Ajouter à ZZ TEST — levure lente à démarrer… »: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m214:133[22m[39m
+    [90m212| [39m    hors[33m.[39m[34mquerySelectorAll[39m([32m'[data-message]'[39m)[33m.[39m[34mforEach[39m(b [33m=>[39m b[33m.[39m[34mremove[39m())[33m;[39m
+    [90m213| [39m    [35mconst[39m texte [33m=[39m [34mlu[39m(hors)[33m;[39m
+    [90m214| [39m    expect(facons.filter(n => texte.includes(n)), `options nommées par…
+    [90m   | [39m                                                                                                                                    [31m^[39m
+    [90m215| [39m  })[33m;[39m
+    [90m216| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-7 : la carte Résolu de la levure a le picto de la levure et le remède du fil[2m > [22mle picto de l'option fermée est celui de la levure (sachet), pas un frigo
+[31m[1mAssertionError[22m: picto « frigo » pour « Pistes : levure sèche… »: expected 'frigo' to be 'sachet' // Object.is equality[39m
+
+Expected: [32m"sachet"[39m
+Received: [31m"frigo"[39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m224:121[22m[39m
+    [90m222| [39m    const p = document.querySelector('.cnp-resolu .cnp-fermees [data-p…
+    [90m223| [39m    [34mexpect[39m(p[33m,[39m [32m'le picto de l\'option fermée'[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m224| [39m    expect(p!.getAttribute('data-picto'), `picto « ${p!.getAttribute('…
+    [90m   | [39m                                                                                                                        [31m^[39m
+    [90m225| [39m  })[33m;[39m
+    [90m226| [39m  it('la carte Résolu dit le remède du fil (« Monté à 19 °C, la fermen…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-7 : la carte Résolu de la levure a le picto de la levure et le remède du fil[2m > [22mla carte Résolu dit le remède du fil (« Monté à 19 °C, la fermentation démarre le lendemain. »), comme la pompe dit « Fermé : … »
+[31m[1mAssertionError[22m: carte : « Résolu en 1 jourPistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid.pas pris Rangé : Brasserie »: expected 'resolu en 1 jourpistes : levure seche…' to match /monte a 19|19\s?°c|fermentation demar…/[39m
+
+[32m- Expected:[39m 
+/monte a 19|19\s?°c|fermentation demarre/
+
+[31m+ Received:[39m 
+"resolu en 1 jourpistes : levure seche proche de sa date, pas rehydratee, mout un peu froid.pas pris range : brasserie"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m231:49[22m[39m
+    [90m229| [39m    [35mconst[39m k [33m=[39m document[33m.[39m[34mquerySelector[39m([32m'.cnp-resolu .cnp-tampon'[39m)[33m;[39m
+    [90m230| [39m    [34mexpect[39m(k[33m,[39m [32m'la carte Résolu'[39m)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m231| [39m    expect(sans(lu(k)), `carte : « ${lu(k)} »`).toMatch(/monte a 19|19…
+    [90m   | [39m                                                [31m^[39m
+    [90m232| [39m  })[33m;[39m
+    [90m233| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-10 : « Pourquoi … ? Tes notes ne le disent pas » seulement quand le fil ne le dit pas[2m > [22mco2 : le fil dit « Test à l’eau savonneuse : bulles au raccord gaz. »
+[31m[1mAssertionError[22m: écran : « ZZ TEST — CO2 qui baisse vite dans un fûtBrasserie▾NotéJe chercheDécidéRésoluPistes : joint du couvercle, raccord gaz ou régulateur.retenuPourquoi Pistes : joint du couvercle, raccord gaz ou régulateur. ? Tes notes ne le disent pas.Ajouter24 – 25 nov.ZZ TEST — CO2 qui baisse vite dans un fûtFût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22.Pistes : joint du couvercle, raccord gaz ou régulateur.Test à l’eau savonneuse »: expected 'zz test — co2 qui baisse vite dans un…' not to match /tes notes ne le disent pas/[39m
+
+[32m- Expected:[39m 
+/tes notes ne le disent pas/
+
+[31m+ Received:[39m 
+"zz test — co2 qui baisse vite dans un futbrasserie▾noteje cherchedecideresolupistes : joint du couvercle, raccord gaz ou regulateur.retenupourquoi pistes : joint du couvercle, raccord gaz ou regulateur. ? tes notes ne le disent pas.ajouter24 – 25 nov.zz test — co2 qui baisse vite dans un futfut de blonde a 1,2 bar le 15 nov., 0,4 bar le 22.pistes : joint du couvercle, raccord gaz ou regulateur.test a l'eau savonneuse : bulles au raccord gaz.raccord gaz change, a reverifier dans une semaine. decideajouter a zz test — co2 qui baisse vite dans un fut..."
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m243:91[22m[39m
+    [90m241| [39m    [34mmonter[39m([34mreleve[39m(nom))[33m;[39m
+    [90m242| [39m    [35mawait[39m [34mattendre[39m([34m150[39m)[33m;[39m
+    [90m243| [39m    expect(sans(lu(document.body)), `écran : « ${lu(document.body).sli…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m244| [39m  })[33m;[39m
+    [90m245| [39m  it('malt, carnet Résolu : aucune question « Pourquoi … ? » sur un ca…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-10 : « Pourquoi … ? Tes notes ne le disent pas » seulement quand le fil ne le dit pas[2m > [22mvapeur : le fil dit « Humidificateur finalement pas utile. » et l'option écartée porte « finalement pas utile »
+[31m[1mAssertionError[22m: écran : « ZZ TEST — trop de vapeur au brassageBrasserie▾NotéJe chercheDécidéRésoluPremière idée : un humidificateur dans la salle.écarté« finalement pas utile »Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide.retenuPourquoi Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide. plutôt que Première idée : un humidificateur dans la salle. ? Tes notes ne le disent pas.Ajouter »: expected 'zz test — trop de vapeur au brassageb…' not to match /tes notes ne le disent pas/[39m
+
+[32m- Expected:[39m 
+/tes notes ne le disent pas/
+
+[31m+ Received:[39m 
+"zz test — trop de vapeur au brassagebrasserie▾noteje cherchedecideresolupremiere idee : un humidificateur dans la salle.ecarte« finalement pas utile »plutot un steam condenser sur la cuve : la vapeur est condensee a l'eau froide.retenupourquoi plutot un steam condenser sur la cuve : la vapeur est condensee a l'eau froide. plutot que premiere idee : un humidificateur dans la salle. ? tes notes ne le disent pas.ajouterarticles 2comparerplutot un steam condenser sur la cuve : la vapeur est condensee a l'eau froide.aucun article encorerang · article?lien sans apercukegland.com.au/brewzilla-2-inch-tri-cl... · a relireouvrir ?lien sans apercubrewtools.com/steam-condenser-2-part-... · a relireouvrir 24 – 25 nov.zz test — trop de vapeur au brassagele 18 nov., pendant l'ebullition, la salle etait pleine de vapeur, ca coule sur les murs.premiere idee : un humidificateur dans la salle.plutot un steam condenser sur la cuve : la vapeur est condensee a l'eau froide.kegland.com.aunon lu · produit et prix inconnusbrewtools.comnon lu · produit et prix inconnusle 2e pas en stock, a surveiller.achat prevu fin du mois.humidificateur finalement pas utile. decideajouter a zz test — trop de vapeur au brassage..."
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m243:91[22m[39m
+    [90m241| [39m    [34mmonter[39m([34mreleve[39m(nom))[33m;[39m
+    [90m242| [39m    [35mawait[39m [34mattendre[39m([34m150[39m)[33m;[39m
+    [90m243| [39m    expect(sans(lu(document.body)), `écran : « ${lu(document.body).sli…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m244| [39m  })[33m;[39m
+    [90m245| [39m  it('malt, carnet Résolu : aucune question « Pourquoi … ? » sur un ca…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-10 : « Pourquoi … ? Tes notes ne le disent pas » seulement quand le fil ne le dit pas[2m > [22mmalt : la façon porte sa raison « en stock »
+[31m[1mAssertionError[22m: écran : « ZZ TEST — malt pilsner en rupture chez le fournisseurBrasserie▾NotéJe chercheDécidéRésoluRésolu en 1 jourRetenu : Autre fournisseur · +4 CHF le sac Rangé : BrasseriePourquoi Autre fournisseur · +4 CHF le sac ? Tes notes ne le disent pas.AjouterRésolus en 20261Relire ira dans Réalisés Rouvrir Le fil · 8Ajouter à ZZ TEST — malt pilsner en rupture chez le fournisseur… »: expected 'zz test — malt pilsner en rupture che…' not to match /tes notes ne le disent pas/[39m
+
+[32m- Expected:[39m 
+/tes notes ne le disent pas/
+
+[31m+ Received:[39m 
+"zz test — malt pilsner en rupture chez le fournisseurbrasserie▾noteje cherchedecideresoluresolu en 1 jourretenu : autre fournisseur · +4 chf le sac range : brasseriepourquoi autre fournisseur · +4 chf le sac ? tes notes ne le disent pas.ajouterresolus en 20261relire ira dans realises rouvrir le fil · 8ajouter a zz test — malt pilsner en rupture chez le fournisseur..."
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m243:91[22m[39m
+    [90m241| [39m    [34mmonter[39m([34mreleve[39m(nom))[33m;[39m
+    [90m242| [39m    [35mawait[39m [34mattendre[39m([34m150[39m)[33m;[39m
+    [90m243| [39m    expect(sans(lu(document.body)), `écran : « ${lu(document.body).sli…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m244| [39m  })[33m;[39m
+    [90m245| [39m  it('malt, carnet Résolu : aucune question « Pourquoi … ? » sur un ca…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-10 : « Pourquoi … ? Tes notes ne le disent pas » seulement quand le fil ne le dit pas[2m > [22mmalt, carnet Résolu : aucune question « Pourquoi … ? » sur un carnet résolu
+[31m[1mAssertionError[22m: écran : « ZZ TEST — malt pilsner en rupture chez le fournisseurBrasserie▾NotéJe chercheDécidéRésoluRésolu en 1 jourRetenu : Autre fournisseur · +4 CHF le sac Rangé : BrasseriePourquoi Autre fournisseur · +4 CHF le sac ? Tes notes ne le disent pas.AjouterRésolus en 20261Relire ira dans Réalisés Rouvrir Le fil · 8Ajouter à ZZ TEST — malt pilsner en rupture chez le fournisseur… »: expected 'zz test — malt pilsner en rupture che…' not to match /pourquoi .* \?/[39m
+
+[32m- Expected:[39m 
+/pourquoi .* \?/
+
+[31m+ Received:[39m 
+"zz test — malt pilsner en rupture chez le fournisseurbrasserie▾noteje cherchedecideresoluresolu en 1 jourretenu : autre fournisseur · +4 chf le sac range : brasseriepourquoi autre fournisseur · +4 chf le sac ? tes notes ne le disent pas.ajouterresolus en 20261relire ira dans realises rouvrir le fil · 8ajouter a zz test — malt pilsner en rupture chez le fournisseur..."
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m249:91[22m[39m
+    [90m247| [39m    [35mawait[39m [34mattendre[39m([34m150[39m)[33m;[39m
+    [90m248| [39m    expect(document.querySelector('.cnp-resolu'), 'le carnet est Résol…
+    [90m249| [39m    expect(sans(lu(document.body)), `écran : « ${lu(document.body).sli…
+    [90m   | [39m                                                                                          [31m^[39m
+    [90m250| [39m  })[33m;[39m
+    [90m251| [39m  it('malt, relecture « Résolus en 2026 » : « pourquoi » dit la raison…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR111 · EXA-10 : « Pourquoi … ? Tes notes ne le disent pas » seulement quand le fil ne le dit pas[2m > [22mmalt, relecture « Résolus en 2026 » : « pourquoi » dit la raison « en stock », jamais « tes notes ne le disent pas »
+[31m[1mAssertionError[22m: relecture : « resoluszz test — malt pilsner en rupture chez le fournisseurbrasserieresoluproblemezz test — malt pilsner en rupture chez le fournisseurprisautre fournisseur · +4 chf le sac, 25 nov. 2026pourquoites notes ne le disent pasduree1 jour · 5 notesle fil toujours le bon choix ?ouipas surchercher dans les resolus... »: expected 'resoluszz test — malt pilsner en rupt…' not to match /tes notes ne le disent pas/[39m
+
+[32m- Expected:[39m 
+/tes notes ne le disent pas/
+
+[31m+ Received:[39m 
+"resoluszz test — malt pilsner en rupture chez le fournisseurbrasserieresoluproblemezz test — malt pilsner en rupture chez le fournisseurprisautre fournisseur · +4 chf le sac, 25 nov. 2026pourquoites notes ne le disent pasduree1 jour · 5 notesle fil toujours le bon choix ?ouipas surchercher dans les resolus..."
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m259:57[22m[39m
+    [90m257| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m258| [39m    [35mconst[39m t [33m=[39m [34msans[39m([34mlu[39m(document[33m.[39mbody))[33m;[39m
+    [90m259| [39m    expect(t, `relecture : « ${t.slice(0, 420)} »`).not.toMatch(/tes n…
+    [90m   | [39m                                                        [31m^[39m
+    [90m260| [39m  })[33m;[39m
+    [90m261| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR112 · EXA-3 : Reclasser le malt d'ancien format (document réel de c75, avant le tour 78) propose le problème, le résolu et la tâche[2m > [22mla carte dit : « Idée » devient « Problème »
+[31m[1mAssertionError[22m: carte : « Reclasser ce carnet ? Rien n’est écrit avant votre OK.L’article « Autre fournisseur : en stock, 4 CHF de plus le sac. » n’est pas un article : il devient la piste « Autre fournisseur · +4 CHF le sac » (+4 CHF le sac : un écart, pas un prix).« Commandé 2 sacs chez l’autre, brassin maintenu. » : de « à acheter » à fait. ReclasserLaisser »: expected 'reclasser ce carnet ? rien n\'est ecr…' to match /probleme/[39m
+
+[32m- Expected:[39m 
+/probleme/
+
+[31m+ Received:[39m 
+"reclasser ce carnet ? rien n'est ecrit avant votre ok.l'article « autre fournisseur : en stock, 4 chf de plus le sac. » n'est pas un article : il devient la piste « autre fournisseur · +4 chf le sac » (+4 chf le sac : un ecart, pas un prix).« commande 2 sacs chez l'autre, brassin maintenu. » : de « a acheter » a fait. reclasserlaisser"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m285:49[22m[39m
+    [90m283| [39m    [35mconst[39m k [33m=[39m [34mcarteReclasser[39m()[33m;[39m
+    [90m284| [39m    expect(k, `aucune carte « Reclasser ce carnet ? » : « ${lu(documen…
+    [90m285| [39m    [34mexpect[39m([34msans[39m([34mlu[39m(k))[33m,[39m [32m`carte : « [39m[36m${[39m[34mlu[39m(k)[36m}[39m[32m »`[39m)[33m.[39m[34mtoMatch[39m(re)[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m286| [39m  })[33m;[39m
+    [90m287| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR112 · EXA-3 : Reclasser le malt d'ancien format (document réel de c75, avant le tour 78) propose le problème, le résolu et la tâche[2m > [22mla carte dit : le carnet devient « Résolu » (« Commandé 2 sacs chez l'autre, brassin maintenu. »)
+[31m[1mAssertionError[22m: carte : « Reclasser ce carnet ? Rien n’est écrit avant votre OK.L’article « Autre fournisseur : en stock, 4 CHF de plus le sac. » n’est pas un article : il devient la piste « Autre fournisseur · +4 CHF le sac » (+4 CHF le sac : un écart, pas un prix).« Commandé 2 sacs chez l’autre, brassin maintenu. » : de « à acheter » à fait. ReclasserLaisser »: expected 'reclasser ce carnet ? rien n\'est ecr…' to match /resolu/[39m
+
+[32m- Expected:[39m 
+/resolu/
+
+[31m+ Received:[39m 
+"reclasser ce carnet ? rien n'est ecrit avant votre ok.l'article « autre fournisseur : en stock, 4 chf de plus le sac. » n'est pas un article : il devient la piste « autre fournisseur · +4 chf le sac » (+4 chf le sac : un ecart, pas un prix).« commande 2 sacs chez l'autre, brassin maintenu. » : de « a acheter » a fait. reclasserlaisser"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m285:49[22m[39m
+    [90m283| [39m    [35mconst[39m k [33m=[39m [34mcarteReclasser[39m()[33m;[39m
+    [90m284| [39m    expect(k, `aucune carte « Reclasser ce carnet ? » : « ${lu(documen…
+    [90m285| [39m    [34mexpect[39m([34msans[39m([34mlu[39m(k))[33m,[39m [32m`carte : « [39m[36m${[39m[34mlu[39m(k)[36m}[39m[32m »`[39m)[33m.[39m[34mtoMatch[39m(re)[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m286| [39m  })[33m;[39m
+    [90m287| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR112 · EXA-3 : Reclasser le malt d'ancien format (document réel de c75, avant le tour 78) propose le problème, le résolu et la tâche[2m > [22mla carte dit : « Brassin du 3 déc. à décaler » est proposé en tâche
+[31m[1mAssertionError[22m: carte : « Reclasser ce carnet ? Rien n’est écrit avant votre OK.L’article « Autre fournisseur : en stock, 4 CHF de plus le sac. » n’est pas un article : il devient la piste « Autre fournisseur · +4 CHF le sac » (+4 CHF le sac : un écart, pas un prix).« Commandé 2 sacs chez l’autre, brassin maintenu. » : de « à acheter » à fait. ReclasserLaisser »: expected 'reclasser ce carnet ? rien n\'est ecr…' to match /(tache|a faire).*decaler|decaler.*(ta…/[39m
+
+[32m- Expected:[39m 
+/(tache|a faire).*decaler|decaler.*(tache|a faire)/
+
+[31m+ Received:[39m 
+"reclasser ce carnet ? rien n'est ecrit avant votre ok.l'article « autre fournisseur : en stock, 4 chf de plus le sac. » n'est pas un article : il devient la piste « autre fournisseur · +4 chf le sac » (+4 chf le sac : un ecart, pas un prix).« commande 2 sacs chez l'autre, brassin maintenu. » : de « a acheter » a fait. reclasserlaisser"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m285:49[22m[39m
+    [90m283| [39m    [35mconst[39m k [33m=[39m [34mcarteReclasser[39m()[33m;[39m
+    [90m284| [39m    expect(k, `aucune carte « Reclasser ce carnet ? » : « ${lu(documen…
+    [90m285| [39m    [34mexpect[39m([34msans[39m([34mlu[39m(k))[33m,[39m [32m`carte : « [39m[36m${[39m[34mlu[39m(k)[36m}[39m[32m »`[39m)[33m.[39m[34mtoMatch[39m(re)[33m;[39m
+    [90m   | [39m                                                [31m^[39m
+    [90m286| [39m  })[33m;[39m
+    [90m287| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR112 · EXA-8 : « Ajouter » sous « Déjà un carnet proche » vide le brouillon ; la phrase n'atterrit pas dans un autre carnet (écritures SIMULÉES : magasin en mémoire)[2m > [22mretour à la liste après « Ajouter » : le champ est vide (le brouillon est vidé, ou « Ajouter » a dit ce qu'il fait)
+[31m[1mAssertionError[22m: champ de la liste : « ZZ TEST — ranger la cave » ; brouillons : [["laffinee.carnet.brouillon:","ZZ TEST — ranger la cave"]]: expected 'ZZ TEST — ranger la cave' to be '' // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[31m+ ZZ TEST — ranger la cave[39m
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m306:166[22m[39m
+    [90m304| [39m    [35mawait[39m [34mretourListe[39m()[33m;[39m
+    [90m305| [39m    const champ = document.querySelector('.cn-champ textarea') as HTML…
+    [90m306| [39m    expect(champ.value, `champ de la liste : « ${champ.value} » ; brou…
+    [90m   | [39m                                                                                                                                                                     [31m^[39m
+    [90m307| [39m  })[33m;[39m
+    [90m308| [39m  it('un autre carnet (soufre) ne montre ni « va atterrir ici · tiré d…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/32]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c79Regles.test.tsx[2m > [22mR112 · EXA-8 : « Ajouter » sous « Déjà un carnet proche » vide le brouillon ; la phrase n'atterrit pas dans un autre carnet (écritures SIMULÉES : magasin en mémoire)[2m > [22mun autre carnet (soufre) ne montre ni « va atterrir ici · tiré de votre phrase », ni la phrase dans son champ
+[31m[1mAssertionError[22m: écran du soufre : « ZZ TEST — odeur de soufre dans un lotÀ ranger▾NotéJe chercheDécidéRésolu va atterrir ici tiré de votre phraseNotes : ZZ TEST — ranger la cave✻ Même chose que la note du 25 nov. : elles seront fusionnéesGarder à part24 – 25 nov.Lot 14 de lager : odeur d’œuf pourri à J+5.Souvent normal avec une levure lager, ça part pendant la garde. DécidéZZ TÀ sentir à nouveau dans 2 semaines,  »: expected 'zz test — odeur de soufre dans un lot…' not to match /va atterrir ici/[39m
+
+[32m- Expected:[39m 
+/va atterrir ici/
+
+[31m+ Received:[39m 
+"zz test — odeur de soufre dans un lota ranger▾noteje cherchedecideresolu va atterrir ici tire de votre phrasenotes : zz test — ranger la cave✻ meme chose que la note du 25 nov. : elles seront fusionneesgarder a part24 – 25 nov.lot 14 de lager : odeur d'œuf pourri a j+5.souvent normal avec une levure lager, ca part pendant la garde. decidezz ta sentir a nouveau dans 2 semaines, avant la mise en fut.est — ranger la caveva dansce qui comptenotefaconajouter a zz test — odeur de soufre dans un lot...zz test — ranger la caveajouter"
+
+[36m [2m❯[22m tests/unit/c79Regles.test.tsx:[2m316:101[22m[39m
+    [90m314| [39m    [35mawait[39m [34mattendre[39m([34m400[39m)[33m;[39m
+    [90m315| [39m    const champ = document.querySelector('.cn-champ textarea') as HTML…
+    [90m316| [39m    expect(sans(lu(document.body)), `écran du soufre : « ${lu(document…
+    [90m   | [39m                                                                                                    [31m^[39m
+    [90m317| [39m    [34mexpect[39m(champ[33m.[39mvalue[33m,[39m [32m'champ du soufre'[39m)[33m.[39m[34mtoBe[39m([32m''[39m)[33m;[39m
+    [90m318| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/32]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m32 failed[39m[22m[90m (32)[39m
+[2m   Start at [22m 14:31:23
+[2m   Duration [22m 13.89s[2m (transform 1.40s, setup 275ms, collect 2.11s, tests 10.51s, environment 591ms, prepare 59ms)[22m
+
