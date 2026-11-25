@@ -14,3 +14,7 @@ Ce qu'il faut :
    Chaque maquette : état avant l'envoi, état après, et le geste d'annulation.
 3. Le critique calibré (PORTRAIT.md) juge les 3 : « combien et quels problèmes ? », une correction, puis une page de choix écrite à la main (page.html : les 3 côte à côte, une phrase chacune, rien d'autre), vérifiée par `node scripts/agents/verifier-page.mjs page.html --page-lot --captures cap/page` → PAGE OK.
 Léger : pas de port, pas de code dans src/, pas d'autre voie. Possède : work/missions/2026-11-25-carnet-document/.
+
+## Ajout (25.11, sa parole) : une 4e voie à regarder
+« Je sais pas si c'est une bonne idée mais il y aurait 2 version, une version Raw text avec juste mes note, et une version ultra organiser, boostée par l'ai et super visuel Ça serait une voie à regarder aussi »
+→ 4e maquette : deux vues du même carnet, bascule d'un toucher : « Mes notes » (texte brut, à lui, jamais réécrit) et « Organisé » (vue IA, très visuelle : trouvé / pas trouvé, pistes, devis, coût, prochaine étape, conseil, correction ; chaque élément renvoie à sa note). La page de choix montre les 4 côte à côte.
