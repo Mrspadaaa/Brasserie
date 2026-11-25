@@ -1,0 +1,76 @@
+{
+ "avantRepli": true,
+ "repli": {
+  "x": 112,
+  "y": 277.96875,
+  "t": "Brasserie5",
+  "tag": "DIV.cnl-dn"
+ },
+ "apresRepli": true,
+ "repliB": {
+  "x": 112,
+  "y": 314.96875,
+  "t": "▾Brassage3",
+  "tag": "BUTTON.cnl-sd"
+ },
+ "apresRepliB": true,
+ "autres": [
+  {
+   "t": "Robinetterie",
+   "r": {
+    "x": 112,
+    "y": 519.96875,
+    "t": "Robinetterie & tuyaux raccords (fait par soi-même)Local · 20",
+    "tag": "BUTTON.cnp-ligne"
+   },
+   "txt": "Synchronisation comptable : internal\nActualiser\n🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nRésolus\nRobinetterie & tuyaux raccords (fait par soi-même)\nLocal\nRésolu\nproblème\nRobinetterie & tuyaux raccords (fait par soi-même) Budget du Planning : 350 CHF À faire du 29.12.2025 au 11.0…\npourquoi\ntes notes ne le disent pas\ndurée\n78 jours · 1 note\nLe fil\nToujours le bon choix ?\nOui\nPas sûr\nAutres résolus\npar catégorie\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nLocal · 20 nov.\nAchat & installation évier principal + douchette\nLocal · 20 nov.\nRefaire évier — bloqué (attendre vis pieds)\nLocal · 20 nov.\nRangement / étagères inox & déménagement\nMeuble · 20 nov.\nChercher dans les résolus…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  },
+  {
+   "t": "Achat & installation",
+   "r": {
+    "x": 112,
+    "y": 571.96875,
+    "t": "Achat & installation évier principal + douchetteLocal · 20 n",
+    "tag": "BUTTON.cnp-ligne"
+   },
+   "txt": "Synchronisation comptable : internal\nActualiser\n🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nRésolus\nAchat & installation évier principal + douchette\nLocal\nRésolu\nproblème\nAchat & installation évier principal + douchette Budget du Planning : 1 000 CHF À faire du 02.02.2026 au 15.0…\npourquoi\ntes notes ne le disent pas\ndurée\n78 jours · 1 note\nLe fil\nToujours le bon choix ?\nOui\nPas sûr\nAutres résolus\npar catégorie\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nLocal · 20 nov.\nRobinetterie & tuyaux raccords (fait par soi-même)\nLocal · 20 nov.\nRefaire évier — bloqué (attendre vis pieds)\nLocal · 20 nov.\nRangement / étagères inox & déménagement\nMeuble · 20 nov.\nChercher dans les résolus…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  },
+  {
+   "t": "Refaire évier",
+   "r": {
+    "x": 112,
+    "y": 623.96875,
+    "t": "Refaire évier — bloqué (attendre vis pieds)Local · 20 nov.",
+    "tag": "BUTTON.cnp-ligne"
+   },
+   "txt": "Synchronisation comptable : internal\nActualiser\n🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nRésolus\nRefaire évier — bloqué (attendre vis pieds)\nLocal\nRésolu\nproblème\nRefaire évier — bloqué (attendre vis pieds) Budget du Planning : 200 CHF À faire du 18.05.2026 au 01.06.2026…\npourquoi\ntes notes ne le disent pas\ndurée\n78 jours · 1 note\nLe fil\nToujours le bon choix ?\nOui\nPas sûr\nAutres résolus\npar catégorie\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nLocal · 20 nov.\nRobinetterie & tuyaux raccords (fait par soi-même)\nLocal · 20 nov.\nAchat & installation évier principal + douchette\nLocal · 20 nov.\nRangement / étagères inox & déménagement\nMeuble · 20 nov.\nChercher dans les résolus…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  },
+  {
+   "t": "Rangement / étagères",
+   "r": {
+    "x": 112,
+    "y": 675.96875,
+    "t": "Rangement / étagères inox & déménagementMeuble · 20 nov.",
+    "tag": "BUTTON.cnp-ligne"
+   },
+   "txt": "Synchronisation comptable : internal\nActualiser\n🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\nRésolus\nRangement / étagères inox & déménagement\nMeuble\nRésolu\nproblème\nRangement / étagères inox & déménagement Budget du Planning : 200 CHF À faire du 29.12.2025 au 11.01.2026 (Pl…\npourquoi\ntes notes ne le disent pas\ndurée\n78 jours · 1 note\nLe fil\nToujours le bon choix ?\nOui\nPas sûr\nAutres résolus\npar catégorie\nSol, murs & évacuation (béton, revêtement, peinture food-safe)\nLocal · 20 nov.\nRobinetterie & tuyaux raccords (fait par soi-même)\nLocal · 20 nov.\nAchat & installation évier principal + douchette\nLocal · 20 nov.\nRefaire évier — bloqué (attendre vis pieds)\nLocal · 20 nov.\nChercher dans les résolus…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+  }
+ ],
+ "anc": {
+  "x": 113,
+  "y": 651.96875,
+  "t": "Anciennes notes de l’Atelier · 3",
+  "tag": "BUTTON.cn-anciennes-tete"
+ },
+ "tanc": "Synchronisation comptable : internal\nActualiser\n🍺\nL'Affinée\nTout\nA\nG\nMatériel\nParc\nÀ venir\n11\nCarnets\n32\nRéalisés\n5\n8\nje cherche\n0\ndécidés\n0\nnotés\n5\nrésolus 2026\nArbre\nÀ faire\n6\n0\nUn jour\n6\nExtincteur\n· jusqu’au 31 déc.\nau Planning\n≈ 80 CHF\nInstallation électrique 27A (2027)\n· sem. du 26 avr. 2027\nau Planning\n≈ 1 500 CHF\nEmbouteillage — station complète (2027)\n· sem. du 26 avr. 2027\nau Planning\n≈ 2 500 CHF\nFrigo + congel\n· jusqu’au 1 mai 2027\nau Planning\n≈ 400 CHF\n2ème évier (2027)\n· sem. du 30 août 2027\nau Planning\n≈ 400 CHF\nConformité — dossiers SAAV + SEn + assurances\n· sem. du 29 nov. 2027\nau Planning\n≈ 850 CHF\nAnciennes notes de l’Atelier · 3\nVentilation\nnote · 20.11.2026\nBière d'Hiver Pain d'Épices & Miel de Fribourg\nidée de bière\nLe Carnotzet Gourmand\ncontact\nUne idée, un problème…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+ "guet": {
+  "enreg": [],
+  "ecritures": []
+ },
+ "bloques": [
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/syncFinancialLedger",
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity",
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/syncFinancialLedger",
+  "https://europe-west6-brasserie-l-affinee.cloudfunctions.net/getBrewerActivity"
+ ]
+}
