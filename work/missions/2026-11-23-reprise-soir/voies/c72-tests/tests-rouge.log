@@ -1,0 +1,707 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 34 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « propre » (chaque coût vise sa piste)[2m > [22mle ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 450 CHF » (une seule piste : son prix seul), jamais « 450 à 630 »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":null,"enTete":null}: expected null to deeply equal { min: 45000, max: 45000, …(1) }[39m
+
+[32m- Expected:[39m 
+{
+  "max": 45000,
+  "min": 45000,
+  "par": Any<String>,
+}
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m159:49[22m[39m
+    [90m157| [39m  it('le ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 4…
+    [90m158| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'…
+    [90m159| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 45000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m160| [39m  })[33m;[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « propre » (chaque coût vise sa piste)[2m > [22mle condenseur écarté : il reste « 180 CHF »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":null,"enTete":null}: expected null to deeply equal { min: 18000, max: 18000, …(1) }[39m
+
+[32m- Expected:[39m 
+{
+  "max": 18000,
+  "min": 18000,
+  "par": Any<String>,
+}
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m163:49[22m[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+    [90m162| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FC', 'trop cher'), …
+    [90m163| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m164| [39m  })[33m;[39m
+    [90m165| [39m  it('le condenseur retenu : le coût en tête est la retenue, 450, jama…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mdeux pistes (450 et 180) : la fourchette 180 à 450, jamais 630 (la somme de deux solutions exclusives)
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 18000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[32m-   "min": 18000,[39m
+[32m-   "par": "fourchette",[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[31m+   "par": "total (somme)",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m155:49[22m[39m
+    [90m153| [39m  it('deux pistes (450 et 180) : la fourchette 180 à 450, jamais 630 (…
+    [90m154| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mvapeur[39m({ forme }))[33m;[39m
+    [90m155| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m156| [39m  })[33m;[39m
+    [90m157| [39m  it('le ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 4…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mle ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 450 CHF » (une seule piste : son prix seul), jamais « 450 à 630 »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 45000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[32m-   "min": 45000,[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[2m    "par": Any<String>,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m159:49[22m[39m
+    [90m157| [39m  it('le ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 4…
+    [90m158| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'…
+    [90m159| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 45000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m160| [39m  })[33m;[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mle condenseur écarté : il reste « 180 CHF »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 18000, max: 18000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 18000,[39m
+[32m-   "min": 18000,[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[2m    "par": Any<String>,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m163:49[22m[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+    [90m162| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FC', 'trop cher'), …
+    [90m163| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m164| [39m  })[33m;[39m
+    [90m165| [39m  it('le condenseur retenu : le coût en tête est la retenue, 450, jama…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mle condenseur retenu : le coût en tête est la retenue, 450, jamais la somme ni le prix de l'autre piste
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 45000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[32m-   "min": 45000,[39m
+[32m-   "par": "retenu",[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[31m+   "par": "total (somme)",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m167:49[22m[39m
+    [90m165| [39m  it('le condenseur retenu : le coût en tête est la retenue, 450, jama…
+    [90m166| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mretenir[39m([34mvapeur[39m({ forme })[33m,[39m [32m'FC'[39m)[33m,[39m [32m'FC'[39m)[33m;[39m
+    [90m167| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 45000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m168| [39m  })[33m;[39m
+    [90m169| [39m  [34mit[39m([32m'le ventilateur retenu : 180'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mle ventilateur retenu : 180
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 18000, max: 18000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 18000,[39m
+[32m-   "min": 18000,[39m
+[32m-   "par": "retenu",[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[31m+   "par": "total (somme)",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m171:49[22m[39m
+    [90m169| [39m  [34mit[39m([32m'le ventilateur retenu : 180'[39m[33m,[39m () [33m=>[39m {
+    [90m170| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mretenir[39m([34mvapeur[39m({ forme })[33m,[39m [32m'FV'[39m)[33m,[39m [32m'FV'[39m)[33m;[39m
+    [90m171| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m172| [39m  })[33m;[39m
+    [90m173| [39m  it('trois pistes (450, 180, 120) : 120 à 450 ; la 3e écartée, de nou…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « sansOption » (le repli local : les deux montants ne visent aucune option)[2m > [22mune piste SANS prix (l'humidificateur) ne compte pas : l'inconnu n'est jamais 0, la fourchette reste 180 à 450
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":null,"total":{"centimes":63000,"n":2},"enTete":{"min":63000,"max":63000,"par":"total (somme)"}}: expected { min: 63000, max: 63000, …(1) } to deeply equal { min: 18000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[32m-   "min": 18000,[39m
+[32m-   "par": "fourchette",[39m
+[31m+   "max": 63000,[39m
+[31m+   "min": 63000,[39m
+[31m+   "par": "total (somme)",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m182:49[22m[39m
+    [90m180| [39m  it('une piste SANS prix (l\'humidificateur) ne compte pas : l\'incon…
+    [90m181| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mvapeur[39m({ forme[33m,[39m humidificateur[33m:[39m [35mtrue[39m }))[33m;[39m
+    [90m182| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m183| [39m  })[33m;[39m
+    [90m184| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « melange » (jetons du repli local (option fantôme, 450 + 180 = 630) et de l'IA ensemble ; reproduit par le geste, voir plus bas)[2m > [22mdeux pistes (450 et 180) : la fourchette 180 à 450, jamais 630 (la somme de deux solutions exclusives)
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":{"min":18000,"max":63000,"n":3},"total":null,"enTete":{"min":18000,"max":63000,"par":"fourchette"}}: expected { min: 18000, max: 63000, …(1) } to deeply equal { min: 18000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[31m+   "max": 63000,[39m
+[2m    "min": 18000,[22m
+[2m    "par": "fourchette",[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m155:49[22m[39m
+    [90m153| [39m  it('deux pistes (450 et 180) : la fourchette 180 à 450, jamais 630 (…
+    [90m154| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mvapeur[39m({ forme }))[33m;[39m
+    [90m155| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m156| [39m  })[33m;[39m
+    [90m157| [39m  it('le ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 4…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « melange » (jetons du repli local (option fantôme, 450 + 180 = 630) et de l'IA ensemble ; reproduit par le geste, voir plus bas)[2m > [22mle ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 450 CHF » (une seule piste : son prix seul), jamais « 450 à 630 »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":{"min":45000,"max":63000,"n":2},"total":null,"enTete":{"min":45000,"max":63000,"par":"fourchette"}}: expected { min: 45000, max: 63000, …(1) } to deeply equal { min: 45000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[31m+   "max": 63000,[39m
+[2m    "min": 45000,[22m
+[2m    "par": Any<String>,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m159:49[22m[39m
+    [90m157| [39m  it('le ventilateur écarté : il sort du calcul AUSSITÔT, il reste « 4…
+    [90m158| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'…
+    [90m159| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 45000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m160| [39m  })[33m;[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « melange » (jetons du repli local (option fantôme, 450 + 180 = 630) et de l'IA ensemble ; reproduit par le geste, voir plus bas)[2m > [22mle condenseur écarté : il reste « 180 CHF »
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":{"min":18000,"max":63000,"n":2},"total":null,"enTete":{"min":18000,"max":63000,"par":"fourchette"}}: expected { min: 18000, max: 63000, …(1) } to deeply equal { min: 18000, max: 18000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 18000,[39m
+[31m+   "max": 63000,[39m
+[2m    "min": 18000,[22m
+[2m    "par": Any<String>,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m163:49[22m[39m
+    [90m161| [39m  [34mit[39m([32m'le condenseur écarté : il reste « 180 CHF »'[39m[33m,[39m () [33m=>[39m {
+    [90m162| [39m    const r = resumeDe(ecarter(vapeur({ forme }), 'FC', 'trop cher'), …
+    [90m163| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m164| [39m  })[33m;[39m
+    [90m165| [39m  it('le condenseur retenu : le coût en tête est la retenue, 450, jama…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « melange » (jetons du repli local (option fantôme, 450 + 180 = 630) et de l'IA ensemble ; reproduit par le geste, voir plus bas)[2m > [22mtrois pistes (450, 180, 120) : 120 à 450 ; la 3e écartée, de nouveau 180 à 450
+[31m[1mAssertionError[22m: trois pistes : {"retenu":null,"fourchette":{"min":12000,"max":63000,"n":4},"total":null,"enTete":{"min":12000,"max":63000,"par":"fourchette"}}: expected { min: 12000, max: 63000, …(1) } to deeply equal { min: 12000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[31m+   "max": 63000,[39m
+[2m    "min": 12000,[22m
+[2m    "par": "fourchette",[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m176:53[22m[39m
+    [90m174| [39m    [35mconst[39m items [33m=[39m [34mvapeur[39m({ forme[33m,[39m hotte[33m:[39m [35mtrue[39m })[33m;[39m
+    [90m175| [39m    [35mconst[39m r3 [33m=[39m [34mresumeDe[39m(items)[33m;[39m
+    [90m176| [39m    expect(enTete(r3), `trois pistes : ${dit(r3)}`).toEqual({ min: 120…
+    [90m   | [39m                                                    [31m^[39m
+    [90m177| [39m    [35mconst[39m r2 [33m=[39m [34mresumeDe[39m([34mecarter[39m(items[33m,[39m [32m'FT'[39m)[33m,[39m undefined[33m,[39m [[32m'FT'[39m])[33m;[39m
+    [90m178| [39m    expect(enTete(r2), `la hotte écartée : ${dit(r2)}`).toEqual({ min:…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION du coût en tête, forme « melange » (jetons du repli local (option fantôme, 450 + 180 = 630) et de l'IA ensemble ; reproduit par le geste, voir plus bas)[2m > [22mune piste SANS prix (l'humidificateur) ne compte pas : l'inconnu n'est jamais 0, la fourchette reste 180 à 450
+[31m[1mAssertionError[22m: jetons lus : {"retenu":null,"fourchette":{"min":18000,"max":63000,"n":3},"total":null,"enTete":{"min":18000,"max":63000,"par":"fourchette"}}: expected { min: 18000, max: 63000, …(1) } to deeply equal { min: 18000, max: 45000, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": 45000,[39m
+[31m+   "max": 63000,[39m
+[2m    "min": 18000,[22m
+[2m    "par": "fourchette",[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m182:49[22m[39m
+    [90m180| [39m  it('une piste SANS prix (l\'humidificateur) ne compte pas : l\'incon…
+    [90m181| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mvapeur[39m({ forme[33m,[39m humidificateur[33m:[39m [35mtrue[39m }))[33m;[39m
+    [90m182| [39m    expect(enTete(r), `jetons lus : ${dit(r)}`).toEqual({ min: 18000, …
+    [90m   | [39m                                                [31m^[39m
+    [90m183| [39m  })[33m;[39m
+    [90m184| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : la FONCTION, une seule piste chiffrée[2m > [22mune seule piste (le condenseur, 450 CHF) : son prix seul, 450 ; ni rien, ni 0
+[31m[1mAssertionError[22m: une seule piste : {"retenu":null,"fourchette":null,"total":null,"enTete":null}: expected null to deeply equal { min: 45000, max: 45000, …(1) }[39m
+
+[32m- Expected:[39m 
+{
+  "max": 45000,
+  "min": 45000,
+  "par": Any<String>,
+}
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m189:54[22m[39m
+    [90m187| [39m  it('une seule piste (le condenseur, 450 CHF) : son prix seul, 450 ; …
+    [90m188| [39m    [35mconst[39m r [33m=[39m [34mresumeDe[39m([34mvapeur[39m({ seule[33m:[39m [35mtrue[39m }))[33m;[39m
+    [90m189| [39m    expect(enTete(r), `une seule piste : ${dit(r)}`).toEqual({ min: 45…
+    [90m   | [39m                                                     [31m^[39m
+    [90m190| [39m  })[33m;[39m
+    [90m191| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mJe cherche, deux pistes dites dans une seule phrase : « 180 à 450 CHF » (B1-pistes dit « 180 à 630 CHF »)
+[31m[1mAssertionError[22m: expected '180 à 630 CHF' to match /^180\D{1,6}450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^180\D{1,6}450\s?CHF$/
+
+[31m+ Received:[39m 
+"180 à 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m198:21[22m[39m
+    [90m196| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m197| [39m    expect(lu(document.querySelector('.cn-ouvert')), 'le problème est …
+    [90m198| [39m    [34mexpect[39m([34mtotal[39m())[33m.[39m[34mtoMatch[39m([36m/^180\D{1,6}450\s?CHF$/[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m199| [39m    expect(lu(document.querySelector('.cn-ouvert')), 'jamais la somme'…
+    [90m200| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mforme « sans option » (le repli local) : « 180 à 450 CHF », pas « ≈ 630 CHF »
+[31m[1mAssertionError[22m: expected '≈ 630 CHF' to match /^180\D{1,6}450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^180\D{1,6}450\s?CHF$/
+
+[31m+ Received:[39m 
+"≈ 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m204:21[22m[39m
+    [90m202| [39m    [34mmonter[39m([34mvapeur[39m({ forme[33m:[39m [32m'sansOption'[39m })[33m,[39m { ouvrir[33m:[39m [33mID[39m })[33m;[39m
+    [90m203| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m204| [39m    [34mexpect[39m([34mtotal[39m())[33m.[39m[34mtoMatch[39m([36m/^180\D{1,6}450\s?CHF$/[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m205| [39m    expect(lu(document.querySelector('.cn-ouvert'))).not.toMatch(/630/…
+    [90m206| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mle ventilateur écarté (avec sa raison), forme « propre » : « 450 CHF » en tête, jamais « 450 à 630 » (C4-ecartee)
+[31m[1mAssertionError[22m: le coût en tête d'une seule piste restante: expected '' to match /^(≈\s?)?450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^(≈\s?)?450\s?CHF$/
+
+[31m+ Received:[39m 
+""
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m215:68[22m[39m
+    [90m213| [39m    monter(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'), { ouvrir:…
+    [90m214| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m215| [39m    expect(total(), 'le coût en tête d\'une seule piste restante').toM…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m216| [39m    expect(lu(document.querySelector('.cn-ouvert'))).not.toMatch(/630/…
+    [90m217| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mle ventilateur écarté (avec sa raison), forme « sansOption » : « 450 CHF » en tête, jamais « 450 à 630 » (C4-ecartee)
+[31m[1mAssertionError[22m: le coût en tête d'une seule piste restante: expected '≈ 630 CHF' to match /^(≈\s?)?450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^(≈\s?)?450\s?CHF$/
+
+[31m+ Received:[39m 
+"≈ 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m215:68[22m[39m
+    [90m213| [39m    monter(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'), { ouvrir:…
+    [90m214| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m215| [39m    expect(total(), 'le coût en tête d\'une seule piste restante').toM…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m216| [39m    expect(lu(document.querySelector('.cn-ouvert'))).not.toMatch(/630/…
+    [90m217| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mle ventilateur écarté (avec sa raison), forme « melange » : « 450 CHF » en tête, jamais « 450 à 630 » (C4-ecartee)
+[31m[1mAssertionError[22m: le coût en tête d'une seule piste restante: expected '450 à 630 CHF' to match /^(≈\s?)?450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^(≈\s?)?450\s?CHF$/
+
+[31m+ Received:[39m 
+"450 à 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m215:68[22m[39m
+    [90m213| [39m    monter(ecarter(vapeur({ forme }), 'FV', 'trop bruyant'), { ouvrir:…
+    [90m214| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m215| [39m    expect(total(), 'le coût en tête d\'une seule piste restante').toM…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m216| [39m    expect(lu(document.querySelector('.cn-ouvert'))).not.toMatch(/630/…
+    [90m217| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le COMPOSANT, l'écran du problème (en-tête `.cnp-total`)[2m > [22mune seule piste chiffrée : « 450 CHF » en tête
+[31m[1mAssertionError[22m: le prix de la seule piste: expected '' to match /^(≈\s?)?450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^(≈\s?)?450\s?CHF$/
+
+[31m+ Received:[39m 
+""
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m232:50[22m[39m
+    [90m230| [39m    [34mmonter[39m([34mvapeur[39m({ seule[33m:[39m [35mtrue[39m })[33m,[39m { ouvrir[33m:[39m [33mID[39m })[33m;[39m
+    [90m231| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m232| [39m    expect(total(), 'le prix de la seule piste').toMatch(/^(≈\s?)?450\…
+    [90m   | [39m                                                 [31m^[39m
+    [90m233| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m234| [39m  it('Décidé (le condenseur retenu) : la rangée ne dit que la retenue,…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le GESTE — la phrase à deux pistes tapée dans le problème[2m > [22mrepli local (IA éteinte) : « deux pistes, … 450 CHF, ou … 180 CHF » : « 180 à 450 CHF » en tête, jamais « ≈ 630 CHF »
+[31m[1mAssertionError[22m: coût en tête après le geste (options : ["ZZ TEST c72 : deux pistes"] ; jetons de coût : ["45000:FACON-ff559ed5-e271-4707-b6e2-8f1efb7b7b46","18000:FACON-ff559ed5-e271-4707-b6e2-8f1efb7b7b46"]): expected '≈ 630 CHF' to match /^180\D{1,6}450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^180\D{1,6}450\s?CHF$/
+
+[31m+ Received:[39m 
+"≈ 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m315:178[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR87 · C72-1 (B) : le GESTE — la phrase à deux pistes tapée dans le problème[2m > [22mréponse de l'IA simulée (une ligne par piste : option + coût écrit) : « 180 à 450 CHF » en tête, jamais « 630 »
+[31m[1mAssertionError[22m: coût en tête après la réponse de l'IA (options : [] ; jetons de coût : ["45000:FACON-1958e2b3-d878-4cc9-a841-89c1591cb11f","18000:FACON-1958e2b3-d878-4cc9-a841-89c1591cb11f","undefined:-","undefined:-"]): expected '≈ 630 CHF' to match /^180\D{1,6}450\s?CHF$/[39m
+
+[32m- Expected:[39m 
+/^180\D{1,6}450\s?CHF$/
+
+[31m+ Received:[39m 
+"≈ 630 CHF"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m329:188[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-2 : la veille d'une option ÉCARTÉE s'arrête (ou se dit arrêtée)[2m > [22mle ventilateur écarté : plus de carte « veille demandée · Ventilateur · pas encore relevée » qui court encore (arrêtée, ou absente)
+[31m[1mAssertionError[22m: cartes de veille du ventilateur : ["veille demandée · Ventilateur extracteur muralpas encore relevée"]: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "veille demandée · Ventilateur extracteur muralpas encore relevée",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m355:84[22m[39m
+    [90m353| [39m    [35mconst[39m cartes [33m=[39m [34mcartesVeille[39m()[33m.[39m[34mfilter[39m(t [33m=>[39m [36m/Ventilateur/[39m[33m.[39m[34mtest[39m(t))[33m;[39m
+    [90m354| [39m    const vivante = cartes.filter(t => /pas encore relevée/.test(t) &&…
+    [90m355| [39m    expect(vivante, `cartes de veille du ventilateur : ${JSON.stringif…
+    [90m   | [39m                                                                                   [31m^[39m
+    [90m356| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m357| [39m  it('le ventilateur écarté : le fil ne dit pas qu\'une veille est enc…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-2 : la veille d'une option ÉCARTÉE s'arrête (ou se dit arrêtée)[2m > [22mle ventilateur écarté : le fil ne dit pas qu'une veille est encore demandée pour lui (aucune « veille demandée » du ventilateur sans arrêt dit)
+[31m[1mAssertionError[22m: fil : « ZZ TEST — c72 vapeur au brassageBrasserie▾NotéJe chercheDécidéRésoluCondenseur de buées à eau froidepiste450 CHFVentilateur extracteur muralécarté180 CHF« trop bruyant »votre phrase : « ZZ TEST — c72 vapeur au brassage : la buée coule du plafond pendant l’ébullition, je cherche une solution »25 nov.ZZ TEST — c72 vapeur au brassage : la buée coule du plafond pendant l’ébullition, je cherche une solutionconstat03:00ZZ TEST c72 : deux pistes, un condenseur de buées à eau froide à 450 CHF, ou un ventilateur extracteur mural à 180 CHFpistepiste450 CHF180 CHF04:00 veille demandée · Ventilateur extracteur muralpas encore relevée »: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m362:53[22m[39m
+    [90m360| [39m    [35mconst[39m fil [33m=[39m [34mlu[39m(document[33m.[39m[34mquerySelector[39m([32m'.cn-ouvert'[39m))[33m;[39m
+    [90m361| [39m    const reste = /veille demandée\s*·\s*Ventilateur[^·]*?pas encore r…
+    [90m362| [39m    [34mexpect[39m(reste[33m,[39m [32m`fil : « [39m[36m${[39mfil[33m.[39m[34mslice[39m([34m0[39m[33m,[39m [34m700[39m)[36m}[39m[32m »`[39m)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m363| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m364| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-3 : À faire — sous « Un jour », le plus proche en tête (R84 : trié par date)[2m > [22ml'ordre sous « Un jour » : la tâche du 7 déc., puis le 31 déc. (Extincteur), puis avril 2027, puis le 1 mai 2027 (Frigo + congel)
+[31m[1mAssertionError[22m: ordre lu : ["ZZ TEST — c72 Frigo + congel· jusqu’au 1 mai 2027au Planning","ZZ TEST — c72 Extincteur· jusqu’au 31 déc.au Planning","tache-sem-7-decZZ TEST — c72 hotte· sem. du 7 déc.","tache-avril-2027ZZ TEST — c72 évier· sem. du 5 avr. 2027"]: expected [ 2, 1, 3, +0 ] to deeply equal [ +0, 1, 2, 3 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[32m-   1,[39m
+[2m    2,[22m
+[31m+   1,[39m
+[2m    3,[22m
+[31m+   0,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m396:68[22m[39m
+    [90m394| [39m    [35mconst[39m rangs [33m=[39m attendu[33m.[39m[34mmap[39m(([nom[33m,[39m re]) [33m=>[39m ({ nom[33m,[39m i[33m:[39m [34mrang[39m(re) }))[33m;[39m
+    [90m395| [39m    expect(rangs.filter(r => r.i < 0).map(r => r.nom), `lignes sous « …
+    [90m396| [39m    expect(rangs.map(r => r.i), `ordre lu : ${JSON.stringify(l)}`).toE…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m397| [39m  })[33m;[39m
+    [90m398| [39m  it('Frigo + congel (1 mai 2027) est la DERNIÈRE ligne sous « Un jour…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-3 : À faire — sous « Un jour », le plus proche en tête (R84 : trié par date)[2m > [22mFrigo + congel (1 mai 2027) est la DERNIÈRE ligne sous « Un jour », pas la première
+[31m[1mAssertionError[22m: ordre : ["ZZ TEST — c72 Frigo + congel· jusqu’au 1 mai 2027au Planning","ZZ TEST — c72 Extincteur· jusqu’au 31 déc.au Planning","tache-sem-7-decZZ TEST — c72 hotte· sem. du 7 déc.","tache-avril-2027ZZ TEST — c72 évier· sem. du 5 avr. 2027"]: expected 'tache-avril-2027ZZ TEST — c72 évier· …' to match /Frigo \+ congel/[39m
+
+[32m- Expected:[39m 
+/Frigo \+ congel/
+
+[31m+ Received:[39m 
+"tache-avril-2027ZZ TEST — c72 évier· sem. du 5 avr. 2027"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m401:61[22m[39m
+    [90m399| [39m    [35mconst[39m l [33m=[39m [34mlignesUnJour[39m()[33m;[39m
+    [90m400| [39m    expect(l.length, `lignes : ${JSON.stringify(l)}`).toBeGreaterThanO…
+    [90m401| [39m    expect(l[l.length - 1], `ordre : ${JSON.stringify(l)}`).toMatch(/F…
+    [90m   | [39m                                                            [31m^[39m
+    [90m402| [39m  })[33m;[39m
+    [90m403| [39m[33m}[39m);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-4 (C71-8 en partie) : la carte de l'article choisi pour 1 kg ne redit pas « 50 g » sur sa ligne de valeurs[2m > [22mla carte (Citra, MotlerHops) dit 1 kg et ≈40 CHF, et nulle part « 50 g »
+[31m[1mAssertionError[22m: deux quantités sur la même carte : « CITRA® (US)boutique-exemple.test · FRAlpha 10 - 15 % · Origine États-Unis · 50 g≈40 CHFen stock1 kg »: expected 'CITRA® (US)boutique-exemple.test · FR…' not to match /\b50 g\b/[39m
+
+[32m- Expected:[39m 
+/\b50 g\b/
+
+[31m+ Received:[39m 
+"CITRA® (US)boutique-exemple.test · FRAlpha 10 - 15 % · Origine États-Unis · 50 g≈40 CHFen stock1 kg"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m426:68[22m[39m
+    [90m424| [39m    [35mfor[39m ([35mconst[39m x [35mof[39m cartes) {
+    [90m425| [39m      [34mexpect[39m(x[33m,[39m [32m`carte : « [39m[36m${[39mx[36m}[39m[32m »`[39m)[33m.[39m[34mtoMatch[39m([36m/1 kg/[39m)[33m;[39m
+    [90m426| [39m      expect(x, `deux quantités sur la même carte : « ${x} »`).not.toM…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m427| [39m    }
+    [90m428| [39m  }[33m,[39m [34m30000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-5 : la puce « Comparer sur … » dit un français juste pour l'alpha[2m > [22m« Comparer sur … » pour la caractéristique « acides alpha » : jamais « l'acides », « le acides » ni « la acides »
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-5 : la puce « Comparer sur … » dit un français juste pour l'alpha[2m > [22m« Comparer sur … » pour la caractéristique « Acides alpha » : jamais « l'acides », « le acides » ni « la acides »
+[31m[1mAssertionError[22m: libellé : « Comparer sur l’acides alpha (%) »: expected 'Comparer sur l’acides alpha (%)' not to match /\b(l['’]|le |la )acides?\b/i[39m
+
+[32m- Expected:[39m 
+/\b(l['’]|le |la )acides?\b/i
+
+[31m+ Received:[39m 
+"Comparer sur l’acides alpha (%)"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m437:41[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-5 : la puce « Comparer sur … » dit un français juste pour l'alpha[2m > [22m« acides alpha » prend « les » ou se dit « l’alpha » : « Comparer sur l’alpha (%) » ou « sur les acides alpha »
+[31m[1mAssertionError[22m: libellé : « Comparer sur l’acides alpha (%) »: expected 'Comparer sur l’acides alpha (%)' to match /Comparer sur (l['’]alpha|les acides a…/[39m
+
+[32m- Expected:[39m 
+/Comparer sur (l['’]alpha|les acides alpha)/
+
+[31m+ Received:[39m 
+"Comparer sur l’acides alpha (%)"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m441:37[22m[39m
+    [90m439| [39m  it('« acides alpha » prend « les » ou se dit « l’alpha » : « Compare…
+    [90m440| [39m    [35mconst[39m l [33m=[39m [34mlibelleProposee[39m([34mligne[39m([32m'acides alpha'[39m))[33m;[39m
+    [90m441| [39m    expect(l, `libellé : « ${l} »`).toMatch(/Comparer sur (l['’]alpha|…
+    [90m   | [39m                                    [31m^[39m
+    [90m442| [39m  })[33m;[39m
+    [90m443| [39m  it('la fonction `avecArticle` : « acides alpha » reçoit « les » (un …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-5 : la puce « Comparer sur … » dit un français juste pour l'alpha[2m > [22mla fonction `avecArticle` : « acides alpha » reçoit « les » (un pluriel en -s), jamais « l'acides »
+[31m[1mAssertionError[22m: expected 'l\'acides alpha' not to match /^l['’]/[39m
+
+[32m- Expected:[39m 
+/^l['’]/
+
+[31m+ Received:[39m 
+"l'acides alpha"
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m444:45[22m[39m
+    [90m442| [39m  })[33m;[39m
+    [90m443| [39m  it('la fonction `avecArticle` : « acides alpha » reçoit « les » (un …
+    [90m444| [39m    [34mexpect[39m([34mavecArticle[39m([32m'acides alpha'[39m))[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/^l['’]/[39m)[33m;[39m
+    [90m   | [39m                                            [31m^[39m
+    [90m445| [39m    [34mexpect[39m([34mavecArticleTypo[39m([32m'Acides alpha'[39m))[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/^l['’]/[39m)[33m;[39m
+    [90m446| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-6 : sur un carnet neuf, « votre phrase : « … » » ne redit pas la première bulle, juste dessous (maquette v01-vapeur : la bulle suffit)[2m > [22mproblème neuf (vapeur) : la phrase est la première bulle du fil : aucune ligne « votre phrase : « … » »
+[31m[1mAssertionError[22m: lignes « votre phrase » : ["votre phrase : « ZZ TEST — c72 vapeur au brassage : la buée coule du plafond pendant l’ébullition, je cherche une solution »"]: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "votre phrase : « ZZ TEST — c72 vapeur au brassage : la buée coule du plafond pendant l’ébullition, je cherche une solution »",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m462:73[22m[39m
+    [90m460| [39m    expect(lu(document.querySelector('.cn-ouvert')), 'la première bull…
+    [90m461| [39m    [35mconst[39m cites [33m=[39m [34mlignesCitees[39m()[33m.[39m[34mfilter[39m(t [33m=>[39m [36m/votre phrase :/[39m[33m.[39m[34mtest[39m(t))[33m;[39m
+    [90m462| [39m    expect(cites, `lignes « votre phrase » : ${JSON.stringify(cites)}`…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m463| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m464| [39m  it('étiqueteuse (problème neuf, autre phrase) : aucune ligne « votre…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-6 : sur un carnet neuf, « votre phrase : « … » » ne redit pas la première bulle, juste dessous (maquette v01-vapeur : la bulle suffit)[2m > [22métiqueteuse (problème neuf, autre phrase) : aucune ligne « votre phrase : « … » »
+[31m[1mAssertionError[22m: lignes « votre phrase » : ["votre phrase : « ZZ TEST — c72 l’étiqueteuse colle de travers depuis lundi, les étiquettes se froissent »"]: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "votre phrase : « ZZ TEST — c72 l’étiqueteuse colle de travers depuis lundi, les étiquettes se froissent »",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m468:73[22m[39m
+    [90m466| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m467| [39m    [35mconst[39m cites [33m=[39m [34mlignesCitees[39m()[33m.[39m[34mfilter[39m(t [33m=>[39m [36m/votre phrase :/[39m[33m.[39m[34mtest[39m(t))[33m;[39m
+    [90m468| [39m    expect(cites, `lignes « votre phrase » : ${JSON.stringify(cites)}`…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m469| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m470| [39m  it('mémo (genre idée, joints graissés) : la phrase est la première b…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/34]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/c72Regles.test.tsx[2m > [22mR88 · C72-6 : sur un carnet neuf, « votre phrase : « … » » ne redit pas la première bulle, juste dessous (maquette v01-vapeur : la bulle suffit)[2m > [22mmémo (genre idée, joints graissés) : la phrase est la première bulle : aucune ligne « votre phrase : « … » »
+[31m[1mAssertionError[22m: lignes « votre phrase » : ["votre phrase : « ZZ TEST — c72 mémo : joints du robinet de la cuve de garde graissés ce matin »"]: expected [ Array(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "votre phrase : « ZZ TEST — c72 mémo : joints du robinet de la cuve de garde graissés ce matin »",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/c72Regles.test.tsx:[2m474:73[22m[39m
+    [90m472| [39m    [35mawait[39m [34mattendre[39m([34m120[39m)[33m;[39m
+    [90m473| [39m    [35mconst[39m cites [33m=[39m [34mlignesCitees[39m()[33m.[39m[34mfilter[39m(t [33m=>[39m [36m/votre phrase :/[39m[33m.[39m[34mtest[39m(t))[33m;[39m
+    [90m474| [39m    expect(cites, `lignes « votre phrase » : ${JSON.stringify(cites)}`…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m475| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+    [90m476| [39m  it('garde : la phrase du carnet n\'est jamais perdue (la première bu…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/34]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m34 failed[39m[22m[2m | [22m[1m[32m23 passed[39m[22m[90m (57)[39m
+[2m   Start at [22m 07:39:19
+[2m   Duration [22m 9.41s[2m (transform 1.56s, setup 260ms, collect 2.44s, tests 5.71s, environment 587ms, prepare 59ms)[22m
+
