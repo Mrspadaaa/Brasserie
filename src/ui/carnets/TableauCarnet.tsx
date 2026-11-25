@@ -387,7 +387,8 @@ export function BlocPrixParMesure({ lignes, cols, enBarres }: { lignes: Ligne[];
         const txt = `${nombreMesure(l.cellules[col.nom])?.toLocaleString('fr-CH', { maximumFractionDigits: 2 }).replace(/[ ’]/g, ' ')} ${unite}`;
         return (
           <div key={l.articleId} className="cn-barre">
-            <span className={`cn-rang${i === 0 ? ' cn-rang-1' : ''}`}>{i + 1}</span>
+            {/* R73-12 (c78) : un seul classement par écran : le rang est celui du tableau (au prix de l'article) ; les barres sont rangées par prix de la mesure, sans second « 1 » */}
+            <span className="cn-rang cn-rang-vide" aria-hidden />
             <span className="cn-barre-nom">{txt}</span>
             <span className="cn-barre-piste" aria-hidden><i className={bon ? undefined : 'cn-barre-autre'} style={{ width: `${barres.get(l.articleId) ?? 0}%` }} /></span>
             <b className={`cn-mono cn-barre-val${bon ? ' cn-vert' : ''}`}>{Math.round(v).toLocaleString('fr-CH').replace(/[ ’]/g, ' ')}</b>

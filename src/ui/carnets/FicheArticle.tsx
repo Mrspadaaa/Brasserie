@@ -28,7 +28,7 @@ import { dateCourte, mentionTaxe, montant, Provenance, rangTexte, texteSelonNom,
 import { BoutonRelire } from './BoutonRelire';
 import { BoutonEscalader } from './BoutonEscalader';
 import { articleAEscalader, raisonEscalade } from '../../domain/carnets/manques';
-import { Insec, liesParNbsp } from './insecable';
+import { Chiffres, Insec, liesParNbsp } from './insecable';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 import { TriangleAlert } from 'lucide-react';
@@ -37,7 +37,7 @@ import { nomAlpha } from '../../domain/carnets/alpha';
 import { estMatierePesee } from '../../domain/carnets/prixUnitaire';
 import { libelleDoute, usePour } from './TableauCarnet';
 import {
-  alphaDe, aromesCommuns, aromesDe, centimesRendus, conditionnementsDe, ligneDuPour, noteImport, quantiteDuChoix, sachetsSansPrix, recolteDe, textePrixConditionnement, texteChfKg, type ArticleRegle
+  alphaDe, aromesCommuns, aromesDe, centimesRendus, conditionnementsDe, ligneDuPour, noteImport, quantiteDuChoix, sachetsSansPrix, recolteDe, vendeurCourt, textePrixConditionnement, texteChfKg, type ArticleRegle
 } from './tableauRegles';
 
 /** R54 : la quantité cochée dans « je prends » (`libelle` : « 1 kg »), son poids et son prix en francs (centimes). */
@@ -239,7 +239,7 @@ export function FicheArticle(p: FicheArticleProps) {
     ? (ligneChoisie.chfKg?.estime ? `≈${montant(centimesRendus(ligneChoisie.chfKg.chf, ligneChoisie.kg))} CHF rendu` : prixTexte(ligneChoisie.centimes, ligneChoisie.devise))
     : null;
   const detailCoche: string | null = prixCoche && ligneChoisie
-    ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime && !noteImport(regle, pour, p.taux) ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
+    ? [ligneChoisie.libelle, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime && !noteImport(regle, pour, p.taux) ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
     : null;
   /* ce que « Choisir » emporte : le conditionnement coché et son prix en francs (le même chiffre que le bloc Offre) */
   const quantiteChoisie: QuantiteChoisie | undefined = prixCoche && ligneChoisie
@@ -341,7 +341,7 @@ export function FicheArticle(p: FicheArticleProps) {
       {houblon && (
         <>
           <p className="cn-fiche-qui cn-mut">
-            <span className="cn-sp">{[a.vendeur ?? a.domaine, paysDit(a.pays), a.taxe ? `${a.taxe.toUpperCase()}${a.taxe === 'ttc' && a.pays && /^[A-Za-z]{2}$/.test(a.pays.trim()) ? ` ${a.pays.trim().toUpperCase()}` : ''}` : null].filter(Boolean).join(' · ')}</span>
+            <span className="cn-sp" title={a.vendeur}>{[a.vendeur ? vendeurCourt({ vendeur: a.vendeur }) : a.domaine, paysDit(a.pays), a.taxe ? `${a.taxe.toUpperCase()}${a.taxe === 'ttc' && a.pays && /^[A-Za-z]{2}$/.test(a.pays.trim()) ? ` ${a.pays.trim().toUpperCase()}` : ''}` : null].filter(Boolean).join(' · ')}</span>
           </p>
           <p className="cn-fiche-alpha"><span className="cn-mut">α{recolte ? ` lot ${recolte}` : ''}</span> <span className="cn-mono cn-fiche-alpha-val">{alpha} %</span></p>
           {aromes.length > 0 && (
@@ -358,8 +358,9 @@ export function FicheArticle(p: FicheArticleProps) {
                 return (
                   <div key={l.kg} className={`cn-prend-ligne${on ? ' cn-prend-on' : ''}`} aria-current={on || undefined}>
                     <span>{l.libelle}{on ? <> <Check size={16} aria-hidden /></> : null}</span>
-                    <span className="cn-mono">{textePrixConditionnement(l)}</span>
-                    <span className="cn-mono">{on && detailCoche && !a.prixUnite && l.chfKg ? <span className="cn-mut cn-mono" title="Le prix au kilo se lit dans l'offre, juste dessous (une valeur, une fois)">offre ↓</span> : l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}{' '}</span>
+                    <span><Chiffres t={textePrixConditionnement(l)} /></span>
+                    {/* R78-2 (c78) : le CHF/kg rendu est DANS sa colonne (« ≈73,8 »), jamais un renvoi « offre ↓ » */}
+                    <span>{l.chfKg ? <Chiffres t={`${l.chfKg.estime ? '≈' : ''}${texteChfKg({ ...l.chfKg, estime: false })} CHF/kg`} /> : <span className="cn-inconnu" aria-label="inconnu">?</span>}{' '}</span>
                   </div>
                 );
               })}
@@ -408,7 +409,7 @@ export function FicheArticle(p: FicheArticleProps) {
                 <>
                   {offres.length > 1 && <span className={`cn-radio${moi ? ' cn-radio-on' : ''}`} aria-hidden />}
                   <span className="cn-sp">
-                    <b>{[o.vendeur, o.pays].filter(Boolean).join(' · ') || o.domaine}</b>
+                    <b title={o.vendeur}>{[o.vendeur ? (/\s/.test(o.vendeur) ? vendeurCourt({ vendeur: o.vendeur }) : o.vendeur) : undefined, o.pays].filter(Boolean).join(' · ') || o.domaine}</b>
                     {/* C52-3 : une vraie espace entre le vendeur, la disponibilité et le prix (jamais « ggmgastro.com2 987,51 CHF ») : le texte seul les sépare, pas le CSS */}
                     {dispoDe(o) && <>{' '}{/* C50-9 : « en stock » ne se coupe jamais en deux (une disponibilité courte tient sur une ligne) */}<span className={`cn-mut${dispoDe(o)!.length <= 16 ? ' cn-nowrap' : ''}`}>{dispoDe(o)}</span></>}
                   </span>
@@ -470,8 +471,8 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {!p.choisi && p.onChoisir && (
         <>
-          <button type="button" className="cn-action cn-action-vert cn-large" onClick={() => p.onChoisir!(quantiteChoisie && quantiteChoisie.centimes > 0 ? quantiteChoisie : undefined)}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${choix.libelle}` : ''}</button>
-          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prixCoche ?? prix ? <>, <PrixMono texte={(prixCoche ?? prix)!} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
+          <button type="button" className="cn-action cn-action-vert cn-large" onClick={() => p.onChoisir!(quantiteChoisie && quantiteChoisie.centimes > 0 ? quantiteChoisie : undefined)}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${vendeurCourt({ vendeur: a.vendeur })}` : ''}{ligneChoisie && a.vendeur ? `, ${choix.libelle}` : ''}</button>
+          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur ? vendeurCourt({ vendeur: a.vendeur }) : undefined].filter(Boolean).join(', ')}{prixCoche ?? prix ? <>, <span className="cn-nowrap">{(prixCoche ?? prix)!}</span></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}
     </article>
@@ -500,8 +501,8 @@ function PoserPrix({ centimes, onPoser, onFermer }: { centimes?: number; onPoser
 
 /** « 1 450 CHF » : le nombre en chiffres tabulaires (l'espace de groupe s'y voit, n° 37), la devise en clair. */
 function PrixMono({ texte }: { texte: string }) {
-  const i = texte.lastIndexOf(' ');
-  return <span className="cn-nowrap cn-prix-mono"><span className="cn-mono cn-prix">{texte.slice(0, i)}</span> <span className="cn-mut">{texte.slice(i + 1)}</span></span>;
+  /* R75-6 (c78) : seul le NOMBRE est en chasse fixe ; la devise et « rendu » sont en police normale */
+  return <Chiffres t={texte} className="cn-prix-mono" nowrap />;
 }
 
 /**

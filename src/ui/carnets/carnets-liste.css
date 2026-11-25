@@ -32,10 +32,12 @@
 /* le coup d'œil : quatre cases colorées, chacune filtre */
 /* R90 (25.11, « trop de place pour les filtres ») : une rangée basse, le chiffre et le mot sur UNE ligne, les quatre cases serrées selon leur contenu */
 .cnl-oeil { display: flex; gap: 4px; padding: 4px 8px 2px; }
-.cnl-case { display: flex; flex: 1 1 auto; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 30px; padding: 0 6px; border-radius: 10px; border: 2px solid transparent; line-height: 1.1; white-space: nowrap; }
+.cnl-case { position: relative; display: flex; flex: 1 1 auto; align-items: center; justify-content: center; gap: 3px; min-width: max-content; min-height: 30px; padding: 0 4px; border-radius: 10px; border: 2px solid transparent; line-height: 1.1; white-space: nowrap; }
 .cnl-case b { font-size: 17px; font-weight: 600; letter-spacing: -.05em; line-height: 1; }
-.cnl-case span { font-size: 14px; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; }
-.cnl-case-x { flex: none; margin-left: -1px; }
+/* R78-5 (c78) : le libellé d'une puce se dit entier (jamais « je cherch… ») ; la puce ne rétrécit pas sous son mot */
+.cnl-case span { font-size: 14px; line-height: 1.1; white-space: nowrap; }
+/* R78-5 : le × de la puce active est un coin posé sur la puce (aucune largeur de plus) */
+.cnl-case[aria-pressed='true']::after { content: '×'; position: absolute; z-index: 1; top: -7px; right: -3px; width: 16px; height: 16px; border-radius: 999px; background: currentColor; font-size: 14px; line-height: 15px; text-align: center; -webkit-text-fill-color: var(--c-bg, #fff); }
 .cnl-case[data-etat='cherche'] { background: var(--p-cherche-bg); color: var(--p-cherche-fg); }
 .cnl-case[data-etat='decide'] { background: var(--p-decide-bg); color: var(--p-decide-fg); }
 .cnl-case[data-etat='note'] { background: var(--p-note-bg); color: var(--p-note-fg); }
@@ -72,6 +74,9 @@
 .cnl-tx { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; gap: 1px; }
 .cnl-t { font-size: 16px; font-weight: 600; line-height: 1.2; color: var(--c-ink); overflow-wrap: anywhere; }
 .cnl-sub { display: flex; align-items: center; flex-wrap: nowrap; gap: 0 6px; font-size: 14px; line-height: 1.25; color: var(--c-mut); min-width: 0; }
+.cnl-pas:has(.cnl-pas-prix) { display: flex; gap: 0; }
+.cnl-pas-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: pre; }
+.cnl-pas-prix { flex: none; }
 .cnl-pas { min-width: 0; flex: 0 1 auto; color: var(--c-ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cnl-etat { font-weight: 700; white-space: nowrap; flex: none; }
 .cnl-etat[data-etat='note'] { color: var(--p-note-fg); }

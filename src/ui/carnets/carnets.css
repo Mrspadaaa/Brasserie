@@ -602,7 +602,7 @@
 .cn-heros .cn-piste-borne { white-space: normal; }
 .cn-carac { grid-template-columns: 1fr 1fr; }
 .cn-carac dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; }
-.cn-prix-mono .cn-prix { font-weight: 600; }
+.cn-prix-mono .cn-prix, .cn-prix-mono .cn-mono { font-weight: 600; }
 /* v04-4 : « Ce qui compte · rien encore : l'IA le proposera » sur la ligne de son titre */
 /* f13 tour 2 (n° 6, g5:v04-4) : picto vert de la zone, 20 px, centré sur son libellé (il tombait de 6 px sous la ligne) */
 .cn-rubrique-ligne .cn-rubrique-tete { flex-wrap: nowrap; align-items: center; }

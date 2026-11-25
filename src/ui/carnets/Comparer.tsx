@@ -24,10 +24,10 @@ import { FaitNote } from './FaitNote';
 import { portDit } from './PrixPastille';
 import type { NoteSurArticle } from '../../domain/carnets/modele';
 import { BoutonEscalader } from './BoutonEscalader';
-import { Insec, liesParNbsp } from './insecable';
+import { Chiffres, Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
 import {
-  aDesPaliers, aromesCommuns, compromisMatiere, departager, ditDifférents, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
+  aDesPaliers, aromesCommuns, compromisMatiere, departager, ditDifférents, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, nombreDifferentes, phraseSelonLaQuantite, plusBasDe,
   centimesRendus, classerAuKilo, plusLargeEtendue, prixAuKilo, quantiteDuChoix, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
 } from './tableauRegles';
 import './carnets-decider.css';
@@ -136,8 +136,10 @@ export function genreCellule(c: ColonneVue, v: ValeurV | undefined, txt: string)
 /** Une mesure à plusieurs termes (« 1800 x 1500 x 2200 mm ») : un terme par ligne, jamais coupée au milieu d'un nombre. */
 function Mesure({ txt }: { txt: string }) {
   const termes = txt.split(/\s*[x×]\s*/).filter(Boolean);
-  if (termes.length < 2) return <span className="cn-mono"><Insec t={txt} /></span>;
-  return <>{termes.map((s, i) => <span key={i} className="cn-mono cn-terme"><Insec t={s} />{i < termes.length - 1 ? ' ×' : ''}</span>)}</>;
+  /* R75-6 (c78) : la chasse fixe ne porte que des chiffres ; un texte à mots (« citron vert, mangue ») est en police normale */
+  if (/\p{L}{3,}/u.test(txt)) return <span><Insec t={txt} /></span>;
+  if (termes.length < 2) return <Chiffres t={txt} nowrap />;
+  return <>{termes.map((s, i) => <span key={i} className="cn-terme"><Chiffres t={s} nowrap />{i < termes.length - 1 ? ' ×' : ''}</span>)}</>;
 }
 /** Les articles en lice qui tiennent la meilleure valeur connue de la colonne (surlignés) ; aucun si moins de 2 valeurs connues. */
 export function meilleursDe(t: Tableau, c: ColonneVue): Set<string> {
@@ -562,7 +564,7 @@ export function Comparer(p: ComparerProps) {
   const libelleBouton = libelleChoisir({
     ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour, libelle: quantiteDuChoix(a, pour, p.taux).libelle } : {}; })() : {}),
     tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null,
-    ...(!matiere && p.articles && premier?.vendeur ? { chez: vendeurCourt({ vendeur: premier.vendeur }) } : {})
+    ...(!matiere && p.articles && premier ? (() => { const a = p.articles!.find(x => x.id === premier.articleId); const v = premier.vendeur ?? (a ? (a as { vendeur?: string }).vendeur ?? (a as { domaine?: string }).domaine : undefined); return v ? { chez: vendeurCourt({ vendeur: v }) } : {}; })() : {})
   });
   /* C70-1 : « Choisir · MotlerHops, 1 kg » emporte CETTE quantité et son prix au kilo rendu (≈40), jamais le sachet de 50 g de l'article */
   const quantiteChoisie = (() => {
@@ -616,7 +618,7 @@ export function Comparer(p: ComparerProps) {
             <table className="cn-tableau cn-tableau-comparer">
               <thead>
                 <tr>
-                  <th scope="col">{identiques.length > 0 ? <span className="cn-mut cn-cmp-differents">{ditDifférents(diffèrent.length)}</span> : <span className="cn-cache">Caractéristique</span>}</th>
+                  <th scope="col">{identiques.length > 0 ? <span className="cn-mut cn-cmp-differents">{ditDifférents(nombreDifferentes(diffèrent))}</span> : <span className="cn-cache">Caractéristique</span>}</th>
                   {ordre.map(l => {
                     const sa = apercuLigne(l, p.nonLus);
                     return (
@@ -627,7 +629,7 @@ export function Comparer(p: ComparerProps) {
                           {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b className={`cn-cmp-rang${rangVisible(t, l) === 1 ? ' cn-cmp-rang-1' : ''}`}>{rangVisible(t, l)}</b> : null}
                           {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros"><Insec t={texteEntete(l, colEntete)} /></span> : null}
                           <span className="cn-cmp-nom">{liesParNbsp(sa ? sa.titre : l.nom)}</span>
-                          {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend">{[l.vendeur, l.pays].filter(Boolean).join(' · ')}</span>}
+                          {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend" title={l.vendeur}>{[l.vendeur ? vendeurCourt({ vendeur: l.vendeur }) : undefined, l.pays].filter(Boolean).join(' · ')}</span>}
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
                           <FaitNote faits={(p.articles?.find(x => x.id === l.articleId) as { notesSur?: NoteSurArticle[] } | undefined)?.notesSur} classe="cn-fait-note-th" />
                         </button>

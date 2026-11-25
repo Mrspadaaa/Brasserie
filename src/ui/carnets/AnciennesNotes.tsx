@@ -22,7 +22,7 @@ export function AnciennesNotes({ notes }: { notes: readonly AncienneNote[] }) {
           {notes.map(n => (
             <li key={n.id} className="cn-anciennes-ligne">
               <span className="cn-anciennes-titre">{n.titre}</span>
-              <span className="cn-mut">{n.genre}{n.date ? <> · <span className="cn-mono">{n.date}</span></> : null}</span>
+              <span className="cn-mut">{n.genre}{n.date ? ` · ${n.date}` : ''}</span>
             </li>
           ))}
         </ul>

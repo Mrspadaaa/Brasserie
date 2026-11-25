@@ -97,6 +97,14 @@ function Picto({ c }: { c: CarnetDoc }) {
   return <span className="cnl-picto" aria-hidden>{nomPicto(c) === 'objet' ? <Wrench size={20} /> : <PictoObjet nom={nomPicto(c)} taille={22} />}</span>;
 }
 
+/** R77-6 (c78) : la coupe « … » de fin de ligne ronge le texte, jamais le prix : un prix final (« 2 697,74 CHF ») est son propre élément, qui ne rétrécit pas. */
+const PRIX_FINAL = /^(.*?\s)((?:≈\s?)?\d[\d\u00A0\u202F' ]*(?:[,.]\d+)?\s(?:CHF|EUR|€)(?:\/kg)?)$/u;
+function TextePas({ t }: { t: string }) {
+  const m = PRIX_FINAL.exec(t);
+  if (!m) return <>{t}</>;
+  return <><span className="cnl-pas-txt">{m[1]}</span><span className="cn-nowrap cnl-pas-prix">{m[2]}</span></>;
+}
+
 function LigneProbleme({ c, messages, maintenant, enCours, trouve, onOuvrir }: { c: CarnetDoc; messages: readonly MessageDoc[]; maintenant: Date; enCours: boolean; trouve?: Trouve | null; onOuvrir: (id: string) => void }) {
   const e = etatDe(c);
   const pas = enCours ? null : dernierPas(c, messages, maintenant);
@@ -107,7 +115,7 @@ function LigneProbleme({ c, messages, maintenant, enCours, trouve, onOuvrir }: {
         <b className="cnl-t cn-carnet-titre">{liesParNbsp(titreLigne(c))}</b>
         <span className="cnl-sub">
           <Jauge etat={e} /> <b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>
-          {enCours ? <span className="cnl-pas" role="status">· ✻ L’IA range…</span> : trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : pas ? <span className="cnl-pas">· {pas}</span> : null}
+          {enCours ? <span className="cnl-pas" role="status">· ✻ L’IA range…</span> : trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : pas ? <span className="cnl-pas">· <TextePas t={pas} /></span> : null}
         </span>
       </span>
     </button>
@@ -131,8 +139,8 @@ function LigneAutre({ c, maintenant, messages, trouve, onOuvrir, avecEtat }: { c
       <span className="cnl-tx">
         <b className="cnl-t cn-carnet-titre">{liesParNbsp(titreLigne(c))}</b>
         {avecEtat
-          ? <span className="cnl-sub"><Jauge etat={e} /> <b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>{trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : val ? <span className="cnl-pas">· {val}</span> : null}</span>
-          : trouve && trouve.sorte !== 'titre' ? <span className="cnl-sub"><LigneTrouvee t={trouve} /></span> : val ? <span className="cnl-sub"><span className="cnl-pas">{val}</span></span> : null}
+          ? <span className="cnl-sub"><Jauge etat={e} /> <b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>{trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : val ? <span className="cnl-pas">· <TextePas t={val} /></span> : null}</span>
+          : trouve && trouve.sorte !== 'titre' ? <span className="cnl-sub"><LigneTrouvee t={trouve} /></span> : val ? <span className="cnl-sub"><span className="cnl-pas"><TextePas t={val} /></span></span> : null}
       </span>
     </button>
   );
@@ -321,7 +329,8 @@ export function ListeArbre(p: ListeArbreProps) {
         <p className="cnl-filtre" role="status">Filtre : <b>{p.filtre === 'resolu' ? `résolus ${annee}` : p.filtre === 'cherche' ? 'je cherche' : p.filtre === 'decide' ? 'décidés' : 'notés'}</b></p>
       )}
       <div className="cnl-corps">{p.onglet === 'afaire' ? p.corpsAFaire : p.onglet === 'veille' ? corpsVeille : corpsArbre}</div>
-      <AnciennesNotes notes={p.anciennes ?? []} />
+      {/* R73-31 (c78) : les anciennes notes sont au pied de l'Arbre (le repos), jamais sous « À faire » ni sous la cloche */}
+      {p.onglet === 'arbre' && <AnciennesNotes notes={p.anciennes ?? []} />}
     </div>
   );
 }

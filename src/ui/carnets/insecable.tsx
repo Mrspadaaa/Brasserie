@@ -64,3 +64,23 @@ export function Insec({ t }: { t: string | null | undefined }): React.ReactEleme
 export function liesParNbsp(t: string): string {
   return decoupe(t).map(p => (p.lie ? p.s.replace(/[  ]/g, ' ') : p.s)).join('');
 }
+
+/**
+ * R75-6 (c78) : la chasse fixe est réservée aux CHIFFRES. « 2 697,74 CHF », « 2,6 m³ », « 50 g », « 20.11.2026 » : le nombre est en chasse fixe,
+ * son unité (CHF, m³, g, V…) et tout mot sont en police normale ; un texte sans chiffre (« offre ↓ ») n'a aucune chasse fixe. Le groupe « nombre + unité »
+ * reste d'un seul tenant (`cn-nowrap` quand `nowrap`). `className` s'ajoute à l'enveloppe (« cn-prix-grand »).
+ */
+const SERIE_CHIFFRES = /[≈~<>+−]?\d(?:[\d'’.,   ]*\d)?/gu;
+export function Chiffres({ t, className, nowrap }: { t: string; className?: string; nowrap?: boolean }): React.ReactElement {
+  const morceaux: React.ReactNode[] = [];
+  let fin = 0;
+  for (const m of t.matchAll(SERIE_CHIFFRES)) {
+    const a = m.index ?? 0;
+    if (a > fin) morceaux.push(t.slice(fin, a));
+    morceaux.push(<span key={a} className="cn-mono">{m[0]}</span>);
+    fin = a + m[0].length;
+  }
+  if (fin < t.length) morceaux.push(t.slice(fin));
+  const classes = [className, nowrap ? 'cn-nowrap' : ''].filter(Boolean).join(' ');
+  return <span className={classes || undefined}>{morceaux}</span>;
+}

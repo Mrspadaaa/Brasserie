@@ -248,10 +248,11 @@ export function classerAuKilo<T extends { lignes: ReadonlyArray<{ articleId: str
 
 /** « 50 g à 1 kg », « 1 g à 20 kg » : ce que vend le vendeur, du plus petit conditionnement au plus gros (maquette v01, « vendu par ») ; `null` : aucun conditionnement lisible. */
 export function venduPar(a: ArticleRegle): string | null {
-  const p = paliersDe(a);
+  /* R78-3 (c78) : « vendu par » dit TOUS les conditionnements de la fiche, ceux dont le prix n'est pas lu aussi (50 g, 250 g et 500 g : « 50 g à 500 g »), jamais le seul sachet chiffré */
+  const p = [...paliersDe(a), ...sachetsSansPrix(a)].sort((x, y) => x.kg - y.kg);
   if (!p.length) return null;
   const dit = (kg: number) => (kg < 1 ? `${Math.round(kg * 1000)} g` : `${String(Math.round(kg * 100) / 100).replace('.', ',')} kg`);
-  return p.length === 1 ? dit(p[0].kg) : `${dit(p[0].kg)} à ${dit(p[p.length - 1].kg)}`;
+  return p.length === 1 || p[0].kg === p[p.length - 1].kg ? dit(p[0].kg) : `${dit(p[0].kg)} à ${dit(p[p.length - 1].kg)}`;
 }
 
 /**
@@ -326,7 +327,13 @@ export function largeursBarres(valeurs: ReadonlyMap<string, number | null>): Map
 /** Une ligne de Comparer réduite à ses cellules dites (texte, ou `null` pour inconnu) : les articles en lice seulement. */
 export interface LigneComparable { cle: string; cellules: ReadonlyArray<string | null> }
 
-const nettoyer = (s: string) => s.normalize('NFKC').replace(/[\s  ]+/g, ' ').trim().toLowerCase();
+const nettoyer = (s: string) => s.normalize('NFKC').replace(/[\s\u00A0\u202F]+/g, ' ').trim().toLowerCase();
+/* R78-4 (c78) : « · variété » dit d'où vient la valeur (la variété, faute de la page de l'article), pas une autre valeur : « agrumes · variété » et « agrumes » ne comptent pas parmi les « N différents » */
+export function ligneIdentiqueALaVariete(l: LigneComparable): boolean {
+  return ligneIdentique({ ...l, cellules: l.cellules.map(c => (c === null ? c : c.replace(/\s*·\s*vari[ée]t[ée]\s*$/iu, ''))) });
+}
+/** Le nombre de lignes qui diffèrent VRAIMENT : une ligne égale à la variété près n'en est pas une. */
+export const nombreDifferentes = (lignes: readonly LigneComparable[]): number => lignes.filter(l => ligneIdentique(l) || !ligneIdentiqueALaVariete(l)).length;
 /** Toutes les cellules disent la même chose et aucune n'est inconnue : la ligne ne départage pas. Une cellule inconnue fait toujours diffèrer (on ne sait pas). */
 export function ligneIdentique(l: LigneComparable): boolean {
   if (l.cellules.length < 2) return false;
@@ -368,7 +375,8 @@ export function ecouterQuantitePour(f: () => void): () => void { ecouteurs.add(f
 /** Le nom court d'un vendeur pour une tête de colonne ou une barre (« Brau- und Rauchshop » → « Brau »). */
 export const vendeurCourt = (a: Pick<ArticleRegle, 'vendeur' | 'nom' | 'domaine'>): string => {
   const v = (a.vendeur ?? a.domaine ?? a.nom ?? '').trim();
-  return v.length > 14 ? (v.split(/[\s-]+/)[0] || v) : v;
+  /* un domaine (« gastro-exemple.com ») est un nom d'un seul tenant : jamais coupé au tiret */
+  return v.length > 14 && !/\.[a-z]{2,}$/i.test(v) ? (v.split(/[\s-]+/)[0] || v) : v;
 };
 
 /** Une ligne de « je prends » (fiche) et de « Conditionnement de … » (carte) : ce que vend le vendeur, son prix dans sa devise, le kilo rendu. */
@@ -459,12 +467,38 @@ export function libelleChoisir(args: { vendeur?: string; pourKg?: number; /** R1
  * dimension à couper, le nom se coupe au dernier mot entier qui tient.
  */
 export const NOM_AU_TABLEAU_MAX = 40;
+const UNITES_MESURE = /\b(?:mm|cm|dm|m|l|kw|w|watt|kg|g|v|a|hz|m²|m³|x|×|chf)\b/giu;
+/** Un segment « 1500 x 1200 mm », « 2,6 m³ », « 230 V » : des nombres et des unités, aucun mot de la désignation. */
+const estMesure = (s: string): boolean => !/\p{L}{4,}/u.test(s.replace(UNITES_MESURE, ' '));
+/** Au dernier mot entier qui tient dans `place` signes ; vide si aucun mot ne tient. */
+function motsQuiTiennent(t: string, place: number): string {
+  if (t.length <= place) return t;
+  const mots = t.slice(0, place + 1).split(' ');
+  if (!/\s/.test(t.charAt(place)) || mots.length === 1) mots.pop();
+  return mots.join(' ').replace(/[\s,;:–—-]+$/u, '');
+}
+/** Un fragment qui finit sur « x », « × », « * » ou un tiret, ou qui ne porte aucun mot : jamais un nom. */
+const nomIllisible = (s: string): boolean => /(?:^|[\s\d])[x×*]\s*$|[-–—]\s*$/iu.test(s) || !/\p{L}{4,}/u.test(s.replace(UNITES_MESURE, ' '));
+
 export function nomAuTableau(nom: string, max: number = NOM_AU_TABLEAU_MAX): string {
   const t = nom.replace(/\s+/g, ' ').trim();
   if (t.length <= max) return t;
   const sansMesures = t.replace(/\s+\d[\d.,]*\s*(?:x|×|\*)?\s*\d?[\d.,]*\s*(?:mm|cm|dm|m|l|kw|w|watt|kg|g|m²|m³)\b.*$/i, '').replace(/[\s,;:–—-]+$/u, '').trim();
-  if (sansMesures.length >= 6 && sansMesures.length <= max) return sansMesures;
-  const mots = t.slice(0, max + 1).split(' ');
-  if (!/\s/.test(t.charAt(max)) || mots.length === 1) mots.pop();
-  return mots.join(' ').replace(/[\s,;:–—-]+$/u, '') || t.slice(0, max);
+  if (sansMesures.length >= 6 && sansMesures.length <= max && !nomIllisible(sansMesures)) return sansMesures;
+  /* R107 (c78) : le nom commence par ses dimensions (« 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus ») : on retire le bruit (puissance, volume, tension),
+     on GARDE la désignation, précédée de la première mesure qui distingue les articles entre eux. */
+  const segments = t.split(/\s+[-–—]\s+/).filter(Boolean);
+  const designation = segments.filter(s => !estMesure(s)).join(' - ');
+  if (segments.length > 1 && designation) {
+    const tete = segments.find(estMesure);
+    const place = tete ? max - tete.length - 3 : 0;
+    if (tete && place >= 12) {
+      const d = motsQuiTiennent(designation, place);
+      if (d && !nomIllisible(d)) return `${tete} - ${d}`;
+    }
+    const d = motsQuiTiennent(designation, max);
+    if (d && !nomIllisible(d)) return d;
+  }
+  const court = motsQuiTiennent(t, max);
+  return court || t.slice(0, max);
 }

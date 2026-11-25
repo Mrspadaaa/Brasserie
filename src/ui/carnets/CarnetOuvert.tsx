@@ -202,9 +202,12 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
   /* f13 tour 2 (n° 6, g5:v04-4) : les rubriques à filet du carnet neuf portent des pictos de 20 px, verts et centrés (carnets.css) */
   const picto = neuf ? 20 : 18;
+  /* R73-18 (c78) : le carnet s'ouvre EN HAUT (titre, tableau), jamais au milieu du fil : l'écran est amené sur son en-tête quand on l'ouvre */
+  const hautRef = useRef<HTMLElement>(null);
+  useEffect(() => { hautRef.current?.scrollIntoView?.({ block: 'start' }); }, [c.id]);
 
   return (
-    <article className={`cn-page cn-ouvert${p.grise ? ' cn-grise' : ''}`} aria-label={titreAffiche(c.title)}>
+    <article ref={hautRef} className={`cn-page cn-ouvert${p.grise ? ' cn-grise' : ''}`} aria-label={titreAffiche(c.title)}>
       {/* Tour 3, f13 tour 2 (critique n° 5, g5:v04-4) : tout juste créé, en-tête, titre et encadré sur la bande teintée de sa maquette,
           fermée par un filet ; ailleurs, rien ne les enveloppe. */}
       <Bande active={neuf}>
@@ -418,7 +421,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* D451 disparaît n° 4 : « Quand » ne paraît que s'il sert : une date posée, un achat, une idée ; pas pour un problème, un mémo ou une récolte sans date */}
-      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand {...(debutPlanning ? { planning: debutPlanning, ...(finPlanning ? { planningAu: finPlanning } : {}) } : {})} date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand dansAVenir={sortieEnPastille || (!!k.sortie && k.sortie.etat !== 'realise')} {...(debutPlanning ? { planning: debutPlanning, ...(finPlanning ? { planningAu: finPlanning } : {}) } : {})} date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
         onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}

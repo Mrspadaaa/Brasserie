@@ -160,7 +160,9 @@ export function FilCarnetVue(p: PropsFil) {
        ces lignes-là ne sont pas redites, les dates restent */
     const lignesBulle = texteBrut.split(/\r?\n/);
     const texte = liees.some(n => notePlanningDe(n.texte)) && lignesBulle.length > 1
-      ? lignesBulle.filter(l => !redisLeTitre(l, c) && !/^\s*budget du planning\b/i.test(l)).join('\n').trim() || texteBrut
+      /* R73-23 (c78) : sa ligne « À faire du … au … » redit le début, que Quand dit déjà : seule la fin reste (« jusqu'au 01.07.2027 ») */
+      ? lignesBulle.filter(l => !redisLeTitre(l, c) && !/^\s*budget du planning\b/i.test(l))
+        .map(l => { const np = notePlanningDe(l); return np ? (np.au ? `jusqu'au ${libelleJour(np.au, annee)}` : '') : l; }).filter(Boolean).join('\n').trim() || texteBrut
       : texteBrut;
     const jetons = jetonsDe(m, c.id);
     const heure = plusieurs ? heureDe(m.carnetMessage.le) : null;
@@ -174,6 +176,8 @@ export function FilCarnetVue(p: PropsFil) {
       <div className="cnp-b cnp-b-vous" data-message={m.id}>
         {photos.map(ph => <img key={ph.id} className="cnp-photo" src={ph.jpeg} alt={`Photo du ${libelleJour(m.carnetMessage.le.slice(0, 10), annee)}`} loading="lazy" />)}
         <p className="cnp-texte-court">{texteDuFil(texte, article?.nom)}</p>
+        {/* R73-17, R75-7 (c78) : un lien collé jamais lu ne dit pas que son domaine : il le dit « non lu » (rien n'en est connu : ni produit, ni prix) */}
+        {/^https?:\/\/\S+$/i.test(texte.trim()) && article?.lecture !== 'lue' && <p className="cnp-rattache cn-mut" data-lien-non-lu>non lu · produit et prix inconnus</p>}
         {visee && <p className="cnp-rattache cn-mut" data-rattache-article={visee.id}>rattachée à {visee.vendeur ?? visee.nom ?? visee.domaine}</p>}
         {e.rattache && <p className="cnp-rattache cn-mut">rattaché : « {e.rattache.citation} »</p>}
         {(jetons.length > 0 || heure || (liees.length === 1 && onNote)) && (

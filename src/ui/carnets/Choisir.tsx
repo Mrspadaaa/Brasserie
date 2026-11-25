@@ -13,7 +13,7 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { detailPrix, prixUnique } from './PrixPastille';
-import { centimesRendus, estCarnetDeMatiere, prixAuKilo, quantiteDuChoix, quantitePour, texteChfKg, vendeurCourt } from './tableauRegles';
+import { centimesRendus, estCarnetDeMatiere, nomAuTableau, prixAuKilo, quantiteDuChoix, quantitePour, texteChfKg, vendeurCourt } from './tableauRegles';
 import { articleHonnete } from '../../domain/carnets/prixUnitaire';
 import { fourchetteSerree } from '../../domain/carnets/alpha';
 import { dateCourte, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
@@ -21,7 +21,7 @@ import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
-import { liesParNbsp } from './insecable';
+import { Chiffres, liesParNbsp } from './insecable';
 
 /**
  * R75-6 (c77) : la chasse fixe est réservée aux CHIFFRES (DESIGN : un mot en mono qui n'est pas une mesure est une faute) : « 4,06 m³ », « 230 V », « 2 697,74 CHF » ;
@@ -127,7 +127,7 @@ const chiffre = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
  * La réglette de g05-11 : un point par article en lice dont la valeur est connue, le choisi plein ; à gauche le meilleur (« ‹ mieux · 0 »,
  * « ‹ moins cher · 190 »), à droite le pire, avec l'unité. La place se lit en chiffres au-dessus (« 1 800 m³/h · 1er sur 4 »).
  */
-export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean }) {
+export function Reglette({ place, sansTete, sansMonChiffre }: { place: Place; sansTete?: boolean; /** R73-9 (c78) : le chiffre de l'article lui-même est déjà dit en tête (le prix) : sa borne ne le redit pas */ sansMonChiffre?: boolean }) {
   if (place.valeur === undefined || place.meilleure === undefined || place.pire === undefined || !place.toutes) return null;
   const prix = place.nom === 'prix';
   const borne = (v: number) => (prix ? chiffre(Math.round(v / 100)) : nombreTexte(v));
@@ -137,12 +137,12 @@ export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean
   const unite = place.unite ? ` ${place.unite}` : '';
   return (
     <div className={`cn-reglette${sansTete ? ' cn-reglette-seule' : ''}`} role="img" aria-label={`${place.libelle ?? place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
-      {!sansTete && <div className="cn-reglette-tete"><b>{nomPlace(place)}</b><span className="cn-sp" /><span><b className="cn-mono">{place.texte}</b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>}
+      {!sansTete && <div className="cn-reglette-tete"><b>{nomPlace(place)}</b><span className="cn-sp" /><span><b><Chiffres t={place.texte} /></b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>}
       <div className="cn-reglette-piste" aria-hidden>
         {place.toutes.map((v, i) => <i key={i} style={{ left: `${pos(v) * 100}%` }} />)}
         <i className="cn-reglette-moi" style={{ left: `${pos(place.valeur) * 100}%` }} />
       </div>
-      <div className="cn-reglette-bornes cn-mut" aria-hidden><span>‹ {prix ? 'moins cher' : 'mieux'} · {borne(place.meilleure)}{unite}</span><span>{borne(place.pire)}{unite}</span></div>
+      <div className="cn-reglette-bornes cn-mut" aria-hidden><span>‹ {prix ? 'moins cher' : 'mieux'}{sansMonChiffre && place.meilleure === place.valeur ? '' : <> · {borne(place.meilleure)}{unite}</>}</span><span>{sansMonChiffre && place.pire === place.valeur ? '' : <>{borne(place.pire)}{unite}</>}</span></div>
     </div>
   );
 }
@@ -208,8 +208,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         <Photo src={a.photo} className="cn-vignette cn-choisi-photo" repli={p.picto ? <span className="cn-vignette cn-choisi-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
         <div className="cn-sp">
           <b>{liesParNbsp(a.nom)}</b>
-          <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ')}</span>
-          {(prix || dispoDe(a)) && <span><b className="cn-mono">{prix ?? ''}</b>{prix && dispoDe(a) ? <span className="cn-mut"> · </span> : null}{dispoDe(a) ? <span className="cn-mut">{dispoDe(a)}</span> : null}</span>}
+          <span className="cn-mut" title={a.vendeur}>{[a.vendeur ? vendeurCourt(a) : undefined, a.pays].filter(Boolean).join(' · ')}</span>
+          {(prix || dispoDe(a)) && <span><b><Chiffres t={prix ?? ''} /></b>{prix && dispoDe(a) ? <span className="cn-mut"> · </span> : null}{dispoDe(a) ? <span className="cn-mut">{dispoDe(a)}</span> : null}</span>}
           {detail && <span className="cn-mut">{detail}</span>}
         </div>
       </div>
@@ -367,7 +367,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             : <div className="cn-sp cn-offre-nom"><b>{liesParNbsp(a.nom ?? a.vendeur)}</b><span className="cn-mut">{[a.nom ? (a.vendeur ? vendeurCourt(a) : a.vendeur) : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
               {detail && <span className="cn-mut">{detail}</span>}
               {/* n° 39 : le prix seul, sans rond vide devant (il n'avait aucun rôle) */}
-              {prix && <span className="cn-offre-prix"><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
+              {prix && <span className="cn-offre-prix"><Chiffres t={prix} className="cn-prix-grand" nowrap /></span>}</div>}
           {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir la page${a.vendeur ? ` de ${a.vendeur}` : ''}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
         </div>
         {/* g05-9 : « Ses autres valeurs · place parmi les n » ; g05-11 : sous chaque valeur chiffrée, sa réglette (« 1er sur 4 ») */}
@@ -382,8 +382,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : estChiffres(v.texte) ? 'cn-mono' : 'cn-place-mot'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
-                    {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete /></td></tr>}
+                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : estChiffres(v.texte) ? 'cn-place-num' : 'cn-place-mot'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{estChiffres(v.texte) ? <Chiffres t={v.texte} /> : v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
+                    {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete sansMonChiffre={pl!.nom === 'prix' && !p.quantite} /></td></tr>}
                   </React.Fragment>
                 );
               })}
@@ -442,8 +442,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             <Photo src={o.article.photo} className="cn-vignette" />
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
-              : <div className="cn-article-tx"><b>{liesParNbsp(o.article.nom)}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
-            <div className="cn-droite">{prixCarte && <span className="cn-mono cn-prix">{prixCarte}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
+              : <div className="cn-article-tx"><b title={nomAuTableau(o.article.nom ?? '') !== o.article.nom ? o.article.nom : undefined}>{liesParNbsp(nomAuTableau(o.article.nom ?? ''))}</b><span className="cn-mut" title={o.article.vendeur}>{[o.article.vendeur ? vendeurCourt(o.article) : undefined, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
+            <div className="cn-droite">{prixCarte && <Chiffres t={prixCarte} className="cn-prix" nowrap />}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
           </div>
         );
       })}
