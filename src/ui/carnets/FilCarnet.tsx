@@ -10,7 +10,7 @@ import { Bell, Calculator, Check, Ellipsis, RotateCcw, Sparkles, X } from 'lucid
 import type { EntreeFil, FilCarnet as FilVu } from '../../domain/carnets/fil';
 import type { CarnetDoc, Etiquette, EvenementSuivi, MessageDoc, Note, PropositionSuivi } from '../../domain/carnets/modele';
 import { notePlanningDe } from '../../domain/carnets/taches';
-import { LIBELLE_ETAT } from '../../domain/carnets/suivi';
+import { LIBELLE_ETAT, optionRetenue } from '../../domain/carnets/suivi';
 import { GENRE_LIBELLE } from './EtatIA';
 import { heureDe, jetonDe, libelleJour, libellePlage, libelleRepli, plagesDe, rangsEcart, texteMontant } from './filRegles';
 import type { RappelsSuivi } from './carnetOuvertTypes';
@@ -150,7 +150,7 @@ export function FilCarnetVue(p: PropsFil) {
     const jetons = jetonsDe(m, c.id);
     const heure = plusieurs ? heureDe(m.carnetMessage.le) : null;
     const photos = photosDe(m.id);
-    const props = (m.carnetMessage.propositionsSuivi ?? []).map((pr, i) => ({ pr, i })).filter(x => x.pr.carnetId === c.id);
+    const props = (m.carnetMessage.propositionsSuivi ?? []).map((pr, i) => ({ pr, i })).filter(x => x.pr.carnetId === c.id && !(x.pr.sorte === 'retenir' && x.pr.optionId !== undefined && x.pr.optionId === optionRetenue(c)?.id)); /* C71-2 : jamais « à retenir ? » d'une option déjà retenue */
     const noeud = (
       <div className="cnp-b cnp-b-vous" data-message={m.id}>
         {photos.map(ph => <img key={ph.id} className="cnp-photo" src={ph.jpeg} alt={`Photo du ${libelleJour(m.carnetMessage.le.slice(0, 10), annee)}`} loading="lazy" />)}

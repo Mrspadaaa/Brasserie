@@ -350,7 +350,7 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
   const retenue = optionRetenue(c);
   const minus = (n: string) => n.charAt(0).toLowerCase() + n.slice(1);
   /* C68-8 : « essayé » dit aussi les solutions écrites en articles que la retenue n'a pas prises (« condenseur A »), comme le Résolu */
-  const essaye = [...doc.facons.filter(f => f.id !== retenue?.id).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : minus(f.nom); }), ...articlesPasPris(c, retenue).map(a => minus(a.nom))];
+  const essaye = [...doc.facons.filter(f => f.id !== retenue?.id).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : etatOption(f) === 'ecartee' && !pasPrisParLaFermeture(f) ? `${minus(f.nom)} (non)` : minus(f.nom); }), ...articlesPasPris(c, retenue).map(a => minus(a.nom))];
   const resolu = suiviDe(c).resolu;
   let pris: FicheResolu['pris'] = null;
   if (retenue) {
@@ -364,6 +364,12 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
   const parts = [texteDureeCourte(dureeDe(c)), n ? pluriel(n, 'note') : null, doc.photos.length ? pluriel(doc.photos.length, 'photo') : null].filter((x): x is string => !!x);
   return { probleme, essaye, pris, pourquoi: pourquoiDe(c, mes), duree: parts.length ? parts.join(' · ') : null, chemin: cheminAffiche(c) };
 }
+
+/** Écartée par la fermeture (raison « pas pris »), pas par lui : ce n'est pas un « non » de sa part. */
+const pasPrisParLaFermeture = (f: Facon): boolean => {
+  const dernier = [...(f.suivi?.historique ?? [])].reverse().find(p => p.etat === 'ecartee');
+  return (dernier?.raison ?? f.raison ?? '').trim().toLowerCase() === 'pas pris';
+};
 
 const texteDureeCourte = (n: number | null): string | null => (n === null ? null : n === 0 ? 'le jour même' : pluriel(n, 'jour'));
 

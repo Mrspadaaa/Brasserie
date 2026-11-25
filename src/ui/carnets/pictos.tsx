@@ -30,8 +30,9 @@ const REGLES: readonly [PictoNom, RegExp][] = [
   ['gaz', /\b(co2|gaz|azote|detendeurs?|compresseurs?|manodetendeurs?)\b/],
   ['embouteillage', /\b(embouteill\w*|remplisseuses?|soutireuses?|isobariques?|monobloc\w*|becs?|bouteilles?|capsuleuses?|canettes?|sertisseuses?)\b/],
   ['evier', /\b(eviers?|lavabos?|plonges?|bacs?)\b/],
-  ['echangeur', /\b(echangeurs?|refroidisseurs?|serpentins?|plaques?|chillers?)\b/],
-  ['frigo', /\b(frigos?|froid|froide|refrigera\w*|vitrines?|congela\w*|groupes? froid|chambres? froides?)\b/],
+  /* C71-7 : un condenseur de buées « à eau froide » est un échangeur, pas un frigo (le mot « froide » de l'eau ne fait pas un frigo) */
+  ['echangeur', /\b(echangeurs?|refroidisseurs?|serpentins?|plaques?|chillers?|condenseurs?)\b/],
+  ['frigo', /\b(frigos?|(?<!eau )froide?|refrigera\w*|vitrines?|congela\w*|groupes? froid|chambres? froides?)\b/],
   ['pompe', /\bpompes?\b/],
   ['moulin', /\b(moulins?|concasseurs?|broyeurs?)\b/],
   /* L-28 (M2-14) : une levure ou un houblon (« Brewferm brewing yeast Lager 6 g ») : un sachet, avant que le titre du carnet ne parle */

@@ -170,7 +170,8 @@ export function ListeArbre(p: ListeArbreProps) {
           {n.ouverts.map(c => <LigneProbleme key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
           {n.groupes.map(g => {
             /* C69-10 : les carnets sans catégorie (Houblons citra, Chambre froide, Frigo + congel…) se replient eux aussi, sous « Autres » : jamais dépliés à plat sous le domaine */
-            const nom = g.chemin ?? 'Autres';
+            /* C71-4 : un groupe sans partie lue dit au moins POURQUOI il est à part (« Sans catégorie »), et nomme ses carnets repliés comme les autres : jamais un « Autres » muet */
+            const nom = g.chemin ?? 'Sans catégorie';
             const cle = `${n.domaine}/${g.chemin ?? ' autres'}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
             const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
@@ -181,7 +182,7 @@ export function ListeArbre(p: ListeArbreProps) {
                 {g.deduit && !ouvert && <div hidden>{lignes}</div>}
                 <button type="button" className="cnl-sd" aria-expanded={ouvert} onClick={() => basculer(cle)}>
                   <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{nom}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
-                  {!ouvert && g.chemin !== null && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
+                  {!ouvert && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
                 {g.chemin === null
                   /* « Autres » reste dans le DOM, caché tant qu'il est replié (jamais à plat sous le domaine) */

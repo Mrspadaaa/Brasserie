@@ -26,7 +26,7 @@ describe('AFaire', () => {
   it('trois groupes de la maquette dans l\'ordre, chacun avec son nombre ; chaque ligne : texte, problème, jeton de coût', () => {
     render(<AFaire carnets={carnets} maintenant={MAINTENANT_SUIVI} messages={messages} plans={[{ id: idPlanDuCarnet(IDS_SUIVI.vapeur), status: 'draft' }]} {...gestes()} />);
     const titres = screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent);
-    expect(titres.slice(0, 2)).toEqual(['Cette semaine 4', 'Fin du mois 4']);
+    expect(titres.slice(0, 2)).toEqual(['Cette semaine 4', 'Fin du mois 3']); // C71-1 (R84) : la 4e tâche, au-delà du dernier jour du mois, se range sous « Un jour » (sa date dite)
     expect(titres[titres.length - 1]).toMatch(/^Un jour \d$/);
     const testeur = within(ligne('Acheter un testeur de tension'));
     expect(testeur.getByText(titre(IDS_SUIVI.fusible))).toBeTruthy();

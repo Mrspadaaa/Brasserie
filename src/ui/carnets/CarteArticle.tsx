@@ -14,7 +14,7 @@ import React from 'react';
 import { articleHonnete, quantiteArticle } from '../../domain/carnets/prixUnitaire';
 import { ExternalLink, Eye, Link2, TriangleAlert } from 'lucide-react';
 import { alphaDe, conditionnementsDe, ligneDuPour, prixAuKilo, puceDoute, QUANTITES_POUR, recolteDe, texteChfKg, textePrixConditionnement, vendeurCourt, type ArticleRegle } from './tableauRegles';
-import { libelleEcarte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
+import { libelleEcarte, prixTexte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
 import { memeCaracteristique } from '../../../functions/src/lienFusion';
 import { dispoDe } from '../../domain/carnets/modele';
 import { montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
@@ -35,6 +35,8 @@ export interface CarteArticleProps {
   /** Écarté : grisé, à la fin, avec sa raison (D-52). */
   ecarte?: { raison: string };
   variante?: 'liste' | 'complete';
+  /** C71-8 (R63) : la quantité et le prix CHOISIS (« 1 kg », ≈40 CHF) : la carte de l'article choisi les dit, jamais le sachet de 50 g de la page. */
+  choisie?: { libelle: string; centimes: number };
   /** `complete` : ce que la page a donné, et le verdict sur le critère (« tient 80 °C : oui »). */
   luSurPage?: string[];
   verdict?: string;
@@ -139,6 +141,14 @@ function Vignette({ article, faconNom, carnetTitre, classe }: { article: Article
   return <VignetteObjet photo={article.photo} mots={[article.nom, faconNom, carnetTitre]} classe={classe} />;
 }
 
+/** C71-8 : le prix de la quantité choisie (comme l'écran « Choisi » : « ≈ » seulement hors franc), jamais le prix du sachet lu sur la page. */
+function PrixChoisi({ p, a, muet }: { p: { libelle: string; centimes: number }; a: ArticleV; muet?: boolean }) {
+  const t = prixTexte(p.centimes, 'CHF');
+  if (!t) return null;
+  const [chiffres, devise] = [t.replace(/ CHF$/, ''), 'CHF'];
+  return <span className="cn-nowrap"><span className="cn-mono cn-prix">{(a.devise ?? 'CHF') === 'CHF' ? '' : '≈'}{chiffres}</span> <span className={muet ? 'cn-mut' : undefined}>{devise}</span></span>;
+}
+
 export function CarteArticle(p: CarteArticleProps) {
   const a = articleHonnete(p.article);
   const prix = montant(a.prixCentimes);
@@ -181,11 +191,11 @@ export function CarteArticle(p: CarteArticleProps) {
           {(prix || dispoDe(a)) && (
             <span className="cn-ligne cn-article-pied">
               {/* C66-7 (C65-4) : un prix lu avec son conditionnement (« 50 g · 73,80 CHF/kg », calculé sur le rendu) est le MÊME prix du sachet partout : le rendu (≈4), jamais le converti nu (≈3) ; sans quantité, le converti de D447 */}
-              {prix && <PrixTexte a={a} taux={p.taux} converti={!((a.conditionnement || a.offres?.length) && quantiteArticle(a as never))} />}
+              {prix && (p.choisie ? <PrixChoisi p={p.choisie} a={a} /> : <PrixTexte a={a} taux={p.taux} converti={!((a.conditionnement || a.offres?.length) && quantiteArticle(a as never))} />)}
               {dispoDe(a) && <span className={`cn-pastille ${dispoClasse(dispoDe(a)!)}`}>{dispoDe(a)}</span>}
             </span>
           )}
-          {prix && detailPrix(a, p.taux) && <span className="cn-mut">{detailPrix(a, p.taux)}</span>}
+          {p.choisie ? <span className="cn-mut">{p.choisie.libelle}</span> : prix && detailPrix(a, p.taux) && <span className="cn-mut">{detailPrix(a, p.taux)}</span>}
         </span>
       </>
     );
@@ -213,9 +223,9 @@ export function CarteArticle(p: CarteArticleProps) {
       {p.rang !== undefined && !p.ecarte && <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span>}
       <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
       <div className="cn-article-tx">
-        <span className="cn-ligne"><b className="cn-sp">{liesParNbsp(a.nom)}</b>{prix && <PrixTexte a={a} taux={p.taux} muet />}</span>
+        <span className="cn-ligne"><b className="cn-sp">{liesParNbsp(a.nom)}</b>{prix && (p.choisie ? <PrixChoisi p={p.choisie} a={a} muet /> : <PrixTexte a={a} taux={p.taux} muet />)}</span>
         <span className="cn-mut">
-          {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, dispoDe(a), prix ? detailPrix(a, p.taux) : null].filter(Boolean).join(' · ')}
+          {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, dispoDe(a), p.choisie ? p.choisie.libelle : prix ? detailPrix(a, p.taux) : null].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}

@@ -47,9 +47,42 @@ const PARTIES: [string, string[]][] = [
 /** C70-4/C70-8 : qui parle d'un client, d'une commande ou d'une vente compte des bouteilles VENDUES, il ne parle pas de l'étape de mise en bouteille. */
 const COMMERCE = ['client*', 'commande*', 'command*', 'vend*', 'vente*', 'revendeur*', 'acheteur*', 'mariage*', 'marche', 'livraison*', 'devis', 'facture*'];
 
-/** La partie de la brasserie dont parle un texte (« Brassage », « Fermentation », « Conditionnement ») ; `null` si aucun mot ne la dit. */
-export function sousDomaineParMots(texte: string): string | null {
+/**
+ * C71-4 : les parties des autres domaines (maquette v01-liste : chaque groupe replié dit sa partie). Même règle de SENS que la brasserie : ce dont on parle (l'eau, le courant, le
+ * rangement, les papiers à garder), jamais une table d'exemples ; à égalité, la première de la liste.
+ */
+const PARTIES_AUTRES: Partial<Record<DomaineCarnet, [string, string[]][]>> = {
+  local: [
+    ['Eau', ['evier', 'lavabo', 'robinet*', 'plomberie', 'tuyau', 'evacuation', 'douche*', 'wc']],
+    ['Électricité', ['electri*', 'prise', 'eclairage', 'lampe', 'disjoncteur*']],
+    ['Air et chaleur', ['hotte', 'ventilation', 'ventilateur', 'chauffage', 'climatisation', 'isolation']],
+    ['Sécurité', ['extincteur', 'securite']],
+    ['Bâtiment', ['local', 'sol', 'mur', 'plafond', 'toit', 'porte', 'fenetre', 'peinture', 'beton', 'carrelage']]
+  ],
+  meuble: [
+    ['Rangement', ['armoire', 'etagere', 'rangement', 'rayonnage', 'casier', 'vestiaire', 'meuble']],
+    ['Plans de travail', ['table', 'comptoir', 'etabli']],
+    ['Sièges', ['chaise', 'tabouret']]
+  ],
+  papiers: [
+    ['Assurances', ['assurance*', 'contrat']],
+    ['Autorisations', ['autorisation*', 'permis', 'licence*', 'patente', 'saav', 'conformite*', 'douane*']],
+    ['Dossiers', ['dossier', 'administrati*']]
+  ],
+  outils: [
+    ['Nettoyage', ['aspirateur*', 'nettoyeur*', 'karcher']],
+    ['Atelier', ['outil', 'perceuse*', 'visseuse*', 'tournevis', 'scie', 'meuleuse*', 'pince', 'cle', 'marteau', 'niveau', 'echelle', 'escabeau']]
+  ]
+};
+
+/** La partie d'un domaine dont parle un texte (brasserie : « Brassage », « Fermentation », « Conditionnement » ; les autres domaines : `PARTIES_AUTRES`) ; `null` si aucun mot ne la dit. */
+export function sousDomaineParMots(texte: string, domaine: DomaineCarnet = 'brasserie'): string | null {
   const ms = mots(texte);
+  if (domaine !== 'brasserie') {
+    let choisie: string | null = null, plus = 0;
+    for (const [partie, liste] of PARTIES_AUTRES[domaine] ?? []) { const c = combien(liste, ms); if (c > plus) { plus = c; choisie = partie; } }
+    return choisie;
+  }
   const commerce = combien(COMMERCE, ms) > 0;
   let meilleur: string | null = null, n = 0;
   for (const [partie, liste] of PARTIES) { if (commerce && partie === 'Conditionnement') continue; const c = combien(liste, ms); if (c > n) { n = c; meilleur = partie; } }

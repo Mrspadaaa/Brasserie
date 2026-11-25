@@ -106,8 +106,8 @@ export function resumeReplie(g: GroupeArbre, maintenant: Date): string {
   return [...titres, ...(val ? [val] : []), ...(reste > 0 ? [`+${reste}`] : [])].join(' · ');
 }
 
-/** Le chemin d'un sous-domaine, ou « Autres » pour les carnets sans sous-domaine (jamais montré replié : ils se lisent à plat). */
-export const nomGroupe = (g: GroupeArbre): string => g.chemin ?? 'Autres';
+/** Le chemin d'un sous-domaine, ou « Sans catégorie » pour les carnets sans sous-domaine (jamais montré replié : ils se lisent à plat). */
+export const nomGroupe = (g: GroupeArbre): string => g.chemin ?? 'Sans catégorie';
 
 /** Un filtre d'état du coup d'œil : seul l'état demandé reste (le même compte que la case) ; sans filtre, tous. */
 export function passeFiltre(c: CarnetDoc, f: FiltreOeil): boolean {

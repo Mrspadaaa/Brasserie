@@ -8,7 +8,7 @@
 import type { Etiquette, EvenementSuivi, MessageDoc, Note, PropositionSuivi, Rattache } from './modele';
 import { sansIndefinis, type CarnetDoc } from './modele';
 import { Brouillon, appliquerEcritures, refus, type Etat, type Resultat } from './operations';
-import { jourLocal, poserVeille, fermerParAchat, resoudre, retenirOption, suiviDe } from './suivi';
+import { jourLocal, optionRetenue, poserVeille, fermerParAchat, resoudre, retenirOption, suiviDe } from './suivi';
 import { ajouterTache, notePlanningDe, poserEcheance } from './taches';
 import { echeanceDite } from './tacheDatee';
 
@@ -40,7 +40,9 @@ export function filDe(c: CarnetDoc, messages: readonly MessageDoc[], options: { 
   for (const m of messages) {
     const cm = m.carnetMessage;
     const etiquettes = (cm.etiquettes ?? []).filter(e => e.carnetId === c.id);
-    const propositions = (cm.propositionsSuivi ?? []).filter(p => p.carnetId === c.id);
+    /* C71-2 : « à retenir ? » d'une option déjà retenue propose un geste déjà fait : elle ne s'affiche pas */
+    const dejaRetenue = optionRetenue(c)?.id;
+    const propositions = (cm.propositionsSuivi ?? []).filter(p => p.carnetId === c.id && !(p.sorte === 'retenir' && p.optionId !== undefined && p.optionId === dejaRetenue));
     const lie = cm.depuis === c.id || cm.effets.some(e => e.carnetId === c.id) || etiquettes.length > 0 || cm.rattache?.carnetId === c.id || propositions.length > 0;
     if (!lie) continue;
     entrees.push({ sorte: 'message', id: m.id, le: cm.le, message: m, etiquettes, ...(cm.rattache && cm.rattache.carnetId === c.id ? { rattache: cm.rattache } : {}), propositions });

@@ -8,7 +8,7 @@
  * Honnêteté : un coût absent (ou nul) n'est pas dit ; un coût estimé garde son « ≈ » ; la proposition ne décrit jamais une photo
  * (aucune IA ne l'a lue) et sa raison est ce que l'on sait : la date de la dernière écriture, pas une ouverture à l'écran.
  */
-import { ajouterJours, dimancheDe, ecartJours, jourLisible, lundiDe } from '../../domain/calendrier/dates';
+import { MOIS_COURTS, ajouterJours, dimancheDe, ecartJours, jourAvecAnnee, jourLisible, lundiDe } from '../../domain/calendrier/dates';
 import { prixTexte } from '../../domain/carnets/comparer';
 import { plier } from '../../domain/carnets/domaines';
 import type { CarnetDoc, MessageDoc, PrecisionTache, Tache } from '../../domain/carnets/modele';
@@ -34,20 +34,46 @@ export const LIBELLE_GROUPE: Record<CleGroupe, string> = {
 };
 export const libelleGroupe = (cle: CleGroupe): string => LIBELLE_GROUPE[cle];
 
+const trierTaches = (l: TacheVue[]): TacheVue[] => [...l].sort((a, b) => (a.echeance ?? '9999').localeCompare(b.echeance ?? '9999') || a.creeeLe.localeCompare(b.creeeLe) || a.id.localeCompare(b.id));
+
 /**
- * C70-6 (règle n° 1, décision du pilote du 25.11) : l'écran n'a que les trois groupes de SA maquette (Cette semaine · Fin du mois · Un jour). Les tâches des mois suivants
- * (« Plus loin » du domaine) se rangent sous « Fin du mois », triées par date : jamais un quatrième groupe, jamais une tâche perdue. Le domaine garde « plus-loin » (ses tests).
+ * C70-6 (règle n° 1) puis C71-1 (B, R84) : l'écran n'a que les trois groupes de SA maquette (Cette semaine · Fin du mois · Un jour), rangés par la DATE RÉELLE.
+ * « Fin du mois » ne tient que ce qui tombe avant le dernier jour du mois courant ; ce qui dépasse le mois (« Plus loin » du domaine : décembre, 2027) se range
+ * sous « Un jour », triée par date, et la ligne dit sa date (`quandDite`) : jamais un quatrième groupe, jamais une tâche perdue. Une tâche dérivée du Planning
+ * déjà commencée mais qui court au-delà du mois (« du 01.08.2026 au 01.05.2027 ») n'est pas « Cette semaine » : c'est un projet de longue durée, sous « Un jour »
+ * avec sa fin dite. Le domaine garde « plus-loin » (ses tests). `maintenant` : l'instant de la vue (le jour du mois courant se tire de lui).
  */
-export function groupesDeLaMaquette(liste: AFaire): AFaire {
-  const loin = liste.groupes.find(g => g.cle === 'plus-loin');
-  if (!loin) return liste;
-  const fin = liste.groupes.find(g => g.cle === 'fin-du-mois');
-  const taches = [...(fin?.taches ?? []), ...loin.taches].sort((a, b) => (a.echeance ?? '9999').localeCompare(b.echeance ?? '9999') || a.creeeLe.localeCompare(b.creeeLe) || a.id.localeCompare(b.id));
-  const fusion = { cle: 'fin-du-mois' as CleGroupe, taches, cout: coutDe(taches) };
-  const groupes = liste.groupes.filter(g => g.cle !== 'plus-loin' && g.cle !== 'fin-du-mois');
-  const i = groupes.findIndex(g => g.cle === 'un-jour');
-  groupes.splice(i < 0 ? groupes.length : i, 0, fusion);
-  return { ...liste, groupes };
+export function groupesDeLaMaquette(liste: AFaire, maintenant?: Maintenant): AFaire {
+  const fin = maintenant === undefined ? null : finDuMois(aujourdhuiDe(maintenant));
+  const longue = (t: TacheVue): boolean => !!(fin && t.derivee && t.finPlanning && t.finPlanning > fin);
+  const deplacees: TacheVue[] = [];
+  const garde = liste.groupes.flatMap(g => {
+    if (g.cle === 'plus-loin') { deplacees.push(...g.taches); return []; }
+    if (g.cle !== 'cette-semaine' || !g.taches.some(longue)) return [g];
+    deplacees.push(...g.taches.filter(longue));
+    const reste = g.taches.filter(t => !longue(t));
+    return reste.length ? [{ ...g, taches: reste, cout: coutDe(reste) }] : [];
+  });
+  if (!deplacees.length) return liste;
+  const unJour = garde.find(g => g.cle === 'un-jour');
+  const taches = trierTaches([...deplacees, ...(unJour?.taches ?? [])]);
+  const fusion = { cle: 'un-jour' as CleGroupe, taches, cout: coutDe(taches) };
+  return { ...liste, groupes: [...garde.filter(g => g.cle !== 'un-jour'), fusion] };
+}
+
+/**
+ * C71-1 : la date dite sur la ligne d'une tâche rangée sous « Un jour » (sinon on ne sait pas pourquoi elle est si loin) : « sem. du 7 déc. », « fin mars 2027 »,
+ * « jusqu'au 1 mai 2027 » (projet du Planning commencé) ; l'année seulement si elle n'est pas celle de « maintenant ». Sans échéance : rien (jamais une date inventée).
+ */
+export function quandDite(t: Pick<TacheVue, 'echeance' | 'precision' | 'derivee' | 'finPlanning'>, maintenant: Maintenant): string | null {
+  if (!t.echeance) return null;
+  const auj = aujourdhuiDe(maintenant);
+  if (t.derivee && t.finPlanning && t.echeance <= dimancheDe(auj)) return `jusqu’au ${jourAvecAnnee(t.finPlanning, auj)}`;
+  if (t.precision === 'mois') {
+    const mois = MOIS_COURTS[Number(t.echeance.slice(5, 7)) - 1];
+    return `fin ${mois}${t.echeance.slice(0, 4) !== auj.slice(0, 4) ? ` ${t.echeance.slice(0, 4)}` : ''}`;
+  }
+  return `sem. du ${jourAvecAnnee(t.echeance, auj)}`;
 }
 
 /* ---------- coût ---------- */

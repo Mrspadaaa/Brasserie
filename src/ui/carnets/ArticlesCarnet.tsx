@@ -84,6 +84,12 @@ function PastillesArticles({ n, k, titre, onCartes, onComparer, cartes }: { n: n
   );
 }
 
+/** C71-8 : la quantité choisie (R54, « 1 kg ») et son prix, pour la carte de l'article choisi seulement. */
+const choisieDe = (k: ContenuCarnetV, id: string): { libelle: string; centimes: number } | undefined => {
+  const ch = k.choix;
+  return ch && ch.articleId === id && ch.quantite && typeof ch.prixCentimes === 'number' && ch.prixCentimes > 0 ? { libelle: ch.quantite.libelle, centimes: ch.prixCentimes } : undefined;
+};
+
 export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
   const { p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion, gerer, setGerer } = v;
   return (
@@ -106,7 +112,7 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
             {gererArticles(v)}
             {articleRange && r && !p.tableau && (
               <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>
-                <CarteArticle article={articleRange} taux={p.taux} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
+                <CarteArticle article={articleRange} choisie={choisieDe(k, articleRange.id)} taux={p.taux} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
             {p.tableau ? (<>
@@ -133,13 +139,13 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
                   if (seul) {
                     return (
                       <div className="cn-carte-complete">
-                        <CarteArticle article={seul} taux={p.taux} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
+                        <CarteArticle article={seul} choisie={choisieDe(k, seul.id)} taux={p.taux} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
                           onOuvrir={() => p.onOuvrirArticle(seul.id)} onVeille={v => p.onVeille?.(seul.id, v)} />
                       </div>
                     );
                   }
                   return reste.map(a => (
-                    <CarteArticle key={a.id} article={a} taux={p.taux} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
+                    <CarteArticle key={a.id} article={a} choisie={choisieDe(k, a.id)} taux={p.taux} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
                   ));
                 })()}
               </div>

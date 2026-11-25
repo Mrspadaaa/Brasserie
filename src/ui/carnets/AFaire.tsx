@@ -13,7 +13,7 @@ import type { CarnetDoc, MessageDoc, PrecisionTache } from '../../domain/carnets
 import { aFaireDe, type TacheVue } from '../../domain/carnets/taches';
 import type { FinancialPlan } from '../../domain/finance/types';
 import { pictoDe, PictoObjet } from './pictos';
-import { choixActuel, choixEcheances, coutDeTache, dansAVenir, groupesDeLaMaquette, libelleGroupe, montantDUnDevis, type Maintenant } from './afaireRegles';
+import { choixActuel, choixEcheances, coutDeTache, dansAVenir, groupesDeLaMaquette, libelleGroupe, montantDUnDevis, quandDite, type Maintenant } from './afaireRegles';
 import './afaire.css';
 
 export interface QuandTache { date: string | null; precision: PrecisionTache }
@@ -42,7 +42,7 @@ const pictoParDefaut = (c: CarnetDoc): React.ReactNode => (
 );
 
 export function AFaire({ carnets, maintenant, plans = [], messages = [], onCocher, onOuvrir, onEcheance, picto = pictoParDefaut }: AFaireProps) {
-  const liste = useMemo(() => groupesDeLaMaquette(aFaireDe(carnets, typeof maintenant === 'function' ? maintenant() : maintenant)), [carnets, maintenant]);
+  const liste = useMemo(() => groupesDeLaMaquette(aFaireDe(carnets, typeof maintenant === 'function' ? maintenant() : maintenant), maintenant), [carnets, maintenant]);
   const parId = useMemo(() => new Map(carnets.map(c => [c.id, c])), [carnets]);
   const [cochees, setCochees] = useState<ReadonlySet<string>>(new Set());
   const [quand, setQuand] = useState<TacheVue | null>(null);
@@ -117,6 +117,7 @@ export function AFaire({ carnets, maintenant, plans = [], messages = [], onCoche
                     <span className="af-sous">
                       {c && <span className="af-picto" aria-hidden>{picto(c)}</span>}
                       {(!t.derivee || t.texte !== t.carnetTitre) && <span className="af-nom">{t.carnetTitre}</span>}
+                      {g.cle === 'un-jour' && quandDite(t, maintenant) && <span className="af-plus af-date">· {quandDite(t, maintenant)}</span>}
                       {devis && cout && <span className="af-plus">· {cout.texte}</span>}
                       {t.derivee && <span className="af-plus">{t.texte === t.carnetTitre ? 'au Planning' : '· au Planning'}</span>}
                       {avenir && <span className="af-plus af-avenir">· dans À venir</span>}

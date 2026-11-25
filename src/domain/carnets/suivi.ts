@@ -121,7 +121,16 @@ export function avantApresDe(c: CarnetDoc, messages: readonly MessageDoc[] = [])
 
 export interface Citation { texte: string; sorte: SorteEtiquette | 'choix'; messageId?: string; le?: string }
 
-const RANG_POURQUOI: Partial<Record<SorteEtiquette | 'choix', number>> = { choix: 0, retenu: 1, pourquoi: 2, achat: 3, veille: 4 };
+const RANG_POURQUOI: Partial<Record<SorteEtiquette | 'choix', number>> = { choix: 0, retenu: 1, pourquoi: 2, achat: 3, veille: 4, ecart: 5 };
+
+/** C71-3 : ce qu'il a écrit en écartant une option (« bruyant et il ne sort pas la buée du plafond ») : sa raison d'écart répond déjà « pourquoi pas celle-là » ; « pas pris » (la fermeture), « non » et un refus bref (« non, en fait » : moins de quatre mots) ne disent rien. */
+export function raisonDEcart(f: Facon): { texte: string; le?: string } | null {
+  if (etatOption(f) !== 'ecartee') return null;
+  const dernier = [...(f.suivi?.historique ?? [])].reverse().find(p => p.etat === 'ecartee');
+  const texte = (dernier?.raison ?? f.raison ?? '').trim();
+  if (!texte || ['pas pris', 'non'].includes(texte.toLowerCase()) || texte.split(/[^\p{L}\p{N}]+/u).filter(Boolean).length < 4) return null;
+  return { texte, ...(dernier?.le ? { le: dernier.le } : {}) };
+}
 /** La première phrase d'un message (sous-chaîne exacte) : la citation quand l'étiquette ne dit pas laquelle. */
 const premierePhrase = (t: string): string => {
   const s = t.trim();
@@ -148,6 +157,10 @@ export function pourquoiDe(c: CarnetDoc, messages: readonly MessageDoc[]): Citat
       if (!mot || trouvees.some(t => t.texte === mot)) continue;
       trouvees.push({ texte: mot, sorte: e.sorte, messageId: m.id, le: m.carnetMessage.le, rang });
     }
+  }
+  if (retenue) for (const f of c.carnet.facons) {
+    const r = f.id === retenue.id ? null : raisonDEcart(f);
+    if (r && !trouvees.some(t => t.texte === r.texte)) trouvees.push({ texte: r.texte, sorte: 'ecart', ...(r.le ? { le: r.le } : {}), rang: RANG_POURQUOI.ecart! });
   }
   const choisies = [...trouvees].sort((a, b) => a.rang - b.rang || (b.le ?? '').localeCompare(a.le ?? '')).slice(0, 2);
   if (!choisies.length) return null;

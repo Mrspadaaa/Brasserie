@@ -464,7 +464,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       {/* f13 tour 3 (critique n° 1) : nommée pour que, sous la bande du carnet tout juste créé, elle s'élargisse aux bords de l'écran (carnets.css) */}
-      <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{fixe}{ecran}</div>
+      <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{/* C71-6 : tant que la carte « rangé pour toi » est posée, elle seule dit le titre : pas de second titre dans le bandeau « Carnet créé · titre tiré de votre phrase » */}{feuilleNode ? null : fixe}{ecran}</div>
       {champ}
       {feuilleNode}
     </div>

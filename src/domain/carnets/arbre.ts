@@ -132,7 +132,7 @@ export interface ArbreCarnets { domaines: NoeudDomaine[]; aRanger: CarnetDoc[]; 
  * d'abord. Ordre stable : domaines dans l'ordre de `DOMAINES`, carnets du plus récent au plus ancien (id en départage), sous-domaines
  * alphabétiques (« sans » en dernier). Passer aussi les archivés (`lireCarnets(items, { archives: true })`) pour que les résolus s'y trouvent.
  */
-export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots, sousParMots?: (texte: string) => string | null): ArbreCarnets {
+export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots, sousParMots?: (texte: string, domaine: DomaineCarnet) => string | null): ArbreCarnets {
   const ouverts = new Map<DomaineCarnet, CarnetDoc[]>();
   const groupes = new Map<DomaineCarnet, Map<string | null, CarnetDoc[]>>();
   const poses = new Set<string>(); /* `domaine/sous-domaine` qui ont au moins un carnet à catégorie posée */
@@ -149,8 +149,8 @@ export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots, sousPa
     if (!d) { aRanger.push(c); continue; }
     if (genreDe(c) === 'probleme') { ouverts.set(d, [...(ouverts.get(d) ?? []), c]); continue; }
     const g = groupes.get(d) ?? new Map<string | null, CarnetDoc[]>();
-    /* C70-4 : un carnet de la brasserie sans catégorie dit sa partie par ses mots (Chambre froide › Fermentation) au lieu de tomber dans un « Autres » muet ; l'affichage seulement, rien n'est écrit */
-    const chemin = c.carnet.categorie?.chemin[0] ?? (d === 'brasserie' && sousParMots ? sousParMots(c.title) ?? (c.carnet.phrase ? sousParMots(c.carnet.phrase) : null) : null);
+    /* C70-4 : un carnet sans catégorie dit sa partie (C71-4 : de tout domaine, pas seulement la brasserie) par ses mots (Chambre froide › Fermentation) au lieu de tomber dans un « Autres » muet ; l'affichage seulement, rien n'est écrit */
+    const chemin = c.carnet.categorie?.chemin[0] ?? (sousParMots ? sousParMots(c.title, d) ?? (c.carnet.phrase ? sousParMots(c.carnet.phrase, d) : null) : null);
     g.set(chemin, [...(g.get(chemin) ?? []), c]);
     if (c.carnet.categorie?.chemin[0]) poses.add(`${d}/${chemin}`);
     groupes.set(d, g);
