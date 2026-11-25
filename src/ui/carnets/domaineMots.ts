@@ -44,10 +44,14 @@ const PARTIES: [string, string[]][] = [
   ['Conditionnement', ['embouteill*', 'bouteille', 'soutireuse', 'isobarique', 'capsuleuse', 'etiqueteuse', 'fut', 'futs', 'keg', 'canette*', 'sertisseuse']]
 ];
 
+/** C70-4/C70-8 : qui parle d'un client, d'une commande ou d'une vente compte des bouteilles VENDUES, il ne parle pas de l'étape de mise en bouteille. */
+const COMMERCE = ['client*', 'commande*', 'command*', 'vend*', 'vente*', 'revendeur*', 'acheteur*', 'mariage*', 'marche', 'livraison*', 'devis', 'facture*'];
+
 /** La partie de la brasserie dont parle un texte (« Brassage », « Fermentation », « Conditionnement ») ; `null` si aucun mot ne la dit. */
 export function sousDomaineParMots(texte: string): string | null {
   const ms = mots(texte);
+  const commerce = combien(COMMERCE, ms) > 0;
   let meilleur: string | null = null, n = 0;
-  for (const [partie, liste] of PARTIES) { const c = combien(liste, ms); if (c > n) { n = c; meilleur = partie; } }
+  for (const [partie, liste] of PARTIES) { if (commerce && partie === 'Conditionnement') continue; const c = combien(liste, ms); if (c > n) { n = c; meilleur = partie; } }
   return meilleur;
 }

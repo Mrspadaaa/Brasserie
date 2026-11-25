@@ -119,7 +119,7 @@
 .cn-place td.cn-mono { white-space: nowrap; text-align: right; padding-right: 12px; }
 .cn-place td:last-child { white-space: nowrap; width: 1%; }
 /* R65 (C67B-3) : une valeur de texte longue (« agrumes, pamplemousse, fruits tropicaux ») se replie ; en nowrap elle élargissait le tableau au-delà des 390 px (curseur hors cadre, valeurs coupées, défilement horizontal) */
-.cn-place td.cn-place-long { white-space: normal; overflow-wrap: anywhere; width: auto; min-width: 0; text-align: right; }
+.cn-place td.cn-place-long { white-space: normal; overflow-wrap: break-word; /* C70-9 : jamais « pamplemous-se » : un mot long ne se coupe qu'en dernier recours */ font-family: inherit; width: auto; min-width: 0; text-align: right; }
 .cn-place { table-layout: auto; max-width: 100%; }
 /* C69-13 : une valeur longue (arômes) passe SOUS son libellé, sur toute la largeur (jamais une colonne étroite à côté, un mot par ligne) */
 .cn-place tr.cn-place-ligne-longue { display: block; padding: 8px 0; border-top: 1px solid var(--c-line); }

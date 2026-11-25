@@ -221,7 +221,7 @@ export interface ComparerProps {
   onRetour: () => void;
   onOuvrirArticle?: (articleId: string) => void;
   /** R54 : l'article que le bouton nomme (le 1er du classement au kilo), pour que l'écran Choisir ouvre celui-là. */
-  onChoisir?: (articleId?: string) => void;
+  onChoisir?: (articleId?: string, quantite?: { kg: number; libelle: string; centimes: number; estime?: boolean }) => void;
   /** C48-1 : relire la page d'un article lu dont le prix est « ? » (geste du brasseur) ; absent : pas de bouton. */
   onRelire?: (articleId: string) => void | Promise<void>;
   /** ESCALADER-SUR-MANQUE : relire avec l'IA forte un article dont un champ manque ou dont les lectures se contredisent ; absent : pas de bouton. */
@@ -535,6 +535,13 @@ export function Comparer(p: ComparerProps) {
     ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour } : {}; })() : {}),
     tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null
   });
+  /* C70-1 : « Choisir · MotlerHops, 1 kg » emporte CETTE quantité et son prix au kilo rendu (≈40), jamais le sachet de 50 g de l'article */
+  const quantiteChoisie = (() => {
+    if (!matiere || !premier) return undefined;
+    const a = enLice.find(x => x.id === premier.articleId);
+    const pk = a ? prixAuKilo(a, pour, p.taux) : null;
+    return pk ? { kg: pour, libelle: texteQuantite(pour), centimes: pk.estime ? Math.round(pk.chf * pour) * 100 : Math.round(pk.chf * pour * 100), ...(pk.estime ? { estime: true } : {}) } : undefined;
+  })();
   const compromisMat = !compromisIA && matiere ? compromisMatiere(enLice, pour, p.taux) : null;
   const compromisAffiche = compromisIA ?? compromisMat ?? compromisLocal;
   return (
@@ -685,7 +692,7 @@ export function Comparer(p: ComparerProps) {
             </table>
           )}
           <ARelire articles={aRelire} />
-          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={() => p.onChoisir!(premier?.articleId)}>{libelleBouton}</button>}
+          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={() => p.onChoisir!(premier?.articleId, quantiteChoisie)}>{libelleBouton}</button>}
         </>
       )}
     </article>

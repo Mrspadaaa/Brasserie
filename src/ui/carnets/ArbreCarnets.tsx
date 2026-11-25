@@ -14,7 +14,7 @@ import { etatDe, LIBELLE_ETAT, genreDe } from '../../domain/carnets/suivi';
 import { DOMAINE_LIBELLE } from '../../domain/carnets/domaines';
 import { chercherCarnet, requete, type Trouve } from '../../domain/carnets/recherche';
 import type { AncienneNote } from '../../domain/carnets/anciens';
-import { domaineParMots } from './domaineMots';
+import { domaineParMots, sousDomaineParMots } from './domaineMots';
 import { PictoDomaine } from './Domaines';
 import { Bandeau } from './Bandeau';
 import { AnciennesNotes } from './AnciennesNotes';
@@ -153,7 +153,7 @@ export function ListeArbre(p: ListeArbreProps) {
     return !!t;
   };
   const sources = p.tous.filter(c => passeFiltre(c, p.filtre) && garde(c));
-  const arbre = arbreDe(sources, domaineParMots);
+  const arbre = arbreDe(sources, domaineParMots, sousDomaineParMots);
   const coup = coupDOeil(p.tous, annee);
   const veilles = carnetsAvecVeille(vivants);
   const basculer = (cle: string) => setOuverts(s => { const n = new Set(s); if (n.has(cle)) n.delete(cle); else n.add(cle); return n; });
@@ -174,16 +174,19 @@ export function ListeArbre(p: ListeArbreProps) {
             const cle = `${n.domaine}/${g.chemin ?? ' autres'}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
             const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
+            const lignes = g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
             return (
               <React.Fragment key={cle}>
+                {/* C70-4 : un sous-domaine lu dans les mots (aucune catégorie posée) garde ses lignes dans le DOM, cachées, tant qu'il est replié (comme « Autres » avant lui : la recherche et le lecteur d'écran les trouvent) */}
+                {g.deduit && !ouvert && <div hidden>{lignes}</div>}
                 <button type="button" className="cnl-sd" aria-expanded={ouvert} onClick={() => basculer(cle)}>
                   <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{nom}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
                   {!ouvert && g.chemin !== null && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
                 {g.chemin === null
                   /* « Autres » reste dans le DOM, caché tant qu'il est replié (jamais à plat sous le domaine) */
-                  ? <div hidden={!ouvert}>{g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}</div>
-                  : ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
+                  ? <div hidden={!ouvert}>{lignes}</div>
+                  : ouvert && lignes}
               </React.Fragment>
             );
           })}

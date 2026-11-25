@@ -13,6 +13,7 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { detailPrix, prixUnique } from './PrixPastille';
+import { prixAuKilo } from './tableauRegles';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
@@ -47,7 +48,7 @@ export type ChoisirProps = {
     etape: 'choisir';
     article: ArticleV;
     /** R54 : la quantité cochée sur la fiche (1 kg) et son prix en francs : ils font le prix annoncé et celui qui part dans À venir. */
-    quantite?: { kg: number; libelle: string; centimes: number };
+    quantite?: { kg: number; libelle: string; centimes: number; estime?: boolean };
     sur: number;
     valeurs: ValeurPlaceeV[];
     autres: { article: ArticleV; rang: number; mesure?: string }[];
@@ -257,7 +258,7 @@ export function budgetMaxDuCarnet(c: { criteres?: readonly { texte: string }[]; 
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const a = p.article;
   /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » ; R54 : avec une quantité cochée, son prix (1 kg : 62,20 CHF), jamais celui d'un autre sachet */
-  const prix = p.quantite ? prixTexte(p.quantite.centimes, 'CHF') : prixChoix(a, p.taux);
+  const prix = p.quantite ? `${p.quantite.estime ? '≈' : ''}${prixTexte(p.quantite.centimes, 'CHF') ?? ''}` : prixChoix(a, p.taux);
   const detail = p.quantite ? p.quantite.libelle : detailPrix(a, p.taux);
   /* P16 : places et pourquoi calculés sur le carnet (valeurs et rangs), jamais un champ vide à taper ; l'IA, si elle a dit, prime.
      n° 10 (g05-11) : chaque valeur chiffrée porte sa réglette ; les écartés du tableau sont dits avec leur ✕ et leur raison. */
@@ -280,7 +281,23 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   }, [p.carnet, a.id]);
   /* R54 : avec une quantité cochée (1 kg), la place « Prix » du sachet de l'article dirait 6,70 sous le 62,20 du haut : elle se tait, le classement au kilo se lit dans Comparer */
   const valeursToutes: (ValeurPlaceeV & { place?: Place })[] = p.valeurs.length ? p.valeurs : calc.valeurs;
-  const valeurs = p.quantite ? valeursToutes.filter(v => v.place?.nom !== 'prix') : valeursToutes;
+  /* C70-2 : à la quantité cochée, la place « Prix » se dit AU KILO RENDU, à cette quantité, pour tous les articles (jamais le prix sans TVA d'import du sachet : bornes 68 et 80 quand l'écran dit 73,80) ;
+     ses bornes sont des prix que l'écran montre (≈40 chez le choisi, 80 sur la carte de l'autre). */
+  const prixKg = useMemo(() => {
+    const q = p.quantite;
+    if (!q) return null;
+    const lignes = [a, ...p.autres.map(o => o.article)].map(x => ({ id: x.id, pk: prixAuKilo(x as never, q.kg, p.taux) }));
+    const moi = lignes.find(l => l.id === a.id)?.pk;
+    const connus = lignes.flatMap(l => (l.pk ? [Math.round(l.pk.chf)] : []));
+    if (!moi || connus.length < 2) return null;
+    const mien = Math.round(moi.chf);
+    const rang = 1 + connus.filter(v => v < mien).length;
+    const place: Place = { nom: 'prix', libelle: 'prix', unite: 'CHF/kg', sens: 'moins', texte: `${moi.estime ? '≈' : ''}${mien} CHF/kg · ${q.libelle}`, rang, sur: connus.length, valeur: mien * 100, meilleure: Math.min(...connus) * 100, pire: Math.max(...connus) * 100, toutes: connus.map(v => v * 100), critere: false };
+    return place;
+  }, [p.quantite, a.id, p.autres, p.taux]);
+  const valeurs = p.quantite
+    ? valeursToutes.flatMap(v => (v.place?.nom !== 'prix' ? [v] : prixKg ? [{ nom: nomPlace(prixKg), texte: prixKg.texte, rang: prixKg.rang!, place: prixKg } as ValeurPlaceeV & { place?: Place }] : []))
+    : valeursToutes;
   /* C69-13 : une valeur dit sa place (« 1er sur 2 ») ou n'en dit rien ; la colonne n'existe que si au moins une la dit */
   const aUnePlace = valeurs.some(v => ((v.place ? placeTexte(v.place) : v.rang ? rangTexte(v.rang) : '') ?? '').trim() !== '');
   const propose = p.pourquoiPropose ?? calc.pourquoi ?? '';
@@ -325,7 +342,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={`cn-mono${v.texte.length > 14 ? ' cn-place-long' : ''}`}>{v.texte}</td>{aUnePlace && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
+                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : 'cn-mono'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
                     {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete /></td></tr>}
                   </React.Fragment>
                 );

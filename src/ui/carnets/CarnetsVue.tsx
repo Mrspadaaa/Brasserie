@@ -23,7 +23,8 @@ import type { Annonce, AReprendre, AvisIA, CarnetsVueProps, Jointe, Retour, Reto
 import { useDonneesCarnets } from './useDonneesCarnets';
 import { useNavigationCarnet } from './useNavigationCarnet';
 import { retourDeMessage } from './retourCarnet';
-import { creerRangementCarnets } from './rangementCarnets';
+import { creerRangementCarnets, garderAPartRange } from './rangementCarnets';
+import { DOMAINE_LIBELLE, type DomaineCarnet } from '../../domain/carnets/domaines';
 import { suiviLocal } from '../../domain/carnets/lecture';
 import { sansArticleEnLecture } from '../../domain/carnets/comptes';
 import { avecBon, carnetAOuvrirDepuisBarre, carteEnBarre, garderBons, lectureIci, lireBons, type Bons } from './lectureRegles';
@@ -36,7 +37,7 @@ import { ecranCarnet } from './ecransCarnet';
 import { deplacerLesLignesDuMessage, type FiltreOeil, type OngletListe } from './listeRegles';
 import { FeuilleRangement, cheminDit, type ModeFeuille } from './FeuilleRangement';
 import { accepterPropositionSuivi } from '../../domain/carnets/fil';
-import { garderMessageAPart, poserDomaine, rattacherMessage } from '../../domain/carnets/operations';
+import { poserDomaine, rattacherMessage } from '../../domain/carnets/operations';
 import { titreCourt } from '../../domain/carnets/titreCourt';
 import { poserGenre } from '../../domain/carnets/suivi';
 import { reduirePhoto } from './photo';
@@ -434,13 +435,16 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const propDeplace = neuf ? (m.carnetMessage.propositionsSuivi ?? []).find(x => x.sorte === 'deplacer' && x.carnetId === c.id && x.versCarnetId) : undefined;
     const vise = enAttente ? c : propDeplace?.versCarnetId ? tous.find(x => x.id === propDeplace.versCarnetId) : undefined;
     const cible = vise ? { id: vise.id, titre: vise.title, chemin: cheminDit(vise) } : undefined;
+    /* C70-3 : ce que l'IA dit du carnet neuf d'une phrase en attente ; la carte le montre, « Garder à part » le pose */
+    const dit = enAttente ? m.carnetMessage.aRattacher?.neuf : undefined;
+    const nouveau = dit ? { titre: titreCourt(m.carnetMessage.texte), genre: dit.genre ?? 'idee' as const, ...(dit.etat ? { etat: dit.etat } : {}), chemin: [dit.domaine && DOMAINE_LIBELLE[dit.domaine as DomaineCarnet], ...(dit.chemin ?? [])].filter(Boolean).join(' › ') || null } : undefined;
     /* C68-12 : « OK » pose ce que la carte propose (la tâche), il n'attend pas dans le carnet */
     const poserLaTache = () => {
       const i = (m.carnetMessage.propositionsSuivi ?? []).findIndex(x => x.sorte === 'tache' && x.carnetId === c.id && x.texte);
       if (i >= 0) appliquer(accepterPropositionSuivi(magasin.lire(), { messageId: m.id, index: i, le: maintenant().toISOString() }));
     };
-    return <FeuilleRangement message={m} carnet={c} autres={autresPour(c.id, m.carnetMessage.texte)} mode={feuilleRang.mode} onMode={mo => setFeuilleRang({ messageId: m.id, mode: mo })} {...(cible ? { cible } : {})} enAttente={enAttente}
-      onGarder={enAttente ? () => { geste(garderMessageAPart(magasin.lire(), { messageId: m.id, id: nouvelIdCarnet('CARNET'), titre: titreCourt(m.carnetMessage.texte) })); fermer(); } : undefined}
+    return <FeuilleRangement message={m} carnet={c} autres={autresPour(c.id, m.carnetMessage.texte)} mode={feuilleRang.mode} onMode={mo => setFeuilleRang({ messageId: m.id, mode: mo })} {...(cible ? { cible } : {})} {...(nouveau ? { nouveau } : {})} enAttente={enAttente}
+      onGarder={enAttente ? () => { geste(garderAPartRange(magasin.lire(), { messageId: m.id, id: nouvelIdCarnet('CARNET'), titre: titreCourt(m.carnetMessage.texte), le: maintenant().toISOString(), ...(dit ? { neuf: dit } : {}) })); fermer(); } : undefined}
       onOK={() => { poserLaTache(); fermer(); }} onFermer={fermer}
       onAnnuler={() => {
         /* en attente, rien n'a été écrit que le message lui-même : Annuler le retire (l'inverse le remet) */

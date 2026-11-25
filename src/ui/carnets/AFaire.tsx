@@ -1,6 +1,6 @@
 /**
  * D451, voie « afaire » : le corps de l'écran « À faire » (maquettes3/v01, écran `afaire`) : les tâches ouvertes de tous les problèmes, en
- * trois groupes (Cette semaine, Fin du mois, Un jour ; « Plus loin » pour les mois suivants). Chaque ligne : case, texte, sous-ligne
+ * trois groupes (Cette semaine, Fin du mois, Un jour ; les mois suivants se rangent sous « Fin du mois », C70-6). Chaque ligne : case, texte, sous-ligne
  * (picto du problème, son nom, · devis, · « dans À venir »), jeton de coût à droite (« ≈ 35 CHF », « 540 CHF »).
  *
  * Contrôlé par props : aucun magasin lu, aucune écriture. La rangée de filtres (Arbre · À faire n · cloche) est celle de la liste.
@@ -13,7 +13,7 @@ import type { CarnetDoc, MessageDoc, PrecisionTache } from '../../domain/carnets
 import { aFaireDe, type TacheVue } from '../../domain/carnets/taches';
 import type { FinancialPlan } from '../../domain/finance/types';
 import { pictoDe, PictoObjet } from './pictos';
-import { choixActuel, choixEcheances, coutDeTache, dansAVenir, libelleGroupe, montantDUnDevis, type Maintenant } from './afaireRegles';
+import { choixActuel, choixEcheances, coutDeTache, dansAVenir, groupesDeLaMaquette, libelleGroupe, montantDUnDevis, type Maintenant } from './afaireRegles';
 import './afaire.css';
 
 export interface QuandTache { date: string | null; precision: PrecisionTache }
@@ -42,7 +42,7 @@ const pictoParDefaut = (c: CarnetDoc): React.ReactNode => (
 );
 
 export function AFaire({ carnets, maintenant, plans = [], messages = [], onCocher, onOuvrir, onEcheance, picto = pictoParDefaut }: AFaireProps) {
-  const liste = useMemo(() => aFaireDe(carnets, typeof maintenant === 'function' ? maintenant() : maintenant), [carnets, maintenant]);
+  const liste = useMemo(() => groupesDeLaMaquette(aFaireDe(carnets, typeof maintenant === 'function' ? maintenant() : maintenant)), [carnets, maintenant]);
   const parId = useMemo(() => new Map(carnets.map(c => [c.id, c])), [carnets]);
   const [cochees, setCochees] = useState<ReadonlySet<string>>(new Set());
   const [quand, setQuand] = useState<TacheVue | null>(null);

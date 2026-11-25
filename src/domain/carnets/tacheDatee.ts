@@ -29,3 +29,23 @@ export function tacheDatee(phrase: string, maintenant: Date): TacheDatee | null 
   const echeance = echeanceDe(iso, 'semaine');
   return echeance ? { texte, echeance } : null;
 }
+
+const EN_MOIS = new RegExp(String.raw`\ben\s+(${MOIS.join('|')})\b`);
+
+export interface EcheanceDite { echeance: string; precision: 'semaine' | 'mois' }
+
+/**
+ * C70-5 : la date que le brasseur a DITE dans sa phrase prime sur celle qu'une réponse de l'IA suppose (l'IA range « avant le 12 décembre » dans « semaine », « en mai » dans « mois »
+ * du mois courant : la date se perdait). Deux formes fermées : une échéance avec jour (`tacheDatee`, précision semaine) ; « en <mois> » (précision mois : le lundi de la dernière semaine de ce
+ * mois, l'an prochain si le mois est passé). Rien d'autre n'est deviné ; `null` : la phrase ne dit pas de date, l'IA garde la main.
+ */
+export function echeanceDite(phrase: string, maintenant: Date): EcheanceDite | null {
+  const datee = tacheDatee(phrase, maintenant);
+  if (datee) return { echeance: datee.echeance, precision: 'semaine' };
+  const m = EN_MOIS.exec(sansAccent(phrase));
+  if (!m) return null;
+  const mois = MOIS.indexOf(m[1]);
+  const an = maintenant.getFullYear() + (mois < maintenant.getMonth() ? 1 : 0);
+  const echeance = echeanceDe(`${an}-${String(mois + 1).padStart(2, '0')}-01`, 'mois');
+  return echeance ? { echeance, precision: 'mois' } : null;
+}

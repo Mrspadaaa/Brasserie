@@ -90,7 +90,9 @@ export const SORTES_ETIQUETTE: readonly SorteEtiquette[] = ['constat', 'piste', 
 /** Un jeton sous une bulle du fil. Montant absent = inconnu (jamais 0) ; `estime` : « ≈ ». */
 export interface Etiquette { carnetId: string; sorte: SorteEtiquette; texte?: string; montantCentimes?: number; devise?: string; estime?: true; optionId?: string; origine: Origine }
 /** « rattaché : « … » » : la citation est une sous-chaîne exacte du message. */
-export interface Rattache { carnetId: string; citation: string }
+/** C70-3 : ce que l'IA dit du carnet NEUF que la phrase créerait (genre, état d'un problème, chemin, domaine) : la carte « Garder à part » le montre et le pose. */
+export interface NeufDit { genre?: GenreCarnet; etat?: EtatSuivi; chemin?: string[]; domaine?: string }
+export interface Rattache { carnetId: string; citation: string; neuf?: NeufDit }
 export type SorteProposition = 'tache' | 'retenir' | 'dater' | 'resoudre' | 'veiller' | 'deplacer';
 export const SORTES_PROPOSITION: readonly SorteProposition[] = ['tache', 'retenir', 'dater', 'resoudre', 'veiller', 'deplacer'];
 /** Ce que l'IA propose sans l'écrire (carte « OK · Non ») : la tâche, retenir, dater, résoudre, veiller, écrire dans un autre carnet. */
@@ -612,8 +614,23 @@ function lireEtiquette(v: unknown): Etiquette | null {
   };
 }
 
+const GENRES_DITS: readonly string[] = ['probleme', 'memo', 'recolte', 'idee', 'achat'];
+const ETATS_DITS: readonly string[] = ['note', 'cherche', 'decide'];
+function lireNeufDit(v: unknown): NeufDit | undefined {
+  if (!estObjet(v)) return undefined;
+  const chemin = Array.isArray(v.chemin) ? v.chemin.filter((s): s is string => typeof s === 'string' && s.trim() !== '').slice(0, 2) : [];
+  const n: NeufDit = {
+    ...(typeof v.genre === 'string' && GENRES_DITS.includes(v.genre) ? { genre: v.genre as GenreCarnet } : {}),
+    ...(typeof v.etat === 'string' && ETATS_DITS.includes(v.etat) ? { etat: v.etat as EtatSuivi } : {}),
+    ...(chemin.length ? { chemin } : {}),
+    ...(typeof v.domaine === 'string' && v.domaine.trim() ? { domaine: v.domaine } : {})
+  };
+  return Object.keys(n).length ? n : undefined;
+}
 function lireRattache(v: unknown): Rattache | undefined {
-  return estObjet(v) && texteNonVide(v.carnetId) && texteNonVide(v.citation) ? { ...inconnues(v, ['carnetId', 'citation']), carnetId: v.carnetId, citation: v.citation } : undefined;
+  if (!(estObjet(v) && texteNonVide(v.carnetId) && texteNonVide(v.citation))) return undefined;
+  const neuf = lireNeufDit(v.neuf);
+  return { ...inconnues(v, ['carnetId', 'citation', 'neuf']), carnetId: v.carnetId, citation: v.citation, ...(neuf ? { neuf } : {}) };
 }
 
 const CLES_PROPOSITION_SUIVI = ['sorte', 'carnetId', 'texte', 'optionId', 'echeance', 'precision', 'coutCentimes', 'devise', 'versCarnetId', 'origine'];

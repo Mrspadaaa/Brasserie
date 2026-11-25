@@ -14,7 +14,7 @@ import { plier } from '../../domain/carnets/domaines';
 import type { CarnetDoc, MessageDoc, PrecisionTache, Tache } from '../../domain/carnets/modele';
 import { idPlanDuCarnet, planAuCalendrier, planSuitCarnet } from '../../domain/carnets/operations';
 import { etatDe, genreDe, jourLocal, optionRetenue } from '../../domain/carnets/suivi';
-import { echeanceDe, finDuMois, type CleGroupe, type TacheVue } from '../../domain/carnets/taches';
+import { coutDe, echeanceDe, finDuMois, type AFaire, type CleGroupe, type TacheVue } from '../../domain/carnets/taches';
 import type { FinancialPlan } from '../../domain/finance/types';
 
 /** Un instant, ou l'horloge de la vue (`maintenant` de CarnetsVue : une fonction qui rend la date). */
@@ -33,6 +33,22 @@ export const LIBELLE_GROUPE: Record<CleGroupe, string> = {
   'cette-semaine': 'Cette semaine', 'fin-du-mois': 'Fin du mois', 'plus-loin': 'Plus loin', 'un-jour': 'Un jour'
 };
 export const libelleGroupe = (cle: CleGroupe): string => LIBELLE_GROUPE[cle];
+
+/**
+ * C70-6 (règle n° 1, décision du pilote du 25.11) : l'écran n'a que les trois groupes de SA maquette (Cette semaine · Fin du mois · Un jour). Les tâches des mois suivants
+ * (« Plus loin » du domaine) se rangent sous « Fin du mois », triées par date : jamais un quatrième groupe, jamais une tâche perdue. Le domaine garde « plus-loin » (ses tests).
+ */
+export function groupesDeLaMaquette(liste: AFaire): AFaire {
+  const loin = liste.groupes.find(g => g.cle === 'plus-loin');
+  if (!loin) return liste;
+  const fin = liste.groupes.find(g => g.cle === 'fin-du-mois');
+  const taches = [...(fin?.taches ?? []), ...loin.taches].sort((a, b) => (a.echeance ?? '9999').localeCompare(b.echeance ?? '9999') || a.creeeLe.localeCompare(b.creeeLe) || a.id.localeCompare(b.id));
+  const fusion = { cle: 'fin-du-mois' as CleGroupe, taches, cout: coutDe(taches) };
+  const groupes = liste.groupes.filter(g => g.cle !== 'plus-loin' && g.cle !== 'fin-du-mois');
+  const i = groupes.findIndex(g => g.cle === 'un-jour');
+  groupes.splice(i < 0 ? groupes.length : i, 0, fusion);
+  return { ...liste, groupes };
+}
 
 /* ---------- coût ---------- */
 

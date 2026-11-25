@@ -121,7 +121,7 @@ export function poserCategorie(etat: Etat, args: { carnetId: string; chemin: rea
 
 const plusRecentD = (a: CarnetDoc, b: CarnetDoc): number => b.carnet.creeLe.localeCompare(a.carnet.creeLe) || a.id.localeCompare(b.id);
 
-export interface GroupeArbre { chemin: string | null; carnets: CarnetDoc[] }
+export interface GroupeArbre { chemin: string | null; carnets: CarnetDoc[]; /** C70-4 : le sous-domaine est lu dans les mots des titres (aucun carnet du groupe n'a de catégorie posée) */ deduit?: true }
 export interface NoeudDomaine { domaine: DomaineCarnet; /** les problèmes ouverts, à plat */ ouverts: CarnetDoc[]; /** les autres genres, repliés par sous-domaine (`null` : sans sous-domaine) */ groupes: GroupeArbre[]; n: number }
 export interface ResolusAnnee { annee: number | null; carnets: CarnetDoc[] }
 export interface ArbreCarnets { domaines: NoeudDomaine[]; aRanger: CarnetDoc[]; resolus: ResolusAnnee[] }
@@ -132,9 +132,10 @@ export interface ArbreCarnets { domaines: NoeudDomaine[]; aRanger: CarnetDoc[]; 
  * d'abord. Ordre stable : domaines dans l'ordre de `DOMAINES`, carnets du plus récent au plus ancien (id en départage), sous-domaines
  * alphabétiques (« sans » en dernier). Passer aussi les archivés (`lireCarnets(items, { archives: true })`) pour que les résolus s'y trouvent.
  */
-export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots): ArbreCarnets {
+export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots, sousParMots?: (texte: string) => string | null): ArbreCarnets {
   const ouverts = new Map<DomaineCarnet, CarnetDoc[]>();
   const groupes = new Map<DomaineCarnet, Map<string | null, CarnetDoc[]>>();
+  const poses = new Set<string>(); /* `domaine/sous-domaine` qui ont au moins un carnet à catégorie posée */
   const aRanger: CarnetDoc[] = [];
   const resolus = new Map<number | null, CarnetDoc[]>();
   for (const c of [...carnets].sort(plusRecentD)) {
@@ -148,14 +149,16 @@ export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots): Arbre
     if (!d) { aRanger.push(c); continue; }
     if (genreDe(c) === 'probleme') { ouverts.set(d, [...(ouverts.get(d) ?? []), c]); continue; }
     const g = groupes.get(d) ?? new Map<string | null, CarnetDoc[]>();
-    const chemin = c.carnet.categorie?.chemin[0] ?? null;
+    /* C70-4 : un carnet de la brasserie sans catégorie dit sa partie par ses mots (Chambre froide › Fermentation) au lieu de tomber dans un « Autres » muet ; l'affichage seulement, rien n'est écrit */
+    const chemin = c.carnet.categorie?.chemin[0] ?? (d === 'brasserie' && sousParMots ? sousParMots(c.title) ?? (c.carnet.phrase ? sousParMots(c.carnet.phrase) : null) : null);
     g.set(chemin, [...(g.get(chemin) ?? []), c]);
+    if (c.carnet.categorie?.chemin[0]) poses.add(`${d}/${chemin}`);
     groupes.set(d, g);
   }
   const noeuds: NoeudDomaine[] = DOMAINES.flatMap(domaine => {
     const o = ouverts.get(domaine) ?? [];
     const g = [...(groupes.get(domaine) ?? new Map<string | null, CarnetDoc[]>()).entries()]
-      .map(([chemin, liste]) => ({ chemin, carnets: liste }))
+      .map(([chemin, liste]) => ({ chemin, carnets: liste, ...(chemin !== null && !poses.has(`${domaine}/${chemin}`) ? { deduit: true as const } : {}) }))
       .sort((x, y) => (x.chemin === null ? 1 : 0) - (y.chemin === null ? 1 : 0) || plie(x.chemin ?? '').localeCompare(plie(y.chemin ?? ''), 'fr'));
     const n = o.length + g.reduce((s, x) => s + x.carnets.length, 0);
     return n ? [{ domaine, ouverts: o, groupes: g, n }] : [];

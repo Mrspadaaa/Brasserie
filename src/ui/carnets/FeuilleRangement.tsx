@@ -10,7 +10,7 @@ import { Camera, Check, Sparkles, Undo2 } from 'lucide-react';
 import type { CarnetDoc, MessageDoc } from '../../domain/carnets/modele';
 import { DOMAINE_LIBELLE, DOMAINES, domaineDe, type DomaineCarnet } from '../../domain/carnets/domaines';
 import { etatDe, genreDe, LIBELLE_ETAT } from '../../domain/carnets/suivi';
-import type { GenreCarnet } from '../../domain/carnets/modele';
+import type { EtatSuivi, GenreCarnet } from '../../domain/carnets/modele';
 import { domaineParMots } from './domaineMots';
 import { PictoDomaine } from './Domaines';
 import { Photo, PictoObjet, pictoDe } from './pictos';
@@ -41,6 +41,8 @@ export interface FeuilleRangementProps {
   onMode: (m: ModeFeuille) => void;
   /** C68-1 : le carnet existant que l'IA désigne pour cette phrase (le carnet neuf qu'elle a créé reste le sien jusqu'au « Rattacher »). */
   cible?: { id: string; titre: string; chemin: string | null };
+  /** C70-3 : ce que l'IA dit du carnet NEUF de cette phrase (genre, état, chemin) : la carte le montre d'abord, le carnet existant n'est plus qu'une suggestion de rattachement. */
+  nouveau?: { titre: string; genre: GenreCarnet; etat?: EtatSuivi; chemin: string | null };
   /** C69-1 : aucun carnet neuf n'existe : la phrase attend son geste (Rattacher · Garder à part) ; `carnet` est le carnet existant que l'IA désigne. */
   enAttente?: boolean;
   /** « Garder à part » : crée le carnet (titre court) ; sans lui, le bouton ferme seulement (le carnet existe déjà). */
@@ -71,6 +73,8 @@ export function FeuilleRangement(p: FeuilleRangementProps) {
   const tache = (cm.propositionsSuivi ?? []).find(x => x.sorte === 'tache' && x.carnetId === c.id && x.texte)?.texte;
   const ia = cm.rangement === 'ia' || cm.rangement === 'simulee';
   const cible = neuf ? p.cible : undefined;
+  /* C70-3 : l'IA dit un carnet neuf (« nouveau problème · Je cherche », Brasserie › Brassage › Vapeur) : la carte montre CE carnet ; le voisin reste un « Rattacher à … ? » dessous */
+  const nv = cible ? p.nouveau : undefined;
   const court = titreLigne(c).split('ZZ TEST — ').join('');
   const dom = domaineDe(c, domaineParMots);
   return (
@@ -91,10 +95,12 @@ export function FeuilleRangement(p: FeuilleRangementProps) {
             </div>
             <div className="cnl-carte-corps">
               <span className="cnl-picto" aria-hidden><PictoObjet nom={pictoDe(c.title, c.carnet.categorie?.chemin.join(' '), c.carnet.phrase)} taille={22} /></span>
-              <span className="cnl-tx"><b className="cnl-t">{liesParNbsp(cible ? titreLigne({ title: cible.titre } as CarnetDoc) : titreLigne(c))}</b>{(cible ? cible.chemin : chemin) && <span className="cnl-sub"><span className="cnl-pas">{cible ? cible.chemin : chemin}</span></span>}</span>
+              <span className="cnl-tx"><b className="cnl-t">{liesParNbsp(nv ? nv.titre : cible ? titreLigne({ title: cible.titre } as CarnetDoc) : titreLigne(c))}</b>{(nv ? nv.chemin : cible ? cible.chemin : chemin) && <span className="cnl-sub"><span className="cnl-pas">{nv ? nv.chemin : cible ? cible.chemin : chemin}</span></span>}</span>
             </div>
             <div className="cnl-jetons">
-              <span className="cnl-jeton">{cible ? 'Rattacher à ce carnet ?' : cm.rattache && !neuf ? <>rattaché : « {cm.rattache.citation} »</> : neuf ? (genre === 'probleme' ? 'nouveau problème' : `nouveau carnet · ${LIBELLE_GENRE[genre]}`) : <>ajouté à ce carnet</>}</span>
+              {nv && <span className="cnl-jeton">{nv.genre === 'probleme' ? 'nouveau problème' : `nouveau carnet · ${LIBELLE_GENRE[nv.genre]}`}</span>}
+              {nv && nv.genre === 'probleme' && nv.etat && <span className="cnl-jeton cnl-jeton-etat" data-etat={nv.etat}>{LIBELLE_ETAT[nv.etat]}</span>}
+              <span className="cnl-jeton">{cible ? (nv ? <>Rattacher à « {liesParNbsp(titreLigne({ title: cible.titre } as CarnetDoc))} » ?</> : 'Rattacher à ce carnet ?') : cm.rattache && !neuf ? <>rattaché : « {cm.rattache.citation} »</> : neuf ? (genre === 'probleme' ? 'nouveau problème' : `nouveau carnet · ${LIBELLE_GENRE[genre]}`) : <>ajouté à ce carnet</>}</span>
               {!cible && genre === 'probleme' && <span className="cnl-jeton cnl-jeton-etat" data-etat={e}>{LIBELLE_ETAT[e]}</span>}
             </div>
             {tache && <p className="cnl-tache"><b>Tâche proposée</b> : {tache}</p>}

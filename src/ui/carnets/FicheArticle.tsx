@@ -40,7 +40,7 @@ import {
 } from './tableauRegles';
 
 /** R54 : la quantité cochée dans « je prends » (`libelle` : « 1 kg »), son poids et son prix en francs (centimes). */
-export interface QuantiteChoisie { kg: number; libelle: string; centimes: number }
+export interface QuantiteChoisie { kg: number; libelle: string; centimes: number; /** C70-1 : le prix vient d'une conversion (euros, TVA d'import) : l'écran dit « ≈ » */ estime?: boolean }
 
 export interface FicheArticleProps {
   article: ArticleV;
@@ -237,7 +237,7 @@ export function FicheArticle(p: FicheArticleProps) {
     : null;
   /* ce que « Choisir » emporte : le conditionnement coché et son prix en francs (le même chiffre que le bloc Offre) */
   const quantiteChoisie: QuantiteChoisie | undefined = prixCoche && ligneChoisie
-    ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100 : 0 }
+    ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100 : 0, ...(ligneChoisie.devise !== 'CHF' && ligneChoisie.chfKg?.estime ? { estime: true } : {}) }
     : undefined;
   const aromes = houblon ? aromesDe(regle) : [];
   const recolte = houblon ? recolteDe(regle) : null;

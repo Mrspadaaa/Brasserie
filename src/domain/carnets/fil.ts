@@ -10,6 +10,7 @@ import { sansIndefinis, type CarnetDoc } from './modele';
 import { Brouillon, appliquerEcritures, refus, type Etat, type Resultat } from './operations';
 import { jourLocal, poserVeille, fermerParAchat, resoudre, retenirOption, suiviDe } from './suivi';
 import { ajouterTache, notePlanningDe, poserEcheance } from './taches';
+import { echeanceDite } from './tacheDatee';
 
 export type EntreeFil =
   | { sorte: 'message'; id: string; le: string; message: MessageDoc; etiquettes: Etiquette[]; rattache?: Rattache; propositions: PropositionSuivi[] }
@@ -100,9 +101,12 @@ export function accepterPropositionSuivi(etat: Etat, args: { messageId: string; 
   const manque = (): Resultat => refus('La proposition ne dit pas quelle option.');
   let r: Resultat;
   switch (p.sorte) {
-    case 'tache':
-      r = ajouterTache(etat, { carnetId: p.carnetId, texte: p.texte ?? '', le: args.le, echeance: p.echeance, precision: p.precision, coutCentimes: p.coutCentimes, devise: p.devise, optionId: p.optionId, messageId: m.id, origine: p.origine });
+    case 'tache': {
+      /* C70-5 : la date que sa phrase dit (« avant le 12 décembre », « en mai ») prime sur celle que l'IA a supposée (la semaine courante) */
+      const dite = echeanceDite(m.carnetMessage.texte, new Date(args.le));
+      r = ajouterTache(etat, { carnetId: p.carnetId, texte: p.texte ?? '', le: args.le, echeance: dite?.echeance ?? p.echeance, precision: dite?.precision ?? p.precision, coutCentimes: p.coutCentimes, devise: p.devise, optionId: p.optionId, messageId: m.id, origine: p.origine });
       break;
+    }
     case 'dater': {
       const t = (c.carnet.taches ?? []).find(x => !x.faiteLe && p.optionId !== undefined && x.optionId === p.optionId);
       if (t && p.echeance) r = poserEcheance(etat, { carnetId: p.carnetId, tacheId: t.id, echeance: p.echeance, precision: p.precision });

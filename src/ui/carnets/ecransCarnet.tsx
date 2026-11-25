@@ -165,7 +165,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length} articles={ouvert.carnet.articles as never}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onRelire={relire} onEscalader={escalader} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
-      onChoisir={articleId => setVue({ sorte: 'choisir', id: ouvert.id, ...(articleId ? { articleId } : {}) })} />;
+      onChoisir={(articleId, quantite) => setVue({ sorte: 'choisir', id: ouvert.id, ...(articleId ? { articleId } : {}), ...(articleId && quantite ? { quantite } : {}) })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;
     const nom = (id: string) => { const a = ouvert.carnet.articles.find(x => x.id === id); return a?.nom ?? a?.domaine ?? 'lien'; };

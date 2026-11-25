@@ -147,7 +147,7 @@ export interface AFaire { groupes: GroupeAFaire[]; total: number; cout: CoutList
 
 const ORDRE: readonly CleGroupe[] = ['cette-semaine', 'fin-du-mois', 'plus-loin', 'un-jour'];
 
-function coutDe(taches: readonly TacheVue[]): CoutListe | null {
+export function coutDe(taches: readonly TacheVue[]): CoutListe | null {
   const connues = taches.filter(t => t.coutCentimes !== undefined && (t.devise ?? 'CHF') === 'CHF');
   if (!connues.length) return null;
   return { centimes: connues.reduce((s, t) => s + t.coutCentimes!, 0), connus: connues.length, sur: taches.length, estime: connues.length < taches.length || connues.some(t => t.coutEstime) };

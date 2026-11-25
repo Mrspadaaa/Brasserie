@@ -2,17 +2,18 @@
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
 import type { SuiviLectures } from '../../domain/carnets/lecture';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
-import { appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
+import { garderMessageAPart, poserDomaine, appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, etiquettesLocales, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
 import { tacheDatee } from '../../domain/carnets/tacheDatee';
 import { titreCourt } from '../../domain/carnets/titreCourt';
 import { ajouterTache } from '../../domain/carnets/taches';
 import { pourIASuivi, suiviDesLignes, type LigneCarnet } from '../../domain/carnets/ia';
-import { plier } from '../../domain/carnets/domaines';
+import { DOMAINES, domaineDe, plier, type DomaineCarnet } from '../../domain/carnets/domaines';
+import { domaineParMots } from './domaineMots';
 import { poserCategorie } from '../../domain/carnets/arbre';
 import { changerEtat, etatDe, etiqueter, genreDe, poserGenre } from '../../domain/carnets/suivi';
-import { lireCarnet, sansIndefinis, type Etiquette, type PropositionSuivi } from '../../domain/carnets/modele';
+import { lireCarnet, sansIndefinis, type Etiquette, type NeufDit, type PropositionSuivi, type Rattache } from '../../domain/carnets/modele';
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { AVIS, appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
@@ -68,12 +69,21 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
   const carnets = lireCarnets(etat, { archives: true });
   const existe = (id: string | undefined) => (id && carnets.some(c => c.id === id) ? id : undefined);
   const crees = new Set(m.carnetMessage.effets.filter(e => e.cible === 'carnet').map(e => e.carnetId));
-  const s = suiviDesLignes(a.lignes, {
+  const s0 = suiviDesLignes(a.lignes, {
     texte: m.carnetMessage.texte, depuis: a.depuis, crees,
     cibleDe: l => existe(a.cibleDe(l)),
     optionDe: (id, nom) => carnets.find(c => c.id === id)?.carnet.facons.find(f => plier(f.nom) === plier(nom))?.id,
     etatDe: id => { const c = carnets.find(x => x.id === id); return c ? etatDe(c) : undefined; }
   });
+  /* C70-7 : « Rattacher à … ? » ne se propose pas entre deux sujets que les mots séparent (un ventilateur mural du bâtiment, un malt de la brasserie) : la phrase et le carnet visé
+     disent chacun leur domaine ; s'ils diffèrent, la carte n'a pas de sens et se tait (inconnu d'un côté : on la garde, l'IA a vu le carnet). */
+  const s = { ...s0, propositions: s0.propositions.filter(p => {
+    if (p.sorte !== 'deplacer' || !p.versCarnetId) return true;
+    const cible = carnets.find(c => c.id === p.versCarnetId);
+    const dit = p.texte ? domaineParMots(p.texte) : null;
+    const leur = cible ? domaineDe(cible, domaineParMots) : null;
+    return !(dit && leur && dit !== leur);
+  }) };
   let courant: EtatDocs = etat;
   const ecritures: EcritureCarnet[] = [], inverse: EcritureCarnet[] = [];
   const passer = (r: Resultat) => {
@@ -104,6 +114,24 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
     }
   }
   return ecritures.length ? { ecritures, inverse } : null;
+}
+
+/**
+ * C70-3 : « Garder à part » : le carnet neuf (titre court) est posé AVEC ce que l'IA en disait : genre (un problème, pas une « idée »), état d'un problème (« je cherche »), domaine et
+ * catégorie (Brasserie › Brassage › Vapeur). Une seule écriture annulable ; ce que l'IA n'a pas dit reste vide (l'inconnu n'est pas inventé).
+ */
+export function garderAPartRange(etat: EtatDocs, a: { messageId: string; id: string; titre: string; le: string; neuf?: NeufDit }): Resultat {
+  const r = garderMessageAPart(etat, { messageId: a.messageId, id: a.id, titre: a.titre });
+  if (!r.ok || !a.neuf) return r;
+  let courant: EtatDocs = appliquerEcritures(etat, r.ecritures);
+  const ecritures: EcritureCarnet[] = [...r.ecritures], inverse: EcritureCarnet[] = [...r.inverse];
+  const passer = (x: Resultat) => { if (!x.ok) return; ecritures.push(...x.ecritures); inverse.unshift(...x.inverse); courant = appliquerEcritures(courant, x.ecritures); };
+  const { genre, etat: etatDit, chemin, domaine } = a.neuf;
+  if (domaine && (DOMAINES as readonly string[]).includes(domaine)) passer(poserDomaine(courant, { carnetId: a.id, domaine: domaine as DomaineCarnet }));
+  if (genre) passer(poserGenre(courant, { carnetId: a.id, genre, origine: 'ia' }));
+  if (chemin?.length) passer(poserCategorie(courant, { carnetId: a.id, chemin, origine: 'ia' }));
+  if (genre === 'probleme' && etatDit && etatDit !== 'resolu') passer(changerEtat(courant, { carnetId: a.id, vers: etatDit, le: a.le, origine: 'ia' }));
+  return { ...r, ecritures, inverse };
 }
 
 /** C67-2 : au-delà, une phrase n'est plus un titre. */
@@ -293,7 +321,7 @@ export function creerRangementCarnets(x: RangementV) {
       lignes = prixEcrits(lignes, analyserTexte(txt));
       let aRanger: LigneARanger[];
       let propose: { carnetId: string; titre: string } | undefined;
-      let suggere: { carnetId: string; citation: string } | undefined;
+      let suggere: Rattache | undefined;
       /*
        * Test en ligne 2 (18.11) : quand l'IA a répondu, son rangement fait foi : le carnet (connu, ou neuf qu'elle nomme), la sorte et le
        * critère. L'annonce locale n'a été qu'un aperçu en attendant ; elle ne sert plus que quand l'IA ne dit pas où (aucun carnet rendu).
@@ -322,7 +350,10 @@ export function creerRangementCarnets(x: RangementV) {
         const reste = lignes.filter(l => l.sorte !== 'idee');
         const sugId = reste[0]?.carnetSuggere;
         if (sugId && connu(sugId) && reste.every(l => l.carnetSuggere === sugId && !l.carnetId && l.sorte !== 'article' && !l.url)) {
-          suggere = { carnetId: sugId, citation: reste[0].citation?.trim() || txt };
+          /* C70-3 : ce que l'IA dit du carnet NEUF (problème · je cherche · Brassage › Vapeur) suit la phrase jusqu'à « Garder à part » */
+          const dit = reste[0];
+          const neuf: NeufDit = { ...(dit.genreCarnet ? { genre: dit.genreCarnet as NeufDit['genre'] } : {}), ...(dit.etatPropose ? { etat: dit.etatPropose as NeufDit['etat'] } : {}), ...(dit.chemin?.length ? { chemin: [...dit.chemin] } : {}), ...(dit.domaine ? { domaine: dit.domaine } : {}) };
+          suggere = { carnetId: sugId, citation: dit.citation?.trim() || txt, ...(Object.keys(neuf).length ? { neuf } : {}) };
           aRanger = [];
         } else {
         const ailleurs = (l: LigneCarnet) => l.sorte !== 'idee' && connu(l.carnetId) && l.carnetId !== an.carnetId;

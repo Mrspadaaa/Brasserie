@@ -5,7 +5,7 @@
  * tuiles (photo, sinon le picto de la catégorie) ; « ira dans Réalisés » (seulement si un plan est lié) et Rouvrir ; le fil, replié sous « Le fil ▸ ».
  * Rien n'est inventé : une date, une durée ou une raison absentes ne se disent pas.
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronRight, Folder, RotateCcw, Sparkles } from 'lucide-react';
 import type { CarnetDoc, MessageDoc, Photo } from '../../domain/carnets/modele';
 import { avantApresDe, categorieDe, dureeDe, jourLocal, optionRetenue, suiviDe } from '../../domain/carnets/suivi';
@@ -59,6 +59,13 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
   const fermees = optionsFermees(c, annee);
   const retenue = optionRetenue(c);
   const { tuiles } = resolusDe(carnets, messages, annee);
+  /* C70-10 (maquette v01-resolu : « le dernier en vert » se voit) : la bande défile ; à 390 px le dernier (le plus récent, en bout) était coupé au bord droit. À l'ouverture, la bande est amenée
+     sur lui, sans bouger la page (jamais scrollIntoView : il tirerait aussi l'écran). Au moins 1 : le navigateur ramène à la butée réelle. */
+  const rang = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const bande = rang.current, d = bande?.querySelector<HTMLElement>('[data-dernier]');
+    if (bande && d) bande.scrollLeft = Math.max(1, d.offsetLeft + d.offsetWidth - bande.clientWidth + 6);
+  }, [tuiles.length, c.id]);
   /* C69-5 : une option pas prise garde son prix (l'article lié, ou le coût écrit pour elle) */
   const prixFermee = (o: { id: string }): string | null => {
     if (o.id.startsWith('art:')) { const a = c.carnet.articles.find(x => x.id === o.id.slice(4)); const m = a ? montant(a.prixCentimes) : null; return m === null ? null : `${m} ${a?.devise ?? 'CHF'}`; }
@@ -118,7 +125,7 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
         <section className="cnp-tuiles" aria-label={`Résolus en ${annee}`}>
           <div className="cnp-tuiles-tete"><b>Résolus en {annee}</b><span className="cn-mut">{tuiles.length}{tuiles.length > 1 ? ' · le dernier en vert' : ''}</span><span className="cn-sp" />
             {onRelecture && <button type="button" className="cnp-lien" onClick={onRelecture}>Relire <ChevronRight size={14} aria-hidden /></button>}</div>
-          <div className="cnp-tuiles-rang">
+          <div className="cnp-tuiles-rang" ref={rang}>
             {tuiles.map(t => {
               const noeud = t.jpeg ? <img src={t.jpeg} alt="" /> : <VignetteObjet mots={[t.titre, cheminAffiche(carnets.find(x => x.id === t.id)!)]} classe="cnp-opt-vignette" taille={34} />;
               return onOuvrir && t.id !== c.id
