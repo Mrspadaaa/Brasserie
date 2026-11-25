@@ -6,6 +6,8 @@
 <title>Carnet, pas un chat · 4 maquettes · 25.11</title>
 <style>
 :root{--bg:#F5F5F5;--carte:#FFFFFF;--fg:#111111;--doux:#666666;--ligne:#E3E3E3;--ia:#6A4FB0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161616;--carte:#222;--fg:#eee;--doux:#aaa;--ligne:#333;--ia:#a58ce6}}
+:root[data-theme="dark"]{--bg:#161616;--carte:#222;--fg:#eee;--doux:#aaa;--ligne:#333;--ia:#a58ce6}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.4 "Source Sans 3","Segoe UI",system-ui,sans-serif}
 .page{max-width:1280px;margin:0 auto;padding:12px}
