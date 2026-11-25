@@ -1,0 +1,101 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-CV-4hErC.js), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables",
+  "majCarnet": "2026-11-20T17:57:58.013503000Z"
+ },
+ "carnet": {
+  "status": "idea",
+  "date": "2027-04-26",
+  "type": "carnet",
+  "carnet": {
+   "version": 1,
+   "phrase": "Embouteillage — station complète (2027)",
+   "facons": [],
+   "sortie": {
+    "le": "2026-11-20T17:57:57.756Z",
+    "planId": "PLAN-c75-01"
+   },
+   "photos": [],
+   "criteres": [
+    {
+     "id": "CRIT-c75-02",
+     "messageId": "MSG-c75-13",
+     "texte": "Budget du Planning : 2 500 CHF",
+     "origine": "vous"
+    }
+   ],
+   "articles": [],
+   "creeLe": "2026-09-03T11:40:33.460190Z",
+   "notes": [
+    {
+     "genre": "a-faire",
+     "messageId": "MSG-c75-13",
+     "texte": "À faire du 01.05.2027 au 01.07.2027 (Planning, Équipements)",
+     "id": "NOTE-c75-08"
+    }
+   ]
+  },
+  "title": "Embouteillage — station complète (2027)",
+  "id": "CARNET-c75-04"
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "carnetMessage": {
+    "le": "2026-09-03T11:40:33.460190Z",
+    "effets": [
+     {
+      "id": "CARNET-c75-04",
+      "carnetId": "CARNET-c75-04",
+      "cible": "carnet"
+     },
+     {
+      "id": "CRIT-c75-02",
+      "carnetId": "CARNET-c75-04",
+      "cible": "critere"
+     },
+     {
+      "id": "NOTE-c75-08",
+      "carnetId": "CARNET-c75-04",
+      "cible": "note"
+     }
+    ],
+    "texte": "Embouteillage — station complète (2027)\nBudget du Planning : 2 500 CHF\nÀ faire du 01.05.2027 au 01.07.2027 (Planning, Équipements)",
+    "rangement": "locale",
+    "depuis": "liste"
+   },
+   "title": "Embouteillage — station complète (2027)\nBudget du Planning : 2 500 CHF\nÀ faire du 01.05.2027 au 01.07.2027 (Planning, Équipements)",
+   "id": "MSG-c75-13"
+  }
+ ],
+ "articles": [],
+ "plan": {
+  "title": "Embouteillage — station complète (2027)",
+  "updatedAt": "2026-11-20T17:57:57.756Z",
+  "source": "equipment",
+  "notes": "Planning, Équipements · du 01.05.2027 au 01.07.2027",
+  "id": "PLAN-c75-01",
+  "status": "draft",
+  "createdAt": "2026-09-03T11:40:33.460190Z",
+  "category": "materiel",
+  "amountCents": 250000,
+  "date": "2027-07-01",
+  "upgrade": {
+   "estimateSource": "estimate",
+   "timing": "next",
+   "budgetKnown": true,
+   "version": 1,
+   "datePrecision": "day",
+   "stage": "idea",
+   "sourceCarnetTitre": "Embouteillage — station complète (2027)",
+   "purchaseCents": 250000,
+   "sourceCarnetId": "CARNET-c75-04"
+  },
+  "fenetre": {
+   "au": "2027-07-04",
+   "du": "2027-04-26"
+  },
+  "direction": "out"
+ }
+}

@@ -1,0 +1,133 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-CV-4hErC.js), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables",
+  "majCarnet": "2026-11-24T20:28:35.177871000Z"
+ },
+ "carnet": {
+  "id": "CARNET-c75-02",
+  "type": "carnet",
+  "title": "ZZ TEST — pompe qui chauffe",
+  "status": "idea",
+  "carnet": {
+   "notes": [
+    {
+     "genre": "note",
+     "id": "NOTE-c75-04",
+     "texte": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+     "messageId": "MSG-c75-06"
+    },
+    {
+     "genre": "note",
+     "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant",
+     "messageId": "MSG-c75-07",
+     "id": "NOTE-c75-05"
+    },
+    {
+     "texte": "Résolu",
+     "messageId": "MSG-c75-07",
+     "genre": "note",
+     "id": "NOTE-c75-06"
+    }
+   ],
+   "articles": [],
+   "version": 1,
+   "photos": [],
+   "facons": [],
+   "phrase": "ZZ TEST — pompe qui chauffe",
+   "criteres": [
+    {
+     "origine": "locale",
+     "id": "CRIT-c75-01",
+     "texte": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+     "messageId": "MSG-c75-08"
+    }
+   ],
+   "creeLe": "2026-11-24T20:20:22.401Z"
+  }
+ },
+ "messages": [
+  {
+   "status": "done",
+   "carnetMessage": {
+    "depuis": "liste",
+    "texte": "ZZ TEST — pompe qui chauffe",
+    "le": "2026-11-24T20:20:22.401Z",
+    "rangement": "locale",
+    "effets": [
+     {
+      "cible": "carnet",
+      "id": "CARNET-c75-02",
+      "carnetId": "CARNET-c75-02"
+     }
+    ]
+   },
+   "type": "carnet-message",
+   "id": "MSG-c75-09",
+   "title": "ZZ TEST — pompe qui chauffe"
+  },
+  {
+   "type": "carnet-message",
+   "title": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+   "carnetMessage": {
+    "depuis": "CARNET-c75-02",
+    "texte": "La pompe de recirculation est brûlante après 30 min d’empâtage.",
+    "effets": [
+     {
+      "carnetId": "CARNET-c75-02",
+      "id": "CRIT-c75-01",
+      "cible": "critere"
+     }
+    ],
+    "rangement": "locale",
+    "le": "2026-11-24T20:28:23.203Z"
+   },
+   "id": "MSG-c75-08",
+   "status": "done"
+  },
+  {
+   "title": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+   "type": "carnet-message",
+   "id": "MSG-c75-06",
+   "carnetMessage": {
+    "le": "2026-11-24T20:28:29.055Z",
+    "depuis": "CARNET-c75-02",
+    "rangement": "locale",
+    "texte": "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+    "effets": [
+     {
+      "id": "NOTE-c75-04",
+      "carnetId": "CARNET-c75-02",
+      "cible": "note"
+     }
+    ]
+   },
+   "status": "done"
+  },
+  {
+   "id": "MSG-c75-07",
+   "type": "carnet-message",
+   "title": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant. Résolu.",
+   "carnetMessage": {
+    "depuis": "CARNET-c75-02",
+    "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant. Résolu.",
+    "effets": [
+     {
+      "cible": "note",
+      "id": "NOTE-c75-05",
+      "carnetId": "CARNET-c75-02"
+     },
+     {
+      "cible": "note",
+      "id": "NOTE-c75-06",
+      "carnetId": "CARNET-c75-02"
+     }
+    ],
+    "le": "2026-11-24T20:28:34.902Z",
+    "rangement": "locale"
+   },
+   "status": "done"
+  }
+ ],
+ "articles": [],
+ "plan": null
+}

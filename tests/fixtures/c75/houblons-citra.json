@@ -1,0 +1,250 @@
+{
+ "_releve": {
+  "source": "cache Firestore de https://brasserie-l-affinee.web.app (paquet index-CV-4hErC.js), lu le 2026-11-25, lecture seule ; ids remplacés par des alias stables",
+  "majCarnet": "2026-11-24T18:29:39.924159000Z"
+ },
+ "carnet": {
+  "carnet": {
+   "phrase": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+   "photos": [],
+   "facons": [],
+   "version": 1,
+   "notes": [
+    {
+     "id": "NOTE-c75-07",
+     "modifieeLe": "2026-11-24T18:29:39.308Z",
+     "messageId": "MSG-c75-10",
+     "genre": "note",
+     "texte": "Semble difficile à obtenir sur le site français"
+    }
+   ],
+   "creeLe": "2026-11-24T15:44:42.506Z",
+   "criteres": [],
+   "articles": [
+    {
+     "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+     "dispo": "en stock",
+     "photo": "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303",
+     "id": "ART-c75-02",
+     "devise": "EUR",
+     "lecture": "lue",
+     "photos": [
+      "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303"
+     ],
+     "domaine": "motlerhops.fr",
+     "valeurs": {
+      "Poids": {
+       "valeur": "50 g, 250 g et 500 g",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Taux d'acides alpha": {
+       "luLe": "2026-11-24T15:44:47.077Z",
+       "origine": "page",
+       "valeur": "10 % - 15 %"
+      },
+      "Origine": {
+       "luLe": "2026-11-24T15:44:47.077Z",
+       "origine": "page",
+       "valeur": "États-Unis"
+      }
+     },
+     "messageId": "MSG-c75-11",
+     "nom": "CITRA® (US)",
+     "prixCentimes": 372,
+     "change": {
+      "taux": 0.9183,
+      "source": "BCE",
+      "date": "2026-11-24"
+     },
+     "vendeur": "MotlerHops"
+    },
+    {
+     "messageId": "MSG-c75-12",
+     "vendeur": "Brau- und Rauchshop",
+     "domaine": "brauundrauchshop.ch",
+     "id": "ART-c75-03",
+     "devise": "CHF",
+     "nom": "Citra 13.6%",
+     "valeurs": {
+      "Particulièrement adapté pour": {
+       "valeur": "amerikanische Ales und IPA's",
+       "luLe": "2026-11-24T18:17:26.366Z",
+       "origine": "page"
+      },
+      "Citra": {
+       "luLe": "2026-11-24T15:45:49.078Z",
+       "valeur": "13,6 %",
+       "origine": "page"
+      },
+      "Origine": {
+       "valeur": "USA",
+       "luLe": "2026-11-24T15:45:49.078Z",
+       "origine": "page"
+      },
+      "Arômes": {
+       "origine": "page",
+       "luLe": "2026-11-24T15:45:49.078Z",
+       "valeur": "citron vert, mangue, fruits tropicaux"
+      }
+     },
+     "prixCentimes": 10,
+     "photos": [
+      "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg"
+     ],
+     "lecture": "lue",
+     "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg",
+     "prixDes": true,
+     "url": "https://www.brauundrauchshop.ch/citra-136-2"
+    }
+   ]
+  },
+  "status": "research",
+  "id": "CARNET-c75-03",
+  "type": "carnet",
+  "title": "Houblons citra"
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "id": "MSG-c75-11",
+   "status": "done",
+   "carnetMessage": {
+    "texte": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "le": "2026-11-24T15:44:42.506Z",
+    "depuis": "liste",
+    "rangement": "ia",
+    "effets": [
+     {
+      "carnetId": "CARNET-c75-03",
+      "cible": "carnet",
+      "id": "CARNET-c75-03"
+     },
+     {
+      "cible": "article",
+      "id": "ART-c75-02",
+      "carnetId": "CARNET-c75-03"
+     }
+    ]
+   },
+   "title": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us"
+  },
+  {
+   "type": "carnet-message",
+   "carnetMessage": {
+    "le": "2026-11-24T15:45:48.454Z",
+    "rangement": "ia",
+    "texte": "https://www.brauundrauchshop.ch/citra-136-2",
+    "effets": [
+     {
+      "cible": "article",
+      "id": "ART-c75-03",
+      "carnetId": "CARNET-c75-03"
+     }
+    ],
+    "depuis": "CARNET-c75-03"
+   },
+   "id": "MSG-c75-12",
+   "title": "https://www.brauundrauchshop.ch/citra-136-2",
+   "status": "done"
+  },
+  {
+   "type": "carnet-message",
+   "status": "done",
+   "title": "Ça semble dur à obtenir sur le site français",
+   "carnetMessage": {
+    "depuis": "CARNET-c75-03",
+    "texte": "Ça semble dur à obtenir sur le site français",
+    "effets": [
+     {
+      "id": "NOTE-c75-07",
+      "carnetId": "CARNET-c75-03",
+      "cible": "note"
+     }
+    ],
+    "le": "2026-11-24T18:29:10.652Z",
+    "rangement": "ia"
+   },
+   "id": "MSG-c75-10"
+  }
+ ],
+ "articles": [
+  {
+   "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+   "dispo": "en stock",
+   "photo": "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303",
+   "id": "ART-c75-02",
+   "devise": "EUR",
+   "lecture": "lue",
+   "photos": [
+    "https://www.motlerhops.fr/cdn/shop/files/Citra_abff0ccb-63f9-4276-b726-f1a21c60430a_600x600.webp?v=1773316303"
+   ],
+   "domaine": "motlerhops.fr",
+   "valeurs": {
+    "Poids": {
+     "valeur": "50 g, 250 g et 500 g",
+     "origine": "page",
+     "luLe": "2026-11-24T15:44:47.077Z"
+    },
+    "Taux d'acides alpha": {
+     "luLe": "2026-11-24T15:44:47.077Z",
+     "origine": "page",
+     "valeur": "10 % - 15 %"
+    },
+    "Origine": {
+     "luLe": "2026-11-24T15:44:47.077Z",
+     "origine": "page",
+     "valeur": "États-Unis"
+    }
+   },
+   "messageId": "MSG-c75-11",
+   "nom": "CITRA® (US)",
+   "prixCentimes": 372,
+   "change": {
+    "taux": 0.9183,
+    "source": "BCE",
+    "date": "2026-11-24"
+   },
+   "vendeur": "MotlerHops"
+  },
+  {
+   "messageId": "MSG-c75-12",
+   "vendeur": "Brau- und Rauchshop",
+   "domaine": "brauundrauchshop.ch",
+   "id": "ART-c75-03",
+   "devise": "CHF",
+   "nom": "Citra 13.6%",
+   "valeurs": {
+    "Particulièrement adapté pour": {
+     "valeur": "amerikanische Ales und IPA's",
+     "luLe": "2026-11-24T18:17:26.366Z",
+     "origine": "page"
+    },
+    "Citra": {
+     "luLe": "2026-11-24T15:45:49.078Z",
+     "valeur": "13,6 %",
+     "origine": "page"
+    },
+    "Origine": {
+     "valeur": "USA",
+     "luLe": "2026-11-24T15:45:49.078Z",
+     "origine": "page"
+    },
+    "Arômes": {
+     "origine": "page",
+     "luLe": "2026-11-24T15:45:49.078Z",
+     "valeur": "citron vert, mangue, fruits tropicaux"
+    }
+   },
+   "prixCentimes": 10,
+   "photos": [
+    "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg"
+   ],
+   "lecture": "lue",
+   "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/023/0230970_citra-136_600.jpg",
+   "prixDes": true,
+   "url": "https://www.brauundrauchshop.ch/citra-136-2"
+  }
+ ],
+ "plan": null
+}
