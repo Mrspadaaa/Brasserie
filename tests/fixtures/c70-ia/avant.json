@@ -1,0 +1,125 @@
+{
+ "passe": "avant",
+ "modele": "gemini-3.8-flash",
+ "reflexion": "low",
+ "date": "2026-11-25T04:37:12.190Z",
+ "reponses": {
+  "r1": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La pompe de transfert claque au démarrage et le débit baisse en fin de transfert du moût",
+      "genre": "note",
+      "carnetNeuf": "Pompe de transfert",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Brassage",
+       "Pompe"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.009347,
+   "ms": 5276,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3495,
+    "sortie": 298,
+    "total": 3793
+   }
+  },
+  "r5": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Détartrer l'échangeur à plaques avant le brassin de vendredi",
+      "genre": "a-faire",
+      "carnetNeuf": "Échangeur à plaques",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "genreCarnet": "memo",
+      "chemin": [
+       "Brassage",
+       "Refroidissement"
+      ],
+      "etatPropose": "note",
+      "tachePropose": {
+       "quand": "semaine",
+       "texte": "Détartrer l'échangeur à plaques avant vendredi"
+      }
+     }
+    ]
+   },
+   "chf": 0.009672,
+   "ms": 4703,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3493,
+    "sortie": 333,
+    "total": 3826
+   }
+  },
+  "r2": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le nouveau joint de la porte de la chambre froide tient bien, pas de givre depuis une semaine",
+      "genre": "note",
+      "carnetNeuf": "Chambre froide",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "local",
+      "etiquette": "constat",
+      "genreCarnet": "memo",
+      "chemin": [
+       "Froid"
+      ],
+      "etatPropose": "resolu"
+     }
+    ]
+   },
+   "chf": 0.009302,
+   "ms": 5206,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3496,
+    "sortie": 293,
+    "total": 3789
+   }
+  },
+  "r4": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Deuxième densimètre (le premier est cassé)",
+      "genre": "a-acheter",
+      "carnetId": "zz-densimetres",
+      "unite": "pièce",
+      "quantite": 1,
+      "etiquette": "constat",
+      "citation": "densimètre",
+      "tachePropose": {
+       "quand": "un-jour",
+       "texte": "Acheter un deuxième densimètre"
+      }
+     }
+    ]
+   },
+   "chf": 0.009698,
+   "ms": 6601,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3617,
+    "sortie": 311,
+    "total": 3928
+   }
+  }
+ }
+}

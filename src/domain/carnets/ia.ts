@@ -12,7 +12,7 @@
  */
 import { estDomaine, type DomaineCarnet } from './domaines';
 import {
-  CARNETS_MAX, CHEMIN_NIVEAUX_MAX, DERNIERS_MAX, ETATS_SUIVI_IA, ETIQUETTES_CARNET, GENRES_CARNET, GENRES_SUIVI, LIGNES_MAX, PAGES_MAX, QUAND_TACHE, SENS_CARNET, SORTES_CARNET, cheminLu,
+  CARNETS_MAX, CHEMIN_NIVEAUX_MAX, DERNIERS_MAX, ETATS_SUIVI_IA, ETIQUETTES_CARNET, GENRES_CARNET, GENRES_SUIVI, LIGNES_MAX, PAGES_MAX, QUAND_TACHE, SENS_CARNET, SORTES_CARNET, cheminLu, sujetAssaini,
   type ContexteRangerCarnet, type EtatSuiviIA, type EtiquetteCarnet, type GenreCarnet, type GenreSuivi, type PageLue, type SensCarnet, type SorteCarnet
 } from '../../../functions/src/carnetIA';
 import { estimeAutour, jetons, prixTousDe } from './analyseLocale';
@@ -330,6 +330,25 @@ export function vendeurPropre(v: string | undefined): string | undefined {
   return v;
 }
 
+/** C70-3 : le rangement de la phrase elle-même (« sujet » de la réponse), tel que l'écran le montre et que « Garder à part » le donne au carnet qui naît. */
+export interface SujetLu { titre?: string; domaine: DomaineCarnet; genre: GenreSuivi; chemin: string[]; etat?: EtatSuiviIA }
+
+/**
+ * C70-3 (banc réel c70-ia, 25.11) : le « sujet » d'une phrase écrite depuis la liste. Rien depuis un carnet ouvert. Le titre : 6 mots et
+ * 60 caractères au plus, jamais la phrase elle-même (sinon absent : l'écran garde son titre court) ; le chemin se rapproche du vocabulaire des
+ * carnets, comme celui d'une ligne. Hors schéma : `undefined`.
+ */
+export function sujetLu(brut: unknown, ctx: Pick<ContexteGarde, 'texte' | 'carnets' | 'depuis'>): SujetLu | undefined {
+  if (ctx.depuis || !brut || typeof brut !== 'object') return undefined;
+  const s = sujetAssaini((brut as { sujet?: unknown }).sujet);
+  if (!s || !estDomaine(s.domaine)) return undefined;
+  const vocabulaire = ctx.carnets.flatMap((c) => (c.chemin?.length ? [c.chemin] : []));
+  const chemin = rapprocherChemin(s.chemin.slice(0, CHEMIN_NIVEAUX_MAX).map(majuscule), vocabulaire).map((x) => x.slice(0, 30));
+  const titre = majuscule(espaces(SANS_PREFIXE(s.titre)));
+  const court = titre.length <= TITRE_MAX && titre.split(' ').length <= 6 && !memeTitre(titre, SANS_PREFIXE(ctx.texte));
+  return { ...(court ? { titre } : {}), domaine: s.domaine, genre: s.genreCarnet, chemin, ...(s.etatPropose ? { etat: s.etatPropose } : {}) };
+}
+
 export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | null {
   if (!brut || typeof brut !== 'object') return null;
   const lignes = (brut as { lignes?: unknown }).lignes;
@@ -420,7 +439,9 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     }
     const raison = chaine(r.raisonCarnet, 120);
     if (raison) ligne.raisonCarnet = raison;
-    if (ligne.carnetNeuf && estDomaine(r.domaine)) ligne.domaine = r.domaine;
+    /* C70-3 (banc réel c70-ia, 25.11) : une phrase de la liste que l'IA désigne pour un carnet existant (« Rattacher ? ») garde le domaine,
+       comme son genre, son chemin et son titre : « Garder à part » en fait naître le carnet, jamais « Idée » sous le domaine seul. */
+    if ((ligne.carnetNeuf || ligne.carnetSuggere) && estDomaine(r.domaine)) ligne.domaine = r.domaine;
 
     // Lien : écrit dans le message, sinon retiré. La page lue de ce lien suit la ligne.
     const url = chaine(r.url, 2000);
@@ -530,6 +551,17 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     if (brutes.length > 1) for (const b of brutes) {
       if (!ligneReprise(SANS_PREFIXE(b), rendues)) sortie.push({ sorte: 'note', genre: 'note', texte: espaces(b).slice(0, TEXTE_LIGNE), carnetId: ouvert.id, origine });
     }
+  }
+  /* C70-3 (banc réel c70-ia, 25.11) : depuis la liste, le « sujet » complète les lignes qui ne vont dans aucun carnet existant (carnet neuf, ou
+     carnet désigné seulement : « Rattacher ? ») quand elles visent un seul carnet ; ce que la ligne dit elle-même prime. */
+  const sujet = sujetLu(brut, ctx);
+  const libres = sortie.filter((l) => !l.carnetId);
+  if (sujet && new Set(libres.flatMap((l) => (l.carnetNeuf ? [sansAccents(l.carnetNeuf)] : []))).size <= 1) for (const l of libres) {
+    l.genreCarnet ??= sujet.genre;
+    if (!l.chemin?.length) l.chemin = [...sujet.chemin];
+    if (sujet.etat) l.etatPropose ??= sujet.etat;
+    if (l.carnetNeuf || l.carnetSuggere) l.domaine ??= sujet.domaine;
+    if (l.sorte === 'idee' && !l.titre && sujet.titre) l.titre = sujet.titre;
   }
   if (!sortie.length) return null;
   // Les achats en tête, le reste dans l'ordre rendu (tri stable).

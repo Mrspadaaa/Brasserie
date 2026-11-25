@@ -1,0 +1,30 @@
+{
+ "passe": "apres",
+ "modele": "gemini-3.8-flash",
+ "reflexion": "low",
+ "date": "2026-11-25T04:37:41.842Z",
+ "reponses": {
+  "r4": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Deuxième densimètre (le premier est cassé)",
+      "genre": "a-acheter",
+      "carnetId": "zz-densimetres",
+      "domaine": "outils",
+      "citation": "densimètre"
+     }
+    ]
+   },
+   "chf": 0.008228,
+   "ms": 3418,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3858,
+    "sortie": 106,
+    "total": 3964
+   }
+  }
+ }
+}

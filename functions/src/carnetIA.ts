@@ -138,7 +138,25 @@ const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 
 const str = { type: 'STRING', nullable: true };
 const num = { type: 'NUMBER', nullable: true };
 
+/**
+ * C70-3 (banc réel c70-ia, 25.11) : le rangement de la phrase elle-même, en tête et OBLIGATOIRE (nul seulement depuis un carnet ouvert ou
+ * pour une note de plusieurs sujets). Les mêmes champs par ligne restaient vides dès que l'IA désignait un carnet existant (« Rattacher ? »),
+ * consigne précisée comprise (r4, avant et après) : « Garder à part » créait alors une « Idée » sous le domaine seul. Méthode standard d'une
+ * classification à sortie structurée : champs requis, énumérations, critères écrits, post-validation (`sujetAssaini`, puis `sujetLu` au client).
+ */
+export const SUJET_SCHEMA = {
+  ...S({
+    titre: { type: 'STRING' },
+    domaine: { type: 'STRING', enum: [...DOMAINES_CARNET] },
+    genreCarnet: { type: 'STRING', enum: [...GENRES_SUIVI] },
+    chemin: { type: 'ARRAY', items: { type: 'STRING' } },
+    etatPropose: { type: 'STRING', enum: [...ETATS_SUIVI_IA], nullable: true }
+  }, ['titre', 'domaine', 'genreCarnet', 'chemin']),
+  nullable: true
+};
+
 export const RANGER_CARNET_SCHEMA = S({
+  sujet: SUJET_SCHEMA,
   lignes: {
     type: 'ARRAY',
     items: S({
@@ -173,7 +191,7 @@ export const RANGER_CARNET_SCHEMA = S({
       propose: { type: 'BOOLEAN', nullable: true }
     }, ['sorte', 'texte'])
   }
-}, ['lignes']);
+}, ['sujet', 'lignes']);
 
 export const RANGER_CARNET: TaskDef = {
   defaultTier: 'fast',
@@ -200,7 +218,7 @@ Deux règles d'abord :
     pas : « carnetId » d'un carnet qui en parle, sinon « carnetNeuf » titré par cet objet. Un objet d'une autre phrase n'est jamais un
     critère du carnet ouvert. Une pièce ou un réglage de l'objet du carnet reste dans ce carnet.
 
-Rends « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord ce qu'il faut acheter, puis le reste.
+Rends « sujet » (voir Suivi plus bas), puis « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord ce qu'il faut acheter, puis le reste.
   • "idee" : une envie nouvelle (le carnet lui-même). « titre » court, sa phrase gardée en « texte ».
   • "critere" : ce qui compte pour choisir (une exigence, une contrainte). Si le critère se mesure, « caracteristique » = la
     grandeur qui servira à comparer les articles : « nom » court en minuscules, « unite » si elle existe, « sens » : "plus" (plus
@@ -225,7 +243,8 @@ Rangement : « carnetId » = l'id d'un des « carnets » si la ligne en parle cl
 une idée nouvelle, et « raisonCarnet » dit en quelques mots pourquoi (« aucun carnet n'en parle »). Avec « carnetNeuf », « domaine »
 range l'idée : "local" (le bâtiment : sol, murs, eau, électricité, sécurité), "brasserie" (le matériel qui fait la bière :
 moulin, froid, cuves, pompes, embouteillage), "meuble" (étagères, armoires), "outils" (ce qui se tient en main) ou "papiers"
-(dossiers, autorisations, assurances) ; nul si rien ne le dit. Une panne ou un souci qui se voit pendant le brassage
+(dossiers, autorisations, assurances, douane) ; nul si rien ne le dit. Une phrase écrite depuis la liste a toujours son « domaine »,
+même rangée dans un carnet existant. Une panne ou un souci qui se voit pendant le brassage
 (ébullition, empâtage, transfert du moût) et touche son matériel, même un élément du bâtiment qui le sert (l'air, le plafond ou le sol de la
 salle de brassage), est « brasserie » : « local » seulement quand le souci n'a rien à voir avec la bière. Depuis un carnet ouvert, une
 ligne qui n'en sort pas va dans « depuis ».
@@ -256,9 +275,17 @@ Suivi d'un problème (champs facultatifs : nuls quand le message ne le dit pas ;
     choix). Le montant d'un devis ou d'un coût va dans « prix », seulement s'il est écrit. « option » = la solution visée, avec
     son nom tel qu'il figure dans les façons ou « options » du carnet.
   • « citation » : des mots copiés tels quels du message (jamais reformulés) qui justifient le carnet choisi.
-  • Pour une idée neuve seulement : « genreCarnet » ("probleme" : ce qui ne va pas et se suit jusqu'à sa résolution ; "memo" : une
-    chose à retenir ; "recolte" ; "idee" ; "achat"), « chemin » : 1 ou 2 mots courts (30 caractères au plus chacun) qui rangent
-    l'idée sous son domaine, repris tels quels dans « chemins » quand l'un convient, « etatPropose » ("note", "cherche", "decide",
+  • « sujet » (en tête de la réponse) : le rangement de la phrase elle-même, rempli TOUJOURS quand « depuis » est null et que le
+    message parle d'un seul sujet, MÊME quand une ligne va dans un carnet de « carnets » (il peut refuser et la garder à part : son
+    carnet naît alors de « sujet », jamais de sa phrase) ; nul depuis un carnet ouvert ou pour une note de plusieurs sujets.
+    « titre » : 2 à 6 mots qui nomment l'objet et ce qui lui arrive, jamais la phrase entière ; « domaine » ; « genreCarnet » ;
+    « chemin » ; « etatPropose ». Une idée neuve porte aussi ces champs sur sa ligne.
+  • « genreCarnet » se choisit par ces critères, dans cet ordre : "probleme" si quelque chose ne marche pas ou gêne (panne, fuite,
+    bruit, défaut, valeur hors consigne, réclamation) et se suit jusqu'à sa résolution ; "memo" pour un fait accompli ou une
+    information à garder (c'est fait, ça marche, reçu, réglé, valable jusqu'à…) ; "achat" pour une chose à acquérir (« il faut
+    un… », « commander », « besoin de… ») ; "idee" pour une envie ou un projet (« et si… », « ce serait bien… ») ; "recolte" pour
+    des trouvailles à rassembler. « chemin » : 1 ou 2 mots courts (30 caractères au plus chacun) qui rangent le sujet sous son
+    domaine, repris tels quels dans « chemins » quand l'un convient ; jamais vide. « etatPropose » ("note", "cherche", "decide",
     "resolu") : où en est le sujet d'après ses mots. Sous « brasserie », le premier mot dit la partie du matériel : « Brassage » (cuve
     d'ébullition, empâtage, moût, malt, pompe de transfert), « Fermentation » (fermenteurs, froid, levure) ou « Conditionnement »
     (fûts, embouteillage) ; le second, s'il y en a un, l'objet.
@@ -318,10 +345,24 @@ function suiviAssaini(r: Record<string, unknown>, out: Record<string, unknown>):
  * Garde serveur : ne laisse passer que la forme du schéma (le client revérifie le sens : ids connus, URL, prix, vendeur…).
  * Une forme fausse rend `{ lignes: [] }` ; au-delà de 12 lignes, les suivantes sont coupées.
  */
-export function assainirRangerCarnet(data: unknown): { lignes: Array<Record<string, unknown>> } {
+export interface SujetCarnet { titre: string; domaine: typeof DOMAINES_CARNET[number]; genreCarnet: GenreSuivi; chemin: string[]; etatPropose?: EtatSuiviIA }
+
+/** C70-3 : le « sujet » ramené au schéma ; un champ requis manquant ou hors liste le retire entier (le client garde alors ses lignes). */
+export function sujetAssaini(v: unknown): SujetCarnet | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const r = v as Record<string, unknown>;
+  const titre = chaine(r.titre, 120), chemin = cheminLu(r.chemin);
+  if (!titre || !chemin || !(DOMAINES_CARNET as readonly string[]).includes(r.domaine as string) || !(GENRES_SUIVI as readonly string[]).includes(r.genreCarnet as string)) return undefined;
+  const etat = (ETATS_SUIVI_IA as readonly string[]).includes(r.etatPropose as string) ? { etatPropose: r.etatPropose as EtatSuiviIA } : {};
+  return { titre, domaine: r.domaine as SujetCarnet['domaine'], genreCarnet: r.genreCarnet as GenreSuivi, chemin, ...etat };
+}
+
+export function assainirRangerCarnet(data: unknown): { sujet?: SujetCarnet; lignes: Array<Record<string, unknown>> } {
   const lignes = (data as { lignes?: unknown } | null)?.lignes;
   if (!Array.isArray(lignes)) return { lignes: [] };
+  const sujet = sujetAssaini((data as { sujet?: unknown }).sujet);
   return {
+    ...(sujet ? { sujet } : {}),
     lignes: lignes.slice(0, LIGNES_MAX).flatMap((l) => {
       if (!l || typeof l !== 'object') return [];
       const r = l as Record<string, unknown>;
