@@ -606,3 +606,7 @@
 {"date":"2026-11-24T23:01:39.427Z","tache":"ranger","texte":"ZZ TEST — c66 marmite de brassage 50 L","modele":"serveur (aiTask tour 66, Rj9Pjhxu)","cout_chf":0.002,"voie":"critique-66"}
 {"date":"2026-11-24T23:03:23.428Z","tache":"rangerCarnet (message dans un carnet ouvert)","texte":"Joint torique 20 mm : en racheter deux, l'ancien est fendu","modele":"serveur (aiTask tour 66, Rj9Pjhxu)","cout_chf":0.002,"voie":"critique-66","appels":1}
 {"date":"2026-11-24T23:10:06.521Z","tache":"lireLien","url":"motlerhops Citra, remis après Retirer sans Annuler (tour 66)","modele":"serveur (aiTask tour 66, Rj9Pjhxu)","cout_chf":0.01,"voie":"critique-66"}
+{"date":"2026-11-25T00:46:00.000Z","tache":"rangerCarnet (saisie rapide, nouveau carnet c67)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67","appels":1}
+{"date":"2026-11-25T00:47:00.000Z","tache":"rangerCarnet (message dans le carnet c67 : condenseur A)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67","appels":1}
+{"date":"2026-11-25T00:46:00.000Z","tache":"rangerCarnet (message dans le carnet c67 : condenseur B)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67","appels":1}
+{"date":"2026-11-25T00:46:00.000Z","tache":"rangerCarnet (message dans le carnet c67 : hotte)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67","appels":1}
