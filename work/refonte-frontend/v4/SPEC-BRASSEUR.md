@@ -2945,3 +2945,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 (classement passe 3) : 
 - 25.11 (classement passe 3) : Beaucoup ne répond que à un problèmematique ou pas du tout...
 - 25.11 après-midi : « Peut être arrêté le massacre et trouvé des vrai solution aux vrais problèmes »
+- 25.11 après-midi (rôle de l'IA dans le Carnet) : « Non l'ai a un rôle très important là dedans, en fait moi je fais que des mini input, mini note et elle doit m'aide, m'appuie, conseillé, classé, corrigé ECT... »
