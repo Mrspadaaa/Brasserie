@@ -1,0 +1,82 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "🎟️",
+  "titre": "Réserver le stand",
+  "quand": "avant mars",
+  "ligne": 3,
+  "citation": "stand à réserver avant mars"
+ },
+ "echeance": {
+  "quand": "avant mars",
+  "quoi": "Stand",
+  "ligne": 3
+ },
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "💰",
+   "valeur": "1 500 CHF",
+   "label": "budget",
+   "ligne": 3
+  },
+  {
+   "emoji": "🍺",
+   "valeur": "3 bières",
+   "label": "pression",
+   "ligne": 1
+  }
+ ],
+ "liste": [
+  {
+   "emoji": "🚰",
+   "texte": "Tireuse",
+   "ligne": 2,
+   "citation": "tireuse"
+  },
+  {
+   "emoji": "⛺",
+   "texte": "2 tonnelles",
+   "ligne": 2,
+   "citation": "2 tonnelles"
+  },
+  {
+   "emoji": "🥤",
+   "texte": "Gobelets consignés",
+   "ligne": 2,
+   "citation": "gobelets consignés"
+  },
+  {
+   "emoji": "🛢️",
+   "texte": "10 fûts",
+   "ligne": 2,
+   "citation": "10 fûts"
+  }
+ ],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "1 500 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 3,
+   "mot": "avant mars",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🎪",
+ "categorie": {
+  "nom": "Événements"
+ },
+ "priorite": "normale",
+ "resume": "Réserver le stand",
+ "etatPropose": "note",
+ "genre": "idee"
+}

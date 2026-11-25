@@ -1,0 +1,119 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "🔁",
+  "titre": "Vérifier le prix Brau",
+  "ligne": 2,
+  "citation": "brauundrauchshop.ch"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [
+  {
+   "emoji": "⚖️",
+   "texte": "poids du prix .fr ?"
+  }
+ ],
+ "attention": [
+  {
+   "emoji": "⚠️",
+   "texte": "Dur à obtenir",
+   "ligne": 3,
+   "citation": "dur à obtenir"
+  }
+ ],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "dur à obtenir",
+   "type": "pas_trouve"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "🌿 α",
+   "💶 Prix",
+   "📦 Dispo",
+   "🍋 Arômes",
+   "🌍 Origine"
+  ],
+  "articles": [
+   {
+    "nom": "MotlerHops",
+    "ligne": 1,
+    "citation": "motlerhops.fr",
+    "valeurs": [
+     {
+      "texte": "10 % - 15 %",
+      "source": "page"
+     },
+     {
+      "texte": "3,72 €",
+      "source": "page"
+     },
+     {
+      "texte": "en stock",
+      "source": "page"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "États-Unis",
+      "source": "page"
+     }
+    ]
+   },
+   {
+    "nom": "Brau- und Rauchshop",
+    "ligne": 2,
+    "citation": "brauundrauchshop.ch",
+    "valeurs": [
+     {
+      "texte": "13,6 %",
+      "source": "page"
+     },
+     {
+      "texte": "à relire",
+      "source": "page"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "citron vert, mangue, fruits tropicaux",
+      "source": "page",
+      "emoji": "🍋🥭🌴"
+     },
+     {
+      "texte": "USA",
+      "source": "page"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ },
+ "emoji": "🌿",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Matières premières"
+ },
+ "priorite": "normale",
+ "resume": "Vérifier le prix Brau",
+ "etatPropose": "cherche",
+ "genre": "achat"
+}

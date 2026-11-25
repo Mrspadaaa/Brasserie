@@ -1,0 +1,85 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": {
+  "choix": {
+   "emoji": "🚚",
+   "texte": "Autre fournisseur",
+   "ligne": 3,
+   "citation": "Autre fournisseur"
+  },
+  "savais": [
+   {
+    "emoji": "🚫",
+    "texte": "Rupture jusqu’à mi-décembre",
+    "ligne": 1,
+    "citation": "en rupture jusqu’à mi-décembre"
+   },
+   {
+    "emoji": "🍺",
+    "texte": "Brassin du 3 déc.",
+    "ligne": 2,
+    "citation": "Brassin du 3 déc."
+   },
+   {
+    "emoji": "📦",
+    "texte": "Autre : en stock",
+    "ligne": 3,
+    "citation": "en stock"
+   }
+  ],
+  "fait": [
+   {
+    "emoji": "🛒",
+    "texte": "2 sacs commandés",
+    "ligne": 4,
+    "citation": "Commandé 2 sacs chez l’autre"
+   },
+   {
+    "emoji": "🍺",
+    "texte": "Brassin maintenu",
+    "ligne": 4,
+    "citation": "brassin maintenu"
+   }
+  ],
+  "calcul": {
+   "valeur": "+8 CHF",
+   "detail": "2 sacs × 4 CHF"
+  }
+ },
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "mi-décembre",
+   "type": "date"
+  },
+  {
+   "ligne": 2,
+   "mot": "3 déc.",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "4 CHF",
+   "type": "montant"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🌾",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Matières premières"
+ },
+ "priorite": "basse",
+ "resume": "Commandé chez l’autre",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}

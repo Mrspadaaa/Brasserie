@@ -1,0 +1,56 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "📞",
+  "titre": "Rappeler le gérant",
+  "quand": "lundi",
+  "ligne": 3,
+  "citation": "Rappeler lundi"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🛢️",
+   "valeur": "2 fûts par mois",
+   "label": "demande",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [
+  {
+   "emoji": "💰",
+   "texte": "prix pro ?"
+  },
+  {
+   "emoji": "🛢️",
+   "texte": "assez de fûts ?"
+  }
+ ],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 2,
+   "mot": "prix pro",
+   "type": "devis"
+  },
+  {
+   "ligne": 3,
+   "mot": "lundi",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🍻",
+ "categorie": {
+  "nom": "Sans catégorie"
+ },
+ "priorite": "normale",
+ "resume": "Rappeler lundi",
+ "etatPropose": "note",
+ "genre": "memo"
+}

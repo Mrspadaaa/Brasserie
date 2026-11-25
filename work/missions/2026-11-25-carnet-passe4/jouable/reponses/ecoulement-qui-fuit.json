@@ -1,0 +1,107 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔧",
+   "mot": "joint",
+   "texte": "Joint du siphon",
+   "statut": "trouve",
+   "ligne": 2,
+   "citation": "joint du siphon trouvé usé"
+  },
+  {
+   "emoji": "🧱",
+   "mot": "dalle",
+   "texte": "Sous la dalle",
+   "statut": "pas_trouve",
+   "ligne": 2,
+   "citation": "fuite sous la dalle, pas trouvée"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "🛠️",
+   "titre": "Changer le joint",
+   "qui": "toi",
+   "cout": "?",
+   "source": "ia",
+   "conseille": true
+  },
+  {
+   "emoji": "👷",
+   "titre": "Le sanitaire",
+   "qui": "sanitaire X",
+   "cout": "150 CHF",
+   "estime": true,
+   "attente": {
+    "ligne": 4,
+    "citation": "Devis attendu"
+   },
+   "source": "notes",
+   "ligne": 5,
+   "citation": "Estimation 150 CHF",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "📞",
+  "titre": "Contacter l’entreprise X",
+  "ligne": 3,
+  "citation": "Contacter l’entreprise X"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [
+  {
+   "emoji": "✏️",
+   "texte": "prix du joint ?"
+  }
+ ],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "fuit au joint",
+   "type": "piste"
+  },
+  {
+   "ligne": 2,
+   "mot": "trouvé usé",
+   "type": "piste"
+  },
+  {
+   "ligne": 2,
+   "mot": "pas trouvée",
+   "type": "pas_trouve"
+  },
+  {
+   "ligne": 3,
+   "mot": "Contacter l’entreprise X",
+   "type": "contacte"
+  },
+  {
+   "ligne": 4,
+   "mot": "Devis attendu",
+   "type": "devis"
+  },
+  {
+   "ligne": 5,
+   "mot": "150 CHF",
+   "type": "montant"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "💧",
+ "categorie": {
+  "nom": "Local",
+  "sous": "Eau"
+ },
+ "priorite": "normale",
+ "resume": "Contacter l’entreprise X",
+ "etatPropose": "cherche",
+ "genre": "probleme",
+ "conseil": "🔧 Le joint d’abord : tu l’as trouvé usé."
+}

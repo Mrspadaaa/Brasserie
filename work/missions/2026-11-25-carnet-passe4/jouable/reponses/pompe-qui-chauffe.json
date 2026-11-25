@@ -1,0 +1,87 @@
+{
+ "pistes": [
+  {
+   "emoji": "🏜️",
+   "mot": "à sec",
+   "texte": "Marche à sec",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "marche à sec"
+  },
+  {
+   "emoji": "🚰",
+   "mot": "vanne",
+   "texte": "Débit bridé",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "La vanne d’entrée était à moitié fermée"
+  }
+ ],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": {
+  "choix": {
+   "emoji": "🚰",
+   "texte": "Régler à la sortie",
+   "ligne": 3,
+   "citation": "on règle le débit à la sortie"
+  },
+  "savais": [
+   {
+    "emoji": "🌡️",
+    "texte": "Brûlante après 30 min",
+    "ligne": 1,
+    "citation": "brûlante après 30 min"
+   },
+   {
+    "emoji": "❓",
+    "texte": "Sec ou débit bridé",
+    "ligne": 2,
+    "citation": "marche à sec, ou débit bridé"
+   }
+  ],
+  "fait": [
+   {
+    "emoji": "🔎",
+    "texte": "Vanne trouvée mi-fermée",
+    "ligne": 3,
+    "citation": "La vanne d’entrée était à moitié fermée"
+   },
+   {
+    "emoji": "🚰",
+    "texte": "Débit réglé à la sortie",
+    "ligne": 3,
+    "citation": "on règle le débit à la sortie maintenant"
+   }
+  ]
+ },
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "30 min",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "Résolu",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🔥",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Brassage"
+ },
+ "priorite": "basse",
+ "resume": "Régler à la sortie",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}

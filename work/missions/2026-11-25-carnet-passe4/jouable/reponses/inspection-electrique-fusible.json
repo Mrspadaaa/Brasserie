@@ -1,0 +1,68 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔌",
+   "mot": "fusible",
+   "texte": "Fusible grillé",
+   "statut": "trouve",
+   "ligne": 1,
+   "citation": "un fusible grillé"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "🔍",
+  "titre": "Acheter un testeur",
+  "ligne": 3,
+  "citation": "Besoin d’un testeur de tension"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🔌",
+   "valeur": "5×20 mm",
+   "label": "fusible",
+   "ligne": 2
+  },
+  {
+   "emoji": "⚡",
+   "valeur": "6,3 A",
+   "label": "calibre",
+   "ligne": 2
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [
+  {
+   "emoji": "💰",
+   "texte": "prix du fusible ?"
+  }
+ ],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "le 20 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 1,
+   "mot": "un fusible grillé",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "⚡",
+ "categorie": {
+  "nom": "Local",
+  "sous": "Électricité"
+ },
+ "priorite": "normale",
+ "resume": "Acheter un testeur",
+ "etatPropose": "cherche",
+ "genre": "probleme",
+ "conseil": "🔍 Teste la tension avant de remettre le fusible."
+}

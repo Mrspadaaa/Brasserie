@@ -1,0 +1,55 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "🧹",
+  "titre": "Ranger la cave",
+  "quand": "samedi 6 déc.",
+  "ligne": 3,
+  "citation": "Ranger la cave le samedi 6 déc."
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [
+  {
+   "emoji": "📦",
+   "texte": "Trier les cartons",
+   "ligne": 1,
+   "citation": "trier les cartons vides"
+  },
+  {
+   "emoji": "🪜",
+   "texte": "Monter une étagère",
+   "ligne": 1,
+   "citation": "monter une étagère"
+  },
+  {
+   "emoji": "🗑️",
+   "texte": "Jeter les seaux",
+   "ligne": 1,
+   "citation": "jeter les vieux seaux"
+  }
+ ],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 2,
+   "mot": "samedi 6 déc.",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "📦",
+ "categorie": {
+  "nom": "Local",
+  "sous": "Rangement"
+ },
+ "priorite": "normale",
+ "resume": "Samedi 6 déc.",
+ "etatPropose": "note",
+ "genre": "memo"
+}

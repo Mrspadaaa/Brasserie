@@ -1,0 +1,80 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔩",
+   "mot": "couvercle",
+   "texte": "Joint du couvercle",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "joint du couvercle"
+  },
+  {
+   "emoji": "🔧",
+   "mot": "raccord gaz",
+   "texte": "Raccord gaz",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "bulles au raccord gaz"
+  },
+  {
+   "emoji": "🎛️",
+   "mot": "régulateur",
+   "texte": "Régulateur",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "régulateur"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "🔁",
+  "titre": "Revérifier le raccord",
+  "quand": "dans une semaine",
+  "ligne": 4,
+  "citation": "à revérifier dans une semaine"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "📉",
+   "valeur": "0,4 bar",
+   "label": "le 22",
+   "ligne": 1
+  },
+  {
+   "emoji": "🛢️",
+   "valeur": "1,2 bar",
+   "label": "le 15 nov.",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "bulles au raccord gaz",
+   "type": "piste"
+  },
+  {
+   "ligne": 4,
+   "mot": "dans une semaine",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🫧",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Conditionnement"
+ },
+ "priorite": "normale",
+ "resume": "Revérifier le raccord",
+ "etatPropose": "decide",
+ "genre": "probleme",
+ "conseil": "🔁 Raccord changé : revérifie la pression dans une semaine."
+}

@@ -1,0 +1,42 @@
+<div id="app">
+  <!-- ===== liste des carnets (base p4b-1) : arbre domaine › sous-domaines, chiffre clé, compteurs qui filtrent, Noter + ===== -->
+  <section class="vue on" id="v-liste" aria-label="Carnets">
+    <div class="p4-tete" role="tablist">
+      <button type="button" role="tab" class="p4-tab on" id="tab-carnets">Carnets <span id="liste-n"></span></button>
+      <button type="button" role="tab" class="p4-tab" id="tab-afaire">À faire <span id="n-afaire"></span></button>
+    </div>
+    <div class="m4j-liste" id="liste"></div>
+    <div class="p4-bas-liste">
+      <div class="p4-oeil" id="oeil"></div>
+      <div class="p4-saisie"><input id="noter" type="text" placeholder="Noter, coller un lien…" enterkeyhint="send" autocomplete="off" aria-label="Noter dans un nouveau carnet"><button class="p4-plus" id="nouveau" type="button" aria-label="Nouveau carnet">+</button></div>
+    </div>
+  </section>
+
+  <!-- ===== un carnet : Organisé par défaut, Mes notes = vraie note ; bascule pleine largeur sous le pouce (p4b-2) ===== -->
+  <section class="vue" id="v-carnet" aria-label="Carnet" data-vue="org">
+    <div class="m4b-top">
+      <button class="m4b-ic" id="b-retour" type="button" aria-label="Carnets"><svg><use href="#i-ret"/></svg></button>
+      <div class="p4-titre" id="tete-titre"></div>
+      <button class="m4b-ic edition-seule" id="k-undo" type="button" aria-label="Annuler"><svg><use href="#i-undo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-redo" type="button" aria-label="Refaire"><svg><use href="#i-redo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-fini" type="button" aria-label="Fini"><svg><use href="#i-fini"/></svg></button>
+      <button class="m4b-ic hors-edition" id="k-menu" type="button" aria-label="Plus : ranger, changements, question">⋯</button>
+    </div>
+    <div id="defil">
+      <div id="p-notes">
+        <div class="m4b-titre" id="titre" contenteditable="true" spellcheck="true" enterkeyhint="next" aria-label="Titre"></div>
+        <div class="m4b-meta" id="meta"></div>
+        <div class="m4b-doc" id="doc" contenteditable="true" spellcheck="true" aria-label="Mes notes" aria-multiline="true" role="textbox"></div>
+      </div>
+      <div id="p-org" class="m4b-org" hidden></div>
+    </div>
+    <div id="action" hidden></div>
+    <div class="m4b-outils" id="outils"></div>
+    <div class="m4b-pied" id="pied-org" hidden></div>
+    <div class="p4-bascule" role="tablist">
+      <button type="button" role="tab" id="t-notes">✏️ Mes notes <span class="n" id="n-file" hidden>1</span></button>
+      <button type="button" role="tab" id="t-org" class="on">▦ Organisé <i id="point-org" hidden></i></button>
+    </div>
+    <input type="file" accept="image/*" capture="environment" id="f-photo" hidden>
+  </section>
+</div>

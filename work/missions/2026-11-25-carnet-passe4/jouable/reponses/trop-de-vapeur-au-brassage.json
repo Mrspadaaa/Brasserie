@@ -1,0 +1,101 @@
+{
+ "pistes": [
+  {
+   "emoji": "💨",
+   "mot": "condenser",
+   "texte": "Steam condenser",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "Plutôt un steam condenser sur la cuve"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "🛒",
+  "titre": "Acheter le condenser",
+  "quand": "fin du mois",
+  "ligne": 7,
+  "citation": "Achat prévu fin du mois"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [
+  {
+   "emoji": "💰",
+   "texte": "prix des deux ?"
+  }
+ ],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "Le 18 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 6,
+   "mot": "pas en stock",
+   "type": "pas_trouve"
+  },
+  {
+   "ligne": 7,
+   "mot": "fin du mois",
+   "type": "date"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "📦 Dispo",
+   "💰 Prix"
+  ],
+  "articles": [
+   {
+    "nom": "KegLand",
+    "ligne": 4,
+    "citation": "kegland.com.au",
+    "valeurs": [
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Brewtools",
+    "ligne": 5,
+    "citation": "brewtools.com",
+    "valeurs": [
+     {
+      "texte": "pas en stock",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   null,
+   null
+  ]
+ },
+ "emoji": "♨️",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Brassage"
+ },
+ "priorite": "normale",
+ "resume": "Acheter fin du mois",
+ "etatPropose": "decide",
+ "genre": "achat"
+}

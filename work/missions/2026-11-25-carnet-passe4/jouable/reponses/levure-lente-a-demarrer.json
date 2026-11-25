@@ -1,0 +1,108 @@
+{
+ "pistes": [
+  {
+   "emoji": "🌡️",
+   "mot": "moût froid",
+   "texte": "Moût froid",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "la fermentation démarre le lendemain"
+  },
+  {
+   "emoji": "📅",
+   "mot": "date",
+   "texte": "Levure proche date",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "proche de sa date"
+  },
+  {
+   "emoji": "💧",
+   "mot": "réhydratée",
+   "texte": "Pas réhydratée",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "pas réhydratée"
+  }
+ ],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [
+  {
+   "emoji": "💧",
+   "texte": "Réhydrater la levure",
+   "ligne": 4,
+   "citation": "réhydrater la levure"
+  },
+  {
+   "emoji": "🌡️",
+   "texte": "Ensemencer à 18 °C",
+   "ligne": 4,
+   "citation": "ensemencer à 18 °C"
+  }
+ ],
+ "manque": [],
+ "attention": [],
+ "relecture": {
+  "choix": {
+   "emoji": "🌡️",
+   "texte": "Monter à 19 °C",
+   "ligne": 3,
+   "citation": "Monté à 19 °C"
+  },
+  "savais": [
+   {
+    "emoji": "⏱️",
+    "texte": "36 h sans activité",
+    "ligne": 1,
+    "citation": "aucune activité 36 h"
+   },
+   {
+    "emoji": "🥶",
+    "texte": "Moût à 16 °C",
+    "ligne": 1,
+    "citation": "moût à 16 °C"
+   }
+  ],
+  "fait": [
+   {
+    "emoji": "🔥",
+    "texte": "Monté à 19 °C",
+    "ligne": 3,
+    "citation": "Monté à 19 °C"
+   },
+   {
+    "emoji": "✅",
+    "texte": "Démarre le lendemain",
+    "ligne": 3,
+    "citation": "la fermentation démarre le lendemain"
+   }
+  ]
+ },
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "36 h",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "Monté à 19 °C",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🧫",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Fermentation"
+ },
+ "priorite": "basse",
+ "resume": "Monté à 19 °C",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}

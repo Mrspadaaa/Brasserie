@@ -1,0 +1,22 @@
+{
+ "items": [
+  {
+   "type": "check",
+   "emoji": "🪣",
+   "texte": "Teste à l’eau colorée",
+   "pourquoi": "voir si l’eau passe sous la dalle"
+  },
+  {
+   "type": "tache",
+   "emoji": "📸",
+   "texte": "Photographie le siphon",
+   "pourquoi": "pour le sanitaire ou le magasin"
+  },
+  {
+   "type": "suggestion",
+   "emoji": "🧴",
+   "texte": "Joint silicone provisoire",
+   "pourquoi": "stoppe la flaque en attendant"
+  }
+ ]
+}

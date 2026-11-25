@@ -1,0 +1,90 @@
+/* ===== passe 4 · v01 (R1 Tableau de bord) : planche et ajouts p4 ===== */
+html,body{background:#EBEBEB}
+body{width:auto;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 24px;padding:0 0 40px;font-size:15px}
+:root{--s1:#f5f5f5;--s2:#ebebeb;--line:#dddddd;--mut:#666666;--ink:#111111;--ok:#3f6b2e}
+.p4-f{margin:0;width:390px;flex:none}
+.p4-f .ecran{margin:0}
+.p4-cap{font-size:14px;line-height:1.25;color:#4A4A4A;padding:6px 8px;height:34px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p4-cap b{color:#111111;font-weight:800}
+.p4-cap span{color:#666666}
+/* coup d'œil en rangée basse (CARNET-LISTE-COMPACTE) */
+.p4-oeil{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr 1fr;gap:5px;padding:5px 10px;flex:none}
+.p4-oeil span{height:38px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;padding:0 7px;font-size:14px;line-height:1.05;white-space:nowrap;overflow:hidden}
+.p4-oeil b{font-size:17px;font-weight:700;line-height:1.05}
+.p4-oeil span.on{box-shadow:0 0 0 2px #FFFFFF,0 0 0 3.5px #4A4A4A}
+.p4-oeil .af{background:#FFFFFF;border:1px solid #D6D6D6;color:#111111;flex-direction:row;align-items:center;gap:3px;flex-wrap:wrap;align-content:center;row-gap:0}
+.p4-oeil .af svg{color:#3F6B2E}
+.p4-oeil .af b{margin-right:1px}
+.g-dn .p4-chev{width:20px;text-align:center;color:#666666;font-size:15px}
+.g-dn .p4-rep{font-size:14px;font-weight:400;color:#666666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;margin-right:6px}
+.a1-pb.p4-neuf{background:#EEF3E8;box-shadow:inset 4px 0 0 #567F45}
+/* glisser D455 */
+.p4-glis{display:flex;align-items:center;gap:8px;margin:5px 10px;padding:4px 10px;border-radius:10px;background:#F5F5F5;border:1px dashed #BDBDBD;font-size:14px;line-height:1.2;color:#4A4A4A;min-height:38px}
+.p4-depot{margin:2px 10px 2px 26px;height:48px;border-radius:12px;border:2px dashed #567F45;background:#EEF3E8;display:flex;align-items:center;padding:0 12px;font-size:14px;color:#3F6B2E}
+.p4-trou{margin:2px 10px 2px 26px;height:40px;border-radius:12px;border:1.5px dashed #D6D6D6;background:#FAFAFA}
+.p4-lift{position:absolute;left:12px;right:10px;top:432px;z-index:5;display:flex;align-items:center;gap:2px;background:#FFFFFF;border:1.5px solid #567F45;border-radius:14px;padding:2px 10px 2px 6px;box-shadow:0 14px 30px rgba(0,0,0,.28);transform:rotate(-1.5deg)}
+.p4-lift .a1-pb{flex:1;min-width:0;padding-left:4px}
+.p4-vers{font-size:14px;font-weight:700;color:#3F6B2E;background:#E4EEDA;border-radius:8px;padding:2px 7px;white-space:nowrap}
+.p4-vide{margin:14px 12px;padding:10px 12px;border-radius:12px;background:#F5F5F5;font-size:14px;color:#666666}
+.p4-vide b{color:#1F64A3}
+.p4-toast{position:absolute;left:10px;right:10px;bottom:118px;z-index:6;display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 6px 6px 14px;border-radius:12px;background:#111111;color:#FFFFFF;font-size:15px;line-height:1.25}
+.p4-toast .p4-ann{color:#F2C14E;height:40px;display:flex;align-items:center;padding:0 10px}
+/* champ en cours de saisie, au-dessus du clavier */
+.p4-tape{flex:none;padding:6px 10px 6px;background:#FFFFFF;border-top:1px solid #EBEBEB}
+.p4-ch2{height:auto!important;min-height:44px;padding:8px 6px 8px 12px!important;border:1.5px solid #6A4FB0!important;color:#111111!important;align-items:flex-end!important;line-height:1.3}
+.p4-envoi{width:36px;height:36px;border-radius:12px;background:#111111;color:#FFFFFF;display:grid;place-items:center;flex:none}
+/* bascule légère Mes notes / Organisé (M4B) */
+.p4-bas{display:flex;align-items:stretch;gap:2px;height:40px;padding:0 6px 0 4px;border-bottom:1px solid #EBEBEB;flex:none}
+.p4-bas>span{display:flex;align-items:center;gap:6px;padding:0 10px;font-size:15px;font-weight:600;color:#666666;border-bottom:2.5px solid transparent;white-space:nowrap}
+.p4-bas>span.on{color:#111111;border-color:#111111}
+.p4-bas>span.ia{color:#6A4FB0}
+.p4-bas>span.ia.on{border-color:#6A4FB0}
+.p4-bas>span.meta{margin-left:auto;border:0;padding:0 2px;font-weight:600;font-size:14px;color:#6A4FB0}
+.p4-chg{display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:16px;border:1px solid #DDD3EF;background:#FFFFFF;font-size:14px;color:#6A4FB0}
+/* Mes notes : une vraie note éditée sur place */
+.p4-doc{flex:1;min-height:0;overflow:hidden;padding:10px 16px 0;font-size:17px;line-height:1.5;color:#111111}
+.p4-doc .meta{font-size:14px;color:#666666;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+.p4-doc p{margin:0 0 3px}
+.p4-lu{text-decoration:underline;text-decoration-color:#6A4FB0;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.p4-hl{background:#FBEFD9;box-shadow:-5px 0 0 #FBEFD9,5px 0 0 #FBEFD9;border-radius:3px}
+.p4-venu{display:flex;align-items:center;gap:4px;font-size:14px;color:#6A4FB0;font-weight:600;margin:6px 0 0}
+.p4-curs{display:inline-block;width:2px;height:21px;background:#6A4FB0;vertical-align:-4px;margin-left:1px}
+.p4-photo{display:flex;align-items:flex-end;gap:8px;margin:4px 0 8px}
+.p4-pied{margin-top:14px;font-size:14px;color:#666666}
+.p4-outils{flex:none;height:52px;display:flex;align-items:center;gap:4px;padding:0 6px;background:#F5F5F5;border-top:1px solid #DDDDDD}
+.p4-outils .b{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;color:#333333}
+.p4-iab{display:inline-flex;align-items:center;gap:5px;height:40px;padding:0 12px;border-radius:20px;border:1.5px solid #6A4FB0;color:#6A4FB0;font-weight:700;font-size:15px;background:#FFFFFF}
+.p4-iab.doux{border-color:#DDD3EF;font-weight:600}
+/* Organisé */
+.p4-lpar{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:#6A4FB0;font-weight:600}
+.b2-op.p4-op{padding:5px 10px}
+.b2-op.p4-op .s{font-size:14px}
+.b2-op.p4-cons{border-color:#CBBCEB;box-shadow:inset 4px 0 0 #6A4FB0}
+.p4-orgb{background:#F5F5F5}
+.p4-orgb .b2-cases div{background:#FFFFFF}
+.p4-pad{padding:2px 10px 8px}
+.p4-pad .m4-carte,.p4-pad .m4-bloc{border:1px solid #E3E3E3}
+.p4-pad .m4-carte.ok{border-color:#C9D9BC}
+.p4-pad .m4-carte.prop{border:2px dashed #6A4FB0}
+.p4-pad .m4-suite{margin-top:4px}
+.b2-seg .p4-prop{border:1.5px dashed #3F6B2E;color:#3F6B2E;font-weight:700;background:#FFFFFF}
+.p4-av{display:inline-flex;align-items:center;gap:4px;margin-top:3px;height:24px;padding:0 8px;border-radius:12px;background:#E4EEDA;color:#3F6B2E;font-size:14px;font-weight:600}
+.p4-pq{display:flex;align-items:center;gap:8px;margin:8px 10px 0;padding:8px 10px;border-radius:12px;background:#FBEFD9;font-size:15px;line-height:1.25}
+.p4-glisse{margin:8px 12px 0;font-size:14px;color:#666666}
+.p4-cit p{margin:0;padding:5px 0;border-top:1px solid #EBEBEB}
+.p4-cit p:first-child{border-top:0}
+/* achat (base ra+p5f) */
+.p4-crit{display:flex;align-items:center;gap:8px;margin:2px 12px 0;font-size:15px;line-height:1.25}
+.p4-crit b{color:#9A4F1E}
+.p4-colle{margin:8px 10px 0;border:1.5px solid #1F64A3;border-radius:14px;padding:8px 10px;background:#FFFFFF}
+.p4-colle .p4-ch{display:flex;align-items:center;gap:5px;font-size:14px;color:#1F64A3;font-weight:600;margin-bottom:6px}
+.p4-nm{font-size:16px;font-weight:700;line-height:1.2}
+.p4-veille{gap:8px;margin-top:6px;padding-top:6px;border-top:1px solid #EBEBEB;font-size:15px;min-height:40px}
+.p4-vu{display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:700;color:#3F6B2E}
+.p4-cmp{display:flex;align-items:center;gap:8px;margin:6px 10px 0;padding:8px 12px;border-radius:14px;border:1.5px solid #1F64A3;background:#EEF3FA;font-size:15px;line-height:1.3}
+
+/* collisions de classes entre le vocabulaire v0x et M4 */
+.m,.n{letter-spacing:0}
+.m4-carte.ok{color:#111111;font-weight:400}
+.m4-tag.p4-app{background:var(--attbg);color:var(--att)}
+.p3-l.p4-l1{border-top:1px solid #EBEBEB;margin-top:4px}

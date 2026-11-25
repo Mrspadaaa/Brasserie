@@ -1,0 +1,92 @@
+{
+ "pistes": [
+  {
+   "emoji": "⚙️",
+   "mot": "compresseur",
+   "texte": "Compresseur HS",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "compresseur HS"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "🔧",
+   "titre": "Réparer",
+   "cout": "480 CHF",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "réparation 480 CHF",
+   "conseille": false
+  },
+  {
+   "emoji": "❄️",
+   "titre": "Frigo neuf",
+   "cout": "1 200 CHF",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "frigo neuf 1 200 CHF",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "⚖️",
+  "titre": "Comparer les devis",
+  "quand": "avant décembre",
+  "ligne": 4,
+  "citation": "Devis à comparer avant décembre"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🌡️",
+   "valeur": "14 °C",
+   "label": "au lieu de 2",
+   "ligne": 1
+  },
+  {
+   "emoji": "🛢️",
+   "valeur": "6 fûts",
+   "label": "au froid",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "Le 21 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "480 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 3,
+   "mot": "1 200 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 4,
+   "mot": "avant décembre",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🧊",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Froid"
+ },
+ "priorite": "haute",
+ "resume": "Réparer ou neuf ?",
+ "etatPropose": "cherche",
+ "genre": "probleme"
+}

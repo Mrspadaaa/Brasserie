@@ -1,0 +1,62 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "🤝",
+  "titre": "Demander une 2e offre",
+  "ligne": 3,
+  "citation": "Demander une offre à un 2e assureur"
+ },
+ "echeance": {
+  "quand": "31 déc.",
+  "quoi": "Renouveler",
+  "ligne": 1
+ },
+ "periode": null,
+ "chiffres": [],
+ "liste": [
+  {
+   "emoji": "📜",
+   "texte": "Police actuelle",
+   "ligne": 2,
+   "citation": "police actuelle"
+  },
+  {
+   "emoji": "🧰",
+   "texte": "Inventaire du matériel",
+   "ligne": 2,
+   "citation": "inventaire du matériel"
+  },
+  {
+   "emoji": "📈",
+   "texte": "Chiffre d’affaires 2026",
+   "ligne": 2,
+   "citation": "chiffre d’affaires 2026"
+  }
+ ],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "31 déc.",
+   "type": "date"
+  },
+  {
+   "ligne": 4,
+   "mot": "avant le 31 déc.",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🛡️",
+ "categorie": {
+  "nom": "Administratif"
+ },
+ "priorite": "normale",
+ "resume": "Demander 2e offre",
+ "etatPropose": "note",
+ "genre": "memo"
+}

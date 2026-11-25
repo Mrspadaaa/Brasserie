@@ -1,0 +1,74 @@
+{
+ "pistes": [],
+ "options": [
+  {
+   "emoji": "🔥",
+   "titre": "Fin d’ébullition",
+   "qui": "à chaud",
+   "cout": "?",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "en fin d'ébullition",
+   "conseille": false
+  },
+  {
+   "emoji": "🧊",
+   "titre": "À froid",
+   "qui": "à froid",
+   "cout": "?",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "à froid",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "🍺",
+  "titre": "Goûter chez la voisine",
+  "ligne": 4,
+  "citation": "Goûter celle de la brasserie voisine"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🍺",
+   "valeur": "4.5%",
+   "label": "blonde légère",
+   "ligne": 2
+  },
+  {
+   "emoji": "🌼",
+   "valeur": "fin mai",
+   "label": "en fleur",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "fin mai",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "ou à froid",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🌼",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Brassage"
+ },
+ "priorite": "basse",
+ "resume": "Goûter chez la voisine",
+ "etatPropose": "note",
+ "genre": "idee"
+}

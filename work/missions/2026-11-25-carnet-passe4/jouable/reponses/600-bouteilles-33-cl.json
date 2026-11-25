@@ -1,0 +1,133 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "📅",
+  "titre": "Choisir avant le 15",
+  "ligne": 4,
+  "citation": "Besoin avant le 15 du mois"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [
+  {
+   "emoji": "🧽",
+   "texte": "Occasion à laver",
+   "ligne": 3,
+   "citation": "à laver, 400 seulement"
+  }
+ ],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 2,
+   "mot": "80 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 4,
+   "mot": "avant le 15 du mois",
+   "type": "date"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "💰 Prix / bt",
+   "📦 Minimum",
+   "🚚 Livraison",
+   "🧮 Pour 600"
+  ],
+  "articles": [
+   {
+    "nom": "Verallia",
+    "ligne": 1,
+    "citation": "Verallia",
+    "valeurs": [
+     {
+      "texte": "0.42/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "1200 min",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "504 CHF",
+      "source": "ia",
+      "detail": "1200 × 0.42"
+     }
+    ]
+   },
+   {
+    "nom": "Fournisseur B",
+    "ligne": 2,
+    "citation": "Fournisseur B",
+    "valeurs": [
+     {
+      "texte": "0.55/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "par 600",
+      "source": "notes"
+     },
+     {
+      "texte": "80 CHF",
+      "source": "notes"
+     },
+     {
+      "texte": "410 CHF",
+      "source": "ia",
+      "detail": "600 × 0.55 + 80"
+     }
+    ]
+   },
+   {
+    "nom": "Occasion",
+    "ligne": 3,
+    "citation": "Occasion sur annonce",
+    "valeurs": [
+     {
+      "texte": "0.20/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "400 seulement",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   2,
+   null,
+   null,
+   null
+  ]
+ },
+ "emoji": "🍾",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Conditionnement"
+ },
+ "priorite": "haute",
+ "resume": "Choisir le fournisseur",
+ "etatPropose": "cherche",
+ "genre": "achat"
+}

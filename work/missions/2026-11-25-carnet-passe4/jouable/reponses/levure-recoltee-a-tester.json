@@ -1,0 +1,71 @@
+{
+ "pistes": [
+  {
+   "emoji": "👃",
+   "mot": "odeur",
+   "texte": "Odeur ok",
+   "statut": "trouve",
+   "ligne": 4,
+   "citation": "Odeur ok"
+  },
+  {
+   "emoji": "🫧",
+   "mot": "mousse",
+   "texte": "Pas de mousse bizarre",
+   "statut": "trouve",
+   "ligne": 4,
+   "citation": "pas de mousse bizarre"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "🧪",
+  "titre": "Faire un starter",
+  "ligne": 3,
+  "citation": "Faire un starter avant d'ensemencer"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🧬",
+   "valeur": "3e génération",
+   "label": "US-05",
+   "ligne": 1
+  },
+  {
+   "emoji": "❄️",
+   "valeur": "12 jours",
+   "label": "au frigo",
+   "ligne": 2
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 2,
+   "mot": "12 jours",
+   "type": "date"
+  },
+  {
+   "ligne": 4,
+   "mot": "Odeur ok",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🧫",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Fermentation"
+ },
+ "priorite": "normale",
+ "resume": "Faire un starter",
+ "etatPropose": "note",
+ "genre": "probleme",
+ "conseil": "🧪 Le starter dira si elle repart bien."
+}

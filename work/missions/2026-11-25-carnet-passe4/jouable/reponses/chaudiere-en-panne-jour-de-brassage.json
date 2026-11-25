@@ -1,0 +1,97 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔴",
+   "mot": "voyant",
+   "texte": "Voyant rouge",
+   "statut": "a_verifier",
+   "ligne": 1,
+   "citation": "voyant rouge"
+  },
+  {
+   "emoji": "🔁",
+   "mot": "reset",
+   "texte": "Reset 10 min",
+   "statut": "a_verifier",
+   "ligne": 3,
+   "citation": "Reset marche 10 min puis recoupe"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "📞",
+   "titre": "Technicien",
+   "qui": "technicien",
+   "cout": "?",
+   "source": "notes",
+   "ligne": 4,
+   "citation": "Technicien ?",
+   "conseille": true
+  },
+  {
+   "emoji": "📅",
+   "titre": "Décaler au jeudi",
+   "qui": "jeudi",
+   "cout": "?",
+   "source": "notes",
+   "ligne": 5,
+   "citation": "décaler au jeudi",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "📞",
+  "titre": "Appeler le technicien",
+  "ligne": 4,
+  "citation": "numéro sur l'autocollant"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "⏱️",
+   "valeur": "10 min",
+   "label": "puis recoupe",
+   "ligne": 3
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [
+  {
+   "emoji": "⏰",
+   "texte": "Brassage demain 7h",
+   "ligne": 2,
+   "citation": "Brassage IPA prévu demain 7h"
+  }
+ ],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "voyant rouge",
+   "type": "piste"
+  },
+  {
+   "ligne": 2,
+   "mot": "demain 7h",
+   "type": "date"
+  },
+  {
+   "ligne": 4,
+   "mot": "technicien appelé",
+   "type": "contacte"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🔥",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Brassage"
+ },
+ "priorite": "haute",
+ "resume": "Appeler le technicien",
+ "etatPropose": "decide",
+ "genre": "probleme"
+}
