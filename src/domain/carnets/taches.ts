@@ -40,7 +40,7 @@ export function notePlanningDe(texte: string): { du: string; au?: string; catego
 }
 
 export interface TacheVue extends Tache { carnetId: string; carnetTitre: string; /** lue d'une note du Planning : jamais écrite, jamais cochée ici */ derivee?: true;
-  /** C68-9 : le dernier jour du projet du Planning (« au 15.09.2026 ») ; passé, il n'y a plus rien à faire */ finPlanning?: string }
+  /** C68-9 : le dernier jour du projet du Planning (« au 15.09.2026 ») ; passé, il n'y a plus rien à faire */ finPlanning?: string; /** R96 (c74c) : le premier jour du projet du Planning (« du 01.05.2027 ») : la tâche dit ce jour, pas le lundi d'avant */ debutPlanning?: string }
 
 export const idTachePlanning = (noteId: string): string => `planning:${noteId}`;
 
@@ -57,7 +57,7 @@ export function tachesDe(c: CarnetDoc): TacheVue[] {
     if (!p) continue;
     planning.push({
       id: idTachePlanning(n.id), texte: c.title, echeance: lundiDe(p.du), precision: 'semaine', origine: 'locale', creeeLe: c.carnet.creeLe, carnetId: c.id, carnetTitre: c.title, derivee: true,
-      ...(p.au ? { finPlanning: p.au } : {}), ...(budget ? { coutCentimes: budget.centimes, devise: budget.devise, coutEstime: true } : {})
+      debutPlanning: p.du, ...(p.au ? { finPlanning: p.au } : {}), ...(budget ? { coutCentimes: budget.centimes, devise: budget.devise, coutEstime: true } : {})
     });
   }
   return [...siennes, ...planning];

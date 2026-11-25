@@ -8,6 +8,8 @@ import type { ContenuCarnetV, CritereV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
 import type { CarnetOuvertProps, RangeeV } from './carnetOuvertTypes';
 
+const ESTBUDGETPLANNING = /^\s*budget du planning\s*:?\s*/i;
+
 export function useCriteresCarnet(p: Pick<CarnetOuvertProps, 'cadre' | 'onRetirerCritere'>, k: ContenuCarnetV, r: RangeeV | null | undefined,
   provenance: (el: CritereV) => string | null, avecProv: (el: CritereV) => string) {
   const [voirCriteres, setVoirCriteres] = useState(false);
@@ -17,7 +19,9 @@ export function useCriteresCarnet(p: Pick<CarnetOuvertProps, 'cadre' | 'onRetire
      critère. La provenance dit la vérité de chacun : « de votre phrase » seulement pour ce qui vient de lui. Les autres critères (sans
      valeur à comparer) sont rangés derrière « +1 sans valeur », un toucher les montre ; un critère tout juste rangé (rangée) les ouvre.
      P11 : un critère par texte normalisé. */
-  const criteres = uniquesParTexte(k.criteres);
+  /* R96 (c74c) : « Budget du Planning : 850 CHF » est un budget, pas un critère : il se dit « Budget 850 CHF », hors de la ligne Critère */
+  const budgets = k.criteres.filter(x => ESTBUDGETPLANNING.test(x.texte)).map(x => x.texte.replace(ESTBUDGETPLANNING, '').trim()).filter(Boolean);
+  const criteres = uniquesParTexte(k.criteres.filter(x => !ESTBUDGETPLANNING.test(x.texte)));
   /* critique 6, n° 14 (g5:v03-8, D-38) : chaque critère est écrit une fois. Le critère tout juste rangé ne se dit que dans sa ligne
      rangée (« ✓ Rangé ici · Annuler »), jamais en plus dans la ligne Critère ni dans une sous-liste de tous les critères. */
   const uRange = r && r.cible === 'critere' ? criteres.find(u => u.ids.includes(r.id)) : undefined;
@@ -71,8 +75,9 @@ export function useCriteresCarnet(p: Pick<CarnetOuvertProps, 'cadre' | 'onRetire
       ))}
     </div>
   ) : null;
-  const ligneCritere = criteres.length > 0 && (
+  const ligneCritere = (criteres.length > 0 || budgets.length > 0) && (
     <section className="cn-critere-bloc" aria-label="Ce qui compte">
+      {budgets.length > 0 && <p className="cn-critere cn-critere-court cn-budget-planning"><b>Budget {budgets[0]}</b><span className="cn-mut"> · du Planning</span></p>}
       {tete.length > 0 && (
         <p className="cn-critere cn-critere-une">
           <Target size={18} aria-hidden className="cn-vert cn-critere-ico" />

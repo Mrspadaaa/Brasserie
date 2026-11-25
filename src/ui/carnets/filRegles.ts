@@ -389,7 +389,8 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
   const retenue = optionRetenue(c);
   const minus = (n: string) => n.charAt(0).toLowerCase() + n.slice(1);
   /* C68-8 : « essayé » dit aussi les solutions écrites en articles que la retenue n'a pas prises (« condenseur A »), comme le Résolu */
-  const essaye = [...doc.facons.filter(f => f.id !== retenue?.id).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : etatOption(f) === 'ecartee' && !pasPrisParLaFermeture(f) ? `${minus(f.nom)} (non)` : minus(f.nom); }), ...articlesPasPris(c, retenue).map(a => minus(a.nom))];
+  /* C73-3 (c74c, D-25.11 : prime sur C67-10) : « essayé » ne cite que ce qui a été essayé ou écarté ; une option restée simple piste (ou veille) n'a jamais été essayée */
+  const essaye = [...doc.facons.filter(f => f.id !== retenue?.id && (etatOption(f) === 'ecartee' || foisEcartee(f) >= 1)).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : etatOption(f) === 'ecartee' && !pasPrisParLaFermeture(f) ? `${minus(f.nom)} (non)` : minus(f.nom); }), ...articlesPasPris(c, retenue).map(a => minus(a.nom))];
   const resolu = suiviDe(c).resolu;
   let pris: FicheResolu['pris'] = null;
   if (retenue) {

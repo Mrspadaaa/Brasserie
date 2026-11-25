@@ -70,10 +70,12 @@ export function groupesDeLaMaquette(liste: AFaire, maintenant?: Maintenant): AFa
  * C71-1 : la date dite sur la ligne d'une tâche rangée sous « Un jour » (sinon on ne sait pas pourquoi elle est si loin) : « sem. du 7 déc. », « fin mars 2027 »,
  * « jusqu'au 1 mai 2027 » (projet du Planning commencé) ; l'année seulement si elle n'est pas celle de « maintenant ». Sans échéance : rien (jamais une date inventée).
  */
-export function quandDite(t: Pick<TacheVue, 'echeance' | 'precision' | 'derivee' | 'finPlanning'>, maintenant: Maintenant): string | null {
+export function quandDite(t: Pick<TacheVue, 'echeance' | 'precision' | 'derivee' | 'finPlanning' | 'debutPlanning'>, maintenant: Maintenant): string | null {
   if (!t.echeance) return null;
   const auj = aujourdhuiDe(maintenant);
   if (t.derivee && t.finPlanning && t.echeance <= dimancheDe(auj)) return `jusqu’au ${jourAvecAnnee(t.finPlanning, auj)}`;
+  /* R96 (c74c) : un projet du Planning dit son premier jour (« 1 mai 2027 »), le même que Quand, pas le lundi de sa semaine */
+  if (t.derivee && t.debutPlanning) return `dès le ${jourAvecAnnee(t.debutPlanning, auj)}`;
   if (t.precision === 'mois') {
     const mois = MOIS_COURTS[Number(t.echeance.slice(5, 7)) - 1];
     return `fin ${mois}${t.echeance.slice(0, 4) !== auj.slice(0, 4) ? ` ${t.echeance.slice(0, 4)}` : ''}`;

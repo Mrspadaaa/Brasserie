@@ -40,7 +40,7 @@ export function etiquettesDuRepli(texte: string, carnetId: string, optionId?: st
   const locales = etiquettesLocales(texte);
   /* C72-1 : une option n'a qu'UN prix : une phrase qui dit plusieurs montants (« 450 CHF, ou … 180 CHF ») ne les pose sur aucune option (le fil les lit comme des pistes) */
   const montants = locales.filter(e => e.sorte === 'cout' || e.sorte === 'devis').length;
-  return locales.map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, optionId: (e.sorte === 'cout' && montants <= 1) || e.sorte === 'pas-trouve' ? optionId : undefined, origine: 'locale' as const }));
+  return locales.map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, optionId: ((e.sorte === 'cout' || e.sorte === 'devis') && montants <= 1) || e.sorte === 'pas-trouve' ? optionId : undefined, origine: 'locale' as const }));
 }
 
 /**
@@ -248,6 +248,8 @@ export function creerRangementCarnets(x: RangementV) {
       const avecJetons = (carnetId: string): MessageARanger => {
         const e = etiquettesDuRepli(txt, carnetId, optionsLocales.size === 1 ? [...optionsLocales.values()][0] : undefined);
         const cartes: PropositionSuivi[] = vise && depuis && carnetId === depuis ? [{ sorte: 'deplacer', carnetId: depuis, versCarnetId: vise.carnetId, origine: 'locale' }] : [];
+        /* R96 (c74c) : « … Résolu. » écrit dans une phrase d'un problème ouvert PROPOSE de passer à Résolu (carte OK · Non) ; il ne passe jamais seul */
+        if (depuis && carnetId === depuis && ouvertDoc && genreDe(ouvertDoc) === 'probleme' && etatDe(ouvertDoc) !== 'resolu' && /\brésolu(?:e|s|es)?\b/i.test(txt)) cartes.push({ sorte: 'resoudre', carnetId: depuis, origine: 'locale' });
         return e.length || cartes.length ? { ...message, ...(e.length ? { etiquettes: e } : {}), ...(cartes.length ? { propositionsSuivi: cartes } : {}) } : message;
       };
       let r: Resultat;

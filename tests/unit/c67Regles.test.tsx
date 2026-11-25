@@ -417,6 +417,8 @@ const resoluCommeEnLigne = (): Item[] => {
     k.facons = [{ id: 'FH', nom: 'Hotte et extracteur au plafond', etat: 'ouverte', origine: 'vous' }, { id: 'FA', nom: 'Condenseur A', etat: 'ouverte', origine: 'vous' }, { id: 'FB', nom: 'Condenseur B', etat: 'ouverte', origine: 'vous' }];
     delete k.choix; k.taches = []; k.articles = [];
   });
+  /* D-25.11 (c74c) : « essayé » ne dit que ce qui a été essayé ou écarté (C73-3 prime sur C67-10) : A est écarté par lui, B reste une simple piste et n'est PAS dit « essayé » */
+  it = appliquer(it, changerOption(it as never, { carnetId: IDS_SUIVI.vapeur, faconId: 'FA', vers: 'ecartee', raison: 'trop petit pour la cuve', le: LE }) as never);
   it = appliquer(it, retenirOption(it as never, { carnetId: IDS_SUIVI.vapeur, faconId: 'FH', le: LE }) as never);
   return appliquer(it, resoudre(it as never, { carnetId: IDS_SUIVI.vapeur, le: '2026-11-30T09:00:00.000Z', sorte: 'reparation' }) as never);
 };
@@ -469,7 +471,11 @@ describe('R62 (m) : les écarts restants du tour 67', () => {
     await attendre(80);
     const t = lu(document.body);
     expect(t, 'la relecture est ouverte').toMatch(/Autres résolus|Toujours le bon choix/i);
-    expect(t, 'une ligne « essayé » : les options jamais prises').toMatch(/essayé.{0,40}Condenseur A/i);
+    expect(t, 'une ligne « essayé » : les options écartées').toMatch(/essayé.{0,40}Condenseur A/i);
+    /* C73-3 (D-25.11) : une simple piste n'a jamais été essayée */
+    const dtEssaye = [...document.querySelectorAll('dt')].find(e => /^essayé$/i.test(lu(e)));
+    expect(lu(dtEssaye?.nextElementSibling), 'la ligne « essayé » dite').toMatch(/Condenseur A/i);
+    expect(lu(dtEssaye?.nextElementSibling), 'B, simple piste, n\'est pas « essayé »').not.toMatch(/Condenseur B/i);
   }, 20000);
 
   it('C67-12 : le menu du domaine propose les sous-domaines (Brasserie › Brassage), pas seulement les cinq domaines', async () => {

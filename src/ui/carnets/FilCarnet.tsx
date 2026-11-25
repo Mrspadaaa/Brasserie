@@ -85,7 +85,7 @@ function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { 
             ? <>{rappels?.onVerifier && <BoutonRelire onRelire={() => rappels.onVerifier!(messageId, index)} />}<button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'non')}>Non</button></>
             : p.sorte === 'tache'
             ? <><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'ok')}>À faire</button><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'plus-tard')}>Plus tard</button></>
-            : <><button type="button" className="cnp-btn cnp-btn-plein" onClick={() => geste(messageId, index, 'ok')}>OK</button><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'non')}>Non</button></>}
+            : <><button type="button" className="cnp-btn cnp-btn-plein" {...(p.sorte === 'resoudre' ? { 'aria-label': 'OK : passer à Résolu' } : {})} onClick={() => geste(messageId, index, 'ok')}>OK</button><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'non')}>Non</button></>}
         </div>
       )}
     </div>

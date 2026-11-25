@@ -95,6 +95,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const setRetour = useCallback((r: RetourNeuf | null) => {
     poserRetourEtat(r ? { ...r, id: (prochainRetour.current += 1) } : null);
   }, [poserRetourEtat]);
+  /* R97 (C73-6, c74c) : l'avis « Hors ligne : rangé sur l'appareil » du retour affiché se retire au retour du réseau (ce qui est rangé reste rangé ; « Ranger maintenant » reste proposé) */
+  useEffect(() => {
+    const cur = retourRef.current;
+    if (!enLigne || cur?.avis?.sorte !== 'hors-ligne') return;
+    const { avis: _retire, ...sansAvis } = cur;
+    void _retire;
+    poserRetourEtat(sansAvis as Retour);
+  }, [enLigne, retour, poserRetourEtat]);
   const [jointe, setJointe] = useState<Jointe | null>(null);
   const jetonJointe = useRef(0);
   const [enTete, setEnTete] = useState<string | undefined>();

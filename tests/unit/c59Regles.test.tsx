@@ -522,12 +522,15 @@ describe('R38 (C59-8) : sur un houblon, l\'alpha s\'appelle « Alpha » et passe
   it('fiche « Citra 13.6% » : la caractéristique « Citra : 13,6 % » devient « Alpha 13,6 % »', () => {
     const racine = fiche(carnetDe(FIX.houblons), 0);
     const t = visible(racine);
-    expect(sans(t), t.slice(0, 600)).toMatch(/alpha\s*:?\s*13,6\s?%/);
+    /* D-25.11 sa plainte : valeur dite une fois (c74c) : l'α se dit dans la tête de fiche (« α 13,6 % »), plus dans la grille Caractéristiques ; jamais sous le nom de la variété */
+    expect(sans(t), t.slice(0, 600)).toMatch(/(?:alpha|α)[^%]{0,14}13,6\s?%/);
+    expect((sans(t).match(/13,6/g) ?? []).length, 'dit une seule fois').toBe(1);
     expect(sans(t), 'une caractéristique nommée comme la variété').not.toMatch(/citra\s*:?\s*13,6\s?%/);
   });
   it('fiche : « Alpha » vient avant les autres caractéristiques (Arômes, Origine) : l\'α avant le reste', () => {
     const t = sans(visible(fiche(carnetDe(FIX.houblons), 0)));
-    const alpha = t.search(/alpha\s*:?\s*13,6/);
+    /* D-25.11 sa plainte : valeur dite une fois (c74c) : « α 13,6 % » en tête de fiche */
+    const alpha = t.search(/(?:alpha|α)[^%]{0,14}13,6/);
     const aromes = t.search(/aromes/);
     expect(alpha, t.slice(0, 600)).toBeGreaterThanOrEqual(0);
     expect(alpha, 'Alpha avant Arômes').toBeLessThan(aromes);

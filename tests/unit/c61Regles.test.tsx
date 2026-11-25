@@ -373,12 +373,14 @@ describe('R45 (C59-8) : sur un houblon, l\'alpha s\'appelle « Alpha » et passe
   for (const forme of FORMES) {
     it(`fiche « Citra 13.6% », valeur gardée en « ${forme} » : « Alpha 13,6 % » et plus de caractéristique nommée « Citra »`, () => {
       const t = sans(lu(fiche(carnetDe(F61.citra, { forme }), 0)));
-      expect(t, t.slice(0, 500)).toMatch(new RegExp(`${sans('Alpha')}\\s*:?\\s*13,6\\s?%`));
+      /* D-25.11 sa plainte : valeur dite une fois (c74c) : « α 13,6 % » dans la tête de fiche, plus « Alpha » dans la grille */
+      expect(t, t.slice(0, 500)).toMatch(/(?:alpha|α)[^%]{0,14}13,6\s?%/);
+      expect((t.match(/13,6/g) ?? []).length, 'dit une seule fois').toBe(1);
       expect(t, 'une caractéristique nommée comme la variété').not.toMatch(/citra\s*:?\s*13,6\s?%/);
     });
     it(`fiche « Citra 13.6% », valeur en « ${forme} » : « Alpha » vient avant « Arômes », « Origine » et le reste (l'α d'abord)`, () => {
       const t = sans(lu(fiche(carnetDe(F61.citra, { forme }), 0)));
-      const alpha = t.search(/alpha\s*:?\s*13,6/);
+      const alpha = t.search(/(?:alpha|α)[^%]{0,14}13,6/);
       expect(alpha, t.slice(0, 500)).toBeGreaterThanOrEqual(0);
       for (const apres of ['aromes', 'origine', 'particulierement adapte']) {
         const i = t.search(new RegExp(apres));
@@ -389,8 +391,10 @@ describe('R45 (C59-8) : sur un houblon, l\'alpha s\'appelle « Alpha » et passe
   it('fiche CITRA® (US) : « Taux d\'acides alpha 10 % - 15 % » se dit « Alpha » et passe avant Origine et Poids', () => {
     const t = sans(lu(fiche(carnetDe(F61.citra), 1)));
     expect(t, t.slice(0, 500)).not.toMatch(/taux d'acides alpha/);
-    const alpha = t.search(/alpha\s*:?\s*10\s?%\s?(?:-|–|à)\s?15\s?%/);
-    expect(alpha, `« Alpha 10 % - 15 % » attendu : ${t.slice(0, 500)}`).toBeGreaterThanOrEqual(0);
+    /* D-25.11 sa plainte (c74c) : « α 10–15 % » serré dans la tête de fiche, dit une fois ; plus « Alpha 10 % - 15 % » dans la grille */
+    const alpha = t.search(/(?:alpha|α)[^%]{0,14}10\s?(?:%\s?)?(?:-|–|à)\s?15\s?%/);
+    expect(alpha, `« α 10–15 % » attendu : ${t.slice(0, 500)}`).toBeGreaterThanOrEqual(0);
+    expect((t.match(/10\s?%?\s?[-–à]\s?15/g) ?? []).length, 'dit une seule fois').toBe(1);
     for (const apres of ['origine', 'poids']) expect(alpha, `Alpha avant « ${apres} » : ${t.slice(0, 500)}`).toBeLessThan(t.search(new RegExp(apres)));
   });
   it('Comparer : la ligne « Alpha » est la première des caractéristiques, et porte les deux valeurs (13,6 % et 10 % - 15 %)', () => {

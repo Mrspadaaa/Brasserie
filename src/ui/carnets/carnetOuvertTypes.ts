@@ -34,6 +34,8 @@ export interface RappelsSuivi {
   onRouvrir?: () => void;
   /** Une option change d'état : piste, veille, retenue, ou écartée avec sa raison (facultative). */
   onOption?: (faconId: string, vers: EtatOption, raison?: string) => void;
+  /** R95 (c74c) : « Ranger » sur la carte d'un fil ancien (options, tâches, Résolu proposés par l'analyse locale) ; seul son geste écrit. */
+  onRangerFil?: (proposition: import('../../domain/carnets/filAncien').PropositionFilAncien, avecResolu: boolean) => void;
   /** « Fermer grâce à l'achat ? Oui » : l'option qui a été achetée. */
   onFermerParAchat?: (optionId: string) => void;
   onRelu?: (reponse: 'oui' | 'pas-sur') => void;

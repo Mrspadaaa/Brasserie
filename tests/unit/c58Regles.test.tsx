@@ -598,6 +598,8 @@ describe('R34 (C58-6) : le prix de la ligne Offre a une place fixe', () => {
     if (!dansCorps && auto) return { place: 'droite', detail };
     if (dansCorps && pleine(ps) && !auto) return { place: 'sous-vendeur', detail };
     if (dansCorps && auto && pleine(cs)) return { place: 'droite', detail };
+    /* D-25.11 sa plainte (c74c) : le corps ne s'étire plus sur 100 % (bloc vide sous le prix) ; il grandit depuis une base fixe (1 1 14rem), le prix s'y range à droite et les gestes suivent sur la même ligne */
+    if (dansCorps && auto && /^1\s+1\s+(?!100%)\S+/.test((cs.get('flex') ?? '').trim())) return { place: 'droite', detail };
     return { place: 'flotte', detail };
   }
   const cas: Array<[string, () => CarnetDoc]> = [

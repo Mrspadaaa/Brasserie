@@ -2,6 +2,7 @@
 import { estLienSeul, type CarnetDoc } from '../../domain/carnets/modele';
 import { analyserTexte, critereMesurable, decouper, genreDEtiquette, genreLocal, jetons, normaliser, objetDe, sansPrefixeBanc } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
+import { genreDe } from '../../domain/carnets/suivi';
 import { liensDuTexte, nombresDe, type LigneCarnet } from '../../domain/carnets/ia';
 import type { GenreNote } from './EtatIA';
 
@@ -77,6 +78,10 @@ function calculerDestination(texte: string, ouvert: CarnetDoc, carnets: readonly
   const t = texte.trim();
   if (!t || plusieursLignes(t) || analyserTexte(t).some(l => l.url)) return ici;
   /* R97 (C73-2, C74B) : dans un PROBLÈME, une solution dite avec son prix (« une hotte inox, devis de 620 CHF ») est une option de CE problème, jamais un carnet neuf à son nom */
+  if (genreDe(ouvert) === 'probleme' && !AUTRE_SUJET.test(t.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, ''))) {
+    const l = analyserTexte(t)[0];
+    if (l && l.sorte === 'article' && !l.url && l.prixCentimes !== undefined) return ici;
+  }
   const autres = carnets.filter(c => c.id !== ouvert.id && !c.carnet.archive);
   /* critique 8, n° 1 : une phrase qui nomme un autre objet ne devient jamais un critère d'ici : un carnet proche, sinon un neuf */
   const objet = autreObjet(t, ouvert);

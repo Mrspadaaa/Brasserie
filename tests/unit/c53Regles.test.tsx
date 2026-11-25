@@ -126,7 +126,8 @@ type ProprieteHoublon = 'acides' | 'huiles';
 type ProprieteChambre = 'dimensions' | 'porte' | 'energie';
 
 /** Les libellés d'un houblon : les acides ensemble (avant les huiles), puis les huiles, la totale d'abord, chaque huile par part décroissante. */
-function attendreHoublon(libelles: string[], lignes: Ligne[], quoi: readonly ProprieteHoublon[] = ['acides', 'huiles']) {
+/* D-25.11 sa plainte : valeur dite une fois (c74c) : sur la FICHE d'un houblon, Alpha sort de la grille (la tête de fiche dit « α 13,6 % ») ; `alphaEnTete` : il n'y reste que bêta et cohumulone */
+function attendreHoublon(libelles: string[], lignes: Ligne[], quoi: readonly ProprieteHoublon[] = ['acides', 'huiles'], alphaEnTete = false) {
   const n = libelles.map(sans);
   const contexte = `ordre lu : ${n.join(' | ')}`;
   expect(n.length, contexte).toBeGreaterThan(8);
@@ -134,7 +135,8 @@ function attendreHoublon(libelles: string[], lignes: Ligne[], quoi: readonly Pro
   expect(tot, contexte).toBeGreaterThanOrEqual(0);
   if (quoi.includes('acides')) {
     const acides = indices(n, ACIDE);
-    expect(acides, `trois acides (alpha, bêta, cohumulone) ; ${contexte}`).toHaveLength(3);
+    expect(acides, `${alphaEnTete ? 'deux acides (bêta, cohumulone), alpha est dans la tête de fiche' : 'trois acides (alpha, bêta, cohumulone)'} ; ${contexte}`).toHaveLength(alphaEnTete ? 2 : 3);
+    if (alphaEnTete) expect(n.some(x => /^alpha/.test(x)), `Alpha n'est plus dans la grille ; ${contexte}`).toBe(false);
     const entre = Array.from({ length: Math.max(...acides) - Math.min(...acides) + 1 }, (_, k) => Math.min(...acides) + k).filter(i => !acides.includes(i)).map(i => n[i]);
     expect(entre.every(x => /^recolte\b/.test(x)), `les acides ensemble, rien d'autre que la récolte entre eux ; ${contexte}`).toBe(true);
     expect(Math.max(...acides), `les acides avant les huiles ; ${contexte}`).toBeLessThan(tot);
@@ -185,12 +187,12 @@ describe('R16 : les caractéristiques se rangent par groupes (acides, huiles, di
       for (const [page, permuter] of PAGES) {
         it(`fiche d'un houblon (${genre}), page ${page} : ${dit}`, () => {
           const c = carnet([{ id: 'H1', nom: `Houblon ${genre}`, valeurs: valeursDe(permuter(lignes)) }], [], 'Houblons');
-          attendreHoublon(libellesDeFiche(fiche(c)), lignes, [quoi]);
+          attendreHoublon(libellesDeFiche(fiche(c)), lignes, [quoi], true);
         });
       }
       it(`article déjà rangé (lireCarnet) · houblon ${genre} : la fiche dit ${dit}`, () => {
         const c = lireCarnet(carnet([{ id: 'H1', nom: `Houblon ${genre}`, valeurs: valeursDe([...lignes].reverse()) }], [], 'Houblons') as never)!;
-        attendreHoublon(libellesDeFiche(fiche(c)), lignes, [quoi]);
+        attendreHoublon(libellesDeFiche(fiche(c)), lignes, [quoi], true);
       });
       it(`lecture serveur (prioriserValeurs) · houblon ${genre}, page inversée : ${dit}`, () => {
         attendreHoublon(prioriserValeurs([...lignes].reverse().map(l => ({ nom: l.nom, valeur: l.valeur, ...(l.unite ? { unite: l.unite } : {}) })) as never[]).map((v: { nom: string }) => v.nom), lignes, [quoi]);

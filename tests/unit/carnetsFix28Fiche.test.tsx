@@ -33,12 +33,16 @@ describe('T28-14 : la fiche d\'un houblon commence par ce que le brasseur cherch
   };
   it('C53 (R16) : les acides ensemble (alpha, bêta), la récolte, les huiles totales, chaque huile par part décroissante ; le reste par son nom', () => {
     const n = noms(fiche(mosaic(valeurs)));
-    expect(n.slice(0, 4)).toEqual(['Alpha', 'Bêta', 'Récolte', 'Huiles totales']);
-    expect(n.slice(4)).toEqual(['Myrcène', 'Caryophyllène', 'Farnésène', 'Pays de récolte', 'Type de houblon']);
+    /* D-25.11 sa plainte : valeur dite une fois (c74c) : sur un houblon, Alpha sort de la grille ; la tête de fiche le dit (« α 11,4 % ») */
+    expect(n.slice(0, 3)).toEqual(['Bêta', 'Récolte', 'Huiles totales']);
+    expect(n).not.toContain('Alpha');
+    expect(n.slice(3)).toEqual(['Myrcène', 'Caryophyllène', 'Farnésène', 'Pays de récolte', 'Type de houblon']);
   });
   it('les noms de la page d\'avant (Alpha, Erntejahr, Total oil) passent aussi, et « 0.8ml » se dit « 0,8 ml/100 g »', () => {
     const c = fiche(mosaic({ Farnesene: v('0.2%'), Caryophyllene: v('7.2%'), Alpha: v('11.4%'), 'Total oil': v('0.8ml'), Erntejahr: v('2025') }));
-    expect(noms(c).slice(0, 3)).toEqual(['Alpha', 'Erntejahr', 'Total oil']);
+    /* D-25.11 sa plainte : valeur dite une fois (c74c) : Alpha est dans la tête de fiche, plus dans la grille */
+    expect(noms(c).slice(0, 2)).toEqual(['Erntejahr', 'Total oil']);
+    expect(noms(c)).not.toContain('Alpha');
     expect(case_(c, 'Total oil')).toContain('0,8 ml/100 g');
   });
   it('un appareil n\'est pas touché : l\'ordre de la page reste', () => {

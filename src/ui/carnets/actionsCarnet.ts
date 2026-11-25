@@ -18,6 +18,7 @@ import { accepterPropositionSuivi, refuserPropositionSuivi } from '../../domain/
 import { changerEtat, changerOption, fermerParAchat, poserAvantApres, poserGenre, repondreRelu, retenirOption, retirerEtiquette, rouvrir } from '../../domain/carnets/suivi';
 import { ajouterTache, cocherTache, poserEcheance } from '../../domain/carnets/taches';
 import { planDeLAchat } from './afaireRegles';
+import { rangerFilAncien } from '../../domain/carnets/filAncien';
 import { deplacerLesLignesDuMessage, enchainer, rattacherContenu } from './listeRegles';
 
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
@@ -233,6 +234,7 @@ export function actionsCarnet(x: ActionsV) {
         const args = { carnetId: c.id, faconId, le: leMaintenant(), ...(raison ? { raison } : {}) };
         geste(vers === 'retenue' ? retenirOption(magasin.lire(), args) : changerOption(magasin.lire(), { ...args, vers }), c.id);
       },
+      onRangerFil: (proposition, avecResolu) => { geste(rangerFilAncien(magasin.lire(), { proposition, le: leMaintenant(), avecResolu }), c.id); },
       onFermerParAchat: optionId => { geste(fermerParAchat(magasin.lire(), { carnetId: c.id, optionId, le: leMaintenant() }), c.id); },
       onRelu: reponse => { geste(repondreRelu(magasin.lire(), { carnetId: c.id, reponse, le: leMaintenant() }), c.id); },
       onAvantApres: (avant, apres) => {

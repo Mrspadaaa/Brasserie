@@ -30,6 +30,9 @@ import { BarreEtat } from './BarreEtat';
 import { ChipGenre, PastilleCategorie } from './EnTeteGenre';
 import { FilCarnetVue } from './FilCarnet';
 import { OptionsProbleme, RangeeJetons } from './OptionsProbleme';
+import { FilAncienARanger } from './FilAncienARanger';
+import { notePlanningDe } from '../../domain/carnets/taches';
+import { propositionFilAncien } from '../../domain/carnets/filAncien';
 import { QuestionPourquoi } from './QuestionPourquoi';
 import { CarteFermerParAchat, ResoluProbleme } from './ResoluProbleme';
 import { achatConstate, resumeJetons } from './filRegles';
@@ -71,6 +74,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
   /* k1d (h05-3, i06-4) : un projet porté du Planning a pour titre le nom de la tâche, pas sa phrase ; son budget vient du Planning */
   const duPlanning = c.id.startsWith(PREFIXE_PLANNING);
+  const debutPlanning = duPlanning ? k.notes.map(n => notePlanningDe(n.texte)).find(Boolean)?.du : undefined;
   const provenance = (el: CritereV): string | null =>
     duPlanning && String(el.origine) === 'vous' ? (/Planning/.test(el.texte) ? null : 'repris du Planning') : provenanceCritere(el);
   const avecProv = (el: CritereV) => { const x = provenance(el); return x ? ` · ${x}` : ''; };
@@ -122,6 +126,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const annee = Number((p.aujourdhui ?? jourDeIso(new Date().toISOString())).slice(0, 4));
   const rap = p.rappels;
   const filVu = neuf ? null : filDuCarnet(doc, messages);
+  const filAncien = neuf ? null : propositionFilAncien(doc, messages);
   const problemeResolu = enteteGenre && genre === 'probleme' && etatSuivi === 'resolu';
   const [achatEcarte, setAchatEcarte] = useState(false);
   const achat = enteteGenre && genre === 'probleme' && etatSuivi === 'decide' && !achatEcarte
@@ -251,6 +256,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           à 390 ils doivent être à l'écran quand on les touche */}
       {p.bandeau}
       {p.cadre}
+      {/* R95 (c74c) : un fil d'avant le suivi se range à l'ouverture par l'analyse locale : la carte propose, rien n'est écrit avant « Ranger » */}
+      {filAncien && rap?.onRangerFil && <FilAncienARanger proposition={filAncien} onRanger={avecResolu => rap.onRangerFil!(filAncien, avecResolu)} />}
       {!enteteGenre && ligneEtat}
       {/* D451 : un problème. Je cherche : les jetons du diagnostic sur une rangée ; les options en deux colonnes ; Décidé : « Fermer grâce à l'achat ? »
           si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
@@ -405,7 +412,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* D451 disparaît n° 4 : « Quand » ne paraît que s'il sert : une date posée, un achat, une idée ; pas pour un problème, un mémo ou une récolte sans date */}
-      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand {...(debutPlanning ? { planning: debutPlanning } : {})} date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
         onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}

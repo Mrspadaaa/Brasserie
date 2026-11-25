@@ -6,6 +6,7 @@ import { DureeFenetre } from '../calendrier/frise/DureeFenetre';
 import { plageDate } from '../plageDate';
 import { lundiDe } from '../../domain/calendrier';
 import { ORDRES_DE_GRANDEUR, texteIntention } from '../../domain/horizons';
+import { MOIS_COURTS } from '../../domain/calendrier/dates';
 import { montant } from './EtatIA';
 import type { CarnetOuvertProps } from './carnetOuvertTypes';
 
@@ -19,7 +20,7 @@ export const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getM
  * toucher rouvre les puces, la frise, les pastilles et Au calendrier. Q-1b B (q1b-b.png) : en tête des pastilles, le prix que le carnet
  * connaît déjà, « 400 CHF · budget » (son critère) ou le prix lu d'un lien (« · lu »).
  */
-export function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null, precision?: 'semaine' | 'mois') => void; onAuCalendrier?: () => void;
+export function RubriqueQuand(p: { /** R96 (c74c) : le début du projet du Planning (AAAA-MM-JJ) : tant que la date est celle de l'import, Quand dit CE jour, pas le lundi d'avant */ planning?: string; date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null, precision?: 'semaine' | 'mois') => void; onAuCalendrier?: () => void;
   prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
   /* D431 (GESTE-DATE-PARTOUT, CA12-PW-2) : sous les puces raccourcis, la frise partagée du Calendrier (`DureeFenetre seule`, rangée achats) ; le repère
      suit le doigt (brouillon), la date s'écrit au lâcher (`onDater(lundi)`), jamais à chaque pas. Sans date, le repère attend sur cette semaine, estompé. */
@@ -27,7 +28,8 @@ export function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'
   const [tire, setTire] = useState<string | null>(null);
   const tireRef = useRef<string | null>(null);
   useEffect(() => { tireRef.current = null; setTire(null); }, [lundiPose]);
-  const quand = tire ? texteIntention(tire, p.aujourdhui, 'semaine') : texteIntention(p.date, p.aujourdhui, p.precision);
+  const jourPlanning = p.planning && lundiPose && lundiDe(p.planning) === lundiPose && !tire && p.planning >= p.aujourdhui ? `${Number(p.planning.slice(8, 10))} ${MOIS_COURTS[Number(p.planning.slice(5, 7)) - 1]} ${p.planning.slice(0, 4)}` : null;
+  const quand = tire ? texteIntention(tire, p.aujourdhui, 'semaine') : jourPlanning ?? texteIntention(p.date, p.aujourdhui, p.precision);
   const plage = plageDate(lundiPose ?? p.aujourdhui, p.aujourdhui);
   const [changerPrix, setChangerPrix] = useState(false);
   const pose = p.prix?.centimes;
@@ -38,7 +40,7 @@ export function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'
   const [ouvert, setOuvert] = useState(false);
   const propose = p.prix?.propose;
   if (!ouvert) {
-    const resume = [quand ?? 'pas encore daté', pose !== undefined ? `${montant(pose)} CHF${mot}` : quand && p.onPrix ? 'prix ?' : null].filter(Boolean).join(' · ');
+    const resume = [quand ?? 'pas encore daté', pose !== undefined ? `${montant(pose)} CHF${mot}` : p.prix?.propose?.source === 'budget' ? `${montant(p.prix.propose.centimes)} CHF · budget` : quand && p.onPrix ? 'prix ?' : null].filter(Boolean).join(' · ');
     return (
       <section className={`cn-rubrique cn-quand${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
         <button type="button" className="cn-rubrique-tete cnq-replie" aria-expanded={false} data-quand-replie="" onClick={() => setOuvert(true)}>

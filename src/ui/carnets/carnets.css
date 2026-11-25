@@ -507,7 +507,8 @@
 /* C58-6 (R34) : le prix a UNE place, à droite de la CARTE : la ligne du vendeur prend toute la largeur (`flex-basis: 100%`), le prix s'y aligne à droite (marge
    automatique) quel que soit le vendeur ; les gestes (Poser le prix, Relire, Ouvrir) vont dessous. Avant, la ligne ne prenait que 170 px : le prix flottait au milieu. */
 /* C74B (R94) : plus de ligne pleine largeur (« flex-basis: 100% ») : elle poussait les gestes (crayon, Ouvrir) sous une bande vide de ≈ 60 px. Le corps prend ce qu'il lui faut (14 rem) et grandit ; les gestes se rangent À CÔTÉ s'ils tiennent, dessous sinon. */
-.cn-offres .cn-offre-corps { flex: 1 1 100%; }
+/* c74c (D-25.11, sa plainte) : le corps ne s'étire plus sur 100 % : il grandit depuis 14 rem, le prix s'y range à droite et les gestes (crayon, Ouvrir) suivent SUR LA MÊME LIGNE que le prix ; ils ne passent dessous que si la carte est trop étroite. */
+.cn-offres .cn-offre-corps { flex: 1 1 14rem; }
 /* C56-1 (R27) : le vendeur ne passe jamais sous son plus long mot (« ggmgastro.com ») : si lui et le prix ne tiennent pas ensemble, le prix passe
    à la ligne, à droite (`min-width: min-content` + `flex-wrap`) ; un mot plus large que la ligne se coupe (`break-word`) au lieu de couvrir le prix. */
 .cn-offres .cn-offre-corps { flex-wrap: wrap; row-gap: 2px; }

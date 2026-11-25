@@ -315,3 +315,9 @@ span.cnp-tuile { cursor: default; }
 }
 .cnp-fermees li { flex-wrap: wrap; }
 .cnp-fermees .cnp-raison { flex: 1 0 100%; padding-left: 36px; font-size: 12px; line-height: 1.3; overflow-wrap: anywhere; }
+
+/* R95 (c74c) : la carte d'un fil ancien (options, Résolu, tâches proposés par l'analyse locale) : mêmes cases que les options d'un problème ; rien n'est écrit avant « Ranger » */
+.cnp-propose { display: flex; flex-direction: column; gap: 6px; }
+.cnp-propose-tete { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; }
+.cnp-propose-ligne { display: flex; align-items: flex-start; gap: 8px; margin: 0; }
+.cnp-propose-gestes { display: flex; gap: 12px; align-items: center; }
