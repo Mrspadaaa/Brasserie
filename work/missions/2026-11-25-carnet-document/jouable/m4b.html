@@ -139,6 +139,8 @@ body.edite .hors-edition{display:none}
 .m4b-opt .t{font-weight:700;line-height:1.2}
 .m4b-opt .m{font-size:14px;color:var(--mut);display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center}
 .m4b-opt .m b{color:var(--ink)}
+.m4b-opt .m b.cout{font-size:16px;font-weight:800;background:var(--s2);border-radius:999px;padding:1px 10px}
+.m4b-opt .t,.m4b-p .v,.m4b-tache .t{font-size:17px}
 .m4b-opt .btn{grid-row:span 2}
 .m4b-opt.seule{grid-template-columns:1fr}
 .m4b-conseille{font-size:14px;font-weight:700;color:var(--ia);background:var(--iabg);border-radius:6px;padding:0 6px}
@@ -885,28 +887,29 @@ function consigne(c, lignes) {
     'Tu ranges le carnet d’un brasseur (micro-brasserie en Suisse). Tu lis ses notes ; tu ne les réécris jamais.',
     'Réponds UNIQUEMENT par un objet JSON, sans aucun texte autour, exactement de cette forme :',
     '{"etatPropose":"note"|"cherche"|"decide"|"resolu",',
-    ' "pistes":[{"texte":string,"statut":"trouve"|"pas_trouve"|"a_verifier","ligne":number,"citation":string}],',
-    ' "options":[{"titre":string,"cout":string,"source":"notes"|"ia","ligne":number?,"citation":string?,"conseille":boolean}],',
-    ' "tache":{"titre":string,"quand":string?,"ligne":number?,"citation":string?}|null,',
+    ' "pistes":[{"emoji":string,"texte":string,"statut":"trouve"|"pas_trouve"|"a_verifier","ligne":number,"citation":string}],',
+    ' "options":[{"emoji":string,"titre":string,"cout":string,"source":"notes"|"ia","ligne":number?,"citation":string?,"conseille":boolean}],',
+    ' "tache":{"emoji":string,"titre":string,"quand":string?,"ligne":number?,"citation":string?}|null,',
     ' "conseil":string?, "resolu":{"question":string}?,',
     ' "lectures":[{"ligne":number,"mot":string,"type":"montant"|"pas_trouve"|"contacte"|"piste"|"devis"|"date"}],',
     ' "comparaison":{"criteres":[string],"articles":[{"nom":string,"ligne":number?,"citation":string?,"valeurs":[{"texte":string,"source":"notes"|"ia"}]}],"gagnant":[number|null],"compromis":string?}|null,',
     ' "genre":"probleme"|"achat"|"memo"|"idee"}',
     'Règles :',
-    '1. Ne réécris jamais son texte. Tes titres sont courts (6 mots au plus), tutoiement.',
+    '1. Ne réécris jamais son texte. Il est TDAH et visuel : "texte" et "titre" font 3 mots au plus, "cout" 3 mots au plus (un nombre si possible), "emoji" est UN emoji parlant ; tutoiement.',
+    '1b. Le texte d’une piste ne tranche jamais (pas « écartée », « exclue ») : le statut suffit.',
     '2. "citation" et "mot" sont des extraits EXACTS, caractère pour caractère (apostrophes comprises), de la ligne numérotée "ligne". Copie-les, ne les corrige pas. 1 à 6 mots.',
     '3. Tout ce qui ne vient pas de ses notes porte "source":"ia" et aucune citation.',
     '4. Rien de tranché sans preuve dans ses notes : sans preuve écrite, "a_verifier".',
     '5. Aucune date inventée : "quand" seulement si un jour ou une date est écrit dans ses notes ; sinon, omets-le.',
     '6. "resolu" seulement si ses notes disent que c’est réglé ; "conseille": true sur une option au plus.',
     '7. Ne repropose pas ce qu’il a refusé.',
-    '8. Français. "conseil" : deux phrases au plus.',
+    '8. Français. "conseil" : une phrase de 12 mots au plus, qui commence par un emoji.',
     '9. Dès que ses notes parlent de 2 articles, offres ou fournisseurs ou plus (prix, liens, quantités, frais d’envoi…), remplis "comparaison" ; sinon null.',
-    '   "criteres" : ce qui compte pour choisir (prix, prix au kg ou au litre, frais d’envoi, quantité, délai…), d’abord ceux de ses notes, 6 au plus.',
+    '   "criteres" : 1 à 2 mots, précédés d’un emoji ; ce qui compte pour choisir (prix, prix au kg ou au litre, frais d’envoi, quantité, délai…), d’abord ceux de ses notes, 6 au plus.',
     '   "valeurs" : une par critère, dans l’ordre des critères ; "?" quand ni ses notes ni un calcul simple ne le disent. Un prix ramené au kg est un calcul : "source":"ia".',
     '   Tu ne peux pas ouvrir les liens : ce qui n’est que derrière un lien vaut "?".',
     '   "gagnant" : pour chaque critère, l’indice (0, 1…) de l’article qui gagne, ou null si on ne sait pas ou égalité.',
-    '   "compromis" : une phrase, ce qu’on gagne et ce qu’on perd avec le meilleur choix.',
+    '   "compromis" : 12 mots au plus, ce qu’on gagne et ce qu’on perd avec le meilleur choix.',
     '',
     'Carnet : ' + titreDe(c),
     'État actuel : ' + c.etat + (c.etatPar ? ' (posé par lui le ' + jour(c.etatPar.le) + ')' : ''),
@@ -996,6 +999,7 @@ function valider(brut, lignes) {
   var erreurs = [], fausses = 0;
   if (!brut || typeof brut !== 'object' || Array.isArray(brut)) return { rep: null, erreurs: ['pas un objet JSON'], fausses: 0 };
   var str = function (x) { return typeof x === 'string' && x.trim() ? x.trim() : null; };
+  var emo = function (x) { x = str(x); return x && x.length <= 8 && !/[A-Za-z0-9]/.test(x) ? x : ''; };
   var normA = function (s) { return s.replace(/[’‘`´]/g, '\'').replace(/[“”«»]/g, '"').replace(/ /g, ' '); };
   /* rend la citation telle qu'écrite dans SA ligne, ou null (comptée fausse) */
   function verifier(quoi, ligne, citation) {
@@ -1018,14 +1022,14 @@ function valider(brut, lignes) {
     var statut = ['trouve', 'pas_trouve', 'a_verifier'].indexOf(p.statut) >= 0 ? p.statut : 'a_verifier';
     var v = verifier('piste « ' + p.texte + ' »', p.ligne, p.citation);
     if (!v && statut !== 'a_verifier') { statut = 'a_verifier'; }
-    return { texte: str(p.texte), statut: statut, ligne: v ? v.ligne : null, citation: v ? v.citation : null };
+    return { emoji: emo(p.emoji), texte: str(p.texte), statut: statut, ligne: v ? v.ligne : null, citation: v ? v.citation : null };
   }).filter(Boolean);
   var unConseil = false;
   rep.options = (Array.isArray(brut.options) ? brut.options : []).slice(0, 5).map(function (o) {
     if (!o || !str(o.titre)) return null;
     var v = o.source === 'notes' || o.citation ? verifier('option « ' + o.titre + ' »', o.ligne, o.citation) : null;
     var cons = o.conseille === true && !unConseil; if (cons) unConseil = true;
-    return { titre: str(o.titre), cout: str(o.cout), source: v ? 'notes' : 'ia', ligne: v ? v.ligne : null, citation: v ? v.citation : null, conseille: cons };
+    return { emoji: emo(o.emoji), titre: str(o.titre), cout: str(o.cout), source: v ? 'notes' : 'ia', ligne: v ? v.ligne : null, citation: v ? v.citation : null, conseille: cons };
   }).filter(Boolean);
   if (brut.tache && typeof brut.tache === 'object' && str(brut.tache.titre)) {
     var vt = brut.tache.citation ? verifier('tâche', brut.tache.ligne, brut.tache.citation) : null;
@@ -1033,7 +1037,7 @@ function valider(brut, lignes) {
     if (quand && !lignes.some(function (l) { return normA(l).toLowerCase().indexOf(normA(quand).toLowerCase()) >= 0; })) {
       erreurs.push('date de tâche absente des notes : « ' + quand + ' » (retirée)'); quand = null;
     }
-    rep.tache = { titre: str(brut.tache.titre), quand: quand, ligne: vt ? vt.ligne : null, citation: vt ? vt.citation : null };
+    rep.tache = { emoji: emo(brut.tache.emoji), titre: str(brut.tache.titre), quand: quand, ligne: vt ? vt.ligne : null, citation: vt ? vt.citation : null };
   } else rep.tache = null;
   rep.conseil = str(brut.conseil);
   rep.resolu = brut.resolu && str(brut.resolu.question) ? { question: str(brut.resolu.question) } : null;
@@ -1139,7 +1143,7 @@ function rendreOrg() {
   /* frise */
   if (!memo) {
     org.appendChild(frise(c, o.garde.etat === undefined && r.etatPropose && r.etatPropose !== o.etatDe && r.etatPropose !== 'resolu' ? r.etatPropose : null));
-    if (c.etatPar && c.etat !== 'resolu') org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par ' + (c.etatPar.par || 'toi') + ' le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
+    if (c.etatPar && c.etatPar.par !== 'toi' && c.etat !== 'resolu') org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par ' + (c.etatPar.par || 'toi') + ' le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
   }
   /* résolu ? */
   if ((r.resolu || r.etatPropose === 'resolu') && o.garde.resolu === undefined) {
@@ -1153,8 +1157,8 @@ function rendreOrg() {
     r.pistes.forEach(function (p) {
       var oui = p.statut === 'trouve';
       pg.appendChild(h('button', { type: 'button', class: 'm4b-p ' + (oui ? 'oui' : 'q'), onclick: p.ligne ? function () { allerLigne(p.ligne, p.citation, p.texte); } : null },
-        h('span', { class: 'ic' }, oui ? '✓' : '?'), h('span', { class: 'v' }, p.texte),
-        h('span', { class: 'm4b-src' }, p.citation ? cite(p.citation) : null, oui ? null : ' à vérifier', p.ligne ? ico('b-r', 'm4b-r') : null)));
+        h('span', { class: 'ic' }, oui ? '✓' : '?'), h('span', { class: 'v' }, p.emoji ? p.emoji + ' ' : '', p.texte),
+        h('span', { class: 'm4b-src' }, oui ? (p.statut === 'trouve' ? 'trouvé' : '') : 'à vérifier', p.ligne ? ico('b-r', 'm4b-r') : null)));
     });
     org.appendChild(pg);
   }
@@ -1177,21 +1181,21 @@ function rendreOrg() {
     });
     org.appendChild(h('div', { class: 'm4b-k' }, 'Comparer · ' + n + ' articles'));
     org.appendChild(tb);
-    if (cmp.compromis) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, cmp.compromis, h('small', null, 'l’IA, pas tes notes'))));
+    if (cmp.compromis) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, cmp.compromis)));
   }
   /* conseil */
-  if (r.conseil && o.garde.options !== false) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, r.conseil, h('small', null, 'l’IA, pas tes notes'))));
+  if (r.conseil && o.garde.options !== false) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, r.conseil)));
   /* options */
   if (r.options.length && o.garde.options !== false) {
     var optSrc = function (op) {
-      return op.source === 'notes' && op.citation ? h('span', { class: 'm4b-src' }, cite(op.citation), ico('b-r', 'm4b-r')) : h('span', { class: 'm4b-tag ia' }, 'l’IA, pas tes notes');
+      return op.source === 'notes' && op.citation ? h('span', { class: 'm4b-src' }, ico('b-r', 'm4b-r')) : h('span', { class: 'm4b-tag ia', title: 'l’IA, pas tes notes' }, '✦ IA');
     };
     var ligneOpt = function (op, i, avecBtn) {
       var row = h(op.ligne ? 'div' : 'div', { class: 'm4b-opt' + (avecBtn ? '' : ' seule'), role: op.ligne ? 'button' : null, tabindex: op.ligne ? '0' : null,
         onclick: op.ligne ? function () { allerLigne(op.ligne, op.citation, op.titre); } : null },
-        h('span', { class: 't' }, op.titre, !avecBtn && op.conseille ? [' ', h('span', { class: 'm4b-conseille' }, 'conseillé')] : null),
+        h('span', { class: 't' }, op.emoji ? op.emoji + ' ' : '', op.titre, !avecBtn && op.conseille ? [' ', h('span', { class: 'm4b-conseille' }, '★')] : null),
         avecBtn ? bouton('Retenir', op.conseille ? 'btn plein' : 'btn', function (e) { e.stopPropagation(); retenir(i); }) : null,
-        h('span', { class: 'm' }, avecBtn && op.conseille ? h('span', { class: 'm4b-conseille' }, 'conseillé') : null, op.cout ? h('b', null, op.cout) : null, optSrc(op)));
+        h('span', { class: 'm' }, avecBtn && op.conseille ? h('span', { class: 'm4b-conseille' }, 'conseillé') : null, op.cout ? h('b', { class: 'cout' }, op.cout) : null, optSrc(op)));
       return row;
     };
     if (o.garde.options === undefined) {
@@ -1215,17 +1219,17 @@ function rendreOrg() {
   /* tâche */
   if (r.tache && o.garde.tache !== false && !memo) {
     var t = r.tache;
-    var srcT = t.citation ? h('span', { class: 'm4b-src' }, cite(t.citation), ico('b-r', 'm4b-r')) : h('span', { class: 'm4b-tag ia' }, 'l’IA, pas tes notes');
+    var srcT = t.citation ? h('span', { class: 'm4b-src' }, ico('b-r', 'm4b-r')) : h('span', { class: 'm4b-tag ia', title: 'l’IA, pas tes notes' }, '✦ IA');
     var allerT = t.ligne ? function () { allerLigne(t.ligne, t.citation, t.titre); } : null;
     if (o.garde.tache === undefined) {
       org.appendChild(h('div', { class: 'm4b-k' }, 'Ensuite'));
-      org.appendChild(h('div', { class: 'm4b-tache prop', onclick: allerT }, ico('b-ia'), h('span', { class: 't' }, t.titre),
+      org.appendChild(h('div', { class: 'm4b-tache prop', onclick: allerT }, ico('b-ia'), h('span', { class: 't' }, t.emoji ? t.emoji + ' ' : '', t.titre),
         bouton('Garder la tâche', 'btn plein', function (e) { e.stopPropagation(); garder('tache'); }), h('span', { class: 'm' }, 'tâche proposée · ', srcT)));
     } else {
       org.appendChild(h('div', { class: 'm4b-k' }, 'À faire'));
       org.appendChild(h('div', { class: 'm4b-tache' + (o.tacheFaite ? ' faite' : ''), onclick: allerT },
         h('button', { type: 'button', class: 'c', 'aria-label': o.tacheFaite ? 'Décocher' : 'Cocher', onclick: function (e) { e.stopPropagation(); o.tacheFaite = !o.tacheFaite; sauver(); geste(o.tacheFaite ? 'cocher la tâche' : 'décocher la tâche', t.titre); rendreOrg(); } }, o.tacheFaite ? ico('b-coche') : null),
-        h('span', { class: 't' }, t.titre), h('span'), h('span', { class: 'm' }, 'gardée par toi', o.garde.quand === true && t.quand ? ' · ' + t.quand : '', ' · ', srcT)));
+        h('span', { class: 't' }, t.emoji ? t.emoji + ' ' : '', t.titre), h('span'), h('span', { class: 'm' }, 'gardée par toi', o.garde.quand === true && t.quand ? ' · ' + t.quand : '', ' · ', srcT)));
     }
     if (t.quand && o.garde.quand === undefined && o.garde.tache !== false) {
       org.appendChild(h('div', { class: 'm4b-tache prop' }, ico('b-agenda'), h('span', { class: 't' }, t.quand + ' ?'),

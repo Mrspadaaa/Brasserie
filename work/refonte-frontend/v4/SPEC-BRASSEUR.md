@@ -2957,3 +2957,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 soir (capture de M4 b Organisé, « Je cherche ? » entouré) : « C'est automatique ? Et ce qui est de comparaison d'articles ? C'était vraiment bien... »
 - 25.11 soir (capture de M4 b Mes notes, flèche rouge vers « Organisé ») : « SI je clique ou ferme ou quoi que ce soit que ce soit plus écrire, ça trigger l'ai »
 - 25.11 soir (capture du jouable M4 b, l'outil IA entouré) : « Ça trigger l'ai et envoie sur la vue IA. »
+- 25.11 soir (capture du jouable M4 b, Organisé rangé par le vrai Claude) : « C'est très bien, même très très bien mais poud un TDAH, Visual learner, c'est un peu trop textuel »
