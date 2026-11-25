@@ -1,0 +1,56 @@
+{
+ "pistes": [
+  {
+   "emoji": "🚰",
+   "texte": "Débit bridé",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "La vanne d’entrée était à moitié fermée"
+  },
+  {
+   "emoji": "🏜️",
+   "texte": "Marche à sec",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "marche à sec"
+  }
+ ],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "⏱️",
+   "valeur": "30 min",
+   "label": "d’empâtage",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [
+  {
+   "emoji": "🚰",
+   "texte": "Régler à la sortie",
+   "ligne": 3,
+   "citation": "on règle le débit à la sortie"
+  }
+ ],
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "Résolu",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🔥",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Brassage"
+ },
+ "priorite": "basse",
+ "resume": "Débit réglé sortie",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}

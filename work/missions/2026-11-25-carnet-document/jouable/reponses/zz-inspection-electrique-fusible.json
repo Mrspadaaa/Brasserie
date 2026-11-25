@@ -1,0 +1,69 @@
+{
+ "pistes": [
+  {
+   "emoji": "⚡",
+   "texte": "Fusible grillé",
+   "statut": "trouve",
+   "ligne": 1,
+   "citation": "un fusible grillé"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "🛒",
+   "titre": "Fusible Brewtools",
+   "cout": "?",
+   "source": "notes",
+   "ligne": 4,
+   "citation": "brewtools.com",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "🔌",
+  "titre": "Acheter un testeur",
+  "ligne": 3,
+  "citation": "Besoin d’un testeur de tension"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "📏",
+   "valeur": "5×20 mm",
+   "label": "fusible",
+   "ligne": 2
+  },
+  {
+   "emoji": "⚡",
+   "valeur": "6,3 A",
+   "label": "calibre",
+   "ligne": 2
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "le 20 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 2,
+   "mot": "à remplacer",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "⚡",
+ "categorie": {
+  "nom": "Local",
+  "sous": "Électricité"
+ },
+ "priorite": "haute",
+ "resume": "Fusible et testeur",
+ "etatPropose": "cherche",
+ "conseil": "⚡ Teste la tension avant de remettre le fusible.",
+ "genre": "probleme"
+}

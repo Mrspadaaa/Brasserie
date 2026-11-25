@@ -1,0 +1,54 @@
+{
+ "pistes": [
+  {
+   "emoji": "🍺",
+   "texte": "Levure lager",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "Souvent normal avec une levure lager"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "👃",
+  "titre": "Sentir à nouveau",
+  "quand": "dans 2 semaines",
+  "ligne": 3,
+  "citation": "sentir à nouveau dans 2 semaines"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "📅",
+   "valeur": "J+5",
+   "label": "odeur",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "J+5",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "dans 2 semaines",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🥚",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Fermentation"
+ },
+ "priorite": "normale",
+ "resume": "Sentir avant fût",
+ "etatPropose": "decide",
+ "conseil": "👃 Laisse la garde agir, sens avant la mise en fût.",
+ "genre": "probleme"
+}

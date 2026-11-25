@@ -1,0 +1,43 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": {
+  "du": "01.05.2027",
+  "au": "01.07.2027",
+  "ligne": 2
+ },
+ "chiffres": [
+  {
+   "emoji": "💰",
+   "valeur": "2 500 CHF",
+   "label": "budget",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "2 500 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 2,
+   "mot": "01.05.2027",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🍾",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Conditionnement"
+ },
+ "priorite": "normale",
+ "resume": "Budget 2 500 CHF",
+ "etatPropose": "note",
+ "genre": "planning"
+}

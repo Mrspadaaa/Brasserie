@@ -1,0 +1,79 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔩",
+   "texte": "Raccord gaz",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "bulles au raccord gaz"
+  },
+  {
+   "emoji": "⭕",
+   "texte": "Joint du couvercle",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "joint du couvercle"
+  },
+  {
+   "emoji": "🎛️",
+   "texte": "Régulateur",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "régulateur"
+  }
+ ],
+ "options": [],
+ "tache": {
+  "emoji": "🔍",
+  "titre": "Revérifier la pression",
+  "quand": "dans une semaine",
+  "ligne": 4,
+  "citation": "à revérifier dans une semaine"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "📈",
+   "valeur": "1,2 bar",
+   "label": "le 15 nov.",
+   "ligne": 1
+  },
+  {
+   "emoji": "📉",
+   "valeur": "0,4 bar",
+   "label": "le 22",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "le 15 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "bulles au raccord gaz",
+   "type": "piste"
+  },
+  {
+   "ligne": 4,
+   "mot": "dans une semaine",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🫧",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Conditionnement"
+ },
+ "priorite": "haute",
+ "resume": "Revérifier la pression",
+ "etatPropose": "decide",
+ "conseil": "🫧 Refais le test au savon sur le raccord neuf.",
+ "genre": "probleme"
+}

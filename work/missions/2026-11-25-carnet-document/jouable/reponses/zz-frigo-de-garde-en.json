@@ -1,0 +1,130 @@
+{
+ "pistes": [
+  {
+   "emoji": "⚙️",
+   "texte": "Compresseur",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "compresseur HS"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "🔧",
+   "titre": "Réparer",
+   "cout": "480 CHF",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "réparation 480 CHF",
+   "conseille": false
+  },
+  {
+   "emoji": "🆕",
+   "titre": "Frigo neuf",
+   "cout": "1 200 CHF",
+   "source": "notes",
+   "ligne": 3,
+   "citation": "frigo neuf 1 200 CHF",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "⚖️",
+  "titre": "Comparer les devis",
+  "quand": "avant décembre",
+  "ligne": 4,
+  "citation": "Devis à comparer avant décembre."
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🌡️",
+   "valeur": "14 °C",
+   "label": "au lieu de 2",
+   "ligne": 1
+  },
+  {
+   "emoji": "🛢️",
+   "valeur": "6 fûts",
+   "label": "déplacés",
+   "ligne": 1
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "Le 21 nov.",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "480 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 3,
+   "mot": "1 200 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 4,
+   "mot": "avant décembre",
+   "type": "date"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "💰 Prix",
+   "⏱️ Délai"
+  ],
+  "articles": [
+   {
+    "nom": "Réparer",
+    "ligne": 3,
+    "citation": "réparation 480 CHF",
+    "valeurs": [
+     {
+      "texte": "480 CHF",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Frigo neuf",
+    "ligne": 3,
+    "citation": "frigo neuf 1 200 CHF",
+    "valeurs": [
+     {
+      "texte": "1 200 CHF",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   0,
+   null
+  ],
+  "compromis": "Réparer : 720 CHF de moins, durée de vie inconnue."
+ },
+ "emoji": "🧊",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Froid"
+ },
+ "priorite": "haute",
+ "resume": "Comparer les devis",
+ "etatPropose": "cherche",
+ "genre": "probleme"
+}

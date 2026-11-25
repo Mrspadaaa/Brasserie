@@ -1,0 +1,22 @@
+{
+ "items": [
+  {
+   "type": "check",
+   "emoji": "🌡️",
+   "texte": "Relève la chambre froide",
+   "pourquoi": "tient-elle avec 6 fûts de plus ?"
+  },
+  {
+   "type": "tache",
+   "emoji": "📅",
+   "texte": "Demande l’âge du frigo",
+   "pourquoi": "pour juger si réparer vaut"
+  },
+  {
+   "type": "suggestion",
+   "emoji": "🔁",
+   "texte": "Frigo d’occasion",
+   "pourquoi": "entre réparation et neuf"
+  }
+ ]
+}

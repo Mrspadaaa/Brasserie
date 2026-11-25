@@ -1,0 +1,82 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "🔗",
+  "titre": "Comparer les prix"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "dur à obtenir",
+   "type": "pas_trouve"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "📦 Dispo",
+   "💰 Prix / kg",
+   "🚚 Envoi"
+  ],
+  "articles": [
+   {
+    "nom": "Motler",
+    "ligne": 1,
+    "citation": "motlerhops.fr",
+    "valeurs": [
+     {
+      "texte": "dur à obtenir",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Brau und Rauch",
+    "ligne": 2,
+    "citation": "brauundrauchshop.ch",
+    "valeurs": [
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   null,
+   null,
+   null
+  ],
+  "compromis": "Le suisse si le français reste dur à obtenir."
+ },
+ "emoji": "🌿",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Matières premières"
+ },
+ "priorite": "normale",
+ "resume": "Comparer les prix",
+ "etatPropose": "cherche",
+ "genre": "achat"
+}

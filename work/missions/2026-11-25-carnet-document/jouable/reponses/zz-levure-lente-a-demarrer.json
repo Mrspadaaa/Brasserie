@@ -1,0 +1,86 @@
+{
+ "pistes": [
+  {
+   "emoji": "🥶",
+   "texte": "Moût froid",
+   "statut": "trouve",
+   "ligne": 3,
+   "citation": "Monté à 19 °C"
+  },
+  {
+   "emoji": "📅",
+   "texte": "Levure proche date",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "levure sèche proche de sa date"
+  },
+  {
+   "emoji": "💧",
+   "texte": "Pas réhydratée",
+   "statut": "a_verifier",
+   "ligne": 2,
+   "citation": "pas réhydratée"
+  }
+ ],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "⏱️",
+   "valeur": "36 h",
+   "label": "sans activité",
+   "ligne": 1
+  },
+  {
+   "emoji": "🌡️",
+   "valeur": "16 °C",
+   "label": "au départ",
+   "ligne": 1
+  },
+  {
+   "emoji": "🌡️",
+   "valeur": "19 °C",
+   "label": "relancée",
+   "ligne": 3
+  }
+ ],
+ "liste": [],
+ "retenir": [
+  {
+   "emoji": "💧",
+   "texte": "Réhydrater la levure",
+   "ligne": 4,
+   "citation": "réhydrater la levure"
+  },
+  {
+   "emoji": "🌡️",
+   "texte": "Ensemencer à 18 °C",
+   "ligne": 4,
+   "citation": "ensemencer à 18 °C"
+  }
+ ],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "36 h",
+   "type": "piste"
+  },
+  {
+   "ligne": 3,
+   "mot": "Monté à 19 °C",
+   "type": "piste"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🧫",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Fermentation"
+ },
+ "priorite": "basse",
+ "resume": "Monté à 19 °C",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}

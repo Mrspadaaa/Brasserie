@@ -1,0 +1,76 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": null,
+ "echeance": {
+  "quand": "avant mars",
+  "quoi": "Réserver le stand",
+  "ligne": 3
+ },
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "💰",
+   "valeur": "1 500 CHF",
+   "label": "budget",
+   "ligne": 3
+  },
+  {
+   "emoji": "🍺",
+   "valeur": "3 bières",
+   "label": "pression",
+   "ligne": 1
+  },
+  {
+   "emoji": "🛢️",
+   "valeur": "10 fûts",
+   "label": "à prévoir",
+   "ligne": 2
+  }
+ ],
+ "liste": [
+  {
+   "texte": "Tireuse",
+   "ligne": 2,
+   "citation": "tireuse"
+  },
+  {
+   "texte": "2 tonnelles",
+   "ligne": 2,
+   "citation": "2 tonnelles"
+  },
+  {
+   "texte": "Gobelets consignés",
+   "ligne": 2,
+   "citation": "gobelets consignés"
+  },
+  {
+   "texte": "10 fûts",
+   "ligne": 2,
+   "citation": "10 fûts"
+  }
+ ],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 3,
+   "mot": "1 500 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 3,
+   "mot": "avant mars",
+   "type": "date"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "🎪",
+ "categorie": {
+  "nom": "Événements"
+ },
+ "priorite": "normale",
+ "resume": "Réserver le stand",
+ "etatPropose": "note",
+ "conseil": "🎪 Le stand d’abord : le reste se prépare après.",
+ "genre": "idee"
+}

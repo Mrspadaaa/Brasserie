@@ -1,0 +1,97 @@
+{
+ "pistes": [
+  {
+   "emoji": "🔧",
+   "texte": "Joint du siphon",
+   "statut": "trouve",
+   "ligne": 2,
+   "citation": "joint du siphon trouvé usé"
+  },
+  {
+   "emoji": "🧱",
+   "texte": "Sous la dalle",
+   "statut": "pas_trouve",
+   "ligne": 2,
+   "citation": "fuite sous la dalle, pas trouvée"
+  }
+ ],
+ "options": [
+  {
+   "emoji": "🛠️",
+   "titre": "Changer le joint",
+   "cout": "?",
+   "source": "ia",
+   "conseille": true
+  },
+  {
+   "emoji": "👷",
+   "titre": "Le sanitaire",
+   "cout": "150 CHF ?",
+   "source": "notes",
+   "ligne": 5,
+   "citation": "Estimation 150 CHF",
+   "conseille": false
+  }
+ ],
+ "tache": {
+  "emoji": "📞",
+  "titre": "Relancer le devis",
+  "ligne": 4,
+  "citation": "Devis attendu."
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "💰",
+   "valeur": "150 CHF",
+   "label": "estimation",
+   "ligne": 5
+  }
+ ],
+ "liste": [],
+ "retenir": [],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "fuit au joint",
+   "type": "piste"
+  },
+  {
+   "ligne": 2,
+   "mot": "trouvé usé",
+   "type": "piste"
+  },
+  {
+   "ligne": 2,
+   "mot": "pas trouvée",
+   "type": "pas_trouve"
+  },
+  {
+   "ligne": 3,
+   "mot": "Contacter l’entreprise X",
+   "type": "contacte"
+  },
+  {
+   "ligne": 4,
+   "mot": "Devis attendu",
+   "type": "devis"
+  },
+  {
+   "ligne": 5,
+   "mot": "150 CHF",
+   "type": "montant"
+  }
+ ],
+ "comparaison": null,
+ "emoji": "💧",
+ "categorie": {
+  "nom": "Local",
+  "sous": "Eau"
+ },
+ "priorite": "normale",
+ "resume": "Devis attendu",
+ "etatPropose": "cherche",
+ "conseil": "🔧 Le joint d’abord : tu l’as trouvé usé.",
+ "genre": "probleme"
+}

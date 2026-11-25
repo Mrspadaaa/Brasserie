@@ -1,0 +1,22 @@
+{
+ "items": [
+  {
+   "type": "check",
+   "emoji": "📏",
+   "texte": "Mesure le raccord",
+   "pourquoi": "le condenser doit aller sur ta cuve"
+  },
+  {
+   "type": "tache",
+   "emoji": "🚿",
+   "texte": "Prévois l’arrivée d’eau",
+   "pourquoi": "il condense à l’eau froide"
+  },
+  {
+   "type": "suggestion",
+   "emoji": "🌀",
+   "texte": "Hotte ou extracteur",
+   "pourquoi": "une autre façon de sortir la vapeur"
+  }
+ ]
+}

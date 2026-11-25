@@ -1,0 +1,105 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": null,
+ "echeance": null,
+ "periode": null,
+ "chiffres": [
+  {
+   "emoji": "🌾",
+   "valeur": "25 kg",
+   "label": "le sac",
+   "ligne": 1
+  },
+  {
+   "emoji": "🛒",
+   "valeur": "2 sacs",
+   "label": "commandés",
+   "ligne": 4
+  }
+ ],
+ "liste": [],
+ "retenir": [
+  {
+   "emoji": "🏪",
+   "texte": "Commandé chez l’autre",
+   "ligne": 4,
+   "citation": "Commandé 2 sacs chez l’autre"
+  },
+  {
+   "emoji": "🍺",
+   "texte": "Brassin maintenu",
+   "ligne": 4,
+   "citation": "brassin maintenu"
+  }
+ ],
+ "lectures": [
+  {
+   "ligne": 1,
+   "mot": "mi-décembre",
+   "type": "date"
+  },
+  {
+   "ligne": 2,
+   "mot": "3 déc.",
+   "type": "date"
+  },
+  {
+   "ligne": 3,
+   "mot": "4 CHF",
+   "type": "montant"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "📦 Stock",
+   "💰 Prix"
+  ],
+  "articles": [
+   {
+    "nom": "Habituel",
+    "ligne": 1,
+    "citation": "en rupture",
+    "valeurs": [
+     {
+      "texte": "rupture",
+      "source": "notes"
+     },
+     {
+      "texte": "4 CHF de moins",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Autre",
+    "ligne": 3,
+    "citation": "en stock",
+    "valeurs": [
+     {
+      "texte": "en stock",
+      "source": "notes"
+     },
+     {
+      "texte": "+4 CHF / sac",
+      "source": "notes"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   1,
+   0
+  ],
+  "compromis": "Brassin tenu, pour 4 CHF de plus le sac."
+ },
+ "emoji": "🌾",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Matières premières"
+ },
+ "priorite": "basse",
+ "resume": "Commandé chez l’autre",
+ "etatPropose": "resolu",
+ "genre": "probleme"
+}
