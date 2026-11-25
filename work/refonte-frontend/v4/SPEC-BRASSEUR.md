@@ -2916,3 +2916,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 (IA, rangement) : « Le rangement sur des phrases neuves, il faudrait as utilisé hydrogen ou flash lite a la place de 3.8 ? » ; au banc comparatif à 0,50 CHF : « Yes »
 - 25.11 matin (Carnet, liste, capture plaintes/2026-11-25-carnet-liste-compact.jpg, entourés : en-têtes Brasserie et Brassage) : « Toujours pas super compact... Et quand j'ai un filtre je peux pas replier.... »
 - 25.11 matin (Carnet, liste, capture plaintes/2026-11-25-carnet-priorite.jpg : « Houblons citra » entouré, flèche vers le haut de Brassage) : « J'aimerais aussi pouvoir dépasser et classé en fonction de la priorité » (lu : déplacer, terme du geste)
+- 25.11 matin (Carnet, priorité) : « Pas du drag and drop »
