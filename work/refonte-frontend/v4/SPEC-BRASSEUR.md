@@ -2930,3 +2930,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 après-midi (Comparer de « Houblons citra », capture plaintes/2026-11-25-comparer-tour80.jpg, sans mots)
 - 25.11 après-midi (carnet ZZ CO2, fil en bulles brutes, capture plaintes/2026-11-25-fil-non-classe.jpg) : « Les notes sont pas du tout classé, rien ?? »
 - 25.11 après-midi (carnet ZZ « écoulement qui fuit » : Je cherche, fil en bulles brutes, aucune option, aucun devis, aucune tâche ; capture plaintes/2026-11-25-aucune-problematique.jpg) : « Ça répond à Aucune problématique ??? »
+- 25.11 après-midi (liste, boutons En tête / Monter / Descendre, capture plaintes/2026-11-25-glisser.jpg) : « C'est pas par drag and drop ??? Je voudrais aussi faire du drag and drop pour lui changer sa catégorie »
