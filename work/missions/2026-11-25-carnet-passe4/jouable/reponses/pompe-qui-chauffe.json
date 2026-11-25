@@ -39,24 +39,18 @@
     "texte": "Brûlante après 30 min",
     "ligne": 1,
     "citation": "brûlante après 30 min"
-   },
-   {
-    "emoji": "❓",
-    "texte": "Sec ou débit bridé",
-    "ligne": 2,
-    "citation": "marche à sec, ou débit bridé"
    }
   ],
   "fait": [
    {
     "emoji": "🔎",
-    "texte": "Vanne trouvée mi-fermée",
+    "texte": "Vanne mi-fermée",
     "ligne": 3,
     "citation": "La vanne d’entrée était à moitié fermée"
    },
    {
     "emoji": "🚰",
-    "texte": "Débit réglé à la sortie",
+    "texte": "Débit réglé",
     "ligne": 3,
     "citation": "on règle le débit à la sortie maintenant"
    }

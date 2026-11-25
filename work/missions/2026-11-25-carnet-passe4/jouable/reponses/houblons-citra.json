@@ -3,7 +3,7 @@
  "options": [],
  "tache": {
   "emoji": "🔁",
-  "titre": "Vérifier le prix Brau",
+  "titre": "Vérifier prix Brau",
   "ligne": 2,
   "citation": "brauundrauchshop.ch"
  },
@@ -15,7 +15,7 @@
  "manque": [
   {
    "emoji": "⚖️",
-   "texte": "poids du prix .fr ?"
+   "texte": "poids .fr ?"
   }
  ],
  "attention": [
@@ -58,7 +58,8 @@
      },
      {
       "texte": "en stock",
-      "source": "page"
+      "source": "page",
+      "emoji": "✅"
      },
      {
       "texte": "?",
@@ -66,7 +67,8 @@
      },
      {
       "texte": "États-Unis",
-      "source": "page"
+      "source": "page",
+      "emoji": "🇺🇸"
      }
     ]
    },
@@ -94,7 +96,8 @@
      },
      {
       "texte": "USA",
-      "source": "page"
+      "source": "page",
+      "emoji": "🇺🇸"
      }
     ]
    }

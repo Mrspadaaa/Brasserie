@@ -2,7 +2,7 @@
  "pistes": [
   {
    "emoji": "🌡️",
-   "mot": "moût froid",
+   "mot": "froid",
    "texte": "Moût froid",
    "statut": "trouve",
    "ligne": 3,
@@ -34,7 +34,7 @@
  "retenir": [
   {
    "emoji": "💧",
-   "texte": "Réhydrater la levure",
+   "texte": "Réhydrater",
    "ligne": 4,
    "citation": "réhydrater la levure"
   },
@@ -57,24 +57,18 @@
   "savais": [
    {
     "emoji": "⏱️",
-    "texte": "36 h sans activité",
+    "texte": "36 h",
     "ligne": 1,
     "citation": "aucune activité 36 h"
    },
    {
     "emoji": "🥶",
-    "texte": "Moût à 16 °C",
+    "texte": "16 °C",
     "ligne": 1,
     "citation": "moût à 16 °C"
    }
   ],
   "fait": [
-   {
-    "emoji": "🔥",
-    "texte": "Monté à 19 °C",
-    "ligne": 3,
-    "citation": "Monté à 19 °C"
-   },
    {
     "emoji": "✅",
     "texte": "Démarre le lendemain",

@@ -21,7 +21,7 @@
   },
   {
    "emoji": "❄️",
-   "titre": "Frigo neuf",
+   "titre": "Neuf",
    "cout": "1 200 CHF",
    "source": "notes",
    "ligne": 3,
@@ -31,7 +31,7 @@
  ],
  "tache": {
   "emoji": "⚖️",
-  "titre": "Comparer les devis",
+  "titre": "Trancher",
   "quand": "avant décembre",
   "ligne": 4,
   "citation": "Devis à comparer avant décembre"
@@ -48,7 +48,6 @@
   {
    "emoji": "🛢️",
    "valeur": "6 fûts",
-   "label": "au froid",
    "ligne": 1
   }
  ],

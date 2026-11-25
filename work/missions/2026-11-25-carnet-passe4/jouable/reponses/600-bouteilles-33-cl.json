@@ -3,7 +3,8 @@
  "options": [],
  "tache": {
   "emoji": "📅",
-  "titre": "Choisir avant le 15",
+  "titre": "Choisir",
+  "quand": "le 15",
   "ligne": 4,
   "citation": "Besoin avant le 15 du mois"
  },
@@ -18,7 +19,7 @@
    "emoji": "🧽",
    "texte": "Occasion à laver",
    "ligne": 3,
-   "citation": "à laver, 400 seulement"
+   "citation": "à laver"
   }
  ],
  "relecture": null,
@@ -52,7 +53,7 @@
       "source": "notes"
      },
      {
-      "texte": "1200 min",
+      "texte": "≥ 1200",
       "source": "notes"
      },
      {
@@ -76,7 +77,7 @@
       "source": "notes"
      },
      {
-      "texte": "par 600",
+      "texte": "× 600",
       "source": "notes"
      },
      {
@@ -100,7 +101,7 @@
       "source": "notes"
      },
      {
-      "texte": "400 seulement",
+      "texte": "≤ 400",
       "source": "notes"
      },
      {
@@ -127,7 +128,7 @@
   "sous": "Conditionnement"
  },
  "priorite": "haute",
- "resume": "Choisir le fournisseur",
+ "resume": "Choisir fournisseur",
  "etatPropose": "cherche",
  "genre": "achat"
 }

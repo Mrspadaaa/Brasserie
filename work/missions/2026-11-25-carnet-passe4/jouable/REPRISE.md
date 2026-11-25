@@ -1,4 +1,8 @@
-# REPRISE — jouable passe 4 (agent concepteur arrêté à 350 k, 25.11 nuit)
+# REPRISE — jouable passe 4 — TERMINÉ (voir RESULTAT.md, CAS.md)
+
+> 25.11 nuit, reprise : les 3 points « Pas fait » sont faits. Fragments dans jouable/fragments/ (build.mjs y lit).
+
+# (historique) REPRISE (agent concepteur arrêté à 350 k, 25.11 nuit)
 
 ## Fait
 - `p4.html` (2 516 lignes) assemblé par `scratchpad/p4/build.mjs` (tranches de lignes de m4b.html + fragments, sans remplacement de chaîne, L26).

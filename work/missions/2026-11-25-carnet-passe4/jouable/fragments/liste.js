@@ -69,8 +69,8 @@ function aFaire() {
   etat.carnets.forEach(function (c) {
     if (c.etat === 'resolu') return;
     var o = c.org, r = o && o.rep;
-    if (r && r.echeance && !o.echeanceFaite) it.push({ c: c, ic: '⏳', t: r.echeance.quoi || 'Échéance', q: r.echeance.quand, sorte: 'echeance' });
-    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite) it.push({ c: c, ic: r.tache.emoji || '☐', t: r.tache.titre, q: r.tache.quand, sorte: 'tache' });
+    if (r && r.echeance && !o.echeanceFaite && !(r.tache && r.tache.quand === r.echeance.quand && o.garde.tache !== false && !o.tacheFaite)) it.push({ c: c, ic: '⏳', t: r.echeance.quoi || 'Échéance', q: r.echeance.quand, sorte: 'echeance' });
+    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite && !tacheDuo(r, o)) it.push({ c: c, ic: r.tache.emoji || '☐', t: r.tache.titre, q: r.tache.quand, sorte: 'tache' });
     (c.miens || []).forEach(function (m) { if (m.type === 'tache' && !m.fait) it.push({ c: c, ic: m.check ? '✓' : '☐', t: m.texte, q: null, sorte: 'mien', m: m }); });
   });
   it.forEach(function (x) { var d = x.q && lireDate(x.q, x.c.maj); x.d = d ? d.d : null; x.approx = d ? !!d.approx : false; });

@@ -19,19 +19,19 @@
   "savais": [
    {
     "emoji": "🚫",
-    "texte": "Rupture jusqu’à mi-décembre",
+    "texte": "Rupture → mi-décembre",
     "ligne": 1,
     "citation": "en rupture jusqu’à mi-décembre"
    },
    {
     "emoji": "🍺",
-    "texte": "Brassin du 3 déc.",
+    "texte": "Brassin 3 déc.",
     "ligne": 2,
     "citation": "Brassin du 3 déc."
    },
    {
     "emoji": "📦",
-    "texte": "Autre : en stock",
+    "texte": "Autre en stock",
     "ligne": 3,
     "citation": "en stock"
    }
@@ -52,7 +52,7 @@
   ],
   "calcul": {
    "valeur": "+8 CHF",
-   "detail": "2 sacs × 4 CHF"
+   "detail": "2 × 4 CHF"
   }
  },
  "lectures": [

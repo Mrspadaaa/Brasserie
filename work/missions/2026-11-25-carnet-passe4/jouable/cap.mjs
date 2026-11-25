@@ -190,7 +190,7 @@ await geste('⋯ puis feuille « Changé par l’IA »', async () => {
 });
 await geste('Décider (frigo) : Retenir au pouce, toast, Annuler', async () => {
   await ouvrir(page, 'frigo de garde'); await cap(page, '40-decider');
-  await clicTexte(page, '#action .p4-b', 'Retenir'); await attendre(120); await cap(page, '41-decider-retenu');
+  await clic(page, '#action .p4-b[aria-label^="Retenir"]'); await attendre(120); await cap(page, '41-decider-retenu');
   const r1 = await page.evaluate(() => window.__p4.etat().carnets.find(c => c.id === window.__p4.etat().courant).org.retenus.slice());
   await clic(page, '.m4b-toast-a'); await attendre(120); await cap(page, '42-decider-annule');
   const r2 = await page.evaluate(() => window.__p4.etat().carnets.find(c => c.id === window.__p4.etat().courant).org.retenus.slice());
@@ -213,7 +213,7 @@ await geste('Achat (citra) : écarter un article, Annuler ; choisir', async () =
   await page.evaluate(() => document.querySelector('.p4-art .p4-x').click()); await attendre(120); await cap(page, '47-citra-ecarte');
   const a = await page.evaluate(() => window.__p4.etat().carnets.find(c => c.id === window.__p4.etat().courant).org.artEcart.slice());
   await clic(page, '.m4b-toast-a'); await attendre(100);
-  await clicTexte(page, '.p4-art .p4-ret', 'choisir'); await attendre(120); await cap(page, '48-citra-choisi');
+  await clic(page, '.p4-art .p4-ret[aria-label^="Choisir"]'); await attendre(120); await cap(page, '48-citra-choisi');
   const b = await page.evaluate(() => window.__p4.etat().carnets.find(c => c.id === window.__p4.etat().courant).org.artRet.slice());
   await fermer(page);
   return a.length === 1 && b.length === 1 ? 'écarté ' + a + ' (annulé), choisi ' + b : false;
@@ -224,7 +224,7 @@ await geste('Échéance (assurance) : cocher une pièce', async () => {
   await fermer(page); return n === 1 ? '1/3' : false;
 });
 await geste('Relecture (malt) : Toujours le bon choix ? Oui', async () => {
-  await ouvrir(page, 'malt pilsner'); await clicTexte(page, '#action .p4-b', 'Oui'); await attendre(100); await cap(page, '50-malt-oui');
+  await ouvrir(page, 'malt pilsner'); await clic(page, '#action .p4-b[aria-label^="Oui"]'); await attendre(100); await cap(page, '50-malt-oui');
   const b = await page.evaluate(() => window.__p4.etat().carnets.find(c => c.id === window.__p4.etat().courant).org.bonChoix);
   await fermer(page); return b === 'oui' ? 'oui' : false;
 });

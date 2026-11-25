@@ -623,6 +623,25 @@ button.p4-puce:before{content:"";position:absolute;inset:-7px 0}
 .p4-afr .d{font-size:14px;font-weight:800;color:var(--att);white-space:nowrap;padding-right:6px;font-variant-numeric:tabular-nums}
 .p4-afr .d.passe{color:var(--bad)}
 .p4-grp{font-size:13px;font-weight:800;color:var(--mut);margin:12px 4px 2px;text-transform:uppercase;letter-spacing:.04em}
+
+/* passe 4, mots : étape d'achat en points, « ✦ n », écart et calcul à un toucher, avant → fait en icônes, pouces, attention sous l'article */
+.p4-etape .pts{display:inline-flex;gap:3px;align-items:center;margin-right:2px}
+.p4-etape .pts u{width:7px;height:7px;border-radius:50%;background:var(--line);text-decoration:none}
+.p4-etape .pts u.f{background:var(--c)}
+.p4-etape .pts u.ici{width:16px;border-radius:4px;background:var(--c)}
+.p4-chg .n{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;background:var(--ia);color:var(--bg);font-size:14px;font-weight:900;margin-left:4px;padding:0 6px}
+.p4-ecart{display:block;width:100%;min-height:44px}
+.p4-abaque{font-style:normal;font-size:15px;margin-left:2px;border-bottom:1.5px dotted var(--mut)}
+.p4-c.calc{cursor:pointer}
+.p4-att-art{min-height:44px;border-radius:10px;padding:2px 4px;font-size:13px;font-weight:800;line-height:1.1;color:var(--att);background:color-mix(in srgb,var(--att) 16%,var(--bg))}
+.p4-svf{grid-template-columns:1fr 16px 1fr;gap:4px}
+.p4-fl{align-self:center;text-align:center;color:var(--mut);font-weight:900;font-size:18px}
+.p4-sv .hd{font-size:18px;padding:2px}
+.p4-pouce{font-size:28px;line-height:1}
+.p4-creux.un{grid-template-columns:1fr}
+.p4-art .nom{flex:1}
+.p4-att-art{min-height:0;margin-top:3px;padding:2px 6px;border-radius:8px}
+.p4-jeton .mot.long{font-size:12px;letter-spacing:-.2px}
 </style>
 </head>
 <body>
@@ -1055,8 +1074,8 @@ function aFaire() {
   etat.carnets.forEach(function (c) {
     if (c.etat === 'resolu') return;
     var o = c.org, r = o && o.rep;
-    if (r && r.echeance && !o.echeanceFaite) it.push({ c: c, ic: '⏳', t: r.echeance.quoi || 'Échéance', q: r.echeance.quand, sorte: 'echeance' });
-    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite) it.push({ c: c, ic: r.tache.emoji || '☐', t: r.tache.titre, q: r.tache.quand, sorte: 'tache' });
+    if (r && r.echeance && !o.echeanceFaite && !(r.tache && r.tache.quand === r.echeance.quand && o.garde.tache !== false && !o.tacheFaite)) it.push({ c: c, ic: '⏳', t: r.echeance.quoi || 'Échéance', q: r.echeance.quand, sorte: 'echeance' });
+    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite && !tacheDuo(r, o)) it.push({ c: c, ic: r.tache.emoji || '☐', t: r.tache.titre, q: r.tache.quand, sorte: 'tache' });
     (c.miens || []).forEach(function (m) { if (m.type === 'tache' && !m.fait) it.push({ c: c, ic: m.check ? '✓' : '☐', t: m.texte, q: null, sorte: 'mien', m: m }); });
   });
   it.forEach(function (x) { var d = x.q && lireDate(x.q, x.c.maj); x.d = d ? d.d : null; x.approx = d ? !!d.approx : false; });
@@ -2047,15 +2066,18 @@ function genreDe(c) { var r = c.org && c.org.rep; if (!r) return c.genre; return
 function ligneEtat(c) {
   var o = c.org, g = genreDe(c), P = o ? aGarder(c) : [];
   var el = h('div', { class: 'p4-etat' });
-  if (!o || g === 'probleme' || g === 'achat' || !g)
-    el.appendChild(h('button', { type: 'button', class: 'p4-puce', style: '--c:' + COUL_ETAT[c.etat], 'data-booster': 'etat', 'aria-label': 'État ' + (NOM_ETAT[c.etat] || 'Noté') + ', toucher pour changer',
-      onclick: function () { var ord = ['note', 'cherche', 'decide', 'resolu']; poserEtat(c, ord[(ord.indexOf(c.etat) + 1) % 4]); } }, h('i'), NOM_ETAT[c.etat] || 'Noté'));
+  /* passe 4, mots : l'achat montre son étape (un mot, trois points) à la place de l'état ; « ✦ n » seul, le reste dans l'aria et la feuille */
+  var achat = g === 'achat' && o, ord = ['note', 'cherche', 'decide', 'resolu'];
+  var pas = achat ? (c.etat === 'resolu' ? 2 : ((o.artRet || []).length || retenus(o).length) ? 1 : 0) : 0, ETAPES = ['comparé', 'choisi', 'commandé'];
+  if (!o || g === 'probleme' || achat || !g)
+    el.appendChild(h('button', { type: 'button', class: 'p4-puce' + (achat ? ' p4-etape' : ''), style: '--c:' + COUL_ETAT[c.etat], 'data-booster': 'etat',
+      'aria-label': achat ? 'Achat : ' + ETAPES[pas] + ' (comparé, choisi, commandé) · état ' + (NOM_ETAT[c.etat] || 'Noté') + ', toucher pour changer' : 'État ' + (NOM_ETAT[c.etat] || 'Noté') + ', toucher pour changer',
+      onclick: function () { poserEtat(c, ord[(ord.indexOf(c.etat) + 1) % 4]); } },
+      achat ? h('span', { class: 'pts', 'aria-hidden': 'true' }, ETAPES.map(function (s, i) { return h('u', { class: i < pas ? 'f' : i === pas ? 'ici' : '' }); })) : h('i'),
+      achat ? ETAPES[pas] : (NOM_ETAT[c.etat] || 'Noté')));
   else el.appendChild(h('span', { class: 'p4-puce genre' }, NOM_GENRE_P4[g] || g));
-  if (g === 'achat' && o) {
-    var pas = c.etat === 'resolu' ? 2 : ((o.artRet || []).length || retenus(o).length) ? 1 : 0;
-    el.appendChild(h('span', { class: 'p4-av', 'aria-label': 'avancement de l’achat' }, ['comparé', 'choisi', 'commandé'].map(function (s, i) { return h('b', { class: i === pas ? 'ici' : (i < pas ? 'fait' : '') }, s); })));
-  }
-  if (o) el.appendChild(h('button', { type: 'button', class: 'p4-chg', 'aria-label': 'Changé par l’IA', onclick: feuilleChangements }, '✦ ' + (P.length ? P.length + ' à garder' : hm(new Date(o.quand))) + ' ›'));
+  if (o) el.appendChild(h('button', { type: 'button', class: 'p4-chg', 'aria-label': 'Changé par l’IA' + (P.length ? ' : ' + P.length + ' à garder' : ' à ' + hm(new Date(o.quand))), onclick: feuilleChangements },
+    '✦', P.length ? h('b', { class: 'n' }, String(P.length)) : null, ' ›'));
   return el;
 }
 function bandeau(cls, icone, titre, sous) {
@@ -2069,7 +2091,7 @@ function rendreOrg() {
   if (enCours) org.appendChild(h('div', { class: 'm4b-lit m4b-lit-org', role: 'status', style: 'margin:0 0 10px' }, h('span', null, ico('b-ia'), lecture && lecture.carnetId === c.id ? 'L’IA lit ta note…' : 'L’IA lira ta note juste après'), h('span', { class: 'bar' }, h('i'))));
   var horsLigne = !navigator.onLine || c.attente;
   if (horsLigne && !enCours) org.appendChild(bandeau('hors', '📴', 'Hors ligne', (c.attente ? '1 note en file · ' : '') + 'l’IA lira au retour'));
-  else if (c.orgErreur && !enCours) org.appendChild(bandeau('bad', '⚠️', 'L’IA n’a pas pu lire', c.orgErreur.message + ' · tes ' + nbl + ' notes sont gardées'));
+  else if (c.orgErreur && !enCours) { org.appendChild(bandeau('bad', '⚠️', 'L’IA n’a pas pu lire', '✏️ ' + nbl + ' notes gardées')); org.lastChild.title = c.orgErreur.message; }
   if (!o) {
     if (!enCours && (c.orgErreur || horsLigne)) {
       ecranSansIA(c);
@@ -2089,7 +2111,9 @@ function rendreOrg() {
   }
   if (r.echeance) compteARebours(c, r);
   if (r.periode) periode(c, r);
-  (r.attention || []).forEach(function (a) {
+  /* une attention qui tient sur la ligne d'un article de la comparaison se pose sous son nom (comparer), pas en bandeau */
+  var lignesArt = r.comparaison ? r.comparaison.articles.map(function (a) { return a.ligne; }) : [];
+  (r.attention || []).filter(function (a) { return lignesArt.indexOf(a.ligne) < 0; }).forEach(function (a) {
     org.appendChild(h('button', { type: 'button', class: 'p4-att', onclick: vers(a.ligne, a.citation, a.texte) }, h('span', { class: 'em' }, a.emoji || '⚠️'), h('span', null, '« ' + a.citation + ' »'), h('small', null, 'ligne ' + a.ligne + ' ↩')));
   });
   if (r.chiffres && r.chiffres.length) org.appendChild(h('div', { class: 'p4-chf' }, r.chiffres.map(function (x) {
@@ -2099,7 +2123,8 @@ function rendreOrg() {
   if (r.relecture) relecture(c, r);
   if (r.comparaison) comparer(c, r);
   var ops = decidable(r), zoneLibre = true;
-  if (ops && o.garde.options !== false) zoneLibre = !decider(c, r, ops);
+  var parDuo = false;
+  if (ops && o.garde.options !== false) { zoneLibre = !decider(c, r, ops); parDuo = !zoneLibre; }
   else faceAFace(c, r);
   (r.manque || []).forEach(function (m) {
     org.appendChild(h('div', { class: 'p4-manque' }, h('span', { class: 'em' }, m.emoji || '✏️'), h('b', null, m.texte),
@@ -2111,9 +2136,9 @@ function rendreOrg() {
     return h('button', { type: 'button', onclick: vers(x.ligne, x.citation, x.texte) }, (x.emoji ? x.emoji + ' ' : '') + x.texte, ico('b-r', 'm4b-r'));
   })));
   if (r.relecture && zoneLibre && c.etat === 'resolu') { bonChoix(c); zoneLibre = false; }
-  var t = r.tache && o.garde.tache !== false ? r.tache : null;
+  var t = r.tache && o.garde.tache !== false && !tacheDuo(r, o) ? r.tache : null;
   if (t && !o.tacheFaite && zoneLibre) { actionTache(c, t); t = null; }
-  sectionAFaire(c, t);
+  sectionAFaire(c, parDuo ? null : t);
   if (!r.pistes.length && !r.options.length && !r.tache && !r.conseil && !r.comparaison && !r.echeance && !r.periode && !(r.liste || []).length && !(r.chiffres || []).length && !r.relecture && !c.miens.length)
     org.appendChild(h('p', { class: 'm4b-vide' }, 'L’IA n’a rien trouvé à ranger dans cette note.'));
   feuilleAide(c);
@@ -2121,12 +2146,12 @@ function rendreOrg() {
 /* pistes : jetons ronds, un mot, pastille ✓ trouvé / ? à vérifier ; « + » ajoute la sienne */
 function jetons(c, r) {
   var miens = c.miens.filter(function (m) { return m.type === 'piste'; }), ps = r.pistes;
-  if (!ps.length && !miens.length && r.genre !== 'probleme') return;
+  if (!ps.length && !miens.length && (r.genre !== 'probleme' || r.relecture)) return;
   var g = h('div', { class: 'p4-jetons' });
   ps.forEach(function (p) {
     var oui = p.statut === 'trouve';
     g.appendChild(h('button', { type: 'button', class: 'p4-jeton ' + (oui ? 'oui' : 'q'), 'data-booster': 'jeton-piste', 'aria-label': p.texte + ' : ' + (oui ? 'trouvé' : p.statut === 'pas_trouve' ? 'pas trouvé' : 'à vérifier'), onclick: vers(p.ligne, p.citation, motDe(p)) },
-      h('span', { class: 'rond' }, p.emoji || '🔎', h('i', null, oui ? '✓' : '?')), h('span', { class: 'mot' }, motDe(p))));
+      h('span', { class: 'rond' }, p.emoji || '🔎', h('i', null, oui ? '✓' : '?')), h('span', { class: 'mot' + (motDe(p).length > 9 ? ' long' : '') }, motDe(p))));
   });
   miens.forEach(function (m) {
     g.appendChild(h('button', { type: 'button', class: 'p4-jeton q mien', 'aria-label': m.texte + (m.ia ? ' (aide de l’IA)' : ' (à toi)'), onclick: m.ia ? null : function () { allerLigne(0, m.ligneTxt, m.texte); } },
@@ -2177,11 +2202,20 @@ function decider(c, r, ops) {
     return h('button', { type: 'button', class: 'p4-col' + (ret ? ' ret' : '') + (vals[i] === mn && mx > mn ? ' moins' : ''), onclick: vers(op.ligne, op.citation, op.titre) },
       h('b', { class: 'v' }, op.cout), h('span', { class: 'barre', style: 'height:' + Math.max(24, Math.round(vals[i] / mx * 150)) + 'px' }, op.emoji || ''), h('span', { class: 'n' }, (ret ? '✓ ' : '') + op.titre));
   })));
-  if (ops.length === 2 && mx > mn) org.appendChild(h('div', { class: 'p4-ecart' }, h('b', null, milliers(mx - mn) + ' ' + unite), ' d’écart ', h('small', null, '(' + milliers(mx) + ' − ' + milliers(mn) + ')')));
+  if (ops.length === 2 && mx > mn) {
+    var calc = milliers(mx) + ' − ' + milliers(mn);
+    org.appendChild(h('button', { type: 'button', class: 'p4-ecart', title: calc, 'aria-label': milliers(mx - mn) + ' ' + unite + ' d’écart, calcul ' + calc, onclick: function () { toast('🧮 ' + calc + ' = ' + milliers(mx - mn) + ' ' + unite + ' · calcul de l’app'); } },
+      h('b', null, milliers(mx - mn) + ' ' + unite), ' d’écart ', h('i', { class: 'p4-abaque', 'aria-hidden': 'true' }, '🧮')));
+  }
   if (R.length) return false;
-  enAction(h('div', { class: 'p4-duo' }, ops.map(function (op, i) { return h('button', { type: 'button', class: 'p4-b', 'data-booster': 'retenir-pouce', onclick: function () { retenirAnnulable(i); } }, 'Retenir ', op.emoji || op.titre); })));
+  /* la tâche « trancher » est ce duo : son échéance s'y lit, la ligne À faire ne la répète pas */
+  var tq = r.tache && r.tache.quand && o.garde.tache !== false ? r.tache.quand : null;
+  enAction(h('div', { class: 'p4-duo' }, h('div', { class: 'p4-duo-t' }, 'Retenir' + (tq ? ' · ⏳ ' + tq : '')), ops.map(function (op, i) {
+    return h('button', { type: 'button', class: 'p4-b', 'data-booster': 'retenir-pouce', 'aria-label': 'Retenir ' + op.titre, onclick: function () { retenirAnnulable(i); } }, h('span', { class: 'p4-pouce' }, op.emoji || op.titre));
+  })));
   return true;
 }
+function tacheDuo(r, o) { return !!(r.tache && r.tache.quand && decidable(r) && o.garde.options !== false); }
 function retenirAnnulable(i) {
   var c = courant(), o = c.org, op = o.rep.options[i], av = { etat: c.etat, par: c.etatPar, R: retenus(o).slice(), g: o.garde.options }, deja = av.R.indexOf(i) >= 0;
   retenir(i); rendreListe();
@@ -2195,14 +2229,15 @@ function comparer(c, r) {
   var arts = cmp.articles.map(function (a, i) { return { a: a, i: i }; }).filter(function (x) { return o.artEcart.indexOf(x.i) < 0; });
   var lu = 0, manque = 0; arts.forEach(function (x) { x.a.valeurs.forEach(function (v) { if (v.texte === '?' || /à relire/.test(v.texte)) manque++; else lu++; }); });
   var seg = h('span', { class: 'seg' }); for (var k = 0; k < lu + manque; k++) seg.appendChild(h('i', { class: k < lu ? 'l' : '' }));
-  org.appendChild(h('div', { class: 'p4-jauge', 'data-booster': 'jauge-lu', 'aria-label': 'lu ' + lu + ', manque ' + manque }, h('b', null, 'lu ' + lu), seg, h('b', { class: 'm' }, 'manque ' + manque)));
+  org.appendChild(h('div', { class: 'p4-jauge', 'data-booster': 'jauge-lu', 'aria-label': 'lu ' + lu + ', manque ' + manque }, h('b', { title: 'lu' }, '✓ ' + lu), seg, h('b', { class: 'm', title: 'manque' }, '? ' + manque)));
   var g = h('div', { class: 'p4-cmp', style: 'grid-template-columns:32px repeat(' + arts.length + ',minmax(0,1fr))' });
   g.appendChild(h('span'));
   arts.forEach(function (x) {
     var ret = o.artRet.indexOf(x.i) >= 0;
     g.appendChild(h('div', { class: 'p4-art' + (ret ? ' ret' : '') },
-      h('button', { type: 'button', class: 'nom', onclick: vers(x.a.ligne, x.a.citation, x.a.nom) }, h('span', { class: 'em' }, (ret ? '✓' : '') || r.emoji || '🛒'), h('b', null, x.a.nom)),
-      h('span', { class: 'gestes' }, h('button', { type: 'button', class: 'p4-ret' + (ret ? ' on' : ''), 'data-booster': 'choisir', onclick: function () { choisirArt(c, x.i); } }, ret ? '✓ choisi' : 'choisir'),
+      h('button', { type: 'button', class: 'nom', onclick: vers(x.a.ligne, x.a.citation, x.a.nom) }, h('span', { class: 'em' }, (ret ? '✓' : '') || r.emoji || '🛒'), h('b', null, x.a.nom),
+        (r.attention || []).filter(function (a) { return a.ligne === x.a.ligne; }).map(function (a) { return h('span', { class: 'p4-att-art', 'aria-label': 'Attention : ' + a.citation }, (a.emoji || '⚠️') + ' ' + a.citation); })),
+      h('span', { class: 'gestes' }, h('button', { type: 'button', class: 'p4-ret' + (ret ? ' on' : ''), 'data-booster': 'choisir', 'aria-label': (ret ? 'Choisi : ' : 'Choisir ') + x.a.nom, onclick: function () { choisirArt(c, x.i); } }, ret ? '✓ choisi' : '✓'),
         h('button', { type: 'button', class: 'p4-x', 'aria-label': 'Écarter ' + x.a.nom, onclick: function () { ecarterArt(c, x.i); } }, '✕'))));
   });
   cmp.criteres.forEach(function (cr, k) {
@@ -2211,10 +2246,12 @@ function comparer(c, r) {
     arts.forEach(function (x) {
       var v = x.a.valeurs[k], win = connue && arts.length > 1 && cmp.gagnant[k] === x.i;
       if (v.texte === '?') { g.appendChild(h('span', { class: 'p4-c inc', 'aria-label': cr + ' : inconnu' }, '?')); return; }
-      if (/à relire/.test(v.texte)) { g.appendChild(h('span', { class: 'p4-c relire' }, h('b', null, 'à relire'))); return; }
-      g.appendChild(h('span', { class: 'p4-c' + (win ? ' win' : '') + (v.source === 'ia' ? ' calc' : ''), title: v.texte },
+      if (/à relire/.test(v.texte)) { g.appendChild(h('span', { class: 'p4-c relire', title: 'à relire', 'aria-label': cr + ' : à relire sur la page' }, h('b', null, '👀'))); return; }
+      var calcul = v.source === 'ia' && v.detail ? v.detail : null;
+      g.appendChild(h(calcul ? 'button' : 'span', { class: 'p4-c' + (win ? ' win' : '') + (v.source === 'ia' ? ' calc' : ''), title: calcul ? calcul + ' · calcul' : v.texte, type: calcul ? 'button' : null,
+        onclick: calcul ? function () { toast('🧮 ' + calcul + ' = ' + v.texte + ' · calcul de l’app'); } : null },
         win ? h('i', { class: 'couronne', 'aria-label': 'gagne' }, '👑') : null, v.source === 'page' ? ico('b-globe', 'pg') : null,
-        v.emoji ? h('b', { class: 'emo', 'aria-label': v.texte }, v.emoji) : h('b', null, v.texte), v.source === 'ia' ? h('small', null, (v.detail ? v.detail + ' · ' : '') + 'calcul') : null));
+        v.emoji ? h('b', { class: 'emo', 'aria-label': v.texte }, v.emoji) : h('b', null, v.texte), null));
     });
   });
   org.appendChild(g);
@@ -2244,7 +2281,7 @@ function compteARebours(c, r) {
     for (var i = 0; i < m; i++) jr.appendChild(h('i'));
     bl.appendChild(jr);
   }
-  bl.appendChild(h('div', { class: 'bouts' }, h('span', null, 'auj.'), h('button', { type: 'button', class: 'p4-ligne', onclick: vers(e.ligne, e.quand, e.quoi || 'Échéance') }, 'ta ligne ' + e.ligne, ico('b-r'))));
+  bl.appendChild(h('div', { class: 'bouts' }, h('span', { 'aria-hidden': 'true' }), h('button', { type: 'button', class: 'p4-ligne', 'aria-label': 'ta ligne ' + e.ligne, onclick: vers(e.ligne, e.quand, e.quoi || 'Échéance') }, 'ligne ' + e.ligne, ico('b-r'))));
   org.appendChild(bl);
 }
 function periode(c, r) {
@@ -2275,22 +2312,22 @@ function relecture(c, r) {
   org.appendChild(h('button', { type: 'button', class: 'p4-pq', onclick: vers(x.choix.ligne, x.choix.citation, x.choix.texte) }, h('span', { class: 'q' }, '❓'),
     h('span', null, h('small', null, 'pourquoi'), h('b', null, (x.choix.emoji ? x.choix.emoji + ' ' : '') + x.choix.texte))));
   var col = function (titre, cls, items) {
-    return h('div', { class: 'p4-sv ' + cls }, h('div', { class: 'hd' }, titre), items.map(function (it) { return h('button', { type: 'button', onclick: vers(it.ligne, it.citation, it.texte) }, h('span', { class: 'em' }, it.emoji || '•'), h('span', null, it.texte)); }));
+    return h('div', { class: 'p4-sv ' + cls }, h('div', { class: 'hd', 'aria-label': titre }, cls === 'sv' ? '🧠' : '✓'), items.map(function (it) { return h('button', { type: 'button', onclick: vers(it.ligne, it.citation, it.texte) }, h('span', { class: 'em' }, it.emoji || '•'), h('span', null, String(it.texte).replace(/-/g, '‑'))); }));
   };
-  if (x.savais.length || x.fait.length) org.appendChild(h('div', { class: 'p4-svf' }, col('🧠 tu savais', 'sv', x.savais), col('✓ tu as fait', 'af', x.fait)));
-  if (x.calcul) org.appendChild(h('div', { class: 'p4-calc' }, h('b', null, x.calcul.valeur), h('small', null, x.calcul.detail + ' · calcul de l’app')));
+  if (x.savais.length || x.fait.length) org.appendChild(h('div', { class: 'p4-svf' }, col('ce que tu savais', 'sv', x.savais), h('span', { class: 'p4-fl', 'aria-hidden': 'true' }, '→'), col('ce que tu as fait', 'af', x.fait)));
+  if (x.calcul) org.appendChild(h('div', { class: 'p4-calc' }, h('b', null, x.calcul.valeur), h('small', { title: 'calcul de l’app' }, '🧮 ' + x.calcul.detail)));
 }
 function bonChoix(c) {
   var o = c.org;
-  enAction(h('div', { class: 'p4-duo' }, h('div', { class: 'p4-duo-t' }, o.bonChoix ? (o.bonChoix === 'oui' ? '✓ Toujours le bon choix' : '🤔 Pas sûr : noté') : 'Toujours le bon choix ?'),
-    h('button', { type: 'button', class: 'p4-b', 'data-booster': 'bon-choix', onclick: function () { o.bonChoix = 'oui'; sauver(); geste('bon choix', 'oui'); rendreOrg(); toast('Noté : toujours le bon choix', 'Annuler', function () { o.bonChoix = null; sauver(); rendreOrg(); }); } }, '👍 Oui'),
-    h('button', { type: 'button', class: 'p4-b', onclick: function () { o.bonChoix = 'pas sûr'; sauver(); geste('bon choix', 'pas sûr'); rendreOrg(); viser('note', 'Pas sûr'); } }, '🤔 Pas sûr')));
+  enAction(h('div', { class: 'p4-duo' }, h('div', { class: 'p4-duo-t' }, o.bonChoix ? (o.bonChoix === 'oui' ? '👍 Bon choix' : '🤔 Pas sûr : noté') : 'Bon choix ?'),
+    h('button', { type: 'button', class: 'p4-b', 'data-booster': 'bon-choix', 'aria-label': 'Oui, toujours le bon choix', onclick: function () { o.bonChoix = 'oui'; sauver(); geste('bon choix', 'oui'); rendreOrg(); toast('Noté : toujours le bon choix', 'Annuler', function () { o.bonChoix = null; sauver(); rendreOrg(); }); } }, h('span', { class: 'p4-pouce' }, '👍')),
+    h('button', { type: 'button', class: 'p4-b', 'aria-label': 'Pas sûr', onclick: function () { o.bonChoix = 'pas sûr'; sauver(); geste('bon choix', 'pas sûr'); rendreOrg(); viser('note', 'Pas sûr'); } }, h('span', { class: 'p4-pouce' }, '🤔'))));
 }
 /* la prochaine action : le seul bouton plein, sous le pouce ; toucher = fait, avec Annuler */
 function actionTache(c, t) {
-  var dq = t.quand && lireDate(t.quand, c.maj);
+  var ech = c.org && c.org.rep.echeance, dq = t.quand && !(ech && ech.quand === t.quand) && lireDate(t.quand, c.maj);
   enAction(h('button', { type: 'button', class: 'p4-go', 'data-booster': 'action', 'aria-label': t.titre + ' : toucher quand c’est fait' }, h('span', { class: 'em' }, t.emoji || '☐'), h('b', null, t.titre),
-    t.quand ? h('small', null, (dq && dq.approx ? '≈ ' : '') + (dq ? dateCourte(dq.d) : t.quand)) : null, h('i', { class: 'case' })));
+    t.quand && !(ech && ech.quand === t.quand) ? h('small', null, (dq && dq.approx ? '≈ ' : '') + (dq ? dateCourte(dq.d) : t.quand)) : null, h('i', { class: 'case' })));
   zone.lastChild.addEventListener('click', function () { faireTache(c); });
 }
 function faireTache(c) {
@@ -2331,15 +2368,13 @@ function etiquettesLigne(l) {
 function ecranSansIA(c) {
   var lignes = lignesDoc(), lus = [];
   lignes.forEach(function (l, i) { etiquettesLigne(l).forEach(function (e) { lus.push({ e: e, i: i + 1 }); }); });
-  org.appendChild(h('div', { class: 'p4-k' }, '🧮 Lu par l’app, sans IA'));
+  org.appendChild(h('div', { class: 'p4-k' }, '🧮 Lu sans IA'));
   if (lus.length) org.appendChild(h('div', { class: 'p4-lus' }, lus.map(function (x) {
     return h('button', { type: 'button', class: 'p4-lu ' + x.e.sorte, onclick: vers(x.i, null, x.e.texte) },
       h('span', { class: 'ic' }, x.e.sorte === 'pas_trouve' ? '❓' : x.e.sorte === 'contacte' ? '📞' : '💰'), h('b', null, x.e.texte), h('small', null, 'ligne ' + x.i + ' ↩'));
   })));
   else org.appendChild(h('p', { class: 'm4b-vide' }, 'Rien que l’app sache lire seule.'));
-  org.appendChild(h('div', { class: 'p4-creux' }, h('span', null, '🧩 pistes · IA'), h('span', null, '☐ tâche · IA')));
-  org.appendChild(h('div', { class: 'p4-k' }, '✏️ Tes notes, telles quelles'));
-  org.appendChild(h('div', { class: 'p4-notes' }, lignes.filter(function (l) { return l.trim(); }).map(function (l) { return h('p', null, l); })));
+  org.appendChild(h('div', { class: 'p4-creux un', 'aria-label': 'pistes et tâche : avec l’IA' }, h('span', null, '🧩 ☐ ✦ avec l’IA')));
 }
 /* Aide : une feuille, ✓ vérifier / ☐ tâche / 💡 suggestion, Garder ou Non merci sur chacune */
 function feuilleAide(c) {

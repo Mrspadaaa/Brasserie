@@ -1,5 +1,5 @@
 import fs from 'fs';
-const S = 'C:/Users/mrspa/AppData/Local/Temp/claude/2574149e6fd34767/f97e7359-a046-4072-af48-f44ecac2f73e/scratchpad/p4/';
+const S = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-25-carnet-passe4/jouable/fragments/';
 const R = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/';
 const src = fs.readFileSync(R + '2026-11-25-carnet-document/jouable/m4b.html', 'utf8').split('\n');
 const L = n => src[n - 1];

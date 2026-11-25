@@ -247,3 +247,22 @@ button.p4-puce:before{content:"";position:absolute;inset:-7px 0}
 .p4-afr .d{font-size:14px;font-weight:800;color:var(--att);white-space:nowrap;padding-right:6px;font-variant-numeric:tabular-nums}
 .p4-afr .d.passe{color:var(--bad)}
 .p4-grp{font-size:13px;font-weight:800;color:var(--mut);margin:12px 4px 2px;text-transform:uppercase;letter-spacing:.04em}
+
+/* passe 4, mots : étape d'achat en points, « ✦ n », écart et calcul à un toucher, avant → fait en icônes, pouces, attention sous l'article */
+.p4-etape .pts{display:inline-flex;gap:3px;align-items:center;margin-right:2px}
+.p4-etape .pts u{width:7px;height:7px;border-radius:50%;background:var(--line);text-decoration:none}
+.p4-etape .pts u.f{background:var(--c)}
+.p4-etape .pts u.ici{width:16px;border-radius:4px;background:var(--c)}
+.p4-chg .n{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;background:var(--ia);color:var(--bg);font-size:14px;font-weight:900;margin-left:4px;padding:0 6px}
+.p4-ecart{display:block;width:100%;min-height:44px}
+.p4-abaque{font-style:normal;font-size:15px;margin-left:2px;border-bottom:1.5px dotted var(--mut)}
+.p4-c.calc{cursor:pointer}
+.p4-att-art{min-height:44px;border-radius:10px;padding:2px 4px;font-size:13px;font-weight:800;line-height:1.1;color:var(--att);background:color-mix(in srgb,var(--att) 16%,var(--bg))}
+.p4-svf{grid-template-columns:1fr 16px 1fr;gap:4px}
+.p4-fl{align-self:center;text-align:center;color:var(--mut);font-weight:900;font-size:18px}
+.p4-sv .hd{font-size:18px;padding:2px}
+.p4-pouce{font-size:28px;line-height:1}
+.p4-creux.un{grid-template-columns:1fr}
+.p4-art .nom{flex:1}
+.p4-att-art{min-height:0;margin-top:3px;padding:2px 6px;border-radius:8px}
+.p4-jeton .mot.long{font-size:12px;letter-spacing:-.2px}

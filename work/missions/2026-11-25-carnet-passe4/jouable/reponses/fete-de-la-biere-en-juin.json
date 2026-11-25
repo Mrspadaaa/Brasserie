@@ -18,7 +18,6 @@
   {
    "emoji": "💰",
    "valeur": "1 500 CHF",
-   "label": "budget",
    "ligne": 3
   },
   {
@@ -43,7 +42,7 @@
   },
   {
    "emoji": "🥤",
-   "texte": "Gobelets consignés",
+   "texte": "Gobelets",
    "ligne": 2,
    "citation": "gobelets consignés"
   },

@@ -75,6 +75,5 @@
  "priorite": "normale",
  "resume": "Revérifier le raccord",
  "etatPropose": "decide",
- "genre": "probleme",
- "conseil": "🔁 Raccord changé : revérifie la pression dans une semaine."
+ "genre": "probleme"
 }
