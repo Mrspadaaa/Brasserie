@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p4b-2 · Sous le pouce</title>
+<!--
+RECETTE p4b-2 « Sous le pouce » (recette du juge personas action, juge-personas-action-1.md, fin)
+écran → mécanisme → source
+- Liste → lignes de v04 (piste en un mot, état à droite) groupées par domaine comme v01 (en-têtes ▾, résolus repliés en ▸) ;
+          mini-barre d'options de v02 à la place du mot quand 2 prix ; compteurs bas de v01 qui filtrent, au pouce.
+- Organisé (problème) → jetons de couleur en tête (v06-09), sans frise ; « Une décision t'attend » (v02-18) en barres coût / temps
+          (v02), inconnu hachuré, « Retenir » noir (v03) ; prochaine action en gros bouton bas ; bascule Mes notes / Organisé en bas (à ajouter, juge action).
+- Organisé (achat) → Comparer classé (v06-19), critère proposé ✓ / ✎ ; Écarter en bouton, pas en glisser (juge action).
+- Décider → face à face devis contre devis (v01-11), en colonnes dont la hauteur dit le prix ; Retenir au pouce (M4).
+- À faire → « Une décision t'attend » qu'on tranche d'un toucher (v02 / v06) ; cercles colorés par état (v01) ; veille en interrupteur.
+- Relecture → mot cherché surligné, « Ce que tu savais alors » en icônes (v03) ; « Toujours le bon choix ? » au pouce (v02).
+- Hors ligne → version courte (v06), « 1 en file » (v03), colonne de ce que l'app lit seule (v06-26) ; rien inventé.
+- Mémo → M4, « je le ressortirai quand tu noteras… » (v03) ; pièces en grosses cases.
+Données : tests/fixtures/c79 et c75 (lignes telles quelles, préfixe « ZZ TEST — » masqué). Thème sombre du jouable M4 b.
+-->
+<style>
+:root{--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--bord:#26262a;--bas:#17171a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);width:390px;min-height:844px;position:relative;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.b-n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.b-ecran{position:relative;min-height:844px}
+.b-barre{height:48px;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--bg);position:sticky;top:0;z-index:5}
+.b-barre .t{flex:1;min-width:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-ic{width:36px;height:36px;display:grid;place-items:center;border-radius:10px}
+.b-ic svg{width:22px;height:22px}
+/* pouce */
+.b-pouce{position:fixed;left:0;bottom:0;width:390px;background:var(--bas);border-top:1px solid var(--bord);border-radius:18px 18px 0 0;padding:10px 12px 8px;z-index:9}
+.b-go{width:100%;height:60px;border-radius:16px;background:var(--ink);color:#000;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.b-go .e{font-size:26px}
+.b-go.doux{background:var(--s2);color:var(--mut);font-size:16px}
+.b-ch{display:flex;gap:8px;margin-top:8px}
+.b-champ{flex:1;min-width:0;height:44px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;outline:none;font-size:15px}
+.b-aide{height:44px;padding:0 14px;border-radius:22px;background:var(--ia);color:#120c24;font-weight:800;flex:none}
+.b-bascule{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;height:48px;border-radius:14px;background:#0b0b0d;padding:4px}
+.b-bascule button{border-radius:10px;font-weight:800;color:var(--mut);display:flex;align-items:center;justify-content:center;gap:6px;font-size:15px}
+.b-bascule button.on{background:var(--s2);color:var(--ink)}
+.b-bascule .pt{min-width:20px;height:20px;border-radius:10px;background:var(--att);color:#000;font-size:12px;display:grid;place-items:center;padding:0 5px}
+/* app */
+.b-tabs{position:fixed;left:0;bottom:0;width:390px;height:56px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bas);border-top:1px solid var(--bord);z-index:9}
+.b-tabs div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--mut)}
+.b-tabs div.on{color:var(--ink);font-weight:700}
+.b-tabs b{font-size:18px;font-weight:400;line-height:1}
+/* jetons */
+.b-jets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 12px 0}
+.b-jet{height:64px;border-radius:14px;display:flex;align-items:center;gap:10px;padding:0 12px;font-weight:800;font-size:16px;text-align:left}
+.b-jet .i{font-size:24px}
+.j-ok{background:#1b2e17;color:var(--ok)}.j-q{background:#2f2512;color:var(--att)}.j-at{background:#16253a;color:var(--fin)}.j-ia{background:#1a1726;color:var(--ia);border:1.5px dashed #5b4f86}
+.b-etat{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;font-weight:700;font-size:13px}
+.b-etat i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.e-cherche{color:var(--fin);background:#16253a}.e-decide{color:var(--att);background:#33290f}.e-note{color:var(--mut);background:#232327}.e-resolu{color:var(--ok);background:#1b2e17}
+.b-meta{display:flex;align-items:center;gap:8px;padding:0 12px 8px;font-size:13px;color:var(--mut)}
+.b-meta .chg{margin-left:auto;color:var(--ia);font-weight:700}
+/* décision */
+.b-dec{margin:14px 12px 0;border-radius:16px;background:var(--card);padding:12px}
+.b-dec .q{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;margin-bottom:10px}
+.b-dec .q span{font-size:13px;color:var(--mut);font-weight:700;margin-left:auto}
+.b-cols{display:grid;grid-template-columns:30px 1fr 1fr;gap:8px;align-items:center}
+.b-cols .h{font-size:28px;text-align:center}
+.b-cell{height:48px;border-radius:10px;display:flex;align-items:center;padding:0 10px;font-weight:800;font-size:16px}
+.b-hach{background:repeating-linear-gradient(135deg,#2a2a2e 0 7px,#1c1c1f 7px 14px);color:var(--mut);border:1px dashed var(--line)}
+.b-estim{border:2px dashed var(--fin);color:var(--fin);background:rgba(125,184,245,.12)}
+.b-ret{height:48px;border-radius:10px;background:var(--ink);color:#000;font-weight:800}
+/* notes */
+.b-notes{padding:4px 12px 0;font-size:17px;line-height:1.5}
+.b-notes p{margin:0;padding:6px 8px;border-radius:10px}
+.b-notes p.hl{background:#1b2e17;box-shadow:inset 4px 0 0 var(--ok)}
+.b-notes u{text-decoration-color:var(--ia);text-underline-offset:3px}
+.b-notes mark{background:#5a4a12;color:var(--ink);border-radius:3px;padding:0 2px}
+.b-retour{position:fixed;left:12px;right:12px;bottom:196px;height:48px;border-radius:24px;background:#2b2440;color:var(--ia);font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;z-index:10}
+/* feuille Aide */
+.b-voile{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:20}
+.b-feuille{position:fixed;left:0;bottom:0;width:390px;background:#1c1c1f;border-radius:18px 18px 0 0;padding:10px 12px 14px;z-index:21}
+.b-feuille .poi{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.b-choix{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:10px;width:100%;min-height:64px;border-radius:14px;background:var(--s2);padding:8px 12px;margin-top:8px;text-align:left}
+.b-choix .i{font-size:28px;text-align:center}
+.b-choix b{font-size:17px}
+.b-choix small{display:block;color:var(--mut);font-size:13px}
+/* liste */
+.b-dom{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;font-size:13px;color:var(--mut);font-weight:800;background:#0c0c0e}
+.b-dom .n{color:var(--ink)}
+.b-li{display:grid;grid-template-columns:5px 26px 1fr auto;align-items:center;gap:8px;height:44px;padding:0 12px 0 0;border-bottom:1px solid #141416;width:100%;text-align:left}
+.b-li .bd{height:100%;border-radius:0 3px 3px 0}
+.b-li .em{font-size:18px;text-align:center}
+.b-li .tt{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-li .pi{font-size:13px;color:var(--mut);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.b-li .pi b{font-weight:800}
+.b-repl{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px 0 17px;color:var(--ok);font-weight:700;font-size:13px;border-bottom:1px solid #141416}
+.b-cpt{position:fixed;left:0;bottom:56px;width:390px;display:grid;grid-template-columns:repeat(4,1fr) 48px;gap:6px;padding:6px 12px;background:var(--bg);z-index:9}
+.b-cpt button{height:44px;border-radius:12px;font-weight:800;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.b-cpt b{font-size:17px}
+.b-plus{border-radius:24px!important;background:var(--ink);color:#000;font-size:26px!important}
+/* à faire */
+.b-h{font-size:13px;color:var(--mut);font-weight:800;margin:14px 12px 6px;display:flex;align-items:center;gap:6px}
+.b-tk{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;min-height:50px;padding:4px 12px;border-bottom:1px solid #141416}
+.b-tk .c{width:26px;height:26px;border-radius:50%;border:3px solid}
+.b-tk .tx{font-size:15px}
+.b-tk .tx small{display:block;color:var(--mut);font-size:13px}
+.b-tk .d{font-size:13px;font-weight:800;color:var(--att);white-space:nowrap}
+.b-sw{width:44px;height:26px;border-radius:13px;background:var(--ok);position:relative;flex:none}
+.b-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+.b-card{margin:12px 12px 0;padding:12px;border-radius:16px;background:var(--card)}
+.b-rec{padding:16px;font-size:14px;line-height:1.45}
+.b-rec a{color:var(--fin)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+var Q = new URLSearchParams(location.search), E = Q.get('e') || 'recette';
+var ETAT = { cherche: ['Je cherche', 'e-cherche'], decide: ['Décidé', 'e-decide'], note: ['Noté', 'e-note'], resolu: ['Résolu', 'e-resolu'] };
+var COUL = { cherche: 'var(--fin)', decide: 'var(--att)', note: '#6d6d75', resolu: 'var(--ok)' };
+var IC = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  srch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>'
+};
+var CARNETS = [
+  { d: 'Brasserie', em: '❄️', t: 'Frigo de garde en panne', etat: 'cherche', opt: [480, 1200] },
+  { d: 'Brasserie', em: '🌿', t: 'Houblons citra', etat: 'note', r: '2 liens' },
+  { d: 'Brasserie', em: '🫧', t: 'CO2 qui baisse vite dans un fût', etat: 'decide', r: 'raccord gaz' },
+  { d: 'Brasserie', em: '♨️', t: 'Trop de vapeur au brassage', etat: 'decide', r: 'condenser' },
+  { d: 'Brasserie', em: '👃', t: 'Odeur de soufre dans un lot', etat: 'decide', r: 'à resentir' },
+  { d: 'Brasserie', em: '🍾', t: 'Embouteillage — station complète (2027)', etat: 'note', r: 'mai 2027' },
+  { d: 'Brasserie', em: '🌾', t: 'Malt pilsner en rupture chez le fournisseur', etat: 'resolu' },
+  { d: 'Brasserie', em: '🧫', t: 'Levure lente à démarrer', etat: 'resolu' },
+  { d: 'Brasserie', em: '🔥', t: 'Pompe qui chauffe', etat: 'resolu' },
+  { d: 'Local', em: '💧', t: 'Écoulement qui fuit', etat: 'cherche', r: 'devis' },
+  { d: 'Local', em: '⚡', t: 'Inspection électrique, fusible', etat: 'note', r: 'testeur' },
+  { d: 'Local', em: '📦', t: 'Ranger la cave', etat: 'note', r: '6 déc.' },
+  { d: 'Administratif', em: '📄', t: 'Assurance à renouveler', etat: 'note', r: '31 déc.' },
+  { d: 'Événements', em: '🎪', t: 'Fête de la bière en juin', etat: 'note', r: '1 500 CHF' }
+];
+var DOMS = [['🍺', 'Brasserie'], ['🏠', 'Local'], ['📄', 'Administratif'], ['🎪', 'Événements']];
+var ECOUL = ['L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.',
+  'Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.',
+  'Contacter l’entreprise X (exemple) pour un sanitaire.',
+  'Devis attendu.',
+  'Estimation 150 CHF (exemple).'];
+
+function barre(t, gauche, droite) {
+  return '<div class="b-barre" data-barre>' + (gauche === false ? '<span style="width:4px"></span>' : '<button class="b-ic" aria-label="Retour">' + IC.back + '</button>') +
+    '<div class="t" data-titre>' + t + '</div>' + (droite || '<button class="b-ic" aria-label="Plus">' + IC.more + '</button>') + '</div>';
+}
+function pouce(action, vue, opts) {
+  opts = opts || {};
+  return '<div class="b-pouce">' + (action ? '<button class="b-go' + (opts.doux ? ' doux' : '') + '" data-booster="prochaine-action">' + action + '</button>' : '') +
+    '<div class="b-ch"><input class="b-champ" placeholder="Ajouter…" aria-label="Ajouter une note"><button class="b-aide" data-booster="aide">💡 Aide</button></div>' +
+    '<div class="b-bascule" data-booster="bascule"><button class="' + (vue === 'notes' ? 'on' : '') + '">✎ Mes notes' + (opts.file ? ' <span class="pt">1</span>' : '') + '</button><button class="' + (vue === 'org' ? 'on' : '') + '">▦ Organisé</button></div></div>';
+}
+function tabs() {
+  var T = [['▦', 'Bord'], ['◫', 'Finances'], ['▤', 'Calendrier'], ['◍', 'Brassins'], ['▣', 'Stocks'], ['☺', 'Clients']];
+  return '<nav class="b-tabs">' + T.map(function (x) { return '<div class="' + (x[1] === 'Stocks' ? 'on' : '') + '"><b>' + x[0] + '</b>' + x[1] + '</div>'; }).join('') + '</nav>';
+}
+function etat(e) { return '<span class="b-etat ' + ETAT[e][1] + '"><i></i>' + ETAT[e][0] + '</span>'; }
+var BAS = 200; /* hauteur de la zone du pouce */
+
+/* ---------- Liste ---------- */
+function liste() {
+  var cnt = { cherche: 0, decide: 0, note: 0, resolu: 0 }, ordre = { cherche: 0, decide: 1, note: 2, resolu: 3 };
+  CARNETS.forEach(function (c) { cnt[c.etat]++; });
+  var h = barre('Carnets <span style="color:var(--mut);font-weight:600">14</span>', false, '<button class="b-ic" aria-label="Chercher">' + IC.srch + '</button>');
+  DOMS.forEach(function (d) {
+    var cs = CARNETS.filter(function (c) { return c.d === d[1]; }).sort(function (a, b) { return ordre[a.etat] - ordre[b.etat]; });
+    var ouverts = cs.filter(function (c) { return c.etat !== 'resolu'; }), res = cs.length - ouverts.length;
+    h += '<div class="b-dom" data-booster="repli">▾ ' + d[0] + ' <span class="n">' + d[1] + '</span> ' + cs.length + (res ? '<span style="margin-left:auto;color:var(--ok);font-weight:700">▸ ' + res + ' résolus ' + cs.filter(function (c) { return c.etat === 'resolu'; }).map(function (c) { return c.em; }).join('') + '</span>' : '') + '</div>';
+    ouverts.forEach(function (c) {
+      var pi = c.opt
+        ? '<span style="display:flex;align-items:flex-end;gap:3px;height:22px">' + c.opt.map(function (v, i) { return '<span style="width:9px;border-radius:2px;height:' + Math.round(v / 1200 * 22) + 'px;background:var(--fin)"></span>'; }).join('') + '</span><b class="b-n" style="color:var(--fin)">480 | 1 200</b>'
+        : '<b style="color:' + COUL[c.etat] + '">' + c.r + '</b>';
+      h += '<button class="b-li" data-carnet><span class="bd" style="background:' + COUL[c.etat] + '"></span><span class="em">' + c.em + '</span><span class="tt">' + c.t + '</span><span class="pi">' + pi + '</span></button>';
+    });
+  });
+  h += '<div class="b-cpt" data-booster="coup-oeil">' + [['cherche', 'cherche'], ['decide', 'décidés'], ['note', 'notés'], ['resolu', 'résolus']].map(function (x) {
+    return '<button class="' + ETAT[x[0]][1] + '"><b>' + cnt[x[0]] + '</b>' + x[1] + '</button>';
+  }).join('') + '<button class="b-plus" aria-label="Nouveau carnet">+</button></div>' + tabs();
+  return '<div class="b-ecran" style="padding-bottom:120px">' + h + '</div>';
+}
+
+/* ---------- Organisé, problème : écoulement ---------- */
+function organise() {
+  return '<div class="b-ecran" style="padding-bottom:' + BAS + 'px">' + barre('Écoulement qui fuit') +
+    '<div class="b-meta">' + etat('cherche') + '<span class="chg">✦ 20:35 ›</span></div>' +
+    '<div class="b-jets" data-utile data-booster="jetons">' +
+    '<button class="b-jet j-ok" data-ligne="2"><span class="i">🔧</span>Joint usé<span style="margin-left:auto">✓</span></button>' +
+    '<button class="b-jet j-q" data-ligne="2"><span class="i">🧱</span>Dalle<span style="margin-left:auto">?</span></button>' +
+    '<button class="b-jet j-at" data-ligne="4"><span class="i">⏳</span>Devis X</button>' +
+    '<button class="b-jet j-ia"><span class="i">❓</span>seule cause<span style="margin-left:auto;font-size:13px">✦</span></button></div>' +
+    '<div class="b-dec" data-booster="decision"><div class="q">⚖️ <span style="font-size:20px;color:var(--ink);margin:0">🔧 ou 👷 ?</span></div>' +
+    '<div class="b-cols"><span></span><span class="h">🔧</span><span class="h">👷</span>' +
+    '<span class="h" style="font-size:22px">💰</span><div class="b-cell b-hach">?</div><div class="b-cell b-estim"><span class="b-n">150 CHF</span></div>' +
+    '<span class="h" style="font-size:22px">⏱️</span><div class="b-cell b-hach">?</div><div class="b-cell b-hach" style="color:var(--fin)">⏳ devis</div>' +
+    '<span></span><button class="b-ret">Retenir</button><button class="b-ret">Retenir</button></div></div>' +
+    pouce('<span class="e">📞</span>Contacter l’entreprise X', 'org') + '</div>';
+}
+function organiseLigne() {
+  var notes = ECOUL.map(function (l, i) {
+    if (i === 1) return '<p class="hl">Pistes : joint du siphon <u>trouvé usé</u> ; fuite sous la dalle, <u>pas trouvée</u>.</p>';
+    if (i === 2) return '<p><u>Contacter l’entreprise X</u> (exemple) pour un sanitaire.</p>';
+    if (i === 3) return '<p><u>Devis attendu</u>.</p>';
+    if (i === 4) return '<p>Estimation <u>150 CHF</u> (exemple).</p>';
+    return '<p>' + l + '</p>';
+  }).join('');
+  return '<div class="b-ecran" style="padding-bottom:' + BAS + 'px">' + barre('Écoulement qui fuit') +
+    '<div class="b-meta">mar. 24 nov. · <span style="color:var(--ia)">lu par l’IA 20:35</span></div>' +
+    '<div class="b-notes">' + notes + '</div>' +
+    '<button class="b-retour">← Revenir à 🔧 Joint usé</button>' + pouce('', 'notes') + '</div>';
+}
+function organiseAide() {
+  return organise().replace(/<\/div>$/, '') + '<div class="b-voile"></div><div class="b-feuille"><div class="poi"></div>' +
+    '<button class="b-choix"><span class="i">✓</span><span><b>Vérifier</b><small>l’IA relit tes 5 notes et dit ce qui cloche</small></span></button>' +
+    '<button class="b-choix"><span class="i">☐</span><span><b>Tâche</b><small>« Contacter l’entreprise X » · ta ligne 3</small></span></button>' +
+    '<button class="b-choix" style="outline:2px solid var(--ia);background:#1a1726"><span class="i">💡</span><span><b>Suggestion</b><small style="color:var(--ink)">✦ Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.</small></span></button>' +
+    '<div style="font-size:13px;color:var(--mut);margin-top:10px;text-align:center">Rien n’est posé sans ton toucher.</div></div></div>';
+}
+
+/* ---------- Organisé, achat : houblons citra ---------- */
+function achat() {
+  function alpha(min, max, c) {
+    var l = min / 20 * 100, w = Math.max((max - min) / 20 * 100, 2.5);
+    return '<div style="position:relative;height:16px;flex:1"><div style="position:absolute;left:0;right:0;top:6px;height:4px;border-radius:2px;background:#2a2a2e"></div><div style="position:absolute;left:' + l + '%;width:' + w + '%;top:0;height:16px;border-radius:8px;background:' + c + '"></div></div>';
+  }
+  function art(rang, nom, dom, c, lignes) {
+    return '<div class="b-card" style="border:1.5px solid ' + c + ';padding:12px 12px 14px"><div style="display:flex;align-items:center;gap:10px"><span style="width:28px;height:28px;border-radius:14px;background:' + c + ';color:#000;font-weight:800;display:grid;place-items:center">' + rang + '</span>' +
+      '<span style="font-size:30px">🌿</span><b style="font-size:16px;line-height:1.1">' + nom + '</b>' +
+      '<button style="margin-left:auto;height:36px;padding:0 10px;border-radius:10px;border:1.5px solid var(--line);color:var(--mut);font-weight:700;white-space:nowrap;flex:none">✕ Écarter</button></div>' +
+      '<div style="display:grid;grid-template-columns:30px 1fr;gap:12px 8px;align-items:center;margin-top:12px">' + lignes + '</div></div>';
+  }
+  return '<div class="b-ecran" style="padding-bottom:' + BAS + 'px">' + barre('Houblons citra') +
+    '<div class="b-meta" data-utile><span class="b-etat" style="color:var(--ia);background:#1a1726;border:1.5px dashed #5b4f86;height:32px">✦ α précis</span><button style="height:32px;width:36px;border-radius:10px;background:var(--s2);font-weight:800">✓</button><button style="height:32px;width:36px;border-radius:10px;background:var(--s2)">✎</button></div>' +
+    '<div data-booster="comparer-classe">' +
+    art(1, 'Brau- und Rauchshop', '.ch', 'var(--att)',
+      '<span style="font-size:18px;text-align:center">α</span><span style="display:flex;gap:8px;align-items:center"><b class="b-n" style="color:var(--att)">13,6 %</b>' + alpha(13.6, 13.6, 'var(--att)') + '</span>' +
+      '<span style="font-size:20px">💶</span><div class="b-cell b-hach" style="height:32px;font-size:14px">à relire</div>' +
+      '<span style="font-size:20px">👃</span><span style="font-size:22px;letter-spacing:6px">🍋🥭🌴</span>') +
+    art(2, 'MotlerHops', '.fr', 'var(--fin)',
+      '<span style="font-size:18px;text-align:center">α</span><span style="display:flex;gap:8px;align-items:center"><b class="b-n" style="color:var(--fin)">10–15 %</b>' + alpha(10, 15, 'var(--fin)') + '</span>' +
+      '<span style="font-size:20px">💶</span><div class="b-cell" style="height:32px;background:var(--fin);color:#06121f;width:60%"><span class="b-n">3,72 €</span></div>' +
+      '<span style="font-size:20px">📦</span><div class="b-cell" style="height:32px;font-size:14px;border:1.5px solid var(--att);color:var(--att)">en stock ⚠ <span style="color:var(--ink);font-weight:600;margin-left:6px">« dur à obtenir »</span></div>') +
+    '</div>' + pouce('<span class="e">↻</span>Relire Brau', 'org') + '</div>';
+}
+
+/* ---------- Décider : frigo de garde ---------- */
+function decider() {
+  function col(em, nom, prix, h, c, gain) {
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end">' +
+      '<span style="font-size:15px;font-weight:800;color:' + c + '">' + (gain || '&nbsp;') + '</span>' +
+      '<b class="b-n" style="font-size:28px">' + prix + '</b>' +
+      '<div style="width:100%;height:' + h + 'px;border-radius:14px 14px 4px 4px;background:' + c + ';display:flex;align-items:flex-start;justify-content:center;padding-top:10px;font-size:36px">' + em + '</div>' +
+      '<b style="font-size:16px">' + nom + '</b></div>';
+  }
+  return '<div class="b-ecran" style="padding-bottom:150px">' + barre('Frigo de garde en panne') +
+    '<div class="b-meta">' + etat('cherche') + '<span style="margin-left:auto;color:var(--att);font-weight:800;font-size:14px">⏳ avant décembre</span></div>' +
+    '<div class="b-jets" data-utile style="grid-template-columns:1fr 1fr"><div class="b-jet j-q" style="height:46px;font-size:15px"><span class="i">🌡️</span><span class="b-n">14 °C</span><span style="color:var(--mut);font-weight:600;font-size:13px;line-height:1.1">au lieu<br>de 2 °C</span></div><div class="b-jet j-ok" style="height:46px;font-size:15px"><span class="i">🛢️</span><span class="b-n">6 fûts</span><span style="color:var(--mut);font-weight:600;font-size:13px">au froid</span></div></div>' +
+    '<div class="b-card" data-booster="face-a-face" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;padding:12px 16px 12px">' +
+    col('🔧', 'Réparation', '480 CHF', 120, 'var(--ok)', '−720 CHF') + col('❄️', 'Frigo neuf', '1 200 CHF', 300, 'var(--fin)') + '</div>' +
+    '<div style="font-size:13px;color:var(--mut);margin:8px 12px 0">✎ « compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF » · ta ligne 3</div>' +
+    '<div class="b-pouce" style="padding-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="b-go" style="font-size:16px" data-booster="retenir">Retenir 🔧</button><button class="b-go" style="font-size:16px;background:var(--s2);color:var(--ink)">Retenir ❄️</button></div>' +
+    '<div class="b-bascule"><button>✎ Mes notes</button><button class="on">▦ Organisé</button></div></div></div>';
+}
+
+/* ---------- À faire ---------- */
+function afaire() {
+  function tk(etat, em, tx, sous, d) { return '<div class="b-tk"><span class="c" style="border-color:' + COUL[etat] + '"></span><span class="tx">' + em + ' ' + tx + '<small>' + sous + '</small></span><span class="d">' + d + '</span></div>'; }
+  return '<div class="b-ecran" style="padding-bottom:70px">' + barre('À faire', false, '<span></span>') +
+    '<div class="b-card" data-utile data-booster="decision" style="margin-top:4px;border:1.5px solid var(--fin)"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);font-weight:800">⚖️ UNE DÉCISION T’ATTEND<span style="margin-left:auto;color:var(--att)">⏳ avant décembre</span></div>' +
+    '<div style="font-size:19px;font-weight:800;margin:6px 0 10px">❄️ Frigo : réparer ou neuf ?</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="b-ret" style="height:52px;font-size:17px">🔧 <span class="b-n">480 CHF</span></button><button class="b-ret" style="height:52px;font-size:17px;background:var(--s2);color:var(--ink)">❄️ <span class="b-n">1 200 CHF</span></button></div>' +
+    '<div style="font-size:13px;color:var(--mut);margin-top:8px">+1 décision · 💧 écoulement : 🔧 ou 👷 ?</div></div>' +
+    '<div class="b-h">Cette semaine</div>' +
+    tk('decide', '🫧', 'Revérifier le raccord gaz', 'CO2 · « dans une semaine »', '≈ 1 déc.') +
+    tk('decide', '♨️', 'Acheter le steam condenser', 'Vapeur · « fin du mois »', 'fin nov.') +
+    '<div class="b-h">Bientôt</div>' +
+    tk('note', '📦', 'Ranger la cave', 'samedi au matin', '6 déc.') +
+    tk('decide', '👃', 'Sentir à nouveau le lot 14', 'Soufre · avant la mise en fût', '≈ 8 déc.') +
+    '<div class="b-h">Sans date</div>' +
+    tk('cherche', '📞', 'Contacter l’entreprise X', 'Écoulement · pour un sanitaire', '') +
+    '<div class="b-tk" style="grid-template-columns:28px 1fr auto"><span style="font-size:20px">🔔</span><span class="tx">Veille : le 2e condenser en stock<small>Vapeur · « à surveiller »</small></span><span class="b-sw" data-booster="veille"></span></div>' +
+    tabs() + '</div>';
+}
+
+/* ---------- Relecture : malt pilsner ---------- */
+function relecture() {
+  function tuile(ic, big, small) { return '<div style="border-radius:14px;background:var(--card);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="font-size:32px">' + ic + '</span><b style="font-size:15px">' + big + '</b><span style="font-size:13px;color:var(--mut)">' + small + '</span></div>'; }
+  return '<div class="b-ecran" style="padding-bottom:180px">' + barre('Malt pilsner en rupture chez le fournisseur') +
+    '<div style="margin:0 12px;height:40px;border-radius:20px;background:var(--card);display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--mut)">' + IC.srch.replace('<svg', '<svg width="18" height="18"') + '<span style="color:var(--ink)">pilsner</span><span style="margin-left:auto;font-size:13px">1 carnet</span></div>' +
+    '<div class="b-card" data-utile style="border:1.5px solid var(--ok);display:flex;align-items:center;gap:12px"><span style="font-size:36px">🚚</span><span><span class="b-etat e-resolu" style="height:22px"><i></i>Résolu 25 nov.</span><br><b style="font-size:20px">Autre fournisseur</b> <span class="b-n" style="color:var(--att);font-weight:800">+4 CHF / sac</span></span></div>' +
+    '<div class="b-h">🧠 Ce que tu savais le 24 nov.</div>' +
+    '<div data-booster="savais-alors" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 12px">' +
+    tuile('🚫', '<mark style="background:#5a4a12;color:var(--ink)">Pilsner</mark> en rupture', 'jusqu’à mi-déc.') + tuile('🍺', 'Brassin 3 déc.', 'décaler ou autre malt') + tuile('✅', 'Autre : en stock', '+4 CHF le sac') + '</div>' +
+    '<div class="b-card" style="display:flex;align-items:center;gap:10px"><span style="font-size:24px">🛒</span><span>Commandé <b>2 sacs</b> · brassin maintenu</span><span class="b-n" style="margin-left:auto;color:var(--att);font-weight:800">+8 CHF</span></div>' +
+    '<div class="b-card" style="display:flex;align-items:center;gap:10px;opacity:.75"><span style="font-size:24px">📅</span><s>Décaler le brassin</s><span style="margin-left:auto;font-size:13px;color:var(--mut)">pas pris</span></div>' +
+    '<div class="b-card" style="display:flex;align-items:center;gap:10px;border:1.5px dashed var(--line);background:transparent"><span style="font-size:24px">🔁</span><span>Si ça revient : <b>l’autre fournisseur</b>, +4 CHF le sac</span></div>' +
+    '<div class="b-pouce" style="padding-bottom:14px"><div style="font-size:15px;font-weight:800;margin:0 0 8px;text-align:center">Toujours le bon choix ?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" data-booster="bon-choix"><button class="b-go">👍 Oui</button><button class="b-go" style="background:var(--s2);color:var(--ink)">🤔 Pas sûr</button></div>' +
+    '<div class="b-bascule"><button>✎ Mes notes</button><button class="on">▦ Organisé</button></div></div></div>';
+}
+
+/* ---------- Hors ligne : l'IA ne peut pas lire ---------- */
+function erreur() {
+  function lu(ic, quoi, ligne, c, bg) { return '<div style="display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:8px;height:52px;border-radius:14px;background:' + bg + ';padding:0 12px;margin:0 12px 8px;color:' + c + ';font-weight:800;font-size:17px"><span style="font-size:24px">' + ic + '</span>' + quoi + '<span style="font-size:13px;color:var(--mut);font-weight:700">ligne ' + ligne + ' ↩</span></div>'; }
+  return '<div class="b-ecran" style="padding-bottom:' + BAS + 'px">' + barre('Écoulement qui fuit') +
+    '<div class="b-card" data-utile style="margin-top:4px;background:#2b2412;border:1.5px solid #5a4a12;display:flex;align-items:center;gap:10px"><span style="font-size:28px">📴</span><span style="flex:1"><b style="font-size:17px">Hors ligne</b><br><span style="font-size:13px;color:var(--mut)">1 note en file · l’IA lira au retour</span></span></div>' +
+    '<div class="b-h">📱 Lu par l’app, sans IA</div><div data-booster="lecture-locale">' +
+    lu('❓', 'pas trouvé', 2, 'var(--att)', '#2f2512') + lu('💰', '<span class="b-n">150 CHF</span>', 5, 'var(--fin)', '#16253a') + '</div>' +
+    '<div style="margin:4px 12px 0;padding:12px;border-radius:14px;border:1.5px dashed var(--line);color:var(--mut);display:flex;align-items:center;gap:10px"><span style="font-size:22px">✦</span><span>Pistes, options et tâche : <b style="color:var(--ink)">à l’IA</b>, au retour du réseau.</span></div>' +
+    '<div class="b-h">✎ Tes 5 notes, gardées</div><div class="b-notes" style="font-size:15px;color:var(--mut)">' + ECOUL.map(function (l) { return '<p style="padding:3px 8px">' + l + '</p>'; }).join('') + '</div>' +
+    pouce('⏳ En attente du réseau', 'org', { doux: 1, file: 1 }) + '</div>';
+}
+
+/* ---------- Mémo : assurance ---------- */
+function memo() {
+  function piece(ic, t) { return '<button style="display:grid;grid-template-columns:34px 32px 1fr;align-items:center;gap:8px;width:100%;height:56px;border-radius:14px;background:var(--card);padding:0 12px;margin-bottom:8px;text-align:left;font-size:16px"><span style="width:30px;height:30px;border-radius:8px;border:3px solid var(--line)"></span><span style="font-size:24px">' + ic + '</span>' + t + '</button>'; }
+  return '<div class="b-ecran" style="padding-bottom:' + BAS + 'px">' + barre('Assurance à renouveler') +
+    '<div class="b-meta"><span class="b-etat e-note">📌 Mémo</span></div>' +
+    '<div class="b-card" data-utile data-booster="jours" style="margin-top:0"><div style="display:flex;align-items:baseline;gap:8px"><b class="b-n" style="font-size:34px;color:var(--att)">36 j</b><span style="font-size:17px;font-weight:700">avant le 31 déc.</span></div>' +
+    '<div style="display:flex;gap:3px;margin-top:8px">' + Array.apply(null, Array(37)).map(function (x, i) { return '<span style="flex:1;height:16px;border-radius:2px;background:' + (i === 0 ? 'var(--att)' : i === 36 ? 'var(--bad)' : '#2a2a2e') + '"></span>'; }).join('') + '</div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-top:4px"><span>auj.</span><span>31 déc.</span></div></div>' +
+    '<div class="b-h">📎 Pièces · 0/3</div><div style="margin:0 12px">' + piece('📜', 'Police actuelle') + piece('🧰', 'Inventaire du matériel') + piece('📈', 'Chiffre d’affaires 2026') + '</div>' +
+    '<div class="b-card" data-booster="rappel-mot" style="margin-top:4px;border:1.5px dashed #5b4f86;background:#1a1726;display:flex;align-items:center;gap:10px"><span style="font-size:22px">🔔</span><span style="flex:1">Je le ressortirai quand tu noteras <b style="color:var(--ia)">« assurance »</b></span><span class="b-sw"></span></div>' +
+    pouce('<span class="e">🤝</span>Demander l’offre au 2e assureur', 'org') + '</div>';
+}
+
+function recette() {
+  var src = document.documentElement.innerHTML.match(/RECETTE[\s\S]*?-->/)[0].replace('-->', '');
+  var ids = ['liste', 'organise', 'organise-ligne', 'organise-aide', 'achat', 'decider', 'afaire', 'relecture', 'erreur', 'memo'];
+  return '<div class="b-rec"><pre style="white-space:pre-wrap;font:13px/1.45 inherit">' + src.replace(/</g, '&lt;') + '</pre>' + ids.map(function (i) { return '<a href="?e=' + i + '">' + i + '</a>'; }).join(' · ') + '</div>';
+}
+var R = { recette: recette, liste: liste, organise: organise, 'organise-ligne': organiseLigne, 'organise-aide': organiseAide, achat: achat, decider: decider, afaire: afaire, relecture: relecture, erreur: erreur, memo: memo };
+document.getElementById('app').innerHTML = (R[E] || recette)();
+})();
+</script>
+</body>
+</html>

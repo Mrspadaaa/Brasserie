@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p4b-1 · Ligne de métro</title>
+<!--
+RECETTE p4b-1 « Ligne de métro » (recette du juge critique, juge-critique-1.md, fin)
+écran → mécanisme → source
+- Liste → arbre domaine, sous-domaines sur la ligne du domaine (v01 + correction du juge) ; pastille de piste en un mot (v04) ;
+          mini-barre d'options quand 2 prix (v02) ; coup d'œil 4 états en rangée basse qui filtre (v01) ; champ + « + » collés à la barre.
+- Organisé (problème) → chemin en lignes de métro, une couleur par piste, à la place de toute frise (v04-11) ; coût en barres,
+          inconnu hachuré (v02), estimation en pointillé (v05) ; conseil derrière 💡 ; prochaine action noire sous le pouce (juge action).
+- Organisé (achat) → Comparer en barres dans la page (v04-20), avancement propre à l'achat comparé › choisi › commandé (FRISE-GENERIQUE) ;
+          sa note citée face à « en stock » (v06-18 « à lire »).
+- Décider → face à face en deux cases (v01-11), barres proportionnelles ; « Pourquoi B plutôt que A ? » (v01-10).
+- À faire → « Une décision t'attend » chiffrée (v02-18) ; icône du carnet sous chaque tâche (v03) ; veille en interrupteur (v04).
+- Relecture → « Ce que tu savais alors » en icônes datées (v05) ; écart chiffré (v03) ; « Toujours le bon choix ? » (v02-21).
+- IA en erreur → lecture locale complète de ce que l'app lit seule (v06-26), texte gardé (v03), aucune option ni tâche inventée.
+- Mémo → rappel déclenché par un mot (v03-18) ; jours avant l'échéance ; pas de points d'état.
+Données : tests/fixtures/c79 et c75 (lignes telles quelles, préfixe « ZZ TEST — » masqué). Thème sombre du jouable M4 b.
+-->
+<style>
+:root{--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--bord:#26262a;--bas:#17171a;--note:#a3a3aa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);width:390px;min-height:844px;position:relative;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.a-mono{font-variant-numeric:tabular-nums;white-space:nowrap}
+.a-ecran{position:relative;min-height:844px;padding-bottom:140px}
+/* barre haute */
+.a-barre{height:48px;display:flex;align-items:center;gap:8px;padding:0 8px;border-bottom:1px solid var(--bord);background:var(--bg);position:sticky;top:0;z-index:5}
+.a-barre .t{flex:1;min-width:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-ic{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;color:var(--ink)}
+.a-ic svg{width:22px;height:22px}
+/* ligne discrète */
+.a-meta{display:flex;align-items:center;gap:8px;padding:8px 12px 0;font-size:13px;color:var(--mut)}
+.a-etat{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;font-weight:700;font-size:13px}
+.a-etat i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.e-cherche{color:var(--fin);background:#16253a}.e-decide{color:var(--att);background:#33290f}.e-note{color:var(--mut);background:#232327}.e-resolu{color:var(--ok);background:#1b2e17}
+.a-chg{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--ia);font-weight:700;height:28px;padding:0 8px;border-radius:14px;border:1px solid #3a3352}
+/* cartes */
+.a-bloc{margin:12px 12px 0;padding:12px;border-radius:14px;background:var(--card)}
+.a-k{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);font-weight:700;margin-bottom:8px}
+.a-k .r{margin-left:auto}
+.a-sympt{display:flex;align-items:center;gap:12px;margin:12px 12px 0;padding:10px 12px;border-radius:14px;background:linear-gradient(90deg,#0f2234,#141416)}
+.a-sympt .ico{font-size:30px}
+.a-sympt b{font-size:20px;line-height:1.15}
+/* métro */
+.a-metro{position:relative}
+.a-metro .rg{display:grid;grid-template-columns:132px 1fr;align-items:center;height:74px;width:100%;text-align:left;border-radius:10px}
+.a-metro .rg:active{background:var(--s2)}
+.a-metro .nm{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;white-space:nowrap}
+.a-metro .nm span{font-size:24px}
+.a-metro svg{width:100%;height:74px;overflow:visible}
+.a-badge{font:700 13px "Source Sans 3",system-ui,sans-serif}
+/* coût */
+.a-cout .ln{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:8px;height:56px}
+.a-cout .ln span:first-child{font-size:24px;text-align:center}
+.a-bar{position:relative;height:40px;border-radius:9px;display:flex;align-items:center;padding:0 10px;font-weight:800;font-size:15px}
+.a-hach{background:repeating-linear-gradient(135deg,#2a2a2e 0 7px,#1c1c1f 7px 14px);color:var(--mut);border:1px dashed var(--line)}
+.a-estim{border:2px dashed var(--fin);color:var(--fin);background:rgba(125,184,245,.12)}
+.a-plein{background:var(--fin);color:#06121f}
+.a-ia{display:flex;align-items:center;gap:10px;margin:12px 12px 0;padding:10px 12px;border-radius:14px;border:1.5px dashed #5b4f86;background:#1a1726;color:var(--ia);font-weight:800;font-size:15px;width:calc(100% - 24px);text-align:left}
+.a-ia .q{font-size:24px}
+/* dock */
+.a-dock{position:fixed;left:0;bottom:0;width:390px;padding:8px 12px 10px;background:linear-gradient(180deg,rgba(0,0,0,0),#000 14px);z-index:9}
+.a-go{width:100%;height:52px;border-radius:14px;background:var(--ink);color:#000;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.a-go .e{font-size:22px}
+.a-row{display:flex;gap:8px;margin-top:8px;align-items:center}
+.a-seg{display:flex;height:44px;border-radius:22px;background:var(--s2);padding:3px;flex:none}
+.a-seg button{height:38px;padding:0 12px;border-radius:19px;color:var(--mut);font-weight:700;display:flex;align-items:center;gap:5px;font-size:14px}
+.a-seg button.on{background:#3a3a40;color:var(--ink)}
+.a-champ{flex:1;min-width:0;height:44px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;outline:none;font-size:15px}
+.a-aide{height:44px;padding:0 12px;border-radius:22px;background:var(--ia);color:#120c24;font-weight:800;display:flex;align-items:center;gap:4px;flex:none}
+/* tab bar de l'app */
+.a-tabs{position:fixed;left:0;bottom:0;width:390px;height:56px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bas);border-top:1px solid var(--bord);z-index:9}
+.a-tabs div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--mut)}
+.a-tabs div.on{color:var(--ink);font-weight:700}
+.a-tabs b{font-size:18px;font-weight:400;line-height:1}
+.a-champl{position:fixed;left:0;bottom:56px;width:390px;display:flex;gap:8px;padding:6px 12px;background:var(--bg);z-index:9}
+.a-plus{width:44px;height:44px;border-radius:22px;background:var(--ink);color:#000;font-size:26px;font-weight:700;display:grid;place-items:center;flex:none}
+/* liste */
+.a-dom{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;font-size:13px;color:var(--mut);font-weight:800;background:#0c0c0e;white-space:nowrap;overflow:hidden}
+.a-dom .n{color:var(--ink)}
+.a-dom .sd{font-weight:600;color:#8a8a92;overflow:hidden;text-overflow:ellipsis}
+.a-li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;height:38px;padding:0 12px;border-bottom:1px solid #141416;width:100%;text-align:left}
+.a-li .em{font-size:19px;text-align:center}
+.a-li .tt{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-pil{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;height:24px;padding:0 8px;border-radius:12px;white-space:nowrap}
+.a-pil i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.a-mini{display:flex;flex-direction:column;gap:2px;width:64px}
+.a-mini span{display:block;height:5px;border-radius:3px;background:var(--fin)}
+.a-coup{position:fixed;left:0;bottom:112px;width:390px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px 12px;background:var(--bg);z-index:9}
+.a-coup button{height:32px;border-radius:9px;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;gap:5px}
+.a-coup b{font-size:15px}
+/* face à face */
+.a-ff{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 12px 0}
+.a-tile{border-radius:14px;background:var(--card);padding:12px;display:flex;flex-direction:column;gap:6px;border:1.5px solid transparent}
+.a-tile .em{font-size:30px}
+.a-tile .p{font-size:26px;font-weight:800}
+.a-tile .s{font-size:13px;color:var(--mut)}
+.a-tile .b{height:36px;border-radius:10px;border:1.5px solid var(--ink);font-weight:800;margin-top:4px}
+.a-gain{border-color:var(--ok)}
+.a-pays{font-size:13px;color:var(--mut);font-weight:700}
+.a-jet{display:flex;flex-wrap:wrap;gap:6px;margin:10px 12px 0}
+.a-jet span{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:15px;background:var(--card);font-size:14px;font-weight:700}
+/* à faire */
+.a-h{font-size:13px;color:var(--mut);font-weight:800;margin:14px 12px 6px;display:flex;align-items:center;gap:6px}
+.a-dec{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:var(--card);border-left:4px solid var(--fin)}
+.a-dec .top{display:flex;align-items:center;gap:8px;font-weight:800}
+.a-dec .top .em{font-size:20px}
+.a-dec .q{font-size:15px;margin:4px 0 6px;color:var(--ink)}
+.a-dbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--mut)}
+.a-dbar div span{display:block;height:8px;border-radius:4px;margin-top:3px}
+.a-tk{display:grid;grid-template-columns:26px 30px 1fr auto;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #141416}
+.a-tk .c{width:22px;height:22px;border-radius:50%;border:2px solid var(--line)}
+.a-tk .ci{font-size:20px;text-align:center}
+.a-tk .tx{font-size:15px}
+.a-tk .tx small{display:block;color:var(--mut);font-size:13px}
+.a-tk .d{font-size:13px;font-weight:700;color:var(--att);white-space:nowrap}
+.a-sw{width:44px;height:26px;border-radius:13px;background:var(--ok);position:relative;flex:none}
+.a-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+/* notes */
+.a-notes{padding:6px 12px 0;font-size:17px;line-height:1.5}
+.a-notes p{margin:0;padding:6px 8px;border-radius:10px}
+.a-notes p.hl{background:#1b2e17;box-shadow:inset 4px 0 0 var(--ok)}
+.a-notes u{text-decoration-color:var(--ia);text-underline-offset:3px}
+.a-retour{position:fixed;left:50%;transform:translateX(-50%);bottom:132px;height:44px;padding:0 16px;border-radius:22px;background:#2b2440;color:var(--ia);font-weight:800;display:flex;align-items:center;gap:6px;z-index:10;white-space:nowrap}
+/* feuille Aide */
+.a-voile{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20}
+.a-feuille{position:fixed;left:0;bottom:0;width:390px;background:#1c1c1f;border-radius:18px 18px 0 0;padding:10px 12px 16px;z-index:21}
+.a-feuille .poi{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.a-trois{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.a-trois button{height:96px;border-radius:14px;background:var(--s2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800}
+.a-trois button span{font-size:30px}
+.a-sug{margin-top:10px;padding:10px 12px;border-radius:12px;border:1.5px dashed #5b4f86;color:var(--ink);background:#1a1726;font-size:15px;display:flex;gap:8px}
+/* recette */
+.a-rec{padding:16px;font-size:14px;line-height:1.45}
+.a-rec a{color:var(--fin)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+var Q = new URLSearchParams(location.search), E = Q.get('e') || 'recette';
+var ETAT = { cherche: ['Je cherche', 'e-cherche'], decide: ['Décidé', 'e-decide'], note: ['Noté', 'e-note'], resolu: ['Résolu', 'e-resolu'] };
+var COUL = { cherche: 'var(--fin)', decide: 'var(--att)', note: 'var(--note)', resolu: 'var(--ok)' };
+var IC = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  srch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>'
+};
+/* 14 carnets distincts : c79 (12) + c75 citra, embouteillage ; c75 malt et pompe = jumeaux de c79, écartés */
+var CARNETS = [
+  { d: 'Brasserie', em: '❄️', t: 'Frigo de garde en panne', etat: 'cherche', opt: [480, 1200] },
+  { d: 'Brasserie', em: '🫧', t: 'CO2 qui baisse vite dans un fût', etat: 'decide', r: 'raccord gaz' },
+  { d: 'Brasserie', em: '♨️', t: 'Trop de vapeur au brassage', etat: 'decide', r: 'condenser' },
+  { d: 'Brasserie', em: '👃', t: 'Odeur de soufre dans un lot', etat: 'decide', r: 'à resentir' },
+  { d: 'Brasserie', em: '🌿', t: 'Houblons citra', etat: 'note', r: '2 liens' },
+  { d: 'Brasserie', em: '🍾', t: 'Embouteillage — station complète (2027)', etat: 'note', r: 'mai 2027' },
+  { d: 'Brasserie', em: '🌾', t: 'Malt pilsner en rupture chez le fournisseur', etat: 'resolu', r: 'autre fourn.' },
+  { d: 'Brasserie', em: '🧫', t: 'Levure lente à démarrer', etat: 'resolu', r: '19 °C' },
+  { d: 'Brasserie', em: '🔥', t: 'Pompe qui chauffe', etat: 'resolu', r: 'vanne' },
+  { d: 'Local', em: '💧', t: 'Écoulement qui fuit', etat: 'cherche', r: 'devis' },
+  { d: 'Local', em: '⚡', t: 'Inspection électrique, fusible', etat: 'note', r: 'testeur' },
+  { d: 'Local', em: '📦', t: 'Ranger la cave', etat: 'note', r: 'sam. 6 déc.' },
+  { d: 'Administratif', em: '📄', t: 'Assurance à renouveler', etat: 'note', r: '31 déc.' },
+  { d: 'Événements', em: '🎪', t: 'Fête de la bière en juin', etat: 'note', r: '1 500 CHF' }
+];
+var DOMS = [
+  ['🍺', 'Brasserie', 'Froid · Conditionnement · Brassage · Fermentation · Matières premières'],
+  ['🏠', 'Local', 'Eau · Électricité · Rangement'],
+  ['📄', 'Administratif', ''],
+  ['🎪', 'Événements', '']
+];
+/* écoulement : messages 2 à 6 du carnet c79/zz-ecoulement-qui-fuit, tels quels */
+var ECOUL = ['L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.',
+  'Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.',
+  'Contacter l’entreprise X (exemple) pour un sanitaire.',
+  'Devis attendu.',
+  'Estimation 150 CHF (exemple).'];
+
+function barre(t, opts) {
+  opts = opts || {};
+  return '<div class="a-barre" data-barre>' + (opts.gauche ? '<span style="width:4px"></span>' : '<button class="a-ic" aria-label="Retour">' + IC.back + '</button>') +
+    '<div class="t" data-titre>' + t + '</div>' + (opts.droite || '<button class="a-ic" aria-label="Plus">' + IC.more + '</button>') + '</div>';
+}
+function dock(action, vue) {
+  return '<div class="a-dock">' + (action ? '<button class="a-go" data-booster="prochaine-action">' + action + '</button>' : '') +
+    '<div class="a-row"><div class="a-seg" data-booster="bascule"><button class="' + (vue === 'notes' ? 'on' : '') + '">✎ Notes</button><button class="' + (vue === 'org' ? 'on' : '') + '">▦ Organisé</button></div>' +
+    '<input class="a-champ" placeholder="Ajouter…" aria-label="Ajouter une note"><button class="a-aide" data-booster="aide">💡 Aide</button></div></div>';
+}
+function tabs(on) {
+  var T = [['▦', 'Bord'], ['◫', 'Finances'], ['▤', 'Calendrier'], ['◍', 'Brassins'], ['▣', 'Stocks'], ['☺', 'Clients']];
+  return '<nav class="a-tabs">' + T.map(function (x) { return '<div class="' + (x[1] === on ? 'on' : '') + '"><b>' + x[0] + '</b>' + x[1] + '</div>'; }).join('') + '</nav>';
+}
+function etat(e) { return '<span class="a-etat ' + ETAT[e][1] + '"><i></i>' + ETAT[e][0] + '</span>'; }
+
+/* ---------- Liste ---------- */
+function liste() {
+  var cnt = { cherche: 0, decide: 0, note: 0, resolu: 0 };
+  CARNETS.forEach(function (c) { cnt[c.etat]++; });
+  var ordre = { cherche: 0, decide: 1, note: 2, resolu: 3 };
+  var h = barre('Carnets <span style="color:var(--mut);font-weight:600">14</span>', { gauche: 1, droite: '<button class="a-ic" aria-label="Chercher">' + IC.srch + '</button>' });
+  DOMS.forEach(function (d) {
+    var cs = CARNETS.filter(function (c) { return c.d === d[1]; }).sort(function (a, b) { return ordre[a.etat] - ordre[b.etat]; });
+    h += '<div class="a-dom" data-booster="repli">▾ ' + d[0] + ' <span class="n">' + d[1] + '</span> ' + cs.length + (d[2] ? ' <span class="sd">· ' + d[2] + '</span>' : '') + '</div>';
+    cs.forEach(function (c) {
+      var droite;
+      if (c.opt) {
+        var mx = Math.max.apply(null, c.opt);
+        droite = '<span style="display:flex;align-items:center;gap:6px"><span class="a-mini">' + c.opt.map(function (v) { return '<span style="width:' + Math.round(v / mx * 64) + 'px"></span>'; }).join('') +
+          '</span><span class="a-mono" style="font-size:13px;color:var(--fin);font-weight:700">480 · 1 200</span></span>';
+      } else {
+        droite = '<span class="a-pil" style="color:' + COUL[c.etat] + ';background:#151517"><i></i>' + c.r + '</span>';
+      }
+      h += '<button class="a-li" data-carnet><span class="em">' + c.em + '</span><span class="tt">' + c.t + '</span>' + droite + '</button>';
+    });
+  });
+  h += '<div class="a-coup" data-booster="coup-oeil">' +
+    [['cherche', 'cherche'], ['decide', 'décidés'], ['note', 'notés'], ['resolu', 'résolus']].map(function (x) {
+      return '<button class="' + ETAT[x[0]][1] + '"><b>' + cnt[x[0]] + '</b>' + x[1] + '</button>';
+    }).join('') + '</div>';
+  h += '<div class="a-champl"><input class="a-champ" placeholder="Noter, coller un lien…" aria-label="Noter"><button class="a-plus" aria-label="Nouveau carnet">+</button></div>' + tabs('Stocks');
+  return '<div class="a-ecran" style="padding-bottom:150px">' + h + '</div>';
+}
+
+/* ---------- Organisé, problème : écoulement ---------- */
+function metro() {
+  /* une ligne par piste : couleur propre, stations = ses lignes ; fin = où en est la piste */
+  var P = [
+    { em: '🔧', nm: 'Joint', c: 'var(--ok)', l: 2, fin: 'ok', bad: 'usé' },
+    { em: '🧱', nm: 'Dalle', c: 'var(--att)', l: 2, fin: 'q', bad: '?' },
+    { em: '👷', nm: 'Sanitaire X', c: 'var(--fin)', l: 3, fin: 'att', bad: 'devis' }
+  ];
+  return '<div class="a-bloc a-metro" data-utile data-booster="metro"><div class="a-k" style="margin-bottom:0">💧 flaque après chaque nettoyage<span class="r">↩</span></div>' + P.map(function (p, i) {
+    var plein = p.fin === 'ok', y = 31;
+    var svg = '<svg viewBox="0 0 230 62" preserveAspectRatio="none">' +
+      '<line x1="8" y1="' + y + '" x2="' + (plein ? 150 : 90) + '" y2="' + y + '" stroke="' + p.c + '" stroke-width="6" stroke-linecap="round"/>' +
+      (plein ? '' : '<line x1="96" y1="' + y + '" x2="150" y2="' + y + '" stroke="' + p.c + '" stroke-width="4" stroke-dasharray="3 7" stroke-linecap="round"/>') +
+      '<circle cx="8" cy="' + y + '" r="7" fill="#1c1c1f" stroke="' + p.c + '" stroke-width="4"/>' +
+      (plein ? '<circle cx="150" cy="' + y + '" r="13" fill="' + p.c + '"/><path d="M143 31l5 5 9-10" stroke="#0b1a08" stroke-width="3.2" fill="none" stroke-linecap="round"/>'
+        : p.fin === 'q' ? '<circle cx="150" cy="' + y + '" r="12" fill="#1c1c1f" stroke="' + p.c + '" stroke-width="3" stroke-dasharray="4 3"/><text x="150" y="36" text-anchor="middle" fill="' + p.c + '" font-size="15" font-weight="800">?</text>'
+          : '<circle cx="90" cy="' + y + '" r="7" fill="' + p.c + '"/><circle cx="150" cy="' + y + '" r="12" fill="#1c1c1f" stroke="' + p.c + '" stroke-width="3" stroke-dasharray="4 3"/><text x="150" y="36" text-anchor="middle" font-size="13">⏳</text>') +
+      '<text x="172" y="36" class="a-badge" fill="' + p.c + '">' + (p.fin === 'q' ? '' : p.bad) + '</text></svg>';
+    return '<button class="rg" data-ligne="' + p.l + '"><span class="nm"><span>' + p.em + '</span>' + p.nm + '</span>' + svg + '</button>';
+  }).join('') + '</div>';
+}
+function organise() {
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div class="a-meta">' + etat('cherche') + '<button class="a-chg" data-booster="changements">✦ 20:35 ›</button></div>' +
+    metro() +
+    '<div class="a-bloc a-cout" data-booster="cout"><div class="a-k">💰<span class="r a-ic" style="width:28px;height:28px;font-size:18px" aria-label="Conseil">💡</span></div>' +
+    '<div class="ln"><span>🔧</span><div class="a-bar a-hach" style="font-size:18px">? CHF</div></div>' +
+    '<div class="ln"><span>👷</span><div class="a-bar a-estim" style="width:78%"><span class="a-mono" style="font-size:20px">150 CHF</span><small style="margin-left:auto;font-weight:700">estimé</small></div></div></div>' +
+    '<button class="a-ia" data-booster="ia-question"><span class="q">❓</span>seule cause ?<span style="margin-left:auto;font-size:13px">✦</span></button>' +
+    dock('<span class="e">📞</span>Contacter l’entreprise X', 'org') + '</div>';
+}
+/* geste : toucher « Joint » → sa ligne dans Mes notes */
+function organiseLigne() {
+  var notes = ECOUL.map(function (l, i) {
+    if (i === 1) return '<p class="hl">Pistes : joint du siphon <u>trouvé usé</u> ; fuite sous la dalle, <u>pas trouvée</u>.</p>';
+    if (i === 2) return '<p><u>Contacter l’entreprise X</u> (exemple) pour un sanitaire.</p>';
+    if (i === 3) return '<p><u>Devis attendu</u>.</p>';
+    if (i === 4) return '<p>Estimation <u>150 CHF</u> (exemple).</p>';
+    return '<p>' + l + '</p>';
+  }).join('');
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div class="a-meta">mar. 24 nov. · <span style="color:var(--ia)">lu par l’IA 20:35</span></div>' +
+    '<div class="a-notes">' + notes + '</div>' +
+    '<button class="a-retour">← 🔧 Joint · Organisé</button>' + dock('', 'notes') + '</div>';
+}
+function organiseAide() {
+  return organise().replace(/<\/div>$/, '') + '<div class="a-voile"></div><div class="a-feuille"><div class="poi"></div>' +
+    '<div class="a-k" style="font-size:15px;color:var(--ink)">💡 Aide</div>' +
+    '<div class="a-trois"><button><span>✓</span>Vérifier</button><button><span>☐</span>Tâche</button><button style="outline:2px solid var(--ia)"><span>💡</span>Suggestion</button></div>' +
+    '<div class="a-sug"><span>✦</span><span>Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.</span></div>' +
+    '<div style="font-size:13px;color:var(--mut);margin-top:8px">✓ relit tes notes · ☐ ajoute une tâche · 💡 propose la suite. Rien n’est posé sans ton toucher.</div></div></div>';
+}
+
+/* ---------- Organisé, achat : houblons citra (c75) ---------- */
+function achat() {
+  var A = 'var(--fin)', B = 'var(--att)';
+  function rg(ic, a, b, win) {
+    return '<div style="display:grid;grid-template-columns:30px 1fr 1fr;gap:8px;align-items:center;min-height:60px;border-top:1px solid #2a2a2e">' +
+      '<span style="font-size:22px;text-align:center">' + ic + '</span>' + a + b + '</div>';
+  }
+  function cell(html, cls, win) { return '<div class="a-bar ' + (cls || '') + '" style="height:34px;font-size:14px' + (win ? ';box-shadow:0 0 0 2px var(--ok) inset' : '') + '">' + html + (win ? '<span style="margin-left:auto">👑</span>' : '') + '</div>'; }
+  /* α : 0 à 20 % sur la largeur de la case */
+  function alpha(min, max, c) {
+    var l = min / 20 * 100, w = Math.max((max - min) / 20 * 100, 3);
+    return '<div style="position:relative;height:44px"><div style="position:absolute;left:0;right:0;top:30px;height:4px;border-radius:2px;background:#2a2a2e"></div>' +
+      '<div style="position:absolute;left:' + l + '%;width:' + w + '%;top:24px;height:16px;border-radius:8px;background:' + c + '"></div>' +
+      '<div class="a-mono" style="position:absolute;left:0;top:0;font-size:15px;color:' + c + ';font-weight:800">' + (min === max ? String(min).replace('.', ',') : min + '–' + max) + ' %</div></div>';
+  }
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Houblons citra') +
+    '<div class="a-meta" data-booster="avancement-achat"><span style="display:flex;align-items:center;gap:6px;font-weight:700"><span style="color:var(--fin)">⚖️ comparé</span> › <span>✋ choisi</span> › <span>📦 commandé</span></span></div>' +
+    '<div class="a-ff" style="margin-top:10px" data-utile>' +
+    '<div class="a-tile" style="padding:10px;border-color:' + A + ';align-items:center;text-align:center"><span style="font-size:40px;line-height:1">🌿</span><b>MotlerHops</b><span class="a-pays">.fr</span></div>' +
+    '<div class="a-tile" style="padding:10px;border-color:' + B + ';align-items:center;text-align:center"><span style="font-size:40px;line-height:1">🌿</span><b style="line-height:1.1">Brau- und Rauchshop</b><span class="a-pays">.ch</span></div></div>' +
+    '<div class="a-bloc" data-booster="comparer-barres" style="padding-top:4px">' +
+    rg('α', '<div>' + alpha(10, 15, A) + '</div>', '<div style="box-shadow:0 0 0 2px var(--ok) inset;border-radius:9px;padding:0 4px">' + alpha(13.6, 13.6, B) + '</div>') +
+    rg('💶', cell('<span class="a-mono">3,72</span>&nbsp;€', 'a-plein'), cell('à relire', 'a-hach')) +
+    rg('📦', cell('en stock&nbsp;<span style="color:var(--att)">⚠</span>', '', false).replace('a-bar ', 'a-bar a-estim '), cell('?', 'a-hach')) +
+    rg('👃', cell('', 'a-hach'), cell('<span style="font-size:20px;letter-spacing:4px">🍋🥭🌴</span>', '', false)) +
+    rg('🌍', cell('USA', ''), cell('USA', '')) + '</div>' +
+    '<button class="a-bloc" data-booster="sa-note" style="display:flex;gap:10px;align-items:center;border:1.5px solid #4a3d16;background:#1d190f;width:calc(100% - 24px);text-align:left"><span style="font-size:22px">⚠</span><span style="font-size:15px">« dur à obtenir » <span style="color:var(--mut)">.fr</span></span><span style="margin-left:auto;color:var(--mut)">↩</span></button>' +
+    dock('<span class="e">↻</span>Relire Brau', 'org') + '</div>';
+}
+
+/* ---------- Décider : frigo de garde (c79) ---------- */
+function decider() {
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Frigo de garde en panne') +
+    '<div class="a-meta">' + etat('cherche') + '<span style="margin-left:auto;color:var(--att);font-weight:800">⏳ avant décembre</span></div>' +
+    '<div class="a-jet" data-utile><span>🌡️ <span class="a-mono">14 °C</span> <span style="color:var(--mut)">au lieu de</span> <span class="a-mono">2 °C</span></span><span>🛢️ <span class="a-mono">6</span> fûts → chambre froide</span></div>' +
+    '<div class="a-h">🧑‍🔧 Technicien : compresseur HS</div>' +
+    '<div class="a-ff" style="margin-top:0" data-booster="face-a-face">' +
+    '<div class="a-tile a-gain"><span class="em">🔧</span><b>Réparation</b><span class="p a-mono">480 CHF</span><span style="display:block;height:10px;border-radius:5px;background:var(--ok);width:40%"></span><span class="s" style="color:var(--ok);font-weight:800">−720 CHF</span><button class="b">Retenir</button></div>' +
+    '<div class="a-tile"><span class="em">❄️</span><b>Frigo neuf</b><span class="p a-mono">1 200 CHF</span><span style="display:block;height:10px;border-radius:5px;background:var(--fin);width:100%"></span><span class="s">&nbsp;</span><button class="b">Retenir</button></div></div>' +
+    '<div class="a-bloc" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🤔</span><span style="flex:1">Pourquoi l’un plutôt que l’autre ? <span style="color:var(--mut)">Tes notes ne le disent pas.</span></span><button style="color:var(--ia);font-weight:800">Ajouter</button></div>' +
+    '<div class="a-bloc" style="display:flex;gap:10px;align-items:flex-start;background:#121214;border:1px solid var(--bord)"><span style="font-size:18px">✎</span><span style="font-size:15px;color:var(--mut)">« Technicien : compresseur HS, réparation <b style="color:var(--ink)">480 CHF</b> ou frigo neuf <b style="color:var(--ink)">1 200 CHF</b>. » <small>ta ligne 3</small></span></div>' +
+    '<div class="a-h">Ensuite</div>' +
+    '<div class="a-bloc" style="margin-top:0;border:1.5px dashed #5b4f86;background:#1a1726;display:flex;gap:10px;align-items:center"><span style="font-size:22px">📅</span><span style="flex:1">Devis à comparer <b>avant décembre</b> <small style="display:block;color:var(--ia)">✦ tâche proposée</small></span><button style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--ink);font-weight:800">Garder</button></div>' +
+    dock('', 'org') + '</div>';
+}
+
+/* ---------- À faire, tous les carnets ---------- */
+function afaire() {
+  function dec(em, t, q, a, b, ta, tb) {
+    var mx = Math.max(a || 0, b || 0) || 1;
+    function col(v, lab, c) {
+      return '<div><b class="a-mono" style="color:var(--ink)">' + (v ? v.toLocaleString('fr-CH').replace(/ /g, ' ') + ' CHF' : lab) + '</b>' +
+        '<span style="' + (v ? 'width:' + Math.round(v / mx * 100) + '%;background:' + c : 'width:100%;background:repeating-linear-gradient(135deg,#3a3a40 0 5px,#1c1c1f 5px 10px)') + '"></span>' +
+        '<small>' + (v ? '' : '') + '</small></div>';
+    }
+    return '<div class="a-dec" data-booster="decision"><div class="top"><span class="em">' + em + '</span>' + t + '<span class="a-etat e-cherche" style="margin-left:auto"><i></i>Je cherche</span></div>' +
+      '<div class="q">' + q + '</div><div class="a-dbar">' + col(a, ta, 'var(--ok)') + col(b, tb, 'var(--fin)') + '</div></div>';
+  }
+  function tk(em, tx, sous, d) { return '<div class="a-tk"><span class="c"></span><span class="ci">' + em + '</span><span class="tx">' + tx + '<small>' + sous + '</small></span><span class="d">' + d + '</span></div>'; }
+  return '<div class="a-ecran" style="padding-bottom:120px">' + barre('À faire <span style="color:var(--mut);font-weight:600">· tous les carnets</span>', { droite: '<span></span>' }) +
+    '<div class="a-h" data-utile>⚖️ Une décision t’attend · 2</div>' +
+    dec('❄️', 'Frigo de garde', 'Réparation ou frigo neuf ? <span style="color:var(--att);font-weight:800">avant décembre</span>', 480, 1200, '', '') +
+    dec('💧', 'Écoulement qui fuit', 'Le joint toi-même ou le sanitaire X ?', 0, 150, '? CHF', '') +
+    '<div class="a-h">Puis</div>' +
+    tk('📞', 'Contacter l’entreprise X', '💧 Écoulement qui fuit', '') +
+    tk('🫧', 'Revérifier le raccord gaz', '🫧 CO2 · « dans une semaine »', '≈ 1 déc.') +
+    tk('♨️', 'Acheter le steam condenser', '♨️ Vapeur · « fin du mois »', 'fin nov.') +
+    tk('📦', 'Ranger la cave', '📦 Ranger la cave', 'sam. 6 déc.') +
+    tk('👃', 'Sentir à nouveau le lot 14', '👃 Soufre · avant la mise en fût', '≈ 8 déc.') +
+    tk('📄', 'Renouveler l’assurance', '📄 Assurance', '31 déc.') +
+    '<div class="a-tk" style="grid-template-columns:30px 1fr auto"><span class="ci">🔔</span><span class="tx">Veille : le 2e condenser en stock<small>♨️ Vapeur · « à surveiller »</small></span><span class="a-sw" data-booster="veille"></span></div>' +
+    tabs('Stocks') + '</div>';
+}
+
+/* ---------- Relecture « pourquoi » : malt pilsner (résolu) ---------- */
+function relecture() {
+  function su(ic, tx, date) { return '<div style="display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #2a2a2e"><span style="font-size:26px;text-align:center">' + ic + '</span><span>' + tx + '</span><span style="font-size:13px;color:var(--mut)">' + date + '</span></div>'; }
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Malt pilsner en rupture chez le fournisseur') +
+    '<div class="a-meta">' + etat('resolu') + '<span>le 25 nov.</span></div>' +
+    '<div class="a-bloc" data-utile style="border:1.5px solid var(--ok);display:flex;gap:12px;align-items:center"><span style="font-size:34px">🚚</span><span><b style="font-size:20px">Autre fournisseur</b><br><span class="a-mono" style="color:var(--att);font-weight:700">+4 CHF</span> le sac · en stock</span></div>' +
+    '<div class="a-h">🧠 Ce que tu savais alors</div>' +
+    '<div class="a-bloc" style="margin-top:0;padding-top:4px" data-booster="savais-alors">' +
+    su('🚫', 'Pilsner <span class="a-mono">25 kg</span> en rupture → <b>mi-décembre</b>', '24 nov.') +
+    su('🍺', 'Brassin du <b>3 déc.</b> à décaler ou autre malt', '24 nov.') +
+    su('✅', 'Autre fournisseur : <b>en stock</b>', '24 nov.') + '</div>' +
+    '<div class="a-h">🧮 Ce que ça a coûté</div>' +
+    '<div class="a-bloc" style="margin-top:0;display:flex;align-items:center;gap:10px"><span class="a-mono" style="font-size:24px;font-weight:800;color:var(--att)">+8 CHF</span><span style="color:var(--mut);font-size:13px">2 sacs × 4 CHF · calcul de l’app</span><span style="margin-left:auto;color:var(--ok);font-weight:800">🍺 maintenu</span></div>' +
+    '<div class="a-bloc" style="display:flex;align-items:center;gap:10px;opacity:.7"><span style="font-size:22px">📅</span><s>Décaler le brassin</s><span style="margin-left:auto;font-size:13px;color:var(--mut)">pas pris</span></div>' +
+    '<div class="a-h">Toujours le bon choix ?</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px" data-booster="bon-choix"><button class="a-go" style="height:48px">👍 Oui</button><button class="a-go" style="height:48px;background:var(--s2);color:var(--ink)">🤔 Pas sûr</button></div>' +
+    '</div>';
+}
+
+/* ---------- IA en erreur : écoulement, lecture locale ---------- */
+function erreur() {
+  /* etiquettesLocales (analyseLocale.ts) sur ses 5 lignes : ligne 2 → pas-trouve ; ligne 5 → cout 150 CHF (« Estimation » n'est pas un mot d'estimation du motif ESTIME). Rien d'autre. */
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div class="a-bloc" data-utile style="border:1.5px solid #6b2d26;background:#24130f;display:flex;gap:10px;align-items:center"><span style="font-size:26px">⚠️</span><span style="flex:1"><b>L’IA n’a pas pu lire</b><br><span style="font-size:13px;color:var(--mut)">délai dépassé · tes 5 notes sont gardées</span></span></div>' +
+    '<div class="a-h">📱 Ce que l’app lit seule</div>' +
+    '<div class="a-jet" style="margin-top:0" data-booster="lecture-locale"><span style="background:#2f2512;color:var(--att)">❓ pas trouvé <small style="color:var(--mut)">ligne 2</small></span><span style="background:#16253a;color:var(--fin)">💰 <span class="a-mono">150 CHF</span> <small style="color:var(--mut)">ligne 5</small></span></div>' +
+    '<div class="a-bloc" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;color:var(--mut)">' +
+    '<div style="height:56px;border-radius:10px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;gap:6px">🛤️ pistes · <b>IA</b></div>' +
+    '<div style="height:56px;border-radius:10px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;gap:6px">☐ tâche · <b>IA</b></div></div>' +
+    '<div class="a-h">✎ Tes notes, telles quelles</div>' +
+    '<div class="a-notes" style="font-size:15px;padding-top:0">' + ECOUL.map(function (l, i) {
+      return '<p>' + (i === 1 ? l.replace('pas trouvée', '<u>pas trouvée</u>') : i === 4 ? l.replace('150 CHF', '<u>150 CHF</u>') : l) + '</p>';
+    }).join('') + '</div>' +
+    dock('<span class="e">↻</span>Relire avec l’IA', 'org') + '</div>';
+}
+
+/* ---------- Mémo : assurance à renouveler (c79) ---------- */
+function memo() {
+  var j = 36; /* du 25 nov. au 31 déc. : calcul de l'app */
+  var pc = Math.round((1 - j / 37) * 100);
+  return '<div class="a-ecran" style="padding-bottom:150px">' + barre('Assurance à renouveler') +
+    '<div class="a-meta"><span class="a-etat e-note">📌 Mémo</span></div>' +
+    '<div class="a-bloc" data-utile style="display:flex;align-items:center;gap:14px" data-booster="jours">' +
+    '<svg width="104" height="104" viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="#2a2a2e" stroke-width="10"/><circle cx="42" cy="42" r="34" fill="none" stroke="var(--att)" stroke-width="10" stroke-dasharray="' + (2 * Math.PI * 34 * pc / 100).toFixed(1) + ' 999" transform="rotate(-90 42 42)" stroke-linecap="round"/><text x="42" y="47" text-anchor="middle" fill="#f1f1f3" font-size="22" font-weight="800">' + j + ' j</text></svg>' +
+    '<span><b style="font-size:20px">avant le 31 déc.</b><br><span style="color:var(--mut);font-size:13px">échéance · ta ligne 1</span></span></div>' +
+    '<div class="a-h">📎 Pièces à réunir · 0/3</div>' +
+    '<div class="a-bloc" style="margin-top:0;padding:4px 12px">' +
+    [['📜', 'Police actuelle'], ['🧰', 'Inventaire du matériel'], ['📈', 'Chiffre d’affaires 2026']].map(function (x) {
+      return '<div style="display:grid;grid-template-columns:26px 30px 1fr;gap:8px;align-items:center;height:44px;border-top:1px solid #2a2a2e"><span class="a-tk" style="padding:0;border:0"><span class="c"></span></span><span style="font-size:22px">' + x[0] + '</span><span>' + x[1] + '</span></div>';
+    }).join('') + '</div>' +
+    '<div class="a-bloc" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🤝</span><span style="flex:1">Demander une offre à un 2e assureur</span><span style="font-size:13px;color:var(--mut)">ta ligne 3</span></div>' +
+    '<div class="a-h">✎ Tes notes</div><div class="a-notes" style="font-size:15px;padding-top:0;color:var(--mut)"><p>Échéance le 31 déc.</p><p>Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.</p><p>Demander une offre à un 2e assureur.</p><p>Renouveler l’assurance avant le 31 déc.</p></div>' +
+    '<div class="a-bloc" data-booster="rappel-mot" style="border:1.5px dashed #5b4f86;background:#1a1726;display:flex;align-items:center;gap:10px"><span style="font-size:22px">🔔</span><span style="flex:1">Je le ressortirai quand tu noteras <b style="color:var(--ia)">« assurance »</b></span><span class="a-sw"></span></div>' +
+    dock('', 'org') + '</div>';
+}
+
+function recette() {
+  var src = document.documentElement.innerHTML.match(/RECETTE[\s\S]*?-->/)[0].replace('-->', '');
+  var ids = ['liste', 'organise', 'organise-ligne', 'organise-aide', 'achat', 'decider', 'afaire', 'relecture', 'erreur', 'memo'];
+  return '<div class="a-rec"><pre style="white-space:pre-wrap;font:13px/1.45 inherit">' + src.replace(/</g, '&lt;') + '</pre>' + ids.map(function (i) { return '<a href="?e=' + i + '">' + i + '</a>'; }).join(' · ') + '</div>';
+}
+var R = { recette: recette, liste: liste, organise: organise, 'organise-ligne': organiseLigne, 'organise-aide': organiseAide, achat: achat, decider: decider, afaire: afaire, relecture: relecture, erreur: erreur, memo: memo };
+document.getElementById('app').innerHTML = (R[E] || recette)();
+})();
+</script>
+</body>
+</html>

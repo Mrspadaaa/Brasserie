@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p4b-3 · Qui gagne quoi</title>
+<!--
+RECETTE p4b-3 « Qui gagne quoi » (recette du juge personas produit, juge-personas-produit-1.md, fin)
+écran → mécanisme → source
+- Liste → lignes de v04-01 (état en pastille, un mot ou le chiffre clé de ses notes, à droite, aligné) ; en-têtes de domaine repliables (v01)
+          avec la part de chaque état en mini-barre ; rangée basse de v01-01 en barre proportionnelle qui filtre d'un toucher (v06-02).
+- Organisé (problème) → en-tête v06-09 en jetons, sans frise ; « qui gagne quoi » en face à face (v01-11, comparaison du jouable M4 b) à la place
+          des cartes de façons ; « tes notes ne le disent pas · Noter » (v03) ; « lu par l'app » (v03-07) ; une seule action noire ; ≤ 30 mots.
+- Organisé (achat) → Comparer en tableau qui couronne chaque critère (v06-19, jouable) ; « Lu / Manque » (v05-19) ; fiche du lien « rangé dans … Changer » (v06-18).
+- Décider → tuiles « l'un face à l'autre » (v01-11) sur une même règle de prix ; la ligne qui remplit les coûts (v06-11) ; « Pourquoi B plutôt que A ? Ajouter » (v01-10).
+- À faire → règle du temps (dates de ses notes) ; « Une décision t'attend » question et deux prix (v02-18 / v06-13) ; achat daté « aussi dans À venir » (v01-13) ; veille à interrupteur.
+- Relecture → v03-16 : pourquoi, ce que tu savais alors, « tes notes ne le disent pas » ; « Toujours le bon choix ? » (v02-21).
+- IA en erreur → repli v03-22 en pastilles v06-26 : les 4 cases que l'app sait lire seule (montant, pas trouvé, contacté, piste), vides dites vides ; sans options ni tâche.
+- Mémo → M4, genre en tête (v01-18), « je le ressortirai quand tu noteras… » (v03-18) ; échéance sur un mini calendrier ; pas d'état d'avancement.
+Données : tests/fixtures/c79 et c75 (lignes telles quelles, préfixe « ZZ TEST — » masqué). Thème sombre du jouable M4 b.
+-->
+<style>
+:root{--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--bord:#26262a;--bas:#17171a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg)}
+body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);width:390px;min-height:844px;position:relative;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.c-n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-ecran{position:relative;min-height:844px}
+.c-barre{height:48px;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--bg);border-bottom:1px solid var(--bord);position:sticky;top:0;z-index:5}
+.c-barre .t{flex:1;min-width:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-ic{width:36px;height:36px;display:grid;place-items:center;border-radius:10px}
+.c-ic svg{width:22px;height:22px}
+.c-etat{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;font-weight:700;font-size:13px}
+.c-etat i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.e-cherche{color:var(--fin);background:#16253a}.e-decide{color:var(--att);background:#33290f}.e-note{color:var(--mut);background:#232327}.e-resolu{color:var(--ok);background:#1b2e17}
+.c-h{font-size:13px;color:var(--mut);font-weight:800;margin:14px 12px 6px;display:flex;align-items:center;gap:6px}
+.c-card{margin:12px 12px 0;padding:12px;border-radius:16px;background:var(--card)}
+/* dock */
+.c-dock{position:fixed;left:0;bottom:0;width:390px;padding:8px 12px 10px;background:linear-gradient(180deg,rgba(0,0,0,0),#000 14px);z-index:9}
+.c-go{width:100%;height:54px;border-radius:14px;background:var(--ink);color:#000;font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.c-go .e{font-size:24px}
+.c-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;margin-top:8px;align-items:center}
+.c-tog{display:flex;height:44px;border-radius:12px;border:1.5px solid var(--line);overflow:hidden}
+.c-tog button{width:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--mut);font-weight:700;line-height:1.1}
+.c-tog button b{font-size:17px}
+.c-tog button.on{background:var(--ink);color:#000}
+.c-champ{min-width:0;height:44px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);padding:0 12px;outline:none;font-size:15px}
+.c-aide{height:44px;width:52px;border-radius:22px;background:var(--ia);color:#120c24;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;line-height:1.1}
+.c-aide b{font-size:17px}
+.c-tabs{position:fixed;left:0;bottom:0;width:390px;height:56px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bas);border-top:1px solid var(--bord);z-index:9}
+.c-tabs div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--mut)}
+.c-tabs div.on{color:var(--ink);font-weight:700}
+.c-tabs b{font-size:18px;font-weight:400;line-height:1}
+/* jetons ronds */
+.c-jets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 12px 0}
+.c-jet{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:16px;background:var(--card);font-weight:800;font-size:15px}
+.c-jet .o{width:64px;height:64px;border-radius:32px;display:grid;place-items:center;font-size:30px;position:relative}
+.c-jet .o i{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:11px;font-style:normal;font-size:13px;display:grid;place-items:center;color:#000;font-weight:900}
+/* face à face */
+.c-ff{display:grid;grid-template-columns:36px 1fr 1fr;gap:8px;align-items:stretch}
+.c-ff .hd{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;padding-bottom:4px}
+.c-ff .hd span{font-size:36px}
+.c-ff .cr{font-size:22px;display:grid;place-items:center}
+.c-v{min-height:58px;border-radius:12px;background:var(--s2);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:16px;position:relative}
+.c-v.win{background:#1b2e17;color:var(--ok);box-shadow:inset 0 0 0 2px var(--ok)}
+.c-v.win::after{content:"👑";position:absolute;top:-9px;right:-4px;font-size:15px}
+.c-hach{background:repeating-linear-gradient(135deg,#2a2a2e 0 7px,#1c1c1f 7px 14px)!important;color:var(--mut);box-shadow:inset 0 0 0 1px var(--line)}
+.c-est{background:rgba(125,184,245,.12)!important;color:var(--fin);box-shadow:inset 0 0 0 2px var(--fin)}
+.c-manque{margin:12px 12px 0;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1.5px dashed var(--att);color:var(--att);font-weight:800;width:calc(100% - 24px);text-align:left}
+.c-manque .b{margin-left:auto;height:36px;padding:0 12px;border-radius:10px;background:var(--att);color:#1a1405;display:grid;place-items:center}
+/* liste */
+.c-dom{display:grid;grid-template-columns:auto 1fr 70px;align-items:center;gap:8px;height:30px;padding:0 12px;font-size:13px;color:var(--mut);font-weight:800;background:#0c0c0e}
+.c-dom .n{color:var(--ink)}
+.c-mb{display:flex;height:6px;border-radius:3px;overflow:hidden}
+.c-li{display:grid;grid-template-columns:10px 26px 1fr auto;align-items:center;gap:8px;height:39px;padding:0 12px;border-bottom:1px solid #141416;width:100%;text-align:left}
+.c-li .d{width:10px;height:10px;border-radius:5px}
+.c-li .em{font-size:18px;text-align:center}
+.c-li .tt{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-li .k{font-size:14px;font-weight:800;text-align:right;white-space:nowrap}
+.c-cpt{position:fixed;left:0;bottom:112px;width:390px;padding:4px 12px;background:var(--bg);z-index:9}
+.c-cpt .bar{display:flex;height:34px;border-radius:10px;overflow:hidden;gap:2px}
+.c-cpt .bar button{display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800;font-size:13px;color:#000}
+.c-champl{position:fixed;left:0;bottom:56px;width:390px;display:flex;gap:8px;padding:6px 12px;background:var(--bg);z-index:9}
+.c-plus{width:44px;height:44px;border-radius:22px;background:var(--ink);color:#000;font-size:26px;font-weight:700;display:grid;place-items:center;flex:none}
+/* tâches */
+.c-tk{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;min-height:48px;padding:4px 12px;border-bottom:1px solid #141416}
+.c-tk .c{width:22px;height:22px;border-radius:6px;border:2px solid var(--line)}
+.c-tk .tx small{display:block;color:var(--mut);font-size:13px}
+.c-tk .d{font-size:13px;font-weight:800;color:var(--att);white-space:nowrap;text-align:right}
+.c-sw{width:44px;height:26px;border-radius:13px;background:var(--ok);position:relative;flex:none}
+.c-sw::after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+/* notes */
+.c-notes{padding:6px 12px 0;font-size:17px;line-height:1.5}
+.c-notes p{margin:0;padding:6px 8px;border-radius:10px}
+.c-notes p.hl{background:#1b2e17;box-shadow:inset 4px 0 0 var(--ok)}
+.c-notes u{text-decoration-color:var(--ia);text-underline-offset:3px}
+.c-retour{position:fixed;right:12px;bottom:128px;height:44px;padding:0 16px;border-radius:22px;background:#2b2440;color:var(--ia);font-weight:800;display:flex;align-items:center;gap:6px;z-index:10}
+.c-voile{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:20}
+.c-feuille{position:fixed;left:0;bottom:0;width:390px;background:#1c1c1f;border-radius:18px 18px 0 0;padding:10px 12px 16px;z-index:21}
+.c-feuille .poi{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.c-rec{padding:16px;font-size:14px;line-height:1.45}
+.c-rec a{color:var(--fin)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+var Q = new URLSearchParams(location.search), E = Q.get('e') || 'recette';
+var ETAT = { cherche: ['Je cherche', 'e-cherche'], decide: ['Décidé', 'e-decide'], note: ['Noté', 'e-note'], resolu: ['Résolu', 'e-resolu'] };
+var COUL = { cherche: '#7db8f5', decide: '#e8bd5a', note: '#8a8a92', resolu: '#8fd17e' };
+var IC = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  srch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>'
+};
+/* k : le chiffre clé ou le mot de ses notes (rien d'autre) */
+var CARNETS = [
+  { d: 'Brasserie', em: '❄️', t: 'Frigo de garde en panne', etat: 'cherche', k: '480 | 1 200 CHF' },
+  { d: 'Brasserie', em: '🫧', t: 'CO2 qui baisse vite dans un fût', etat: 'decide', k: '1,2 → 0,4 bar' },
+  { d: 'Brasserie', em: '♨️', t: 'Trop de vapeur au brassage', etat: 'decide', k: 'fin du mois' },
+  { d: 'Brasserie', em: '👃', t: 'Odeur de soufre dans un lot', etat: 'decide', k: 'J+5' },
+  { d: 'Brasserie', em: '🌿', t: 'Houblons citra', etat: 'note', k: '2 liens' },
+  { d: 'Brasserie', em: '🍾', t: 'Embouteillage — station complète (2027)', etat: 'note', k: '2 500 CHF' },
+  { d: 'Brasserie', em: '🌾', t: 'Malt pilsner en rupture chez le fournisseur', etat: 'resolu', k: '+4 CHF / sac' },
+  { d: 'Brasserie', em: '🧫', t: 'Levure lente à démarrer', etat: 'resolu', k: '19 °C' },
+  { d: 'Brasserie', em: '🔥', t: 'Pompe qui chauffe', etat: 'resolu', k: 'vanne' },
+  { d: 'Local', em: '💧', t: 'Écoulement qui fuit', etat: 'cherche', k: '150 CHF' },
+  { d: 'Local', em: '⚡', t: 'Inspection électrique, fusible', etat: 'note', k: '6,3 A' },
+  { d: 'Local', em: '📦', t: 'Ranger la cave', etat: 'note', k: '6 déc.' },
+  { d: 'Administratif', em: '📄', t: 'Assurance à renouveler', etat: 'note', k: '31 déc.' },
+  { d: 'Événements', em: '🎪', t: 'Fête de la bière en juin', etat: 'note', k: '1 500 CHF' }
+];
+var DOMS = [['🍺', 'Brasserie'], ['🏠', 'Local'], ['📄', 'Administratif'], ['🎪', 'Événements']];
+var ECOUL = ['L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.',
+  'Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.',
+  'Contacter l’entreprise X (exemple) pour un sanitaire.',
+  'Devis attendu.',
+  'Estimation 150 CHF (exemple).'];
+
+function barre(t, gauche, droite) {
+  return '<div class="c-barre" data-barre>' + (gauche === false ? '<span style="width:4px"></span>' : '<button class="c-ic" aria-label="Retour">' + IC.back + '</button>') +
+    '<div class="t" data-titre>' + t + '</div>' + (droite || '<button class="c-ic" aria-label="Plus">' + IC.more + '</button>') + '</div>';
+}
+function dock(action, vue) {
+  return '<div class="c-dock">' + (action ? '<button class="c-go" data-booster="prochaine-action">' + action + '</button>' : '') +
+    '<div class="c-row"><div class="c-tog" data-booster="bascule"><button class="' + (vue === 'notes' ? 'on' : '') + '"><b>✎</b>Notes</button><button class="' + (vue === 'org' ? 'on' : '') + '"><b>▦</b>Organisé</button></div>' +
+    '<input class="c-champ" placeholder="Ajouter…" aria-label="Ajouter une note"><button class="c-aide" data-booster="aide"><b>💡</b>Aide</button></div></div>';
+}
+function tabs() {
+  var T = [['▦', 'Bord'], ['◫', 'Finances'], ['▤', 'Calendrier'], ['◍', 'Brassins'], ['▣', 'Stocks'], ['☺', 'Clients']];
+  return '<nav class="c-tabs">' + T.map(function (x) { return '<div class="' + (x[1] === 'Stocks' ? 'on' : '') + '"><b>' + x[0] + '</b>' + x[1] + '</div>'; }).join('') + '</nav>';
+}
+function etat(e) { return '<span class="c-etat ' + ETAT[e][1] + '"><i></i>' + ETAT[e][0] + '</span>'; }
+
+/* ---------- Liste ---------- */
+function liste() {
+  var cnt = { cherche: 0, decide: 0, note: 0, resolu: 0 }, ordre = { cherche: 0, decide: 1, note: 2, resolu: 3 };
+  CARNETS.forEach(function (c) { cnt[c.etat]++; });
+  var h = barre('Carnets <span style="color:var(--mut);font-weight:600">14</span>', false, '<button class="c-ic" aria-label="Chercher">' + IC.srch + '</button>');
+  DOMS.forEach(function (d) {
+    var cs = CARNETS.filter(function (c) { return c.d === d[1]; }).sort(function (a, b) { return ordre[a.etat] - ordre[b.etat]; });
+    h += '<div class="c-dom" data-booster="repli"><span>▾ ' + d[0] + ' <span class="n">' + d[1] + '</span> ' + cs.length + '</span><span></span><span class="c-mb">' +
+      cs.map(function (c) { return '<span style="flex:1;background:' + COUL[c.etat] + '"></span>'; }).join('') + '</span></div>';
+    cs.forEach(function (c) {
+      h += '<button class="c-li" data-carnet><span class="d" style="background:' + COUL[c.etat] + '"></span><span class="em">' + c.em + '</span><span class="tt">' + c.t + '</span><span class="k c-n" style="color:' + COUL[c.etat] + '">' + c.k + '</span></button>';
+    });
+  });
+  h += '<div class="c-cpt" data-booster="coup-oeil"><div class="bar">' + [['cherche', 'cherche'], ['decide', 'décidés'], ['note', 'notés'], ['resolu', 'résolus']].map(function (x) {
+    return '<button style="flex:' + cnt[x[0]] + ' 1 0;min-width:78px;background:' + COUL[x[0]] + '"><b>' + cnt[x[0]] + '</b>' + x[1] + '</button>';
+  }).join('') + '</div></div>';
+  h += '<div class="c-champl"><input class="c-champ" style="flex:1" placeholder="Noter, coller un lien…" aria-label="Noter"><button class="c-plus" aria-label="Nouveau carnet">+</button></div>' + tabs();
+  return '<div class="c-ecran" style="padding-bottom:150px">' + h + '</div>';
+}
+
+/* ---------- Organisé, problème : écoulement ---------- */
+function jetons() {
+  function j(ic, nom, bg, c, mark, l) { return '<button class="c-jet" data-ligne="' + l + '"><span class="o" style="background:' + bg + '">' + ic + '<i style="background:' + c + '">' + mark + '</i></span><span style="color:' + c + '">' + nom + '</span></button>'; }
+  return '<div class="c-jets" data-utile data-booster="jetons">' + j('🔧', 'joint usé', '#1b2e17', 'var(--ok)', '✓', 2) + j('🧱', 'dalle', '#2f2512', 'var(--att)', '?', 2) + j('👷', 'devis X', '#16253a', 'var(--fin)', '⏳', 4) + '</div>';
+}
+function organise() {
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px 0">' + etat('cherche') + '<span style="margin-left:auto;color:var(--ia);font-weight:700;font-size:13px">✦ 20:35 ›</span></div>' +
+    jetons() +
+    '<div class="c-card" data-booster="qui-gagne-quoi"><div class="c-ff">' +
+    '<span></span><div class="hd"><span>🔧</span>toi</div><div class="hd"><span>👷</span>sanitaire X</div>' +
+    '<span class="cr">💰</span><div class="c-v c-hach">?</div><div class="c-v c-est"><span class="c-n">150 CHF</span></div>' +
+    '<span class="cr">⏱️</span><div class="c-v c-hach">?</div><div class="c-v c-hach" style="color:var(--fin)">⏳ devis</div>' +
+    '</div></div>' +
+    '<button class="c-manque" data-booster="manque"><span style="font-size:22px">✎</span>prix du joint ?<span class="b">Noter</span></button>' +
+    dock('<span class="e">📞</span>Contacter l’entreprise X', 'org') + '</div>';
+}
+function organiseLigne() {
+  var notes = ECOUL.map(function (l, i) {
+    if (i === 1) return '<p class="hl">Pistes : joint du siphon <u>trouvé usé</u> ; fuite sous la dalle, <u>pas trouvée</u>.</p>';
+    if (i === 2) return '<p><u>Contacter l’entreprise X</u> (exemple) pour un sanitaire.</p>';
+    if (i === 3) return '<p><u>Devis attendu</u>.</p>';
+    if (i === 4) return '<p>Estimation <u>150 CHF</u> (exemple).</p>';
+    return '<p>' + l + '</p>';
+  }).join('');
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div style="padding:10px 12px 0;font-size:13px;color:var(--mut)">mar. 24 nov. · <span style="color:var(--ia)">lu par l’IA 20:35</span></div>' +
+    '<div class="c-notes">' + notes + '</div>' +
+    '<button class="c-retour">▦ 🔧 joint usé ↩</button>' + dock('', 'notes') + '</div>';
+}
+function organiseAide() {
+  function op(ic, t, s, on) { return '<button style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;padding:10px;border-radius:14px;background:' + (on ? '#1a1726' : 'var(--s2)') + ';' + (on ? 'outline:2px solid var(--ia);' : '') + 'min-height:118px"><span style="font-size:28px">' + ic + '</span><b>' + t + '</b><small style="color:var(--mut);font-size:13px">' + s + '</small></button>'; }
+  return organise().replace(/<\/div>$/, '') + '<div class="c-voile"></div><div class="c-feuille"><div class="poi"></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">' + op('✓', 'Vérifier', 'relit tes 5 notes') + op('☐', 'Tâche', 'Contacter l’entreprise X') + op('💡', 'Suggestion', 'la suite, selon tes notes', 1) + '</div>' +
+    '<div style="margin-top:10px;padding:12px;border-radius:12px;background:#1a1726;border:1.5px dashed #5b4f86;display:flex;gap:8px;align-items:flex-start"><span style="color:var(--ia)">✦</span><span style="flex:1">Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.</span></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><button class="c-go" style="height:46px;font-size:16px">Garder</button><button class="c-go" style="height:46px;font-size:16px;background:var(--s2);color:var(--ink)">Non merci</button></div></div></div>';
+}
+
+/* ---------- Organisé, achat : houblons citra ---------- */
+function achat() {
+  function v(txt, cls) { return '<div class="c-v ' + (cls || '') + '" style="font-size:15px">' + txt + '</div>'; }
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Houblons citra') +
+    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px 0" data-utile data-booster="lu-manque"><span style="font-size:13px;font-weight:800;color:var(--ok)">lu 7</span>' +
+    '<span style="flex:1;display:flex;gap:2px;height:10px">' + Array.apply(null, Array(10)).map(function (x, i) { return '<span style="flex:1;border-radius:2px;background:' + (i < 7 ? 'var(--ok)' : 'repeating-linear-gradient(135deg,#3a3a40 0 3px,#1c1c1f 3px 6px)') + '"></span>'; }).join('') + '</span>' +
+    '<span style="font-size:13px;font-weight:800;color:var(--mut)">manque 3</span></div>' +
+    '<div class="c-card" data-booster="comparer-couronnes"><div class="c-ff">' +
+    '<span></span><div class="hd"><span>🌿</span>MotlerHops</div><div class="hd"><span>🌿</span><span style="font-size:15px">Brau- und Rauchshop</span></div>' +
+    '<span class="cr">α</span>' + v('<span class="c-n">10–15 %</span>') + v('<span class="c-n">13,6 %</span>', 'win') +
+    '<span class="cr">💶</span>' + v('<span class="c-n">3,72 €</span>') + v('à relire', 'c-hach') +
+    '<span class="cr">📦</span>' + v('en stock ⚠', '" style="color:var(--att);box-shadow:inset 0 0 0 2px var(--att)') + v('?', 'c-hach') +
+    '<span class="cr">👃</span>' + v('?', 'c-hach') + v('<span style="font-size:20px;letter-spacing:3px">🍋🥭🌴</span>', 'win') +
+    '<span class="cr">🌍</span>' + v('USA') + v('USA') +
+    '</div></div>' +
+    '<div class="c-card" style="display:flex;align-items:center;gap:10px;padding:10px 12px"><span style="font-size:20px">⚠</span><span>« dur à obtenir »</span><span style="margin-left:auto;font-size:13px;color:var(--mut)">ta note ↩</span></div>' +
+    dock('<span class="e">↻</span>Relire Brau', 'org') + '</div>';
+}
+
+/* ---------- Décider : frigo de garde ---------- */
+function decider() {
+  var W = 318, x480 = Math.round(480 / 1200 * (W - 24)) + 12, x1200 = W - 12;
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Frigo de garde en panne') +
+    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px 0">' + etat('cherche') + '<span style="margin-left:auto;color:var(--att);font-weight:800">⏳ avant décembre</span></div>' +
+    '<div class="c-card" data-utile data-booster="regle-prix" style="padding:14px 12px 10px">' +
+    '<svg width="' + W + '" height="96" viewBox="0 0 ' + W + ' 96">' +
+    '<line x1="12" y1="56" x2="' + x1200 + '" y2="56" stroke="#2a2a2e" stroke-width="12" stroke-linecap="round"/>' +
+    '<line x1="12" y1="56" x2="' + x480 + '" y2="56" stroke="#8fd17e" stroke-width="12" stroke-linecap="round"/>' +
+    '<line x1="' + (x480 + 8) + '" y1="56" x2="' + (x1200 - 8) + '" y2="56" stroke="#e8bd5a" stroke-width="3" stroke-dasharray="5 5"/>' +
+    '<text x="' + ((x480 + x1200) / 2) + '" y="84" text-anchor="middle" fill="#e8bd5a" font-size="15" font-weight="800">720 CHF d’écart</text>' +
+    '<circle cx="' + x480 + '" cy="56" r="16" fill="#8fd17e"/><text x="' + x480 + '" y="62" text-anchor="middle" font-size="16">🔧</text>' +
+    '<circle cx="' + x1200 + '" cy="56" r="16" fill="#7db8f5"/><text x="' + x1200 + '" y="62" text-anchor="middle" font-size="16">❄️</text>' +
+    '<text x="' + x480 + '" y="22" text-anchor="middle" fill="#f1f1f3" font-size="22" font-weight="800">480</text>' +
+    '<text x="' + x1200 + '" y="22" text-anchor="end" fill="#f1f1f3" font-size="22" font-weight="800">1 200 CHF</text></svg></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 12px 0" data-booster="face-a-face">' +
+    '<div class="c-card" style="margin:0;box-shadow:inset 0 0 0 2px var(--ok)"><div style="font-size:30px">🔧</div><b style="font-size:17px">Réparer</b><div style="color:var(--mut);font-size:13px;margin:2px 0 10px">compresseur HS</div><button class="c-go" style="height:44px;font-size:16px">Retenir</button></div>' +
+    '<div class="c-card" style="margin:0"><div style="font-size:30px">❄️</div><b style="font-size:17px">Frigo neuf</b><div style="color:var(--mut);font-size:13px;margin:2px 0 10px">&nbsp;</div><button class="c-go" style="height:44px;font-size:16px;background:var(--s2);color:var(--ink)">Retenir</button></div></div>' +
+    '<div class="c-card" style="display:flex;gap:10px;align-items:flex-start;background:#121214;box-shadow:inset 0 0 0 1px var(--bord)"><span>📄</span><span style="font-size:15px;color:var(--mut)">« Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF. » <small>ta ligne 3 remplit les deux prix</small></span></div>' +
+    '<button class="c-manque" style="border-color:var(--ia);color:var(--ia)"><span style="font-size:20px">🤔</span><span style="font-weight:700">Pourquoi l’un plutôt que l’autre ? <span style="color:var(--mut);font-weight:600">Tes notes ne le disent pas.</span></span><span class="b" style="background:var(--ia)">Ajouter</span></button>' +
+    '<div class="c-card" style="display:flex;align-items:center;gap:10px;background:transparent;box-shadow:inset 0 0 0 1px var(--bord)"><span style="font-size:20px">🛢️</span><span style="color:var(--mut)">6 fûts dans la chambre froide en attendant · <span class="c-n">14 °C</span> au lieu de <span class="c-n">2 °C</span></span></div>' +
+    dock('', 'org') + '</div>';
+}
+
+/* ---------- À faire ---------- */
+function afaire() {
+  /* règle du 25 nov. au 31 déc. (36 jours), les dates viennent de ses notes */
+  var W = 318, j = function (n) { return 12 + Math.round(n / 36 * (W - 24)); };
+  var P = [[5, '♨️'], [6, '🫧'], [11, '📦'], [13, '👃'], [36, '📄']];
+  var regle = '<svg width="' + W + '" height="88" viewBox="0 0 ' + W + ' 88"><line x1="12" y1="40" x2="' + (W - 12) + '" y2="40" stroke="#2a2a2e" stroke-width="6" stroke-linecap="round"/>' +
+    '<text x="12" y="84" fill="#a3a3aa" font-size="12">auj.</text><text x="' + j(6) + '" y="84" text-anchor="middle" fill="#a3a3aa" font-size="12">1 déc.</text><text x="' + (W - 12) + '" y="84" text-anchor="end" fill="#a3a3aa" font-size="12">31 déc.</text>' +
+    P.map(function (p, i) { var y = i % 2 ? 54 : 22; return '<line x1="' + j(p[0]) + '" y1="40" x2="' + j(p[0]) + '" y2="' + y + '" stroke="#e8bd5a" stroke-width="2"/><circle cx="' + j(p[0]) + '" cy="' + y + '" r="13" fill="#1c1c1f" stroke="#e8bd5a" stroke-width="2"/><text x="' + j(p[0]) + '" y="' + (y + 5) + '" text-anchor="middle" font-size="14">' + p[1] + '</text>'; }).join('') +
+    '<circle cx="12" cy="40" r="5" fill="#f1f1f3"/></svg>';
+  function dec(em, q, a, b, ta, tb) {
+    return '<div class="c-card" style="margin-top:8px;padding:10px 12px"><div style="display:flex;align-items:center;gap:8px;font-weight:800"><span style="font-size:20px">' + em + '</span>' + q + '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">' + ta + tb + '</div></div>';
+  }
+  function px(t, cls) { return '<div class="c-v ' + (cls || '') + '" style="min-height:38px;font-size:15px">' + t + '</div>'; }
+  function tk(em, tx, sous, d) { return '<div class="c-tk"><span class="c"></span><span class="tx">' + em + ' ' + tx + '<small>' + sous + '</small></span><span class="d">' + d + '</span></div>'; }
+  return '<div class="c-ecran" style="padding-bottom:80px">' + barre('À faire', false, '<span></span>') +
+    '<div class="c-card" data-utile data-booster="regle-temps" style="margin-top:8px;padding:6px 12px 4px">' + regle + '</div>' +
+    '<div class="c-h">⚖️ Une décision t’attend</div>' +
+    dec('❄️', 'Réparer ou frigo neuf ?', 0, 0, px('🔧 <span class="c-n">480 CHF</span>', 'win'), px('❄️ <span class="c-n">1 200 CHF</span>')) +
+    dec('💧', 'Toi ou le sanitaire X ?', 0, 0, px('🔧 ?', 'c-hach'), px('👷 <span class="c-n">150 CHF</span>', 'c-est')) +
+    '<div class="c-h">Puis</div>' +
+    tk('♨️', 'Acheter le steam condenser', 'Vapeur · <span style="color:var(--fin)">aussi dans À venir</span>', 'fin nov.') +
+    tk('🫧', 'Revérifier le raccord gaz', 'CO2 · « dans une semaine »', '≈ 1 déc.') +
+    tk('📦', 'Ranger la cave', 'samedi au matin', '6 déc.') +
+    tk('👃', 'Sentir à nouveau le lot 14', 'Soufre · avant la mise en fût', '≈ 8 déc.') +
+    tk('📄', 'Renouveler l’assurance', 'Assurance', '31 déc.') +
+    tk('📞', 'Contacter l’entreprise X', 'Écoulement', '') +
+    '<div class="c-tk" style="grid-template-columns:24px 1fr auto"><span style="font-size:18px">🔔</span><span class="tx">Veille : le 2e condenser<small>Vapeur · « à surveiller »</small></span><span class="c-sw" data-booster="veille"></span></div>' +
+    tabs() + '</div>';
+}
+
+/* ---------- Relecture : malt pilsner ---------- */
+function relecture() {
+  function c(ic, t) { return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0"><span style="font-size:20px">' + ic + '</span><span style="font-size:15px">' + t + '</span></div>'; }
+  return '<div class="c-ecran" style="padding-bottom:40px">' + barre('Malt pilsner en rupture chez le fournisseur') +
+    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px 0">' + etat('resolu') + '<span style="color:var(--mut);font-size:13px">25 nov.</span></div>' +
+    '<div class="c-card" data-utile style="display:flex;align-items:center;gap:12px"><span style="font-size:34px">❓</span><span><span style="color:var(--mut);font-size:13px;font-weight:800">POURQUOI</span><br><b style="font-size:19px">🚚 Autre fournisseur</b></span></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 12px 0" data-booster="avant-apres">' +
+    '<div class="c-card" style="margin:0"><div style="font-size:13px;color:var(--mut);font-weight:800">🧠 TU SAVAIS · 24 nov.</div>' + c('🚫', 'Pilsner en rupture → <b>mi-déc.</b>') + c('🍺', 'Brassin du <b>3 déc.</b>') + c('✅', 'L’autre : en stock, <b>+4 CHF</b> le sac') + '</div>' +
+    '<div class="c-card" style="margin:0;box-shadow:inset 0 0 0 2px var(--ok)"><div style="font-size:13px;color:var(--ok);font-weight:800">✓ TU AS FAIT · 25 nov.</div>' + c('🛒', 'Commandé <b>2 sacs</b> chez l’autre') + c('🍺', 'Brassin <b>maintenu</b>') + c('🧮', '<b class="c-n" style="color:var(--att)">+8 CHF</b> <small style="color:var(--mut)">calcul de l’app</small>') + '</div></div>' +
+    '<div class="c-card" style="display:flex;align-items:center;gap:10px;background:repeating-linear-gradient(135deg,#1c1c1f 0 8px,#202024 8px 16px)"><span style="font-size:20px">✎</span><span style="color:var(--mut)">Le prix du sac : <b style="color:var(--ink)">tes notes ne le disent pas</b></span></div>' +
+    '<div class="c-card" style="display:flex;align-items:center;gap:10px;opacity:.7"><span style="font-size:20px">📅</span><s>Décaler le brassin</s><span style="margin-left:auto;font-size:13px;color:var(--mut)">pas pris</span></div>' +
+    '<div class="c-h">Toujours le bon choix ?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px" data-booster="bon-choix"><button class="c-go" style="height:50px">👍 Oui</button><button class="c-go" style="height:50px;background:var(--s2);color:var(--ink)">🤔 Pas sûr</button></div>' +
+    '</div>';
+}
+
+/* ---------- IA en erreur : les 4 cases que l'app sait lire ---------- */
+function erreur() {
+  function cs(ic, nom, val, ligne, c, bg) {
+    var vide = !val;
+    return '<div style="border-radius:16px;padding:12px;min-height:104px;display:flex;flex-direction:column;gap:6px;' + (vide ? 'border:1.5px dashed var(--line);color:var(--mut)' : 'background:' + bg + ';color:' + c) + '">' +
+      '<span style="font-size:26px;' + (vide ? 'opacity:.45' : '') + '">' + ic + '</span><span style="font-size:13px;font-weight:800">' + nom + '</span>' +
+      '<b style="font-size:17px">' + (val || 'rien lu') + '</b>' + (ligne ? '<span style="font-size:13px;color:var(--mut)">ligne ' + ligne + ' ↩</span>' : '') + '</div>';
+  }
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Écoulement qui fuit') +
+    '<div class="c-card" data-utile style="margin-top:10px;background:#24130f;box-shadow:inset 0 0 0 1.5px #6b2d26;display:flex;gap:10px;align-items:center"><span style="font-size:26px">⚠️</span><span><b>L’IA n’a pas pu lire</b><br><span style="font-size:13px;color:var(--mut)">tes 5 notes restent telles quelles</span></span></div>' +
+    '<div class="c-h">📱 Ce que l’app sait lire seule</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px" data-booster="lecture-locale">' +
+    cs('💰', 'MONTANT', '<span class="c-n">150 CHF</span>', 5, 'var(--fin)', '#16253a') + cs('❓', 'PAS TROUVÉ', '« pas trouvée »', 2, 'var(--att)', '#2f2512') +
+    cs('📞', 'CONTACTÉ', '', 0) + cs('🛤️', 'PISTE', '', 0) + '</div>' +
+    '<div class="c-card" style="display:flex;gap:10px;align-items:center;background:transparent;box-shadow:inset 0 0 0 1px var(--bord);color:var(--mut)"><span style="font-size:20px">✦</span><span>Options, tâche, conseil : seulement avec l’IA.</span></div>' +
+    dock('<span class="e">↻</span>Réessayer', 'org') + '</div>';
+}
+
+/* ---------- Mémo : assurance ---------- */
+function memo() {
+  /* mini calendrier : 25 nov. (aujourd'hui) au 31 déc. ; lundi en tête */
+  var cases = '', jours = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  cases += jours.map(function (x) { return '<span style="font-size:12px;color:var(--mut);text-align:center">' + x + '</span>'; }).join('');
+  /* 25 nov. 2026 est un mercredi : 2 cases vides */
+  for (var v = 0; v < 2; v++) cases += '<span></span>';
+  var d = [];
+  for (var n = 25; n <= 30; n++) d.push([n, 'nov']);
+  for (var m = 1; m <= 31; m++) d.push([m, 'dec']);
+  cases += d.map(function (x) {
+    var auj = x[0] === 25 && x[1] === 'nov', fin = x[0] === 31 && x[1] === 'dec';
+    return '<span class="c-n" style="height:30px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;' +
+      (auj ? 'background:var(--ink);color:#000' : fin ? 'background:var(--bad);color:#000' : x[1] === 'nov' ? 'color:var(--mut)' : 'background:#1c1c1f') + '">' + x[0] + '</span>';
+  }).join('');
+  return '<div class="c-ecran" style="padding-bottom:150px">' + barre('Assurance à renouveler') +
+    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px 0"><span class="c-etat e-note">📌 Mémo</span><span style="font-size:13px;color:var(--mut)">rien à suivre, une échéance</span></div>' +
+    '<div class="c-card" data-utile data-booster="calendrier" style="padding:10px 12px"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px"><b class="c-n" style="font-size:28px;color:var(--att)">36 j</b><b>avant le 31 déc.</b></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">' + cases + '</div></div>' +
+    '<div class="c-h">📎 À réunir</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0 12px">' +
+    [['📜', 'police actuelle'], ['🧰', 'inventaire du matériel'], ['📈', 'chiffre d’affaires 2026']].map(function (x) { return '<span style="display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:18px;background:var(--card);font-weight:700"><span style="font-size:18px">' + x[0] + '</span>' + x[1] + '</span>'; }).join('') +
+    '<span style="display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:18px;background:var(--card);font-weight:700"><span style="font-size:18px">🤝</span>offre d’un 2e assureur</span></div>' +
+    '<div class="c-card" data-booster="rappel-mot" style="border:1.5px dashed #5b4f86;background:#1a1726;display:flex;align-items:center;gap:10px"><span style="font-size:22px">🔔</span><span style="flex:1">Je le ressortirai quand tu noteras <b style="color:var(--ia)">« assurance »</b></span><span class="c-sw"></span></div>' +
+    dock('', 'org') + '</div>';
+}
+
+function recette() {
+  var src = document.documentElement.innerHTML.match(/RECETTE[\s\S]*?-->/)[0].replace('-->', '');
+  var ids = ['liste', 'organise', 'organise-ligne', 'organise-aide', 'achat', 'decider', 'afaire', 'relecture', 'erreur', 'memo'];
+  return '<div class="c-rec"><pre style="white-space:pre-wrap;font:13px/1.45 inherit">' + src.replace(/</g, '&lt;') + '</pre>' + ids.map(function (i) { return '<a href="?e=' + i + '">' + i + '</a>'; }).join(' · ') + '</div>';
+}
+var R = { recette: recette, liste: liste, organise: organise, 'organise-ligne': organiseLigne, 'organise-aide': organiseAide, achat: achat, decider: decider, afaire: afaire, relecture: relecture, erreur: erreur, memo: memo };
+document.getElementById('app').innerHTML = (R[E] || recette)();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+{
+ "p4b-1": {
+  "liste": {
+   "mots": 123,
+   "texte": "Brasserie 9 Froid Conditionnement Brassage Fermentation Matières premières Frigo de garde en panne 480 1 200 CO2 qui baisse vite dans un fût raccord gaz Trop de vapeur au brassage condenser Odeur de soufre dans un lot à resentir Houblons citra 2 liens Embouteillage station complète (2027) mai 2027 Malt pilsner en rupture chez le fournisseur autre fourn. Levure lente à démarrer 19 °C Pompe qui chauffe vanne Local 3 Eau Électricité Rangement Écoulement qui fuit devis Inspection électrique, fusible testeur Ranger la cave sam. 6 déc. Administratif 1 Assurance à renouveler 31 déc. Événements 1 Fête de la bière en juin 1 500 CHF 2 cherche 3 décidés 6 notés 3 résolus Bord Finances Calendrier Brassins Stocks Clients Noter, coller un lien…",
+   "utileTop": null,
+   "lignes": 13,
+   "partLignes": 77,
+   "deborde": false
+  },
+  "organise": {
+   "mots": 26,
+   "texte": "Je cherche 20:35 flaque après chaque nettoyage Joint usé Dalle Sanitaire X devis CHF 150 CHF estimé seule cause Contacter l’entreprise X Notes Organisé Aide Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-ligne": {
+   "mots": 51,
+   "texte": "mar. 24 nov. lu par l’IA 20:35 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu Estimation 150 CHF (exemple). Joint Organisé Notes Organisé Aide Ajouter…",
+   "utileTop": null,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-aide": {
+   "mots": 63,
+   "texte": "Je cherche 20:35 flaque après chaque nettoyage Joint usé Dalle Sanitaire X devis CHF 150 CHF estimé seule cause Contacter l’entreprise X Notes Organisé Aide Aide Vérifier Tâche Suggestion Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis. relit tes notes ajoute une tâche propose la suite. Rien n’est posé sans ton toucher. Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "achat": {
+   "mots": 29,
+   "texte": "comparé choisi commandé MotlerHops .fr Brau- und Rauchshop .ch α 10–15 13,6 3,72 à relire en stock USA USA dur à obtenir .fr Relire Brau Notes Organisé Aide Ajouter…",
+   "utileTop": 35,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "decider": {
+   "mots": 70,
+   "texte": "Je cherche avant décembre 14 °C au lieu de 2 °C 6 fûts chambre froide Technicien compresseur HS Réparation 480 CHF −720 CHF Retenir Frigo neuf 1 200 CHF Retenir Pourquoi l’un plutôt que l’autre Tes notes ne le disent pas. Ajouter Technicien compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF ta ligne 3 Ensuite Devis à comparer avant décembre tâche proposée Garder Notes Organisé Aide Ajouter…",
+   "utileTop": 42,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "afaire": {
+   "mots": 105,
+   "texte": "Une décision t’attend 2 Frigo de garde Je cherche Réparation ou frigo neuf avant décembre 480 CHF 1 200 CHF Écoulement qui fuit Je cherche Le joint toi-même ou le sanitaire X CHF 150 CHF Puis Contacter l’entreprise X Écoulement qui fuit Revérifier le raccord gaz CO2 dans une semaine 1 déc. Acheter le steam condenser Vapeur fin du mois fin nov. Ranger la cave Ranger la cave sam. 6 déc. Sentir à nouveau le lot 14 Soufre avant la mise en fût 8 déc. Renouveler l’assurance Assurance 31 déc. Veille le 2e condenser en stock Vapeur à surveiller Bord Finances Calendrier Brassins Stocks Clients",
+   "utileTop": 14,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "relecture": {
+   "mots": 69,
+   "texte": "Résolu le 25 nov. Autre fournisseur +4 CHF le sac en stock Ce que tu savais alors Pilsner 25 kg en rupture mi-décembre 24 nov. Brassin du 3 déc. à décaler ou autre malt 24 nov. Autre fournisseur en stock 24 nov. Ce que ça a coûté +8 CHF 2 sacs 4 CHF calcul de l’app maintenu Décaler le brassin pas pris Toujours le bon choix Oui Pas sûr",
+   "utileTop": 44,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "erreur": {
+   "mots": 78,
+   "texte": "L’IA n’a pas pu lire délai dépassé tes 5 notes sont gardées Ce que l’app lit seule pas trouvé ligne 2 150 CHF ligne 5 pistes IA tâche IA Tes notes, telles quelles L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu. Estimation 150 CHF (exemple). Relire avec l’IA Notes Organisé Aide Ajouter…",
+   "utileTop": 12,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "memo": {
+   "mots": 72,
+   "texte": "Mémo 36 j avant le 31 déc. échéance ta ligne 1 Pièces à réunir 0/3 Police actuelle Inventaire du matériel Chiffre d’affaires 2026 Demander une offre à un 2e assureur ta ligne 3 Tes notes Échéance le 31 déc. Pièces police actuelle, inventaire du matériel, chiffre d’affaires 2026. Demander une offre à un 2e assureur. Renouveler l’assurance avant le 31 déc. Je le ressortirai quand tu noteras assurance Notes Organisé Aide Ajouter…",
+   "utileTop": 44,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  }
+ },
+ "p4b-2": {
+  "liste": {
+   "mots": 92,
+   "texte": "Brasserie 9 3 résolus Frigo de garde en panne 480 1 200 CO2 qui baisse vite dans un fût raccord gaz Trop de vapeur au brassage condenser Odeur de soufre dans un lot à resentir Houblons citra 2 liens Embouteillage station complète (2027) mai 2027 Local 3 Écoulement qui fuit devis Inspection électrique, fusible testeur Ranger la cave 6 déc. Administratif 1 Assurance à renouveler 31 déc. Événements 1 Fête de la bière en juin 1 500 CHF 2 cherche 3 décidés 6 notés 3 résolus Bord Finances Calendrier Brassins Stocks Clients",
+   "utileTop": null,
+   "lignes": 11,
+   "partLignes": 71,
+   "deborde": false
+  },
+  "organise": {
+   "mots": 24,
+   "texte": "Je cherche 20:35 Joint usé Dalle Devis X seule cause ou 150 CHF devis Retenir Retenir Contacter l’entreprise X Aide Mes notes Organisé Ajouter…",
+   "utileTop": 38,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-ligne": {
+   "mots": 54,
+   "texte": "mar. 24 nov. lu par l’IA 20:35 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu Estimation 150 CHF (exemple). Revenir à Joint usé Aide Mes notes Organisé Ajouter…",
+   "utileTop": null,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-aide": {
+   "mots": 67,
+   "texte": "Je cherche 20:35 Joint usé Dalle Devis X seule cause ou 150 CHF devis Retenir Retenir Contacter l’entreprise X Aide Mes notes Organisé Vérifier l’IA relit tes 5 notes et dit ce qui cloche Tâche Contacter l’entreprise X ta ligne 3 Suggestion Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis. Rien n’est posé sans ton toucher. Ajouter…",
+   "utileTop": 38,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "achat": {
+   "mots": 29,
+   "texte": "α précis 1 Brau- und Rauchshop Écarter α 13,6 à relire 2 MotlerHops Écarter α 10–15 3,72 en stock dur à obtenir Relire Brau Aide Mes notes Organisé Ajouter…",
+   "utileTop": 0,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "decider": {
+   "mots": 44,
+   "texte": "Je cherche avant décembre 14 °C au lieu de 2 °C 6 fûts au froid −720 CHF 480 CHF Réparation 1 200 CHF Frigo neuf compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF ta ligne 3 Retenir Retenir Mes notes Organisé",
+   "utileTop": 38,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "afaire": {
+   "mots": 87,
+   "texte": "UNE DÉCISION T’ATTEND avant décembre Frigo réparer ou neuf 480 CHF 1 200 CHF +1 décision écoulement ou Cette semaine Revérifier le raccord gaz CO2 dans une semaine 1 déc. Acheter le steam condenser Vapeur fin du mois fin nov. Bientôt Ranger la cave samedi au matin 6 déc. Sentir à nouveau le lot 14 Soufre avant la mise en fût 8 déc. Sans date Contacter l’entreprise X Écoulement pour un sanitaire Veille le 2e condenser en stock Vapeur à surveiller Bord Finances Calendrier Brassins Stocks Clients",
+   "utileTop": 4,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "relecture": {
+   "mots": 68,
+   "texte": "pilsner 1 carnet Résolu 25 nov. Autre fournisseur +4 CHF sac Ce que tu savais le 24 nov. Pilsner en rupture jusqu’à mi-déc. Brassin 3 déc. décaler ou autre malt Autre en stock +4 CHF le sac Commandé 2 sacs brassin maintenu +8 CHF Décaler le brassin pas pris Si ça revient l’autre fournisseur +4 CHF le sac Toujours le bon choix Oui Pas sûr Mes notes Organisé",
+   "utileTop": 52,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "erreur": {
+   "mots": 85,
+   "texte": "Hors ligne 1 note en file l’IA lira au retour Lu par l’app, sans IA pas trouvé ligne 2 150 CHF ligne 5 Pistes, options et tâche à l’IA au retour du réseau. Tes 5 notes, gardées L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée. Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu. Estimation 150 CHF (exemple). En attente du réseau Aide Mes notes 1 Organisé Ajouter…",
+   "utileTop": 4,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "memo": {
+   "mots": 37,
+   "texte": "Mémo 36 j avant le 31 déc. auj. 31 déc. Pièces 0/3 Police actuelle Inventaire du matériel Chiffre d’affaires 2026 Je le ressortirai quand tu noteras assurance Demander l’offre au 2e assureur Aide Mes notes Organisé Ajouter…",
+   "utileTop": 34,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  }
+ },
+ "p4b-3": {
+  "liste": {
+   "mots": 120,
+   "texte": "Brasserie 9 Frigo de garde en panne 480 1 200 CHF CO2 qui baisse vite dans un fût 1,2 0,4 bar Trop de vapeur au brassage fin du mois Odeur de soufre dans un lot J+5 Houblons citra 2 liens Embouteillage station complète (2027) 2 500 CHF Malt pilsner en rupture chez le fournisseur +4 CHF sac Levure lente à démarrer 19 °C Pompe qui chauffe vanne Local 3 Écoulement qui fuit 150 CHF Inspection électrique, fusible 6,3 A Ranger la cave 6 déc. Administratif 1 Assurance à renouveler 31 déc. Événements 1 Fête de la bière en juin 1 500 CHF 2 cherche 3 décidés 6 notés 3 résolus Bord Finances Calendrier Brassins Stocks Clients Noter, coller un lien…",
+   "utileTop": null,
+   "lignes": 13,
+   "partLignes": 79,
+   "deborde": false
+  },
+  "organise": {
+   "mots": 25,
+   "texte": "Je cherche 20:35 joint usé dalle devis X toi sanitaire X 150 CHF devis prix du joint Noter Contacter l’entreprise X Notes Organisé Aide Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-ligne": {
+   "mots": 51,
+   "texte": "mar. 24 nov. lu par l’IA 20:35 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu Estimation 150 CHF (exemple). joint usé Notes Organisé Aide Ajouter…",
+   "utileTop": null,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "organise-aide": {
+   "mots": 61,
+   "texte": "Je cherche 20:35 joint usé dalle devis X toi sanitaire X 150 CHF devis prix du joint Noter Contacter l’entreprise X Notes Organisé Aide Vérifier relit tes 5 notes Tâche Contacter l’entreprise X Suggestion la suite, selon tes notes Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis. Garder Non merci Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "achat": {
+   "mots": 29,
+   "texte": "lu 7 manque 3 MotlerHops Brau- und Rauchshop α 10–15 13,6 3,72 à relire en stock USA USA dur à obtenir ta note Relire Brau Notes Organisé Aide Ajouter…",
+   "utileTop": 0,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "decider": {
+   "mots": 68,
+   "texte": "Je cherche avant décembre 720 CHF d’écart 480 1 200 CHF Réparer compresseur HS Retenir Frigo neuf Retenir Technicien compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF. ta ligne 3 remplit les deux prix Pourquoi l’un plutôt que l’autre Tes notes ne le disent pas. Ajouter 6 fûts dans la chambre froide en attendant 14 °C au lieu de 2 °C Notes Organisé Aide Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "afaire": {
+   "mots": 90,
+   "texte": "auj. 1 déc. 31 déc. Une décision t’attend Réparer ou frigo neuf 480 CHF 1 200 CHF Toi ou le sanitaire X 150 CHF Puis Acheter le steam condenser Vapeur aussi dans À venir fin nov. Revérifier le raccord gaz CO2 dans une semaine 1 déc. Ranger la cave samedi au matin 6 déc. Sentir à nouveau le lot 14 Soufre avant la mise en fût 8 déc. Renouveler l’assurance Assurance 31 déc. Contacter l’entreprise X Écoulement Veille le 2e condenser Vapeur à surveiller Bord Finances Calendrier Brassins Stocks Clients",
+   "utileTop": 8,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "relecture": {
+   "mots": 64,
+   "texte": "Résolu 25 nov. POURQUOI Autre fournisseur TU SAVAIS 24 nov. Pilsner en rupture mi-déc. Brassin du 3 déc. L’autre en stock, +4 CHF le sac TU AS FAIT 25 nov. Commandé 2 sacs chez l’autre Brassin maintenu +8 CHF calcul de l’app Le prix du sac tes notes ne le disent pas Décaler le brassin pas pris Toujours le bon choix Oui Pas sûr",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "erreur": {
+   "mots": 45,
+   "texte": "L’IA n’a pas pu lire tes 5 notes restent telles quelles Ce que l’app sait lire seule MONTANT 150 CHF ligne 5 PAS TROUVÉ pas trouvée ligne 2 CONTACTÉ rien lu PISTE rien lu Options, tâche, conseil seulement avec l’IA. Réessayer Notes Organisé Aide Ajouter…",
+   "utileTop": 10,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  },
+  "memo": {
+   "mots": 81,
+   "texte": "Mémo rien à suivre, une échéance 36 j avant le 31 déc. L M M J V S D 25 26 27 28 29 30 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 À réunir police actuelle inventaire du matériel chiffre d’affaires 2026 offre d’un 2e assureur Je le ressortirai quand tu noteras assurance Notes Organisé Aide Ajouter…",
+   "utileTop": 48,
+   "lignes": 0,
+   "partLignes": 0,
+   "deborde": false
+  }
+ }
+}
