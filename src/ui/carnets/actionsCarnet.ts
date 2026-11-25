@@ -19,6 +19,7 @@ import { changerEtat, changerOption, fermerParAchat, poserAvantApres, poserGenre
 import { ajouterTache, cocherTache, poserEcheance } from '../../domain/carnets/taches';
 import { planDeLAchat } from './afaireRegles';
 import { rangerFilAncien } from '../../domain/carnets/filAncien';
+import { propositionReclasser, reclasser } from '../../domain/carnets/reclasser';
 import { deplacerLesLignesDuMessage, enchainer, rattacherContenu } from './listeRegles';
 
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
@@ -227,7 +228,11 @@ export function actionsCarnet(x: ActionsV) {
   };
   /** Les rappels de l'écran d'un carnet (`CarnetOuvert`, props `rappels`) : chaque geste passe par l'intention du domaine. */
   function rappelsDe(c: CarnetDoc): RappelsSuivi {
+    /* R98 (c75) : la proposition se calcule sur le carnet ENREGISTRÉ (l'écran montre le carnet sans l'erreur, `sansErreurDeRangement`) ; seul le toucher écrit */
+    const brut = lireCarnets(magasin.lire(), { archives: true }).find(x => x.id === c.id);
+    const reclassement = brut ? propositionReclasser(brut, lireMessages(magasin.lire())) : null;
     return {
+      ...(reclassement ? { reclasser: { proposition: reclassement, onReclasser: () => { geste(reclasser(magasin.lire(), { proposition: reclassement, le: leMaintenant() }), c.id); } } } : {}),
       onEtat: vers => { geste(changerEtat(magasin.lire(), { carnetId: c.id, vers, le: leMaintenant() }), c.id); },
       onRouvrir: () => { geste(rouvrir(magasin.lire(), { carnetId: c.id, le: leMaintenant() }), c.id); },
       onOption: (faconId, vers, raison) => {

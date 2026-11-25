@@ -320,7 +320,17 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
     if (!autres.length) return 'Seul prix au kilo lu';
     return autres.every(x => Math.round(x.chf) > Math.round(moi.chf)) ? 'Le moins cher au kilo' : null;
   }, [a, p.autres, p.quantite, p.taux, p.titre]);
-  const phraseLocale = calc.pourquoi && baseKilo && !/moins cher/i.test(calc.pourquoi) ? `${baseKilo} ; ${calc.pourquoi.charAt(0).toLowerCase()}${calc.pourquoi.slice(1)}` : calc.pourquoi;
+  /* R73-9, R75-5 (c75) : « En stock, MotlerHops. » redit la tête (dispo et vendeur sont dits une fois, juste au-dessus) : le pourquoi proposé ne garde que ce qui décide ; un vendeur seul n'est pas un pourquoi */
+  const chezTete = [dispoDe(a), a.vendeur ? `${a.vendeur}${a.pays ? ` (${a.pays})` : ''}` : null].filter(Boolean).join(', ');
+  const pourquoiLocal = (() => {
+    const t = calc.pourquoi;
+    if (!t || !chezTete) return t;
+    const n = t.replace(/\.$/, '');
+    if (n.toLowerCase() === chezTete.toLowerCase()) return null;
+    const fin = ` ; ${chezTete}`.toLowerCase();
+    return n.toLowerCase().endsWith(fin) ? `${n.slice(0, n.length - fin.length)}.` : t;
+  })();
+  const phraseLocale = pourquoiLocal && baseKilo && !/moins cher/i.test(pourquoiLocal) ? `${baseKilo} ; ${pourquoiLocal.charAt(0).toLowerCase()}${pourquoiLocal.slice(1)}` : pourquoiLocal ?? (baseKilo ? `${baseKilo}.` : null);
   const propose = p.pourquoiPropose ?? phraseLocale ?? '';
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
@@ -363,7 +373,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : 'cn-mono'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
+                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : /\d/.test(v.texte) ? 'cn-mono' : 'cn-place-mot'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
                     {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete /></td></tr>}
                   </React.Fragment>
                 );
@@ -378,9 +388,9 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           </details>
         )}
         {/* g05-11 : critère, façon, fournisseur (◎ ✓ ✓), puis chaque écarté avec son ✕ et sa raison */}
-        {!sa && (calc.criteres.length > 0 || calc.facon || a.vendeur) && (
+        {!sa && (calc.criteres.length > 0 || calc.facon) && (
           <ul className="cn-raisons cn-choisir-retenus" aria-label="Retenu">
-            <Retenus criteres={calc.criteres} facon={calc.facon} vendeur={a.vendeur} dispo={dispoDe(a)} />
+            <Retenus criteres={calc.criteres} facon={calc.facon} />
           </ul>
         )}
         {calc.ecartes.length > 0 && (
@@ -406,7 +416,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         )}
         {sa
           ? <p id={`cn-non-lue-${a.id}`} className="cn-mut">Page non lue : ni nom, ni prix connus. Elle se choisit une fois lue.</p>
-          : <p className="cn-mut">Part dans À venir : {[prix, dispoDe(a), a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
+          : <p className="cn-mut">Part dans À venir : {prix || 'prix à relire'}, avec le pourquoi.</p>}
       </section>
       {p.autres.map(o => {
         const so = sansApercu(o.article);

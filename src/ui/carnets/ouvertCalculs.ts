@@ -14,6 +14,8 @@ export function etiquetteStatut(c: CarnetV): string {
      elle ne se dit pas comme la date du fait */
   /* D451 disparaît n° 6 : la pastille « Archivé le … » ; un carnet archivé est résolu (le mot de la barre d'état), avec son jour */
   if (c.carnet.archive) return /planning/i.test(c.carnet.archive.raison) ? 'Fait au Planning' : `Résolu${dateCourte(c.carnet.archive.le) ? ` · ${dateCourte(c.carnet.archive.le)}` : ''}`;
+  /* R73-24 (c75) : « Dans À venir » (un projet du Planning importé, un carnet envoyé) n'est plus une « Idée · 3 sept. » : il est décidé, depuis le jour où il y est entré */
+  if (c.status === 'idea' && c.carnet.sortie?.planId) { const d = dateCourte(c.carnet.sortie.le); return d ? `Décidé · ${d}` : 'Décidé'; }
   if (c.status === 'idea') { const d = dateCourte(c.carnet.creeLe); return d ? `Idée · ${d}` : 'Idée'; }
   /* tour 3, PCN-151 : réalisé (plan payé), la pastille le dit comme la ligne de sortie */
   if (c.status === 'validated' && c.carnet.sortie?.etat === 'realise') { const d = dateCourte(c.carnet.sortie.realiseLe); return d ? `Réalisé le ${d}` : 'Réalisé'; }

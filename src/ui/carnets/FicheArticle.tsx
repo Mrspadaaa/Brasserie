@@ -37,7 +37,7 @@ import { nomAlpha } from '../../domain/carnets/alpha';
 import { estMatierePesee } from '../../domain/carnets/prixUnitaire';
 import { libelleDoute, usePour } from './TableauCarnet';
 import {
-  alphaDe, aromesDe, conditionnementsDe, ligneDuPour, noteImport, recolteDe, textePrixConditionnement, texteChfKg, texteQuantite, type ArticleRegle
+  alphaDe, aromesDe, centimesRendus, conditionnementsDe, ligneDuPour, noteImport, quantiteDuChoix, sachetsSansPrix, recolteDe, textePrixConditionnement, texteChfKg, type ArticleRegle
 } from './tableauRegles';
 
 /** R54 : la quantité cochée dans « je prends » (`libelle` : « 1 kg »), son poids et son prix en francs (centimes). */
@@ -231,16 +231,19 @@ export function FicheArticle(p: FicheArticleProps) {
   const [pour] = usePour(p.titreCarnet);
   const conds = matiere ? conditionnementsDe(regle, p.taux) : [];
   const ligneChoisie = ligneDuPour(conds, regle, pour, p.taux);
+  /* R100 (c75) : les sachets que « Poids » dit sans prix (250 g, 500 g) : la table les montre « prix à relire », Relire se propose ; « Choisir » porte le sachet chiffré, jamais « 1 kg » */
+  const sansPrix = matiere ? sachetsSansPrix(regle) : [];
+  const choix = quantiteDuChoix(regle, pour, p.taux);
   /* R54 (C66-4) : un houblon vendu en plusieurs conditionnements dit le prix du conditionnement COCHÉ (1 kg : 62,20), jamais celui d'un autre (le sachet de 100 g : 6,70) : le bloc Offre, le bouton Choisir et « Part dans À venir » disent le même */
-  const prixCoche: string | null = conds.length > 1 && ligneChoisie && !ligneChoisie.auGramme
-    ? (ligneChoisie.chfKg?.estime ? `≈${montant(Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100)} CHF rendu` : prixTexte(ligneChoisie.centimes, ligneChoisie.devise))
+  const prixCoche: string | null = (conds.length > 1 || sansPrix.length > 0) && ligneChoisie && !ligneChoisie.auGramme
+    ? (ligneChoisie.chfKg?.estime ? `≈${montant(centimesRendus(ligneChoisie.chfKg.chf, ligneChoisie.kg))} CHF rendu` : prixTexte(ligneChoisie.centimes, ligneChoisie.devise))
     : null;
   const detailCoche: string | null = prixCoche && ligneChoisie
     ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
     : null;
   /* ce que « Choisir » emporte : le conditionnement coché et son prix en francs (le même chiffre que le bloc Offre) */
   const quantiteChoisie: QuantiteChoisie | undefined = prixCoche && ligneChoisie
-    ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100 : 0, ...(ligneChoisie.devise !== 'CHF' && ligneChoisie.chfKg?.estime ? { estime: true } : {}) }
+    ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? centimesRendus(ligneChoisie.chfKg.chf, ligneChoisie.kg) : 0, ...(ligneChoisie.devise !== 'CHF' && ligneChoisie.chfKg?.estime ? { estime: true } : {}) }
     : undefined;
   const aromes = houblon ? aromesDe(regle) : [];
   const recolte = houblon ? recolteDe(regle) : null;
@@ -341,7 +344,7 @@ export function FicheArticle(p: FicheArticleProps) {
               return <span key={m} className="cn-arome" style={j ? { background: j.fond, color: j.texte } : undefined}>{m}</span>;
             })}</p>
           )}
-          {conds.length > 1 && (
+          {(conds.length > 1 || sansPrix.length > 0) && (
             <section className="cn-bloc cn-prend" aria-label="Je prends">
               <div className="cn-prend-ligne cn-prend-tete cn-mut"><span>je prends</span><span>prix</span><span>CHF/kg rendu</span></div>
               {conds.map(l => {
@@ -350,10 +353,19 @@ export function FicheArticle(p: FicheArticleProps) {
                   <div key={l.kg} className={`cn-prend-ligne${on ? ' cn-prend-on' : ''}`} aria-current={on || undefined}>
                     <span>{l.libelle}{on ? <> <Check size={16} aria-hidden /></> : null}</span>
                     <span className="cn-mono">{textePrixConditionnement(l)}</span>
-                    <span className="cn-mono">{l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>
+                    <span className="cn-mono">{l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}{' '}</span>
                   </div>
                 );
               })}
+              {/* R100 (c75) : les autres sachets de « Poids », sans prix lu : dits « prix à relire » (jamais 0, jamais un prix deviné) ; Relire lit la page, par son geste */}
+              {sansPrix.map(l => (
+                <div key={`sp-${l.kg}`} className="cn-prend-ligne">
+                  <span>{l.libelle}</span>
+                  <span className="cn-mut">prix à relire</span>
+                  <span><span className="cn-inconnu" aria-label="inconnu">?</span>{' '}</span>
+                </div>
+              ))}
+              {sansPrix.length > 0 && p.onRelire && a.url && <BoutonRelire onRelire={p.onRelire} classe="cn-relire-prix" />}
               {noteImport(regle, pour, p.taux) && <p className="cn-mut cn-prend-note">{noteImport(regle, pour, p.taux)}</p>}
             </section>
           )}
@@ -452,7 +464,7 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {!p.choisi && p.onChoisir && (
         <>
-          <button type="button" className="cn-action cn-action-vert cn-large" onClick={() => p.onChoisir!(quantiteChoisie && quantiteChoisie.centimes > 0 ? quantiteChoisie : undefined)}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${texteQuantite(pour)}` : ''}</button>
+          <button type="button" className="cn-action cn-action-vert cn-large" onClick={() => p.onChoisir!(quantiteChoisie && quantiteChoisie.centimes > 0 ? quantiteChoisie : undefined)}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${choix.libelle}` : ''}</button>
           <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prixCoche ?? prix ? <>, <PrixMono texte={(prixCoche ?? prix)!} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}

@@ -180,7 +180,7 @@ describe('Comparer sans critère : ce qui diffère d’abord, les égaux replié
     expect(replie.find(l => /Tension/.test(l.txt))?.cache).toBe(true);
     expect(replie.find(l => /Puissance/.test(l.txt))?.cache).toBe(true);
     expect(replie.find(l => /prix/i.test(l.txt))?.cache).toBe(false);
-    expect(container.querySelector('thead th')?.textContent).toMatch(/\d diffèrent/);
+    expect(container.querySelector('thead th')?.textContent).toMatch(/\d différents?/); // R73-11 (25.11) : « 2 différents », accordé
     const bouton = container.querySelector('.cn-cmp-identiques-bouton') as HTMLElement;
     expect(bouton.textContent).toMatch(/\d identiques/);
     fireEvent.click(bouton);

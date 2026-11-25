@@ -117,6 +117,8 @@
 .cn-place thead th { padding: 6px 0; font-weight: 700; text-align: left; border-top: 0; }
 .cn-place thead th.cn-mut { font-weight: 400; text-align: right; white-space: nowrap; }
 .cn-place td.cn-mono { white-space: nowrap; text-align: right; padding-right: 12px; }
+/* R75-6 (c75) : un mot court (« États-Unis ») se range comme un chiffre, mais ne prend pas la chasse fixe, réservée aux chiffres */
+.cn-place td.cn-place-mot { white-space: nowrap; text-align: right; padding-right: 12px; }
 .cn-place td:last-child { white-space: nowrap; width: 1%; }
 /* R65 (C67B-3) : une valeur de texte longue (« agrumes, pamplemousse, fruits tropicaux ») se replie ; en nowrap elle élargissait le tableau au-delà des 390 px (curseur hors cadre, valeurs coupées, défilement horizontal) */
 .cn-place td.cn-place-long { white-space: normal; overflow-wrap: break-word; /* C70-9 : jamais « pamplemous-se » : un mot long ne se coupe qu'en dernier recours */ font-family: inherit; width: auto; min-width: 0; text-align: right; }

@@ -8,6 +8,8 @@ import type { CreativeItem } from '../../types';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { magasinFirestore } from '../../services/carnetsStore';
 import { lireCarnets, lireMessages } from '../../domain/carnets/modele';
+import { sansErreurDeRangement } from '../../domain/carnets/reclasser';
+import { avecFaitsDesNotes } from '../../domain/carnets/noteSurArticle';
 import { aidesCourantes, modeCarnet } from '../../config/carnetIA';
 import { anciennesNotes, faitsDuPlanning } from '../../domain/carnets/anciens';
 import type { AchatPasse } from '../../domain/horizons';
@@ -40,9 +42,10 @@ export function useDonneesCarnets(p: CarnetsVueProps) {
   }, []);
   const enLigne = !p.horsLigne && enLigneNav;
 
-  const carnets = useMemo(() => lireCarnets(items), [items]);
-  const tous = useMemo(() => lireCarnets(items, { archives: true }), [items]);
   const messages = useMemo(() => lireMessages(items), [items]);
+  /* R99 (c75) : tant qu'il n'a pas touché « Reclasser », l'écran ne montre pas l'erreur de rangement comme un fait (ni veille ni Choisir sur une phrase) */
+  const carnets = useMemo(() => lireCarnets(items).map(c => avecFaitsDesNotes(sansErreurDeRangement(c, messages), messages)), [items, messages]);
+  const tous = useMemo(() => lireCarnets(items, { archives: true }).map(c => avecFaitsDesNotes(sansErreurDeRangement(c, messages), messages)), [items, messages]);
   /* h1, tour 2 : D3 les projets du Planning faits restent dans Tout ; D2 les anciennes notes de l'Atelier, en repli (lecture seule) */
   const faitsPlanning = useMemo(() => faitsDuPlanning(tous), [tous]);
   const creatifsApp = useStorageValue(lireCreatifs);

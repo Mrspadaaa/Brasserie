@@ -23,7 +23,7 @@ export interface PropositionFilAncien {
 }
 
 const ETIQUETTE_AUTRE = /^\s*(autres?\s+[^:\n]{2,40}?)\s*:\s*\S/i;
-const GESTE_FINI = /^\s*(?:ok\s*[:,]?\s*)?(?:command[ee]s?|achete[es]?s?|regle[es]?s?|resolu|repare[es]?s?|installe[es]?s?|livre[es]?s?|c'est fait)\b/;
+export const GESTE_FINI = /^\s*(?:ok\s*[:,]?\s*)?(?:command[ee]s?|achete[es]?s?|regle[es]?s?|resolu|repare[es]?s?|installe[es]?s?|livre[es]?s?|c'est fait)\b/;
 const A_FAIRE = /\ba\s+(?:[a-z]+(?:er|ir|re))\b/;
 const majuscule = (t: string): string => (t ? t.charAt(0).toLocaleUpperCase('fr-CH') + t.slice(1) : t);
 

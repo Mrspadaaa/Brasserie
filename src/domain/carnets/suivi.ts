@@ -55,7 +55,8 @@ export function optionRetenue(c: CarnetDoc): Facon | undefined {
 /** L'état que dit le contenu : choix ou option retenue → décidé ; façon ou article → je cherche ; sinon noté. */
 export function etatContenu(c: CarnetDoc): EtatSuivi {
   const d = c.carnet;
-  if (d.choix || d.facons.some(f => etatOption(f) === 'retenue')) return 'decide';
+  /* R73-24 (c75) : un carnet envoyé dans À venir est décidé (un projet du Planning n'est plus une idée) */
+  if (d.choix || d.sortie?.planId || d.facons.some(f => etatOption(f) === 'retenue')) return 'decide';
   if (d.facons.length || d.articles.length) return 'cherche';
   return 'note';
 }

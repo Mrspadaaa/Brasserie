@@ -32,7 +32,7 @@ export function FaitsNoteFiche({ faits, onDetacher }: { faits?: readonly NoteSur
         <div key={f.messageId} data-fait-note={f.sujet ?? 'note'}>
           <span className="cn-fait-note"><StickyNote size={14} aria-hidden /> {texteFait(f)}</span>
           <p className="cn-mut">« {f.mots} »</p>
-          {onDetacher && <button type="button" className="cn-lien" onClick={() => onDetacher(f.messageId)}>Détacher ma note</button>}
+          {onDetacher && !f.derive && <button type="button" className="cn-lien" onClick={() => onDetacher(f.messageId)}>Détacher ma note</button>}
         </div>
       ))}
     </section>

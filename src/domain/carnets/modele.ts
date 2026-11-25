@@ -131,7 +131,8 @@ export const SUJETS_NOTE: readonly SujetNote[] = ['dispo', 'qualite', 'delai'];
  * Une note du brasseur qui parle d'UN article (« le site français semble ne plus avoir de stock ») : un fait de cet article, à côté de ce que la page dit, jamais à
  * sa place. `mots` : SA phrase, telle qu'il l'a écrite (jamais la réécriture de l'IA) ; `le` : la date de sa saisie ; aucun score de confiance. Se retire d'un toucher.
  */
-export interface NoteSurArticle { messageId: string; mots: string; le: string; sujet?: SujetNote; origine: Origine }
+export interface NoteSurArticle { messageId: string; mots: string; le: string; sujet?: SujetNote; origine: Origine;
+  /** R73-6 (c75) : le fait est LU de la note à l'affichage (jamais écrit) ; il ne se détache pas, la note reste dans le carnet */ derive?: true }
 
 /** PX (R39) : une quantité de poids ou de volume, telle que la page l'écrit. */
 export type UniteQuantite = 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l';
@@ -276,6 +277,8 @@ export interface DonneesMessage {
   etiquettes?: Etiquette[];
   /** D451 : « rattaché : « … » » de la carte « rangé pour toi ». */
   rattache?: Rattache;
+  /** R73-6 (c75) : la note de ce message a déjà été regardée pour son article (rattachée, ou refusée par les gardes) : un fait n'en est plus lu à l'affichage (`avecFaitsDesNotes`). Absent : message d'avant. */
+  faitsLus?: true;
   /**
    * C69-1 : une phrase tapée sur la liste dont l'IA désigne un carnet EXISTANT : rien n'est écrit (ni carnet neuf, ni note chez lui) tant que le brasseur n'a pas
    * touché la carte (« Rattacher » · « Garder à part »). Le message garde seulement ce carnet et la citation de la ligne.

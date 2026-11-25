@@ -520,6 +520,17 @@ export function creerRangementCarnets(x: RangementV) {
         const g = appliquer({ ok: true, ecritures: suiviIA.ecritures, inverse: suiviIA.inverse, avis: 'Suivi posé' });
         if (g) { fait.inverse.unshift(...g.inverse); vu = appliquerEcritures(vu, g.ecritures); }
       }
+      /* R73-6 (c75) : une note rangée par l'IA dans un carnet qui a des articles a été regardée pour son article (N1 : le contexte portait leurs id et sites) ; rattachée ou refusée par les gardes,
+         l'affichage n'en tire plus de fait seul (`avecFaitsDesNotes` ne lit que les messages d'avant) */
+      if (lignes.some(l => l.sorte === 'note') && lireCarnets(vu).some(c => c.carnet.articles.length > 0 && lignes.some(l => l.sorte === 'note' && (vers.get(l) ?? l.carnetId) === c.id))) {
+        const bm = new Brouillon(vu);
+        const msgLu = bm.messages().find(x => x.id === messageId);
+        if (msgLu && !msgLu.carnetMessage.faitsLus) {
+          bm.ecrire({ ...msgLu, carnetMessage: { ...msgLu.carnetMessage, faitsLus: true } });
+          const mk = appliquer(bm.resultat('Note regardée'));
+          if (mk) { fait.inverse.unshift(...mk.inverse); vu = appliquerEcritures(vu, mk.ecritures); }
+        }
+      }
       /* Annuler défait le rangement réel : l'écriture de l'IA, puis l'écriture locale qu'elle a remplacée. */
       /* Seule la branche où l'IA choisit le carnet neuf lui doit son titre ; ailleurs (créer, annoncé) le titre reste celui de la règle locale. */
       const titresIA = an ? undefined : lignes.flatMap(l => [l.carnetNeuf, l.titre]);

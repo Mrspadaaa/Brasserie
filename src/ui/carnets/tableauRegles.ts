@@ -9,7 +9,7 @@
 import { fourchetteSerree, nomAlpha } from '../../domain/carnets/alpha';
 import type { Article } from '../../domain/carnets/modele';
 import { portCentimes, prixRendu, tauxVersChf, type PrixArticleDonnees } from '../../domain/carnets/prixRendu';
-import { estMatierePesee, quantiteArticle } from '../../domain/carnets/prixUnitaire';
+import { estMatierePesee, poidsLus, quantiteArticle } from '../../domain/carnets/prixUnitaire';
 import { valeursLuesDe } from '../../domain/carnets/comparer';
 
 /* ------------------------------------------------------------------------------------------------ colonnes */
@@ -162,17 +162,38 @@ export function prixAuKilo(a: ArticleRegle, pourKg: number, taux?: number): Prix
   const paliers = paliersDe(a);
   const retenu = [...paliers].reverse().find(p => p.kg <= pourKg + 1e-9);
   if (!retenu) return null;
-  const fois = pourKg / retenu.kg;
+  /* R100 (c75) : le prix d'un sachet lu dans « Poids » est celui de CE sachet : le kilo en vient (même chiffre au tableau, à la fiche et au Choisir), sans 20 sachets inventés pour 1 kg */
+  const kgAchete = retenu.depuisPoids ? retenu.kg : pourKg;
+  const fois = kgAchete / retenu.kg;
   const totalDevise = retenu.centimes * fois;
   const devise = (a.devise ?? 'CHF').toUpperCase();
-  if (devise === 'CHF') return { chf: totalDevise / 100 / pourKg, estime: false, plancher: false, palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
+  if (devise === 'CHF') return { chf: totalDevise / 100 / kgAchete, estime: false, plancher: false, palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
   const donnees: PrixArticleDonnees = { prixCentimes: totalDevise, devise, ...(a.change ? { change: a.change } : {}), ...(a.livraison ? { livraison: a.livraison } : {}) };
   const t = tauxVersChf(donnees, taux);
   if (!t) return null;
   const port = portCentimes(donnees);
   const r = prixRendu({ eurCentimes: totalDevise, taux: t.taux, ...(port !== undefined ? { portEurCentimes: port } : {}) });
   if (r.totalChf === undefined) return null;
-  return { chf: r.totalChf / 100 / pourKg, estime: true, plancher: r.manque.includes('port'), palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
+  return { chf: r.totalChf / 100 / kgAchete, estime: true, plancher: r.manque.includes('port'), palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
+}
+
+/**
+ * R100 (c75) : la quantité que « Choisir » emporte pour un achat de `pourKg` : le conditionnement dont le prix est lu. Un prix lu pour un seul sachet (« Poids : 50 g, 250 g et 500 g »,
+ * prix du 50 g) emporte CE sachet, jamais « 1 kg » (20 sachets que personne n'a chiffrés) ; sinon la quantité d'achat posée.
+ */
+export function quantiteDuChoix(a: ArticleRegle, pourKg: number, taux?: number): { kg: number; libelle: string } {
+  const p = prixAuKilo(a, pourKg, taux);
+  return p?.depuisPoids ? { kg: p.palier, libelle: texteMasse(p.palier) } : { kg: pourKg, libelle: texteQuantite(pourKg) };
+}
+
+/** Le prix en francs d'une quantité (centimes) : au franc près dès 10 CHF (« ≈41 »), au centime en dessous (un sachet de 3,69 ne se dit pas « 4 »). */
+export const centimesRendus = (chf: number, kg: number): number => { const total = chf * kg; return total >= 10 ? Math.round(total) * 100 : Math.round(total * 100); };
+
+/** R100 : les sachets que « Poids » dit sans en donner le prix (« 250 g », « 500 g » quand seul le 50 g est chiffré) : la fiche les montre « prix à relire ». */
+export function sachetsSansPrix(a: ArticleRegle): { kg: number; libelle: string }[] {
+  const p = paliersDe(a);
+  if (p.length !== 1 || !p[0].depuisPoids) return [];
+  return poidsLus(a as never).filter(q => Math.abs(q.base - p[0].kg) > 1e-9).map(q => ({ kg: q.base, libelle: texteMasse(q.base) }));
 }
 
 /** « ≈41 », « 80 », « 4,2 » : au franc près dès 10 CHF/kg, une décimale en dessous (un malt à 2,40 CHF/kg ne se dit pas « 2 »). */
@@ -322,6 +343,8 @@ export function departager<T extends LigneComparable>(lignes: readonly T[], gard
 
 /** « 5 diffèrent » / « 1 diffère » ; « 18 identiques » / « 1 identique ». */
 export const ditDiffèrent = (n: number): string => `${n} ${n > 1 ? 'diffèrent' : 'diffère'}`;
+/** R73-11 (c75) : l'en-tête de Comparer, « 5 différents · 1 identique » : les deux mots s'accordent comme des adjectifs (le verbe « diffèrent » ne répondait pas à « identiques »). */
+export const ditDifférents = (n: number): string => `${n} ${n > 1 ? 'différents' : 'différent'}`;
 export const ditIdentiques = (n: number): string => `${n} ${n > 1 ? 'identiques' : 'identique'}`;
 
 /* ------------------------------------------------------------------------------------------------ « pour 1 kg » : la quantité d'achat, par carnet */
@@ -424,7 +447,7 @@ export function compromisMatiere(articles: ReadonlyArray<ArticleRegle & { id: st
 }
 
 /** Le texte du bouton Choisir de Comparer : « Choisir · MotlerHops, 1 kg » (matière pesée) ; sinon « Choisir la 4,06 m³ » (la valeur de tête du 1er) ou « Choisir ». */
-export function libelleChoisir(args: { vendeur?: string; pourKg?: number; tete?: string | null }): string {
-  if (args.vendeur && args.pourKg) return `Choisir · ${args.vendeur}, ${texteQuantite(args.pourKg)}`;
+export function libelleChoisir(args: { vendeur?: string; pourKg?: number; /** R100 : le conditionnement dont le prix est lu (« 50 g »), qui prime sur la quantité d'achat */ libelle?: string; tete?: string | null }): string {
+  if (args.vendeur && args.pourKg) return `Choisir · ${args.vendeur}, ${args.libelle ?? texteQuantite(args.pourKg)}`;
   return args.tete ? `Choisir la ${args.tete}` : 'Choisir';
 }

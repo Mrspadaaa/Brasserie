@@ -11,7 +11,7 @@
  *  - `faitDeNote`, `verificationProposee` : le fait gardé (SES mots tels quels, jamais la réécriture de l'IA) et la vérification proposée (jamais lancée seule).
  * Aucun score de confiance ; « semble » ne devient jamais une certitude : le libellé dit « douteuse », sa phrase est montrée telle quelle.
  */
-import type { Article, NoteSurArticle, Origine, SujetNote } from './modele';
+import type { Article, CarnetDoc, MessageDoc, NoteSurArticle, Origine, SujetNote } from './modele';
 
 const sans = (s: string): string => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’‘ʼ]/g, "'").toLowerCase();
 
@@ -58,7 +58,7 @@ export function articleVise(articleId: unknown, citation: string | undefined, ar
   return concernes.length === 1 && concernes[0].id === articleId ? articleId : undefined;
 }
 
-const DISPO = /\b(stock|dispo|disponib\w*|rupture|epuis\w*|indisponible|introuvable)/;
+const DISPO = /\b(stock|dispo|disponib\w*|rupture|epuis\w*|indisponible|introuvable|(?:difficile|dur|compliquee?)s? a (?:obtenir|trouver|avoir))/;
 const DELAI = /\b(livr\w*|delais?|semaines?|jours?|expedi\w*|attente|attendre|arriv\w*|retard\w*)/;
 const QUALITE = /\b(event\w*|qualit\w*|fraich\w*|frais|perim\w*|rassis|vieux|moisi\w*|oxyd\w*|abim\w*|mauvais\w*|decevant\w*|odeur|degrad\w*|stale)/;
 
@@ -103,6 +103,33 @@ export function verificationProposee(sujet: SujetNote | undefined, article: Pick
 export function pageSansProduit(p: { statut?: string; prix?: number; prixUnite?: unknown; offres?: readonly unknown[]; conditionnement?: unknown; dispo?: string; photo?: string; photos?: readonly string[]; valeurs?: readonly unknown[] } | undefined): boolean {
   if (!p || p.statut !== 'lue') return false;
   return p.prix === undefined && !p.prixUnite && !p.offres?.length && !p.conditionnement && !p.dispo && !p.photo && !p.photos?.length && !p.valeurs?.length;
+}
+
+/**
+ * R73-6 (c75) : une note déjà écrite qui ne parle que d'UN article (« semble difficile à obtenir sur le site français ») est lue comme le fait de cet article, sur sa fiche, à côté de
+ * ce que la page dit. Même garde que l'IA (`designe` : vendeur, mot de l'adresse, pays du site ; deux articles qui correspondent : aucun rattachement). Un fait déjà écrit n'est pas redit.
+ * Lecture seule : rien n'est écrit, le fait est marqué `derive`.
+ */
+export function avecFaitsDesNotes(c: CarnetDoc, messages: readonly MessageDoc[]): CarnetDoc {
+  const k = c.carnet;
+  if (!k.articles.length || !k.notes.length) return c;
+  const ajouts = new Map<string, NoteSurArticle[]>();
+  for (const n of k.notes) {
+    if (/\(Planning[^)]*\)\s*$/.test(n.texte)) continue;
+    const vises = k.articles.filter(a => designe(n.texte, a));
+    if (vises.length !== 1) continue;
+    const a = vises[0];
+    const cle = n.messageId ?? n.id;
+    /* une note déjà regardée pour son article (rattachée, ou refusée par les gardes) n'est pas relue : seul le fil d'avant N1 se lit ici */
+    if (n.messageId && messages.find(x => x.id === n.messageId)?.carnetMessage.faitsLus) continue;
+    if ((a.notesSur ?? []).some(f => f.messageId === cle) || (ajouts.get(a.id) ?? []).some(f => f.messageId === cle)) continue;
+    const m = n.messageId ? messages.find(x => x.id === n.messageId) : undefined;
+    const sujet = sujetDeNote(n.texte);
+    const fait: NoteSurArticle = { messageId: cle, mots: n.texte.trim().slice(0, 200), le: n.modifieeLe ?? m?.carnetMessage.le ?? k.creeLe, ...(sujet ? { sujet } : {}), origine: 'locale', derive: true };
+    ajouts.set(a.id, [...(ajouts.get(a.id) ?? []), fait]);
+  }
+  if (!ajouts.size) return c;
+  return { ...c, carnet: { ...k, articles: k.articles.map(a => (ajouts.has(a.id) ? { ...a, notesSur: [...(a.notesSur ?? []), ...ajouts.get(a.id)!].slice(-5) } : a)) } };
 }
 
 /** Le site d'une page, sans « www. » : ce qui relie une page du vendeur à ses articles (N5). */

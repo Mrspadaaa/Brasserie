@@ -55,11 +55,12 @@ const NOM_POIDS = /^(?:poids(?: net)?|gewicht|nettogewicht|contenu net|net weigh
  * plus bas, celui du plus petit sachet (un prix « dès »). Le prix dit alors son sachet (« ≈4 CHF les 50 g · ≈80 CHF/kg »), jamais un nombre nu. Seulement pour une
  * matière qu'on pèse : le poids d'un appareil n'est pas la quantité de son prix. Un seul poids lu : c'est lui.
  */
-function quantiteDuPoids(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'valeurs'>>): QuantiteArticle | null {
-  if (!a.valeurs || !estMatierePesee(a)) return null;
+/** R100 (c75) : tous les sachets que dit la ligne « Poids » d'une matière pesée (« 50 g, 250 g et 500 g »), du plus petit au plus gros ; aucun : liste vide. */
+export function poidsLus(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'valeurs'>>): QuantiteArticle[] {
+  if (!a.valeurs || !estMatierePesee(a)) return [];
   const cle = Object.keys(a.valeurs).find(k => NOM_POIDS.test(k.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()));
   const v = cle ? a.valeurs[cle] : undefined;
-  if (!v || typeof v.valeur === 'boolean') return null;
+  if (!v || typeof v.valeur === 'boolean') return [];
   const texte = `${v.valeur}${v.unite && !/[a-zA-Z]/.test(String(v.valeur)) ? ` ${v.unite}` : ''}`;
   const lues: QuantiteArticle[] = [];
   for (const m of texte.matchAll(MOTIF)) {
@@ -67,8 +68,11 @@ function quantiteDuPoids(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'valeur
     const n = Number(m[1].replace(',', '.'));
     if (u && u.dim === 'masse' && Number.isFinite(n) && n > 0) lues.push({ dim: 'masse', base: n * u.f, texte: `${m[1].replace('.', ',')} ${u.affiche}`, depuisPoids: true });
   }
-  if (!lues.length) return null;
-  return lues.reduce((petit, q) => (q.base < petit.base ? q : petit));
+  return lues.sort((x, y) => x.base - y.base);
+}
+
+function quantiteDuPoids(a: Pick<Article, 'nom'> & Partial<Pick<Article, 'valeurs'>>): QuantiteArticle | null {
+  return poidsLus(a)[0] ?? null;
 }
 
 /**

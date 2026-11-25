@@ -155,7 +155,13 @@ export function FilCarnetVue(p: PropsFil) {
     }
     const m = e.message;
     const liees = notesDe(m.id);
-    const texte = liees.length === 1 && liees[0].modifieeLe && liees[0].modifieeLe > m.carnetMessage.le ? liees[0].texte : m.carnetMessage.texte;
+    const texteBrut = liees.length === 1 && liees[0].modifieeLe && liees[0].modifieeLe > m.carnetMessage.le ? liees[0].texte : m.carnetMessage.texte;
+    /* R73-23 (c75) : la bulle d'un projet importé du Planning recopiait le titre et le budget (déjà dits dans l'en-tête et la ligne Critère) avant sa ligne « À faire du … (Planning, …) » :
+       ces lignes-là ne sont pas redites, les dates restent */
+    const lignesBulle = texteBrut.split(/\r?\n/);
+    const texte = liees.some(n => notePlanningDe(n.texte)) && lignesBulle.length > 1
+      ? lignesBulle.filter(l => !redisLeTitre(l, c) && !/^\s*budget du planning\b/i.test(l)).join('\n').trim() || texteBrut
+      : texteBrut;
     const jetons = jetonsDe(m, c.id);
     const heure = plusieurs ? heureDe(m.carnetMessage.le) : null;
     const photos = photosDe(m.id);

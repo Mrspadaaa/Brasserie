@@ -20,7 +20,7 @@ export const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getM
  * toucher rouvre les puces, la frise, les pastilles et Au calendrier. Q-1b B (q1b-b.png) : en tête des pastilles, le prix que le carnet
  * connaît déjà, « 400 CHF · budget » (son critère) ou le prix lu d'un lien (« · lu »).
  */
-export function RubriqueQuand(p: { /** R96 (c74c) : le début du projet du Planning (AAAA-MM-JJ) : tant que la date est celle de l'import, Quand dit CE jour, pas le lundi d'avant */ planning?: string; date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null, precision?: 'semaine' | 'mois') => void; onAuCalendrier?: () => void;
+export function RubriqueQuand(p: { /** R96 (c74c) : le début du projet du Planning (AAAA-MM-JJ) : tant que la date est celle de l'import, Quand dit CE jour, pas le lundi d'avant */ planning?: string; /** R101 (c75) : la fin du projet du Planning : la date du plan (le dernier jour) reste « celle de l'import » tant qu'elle est dans le projet */ planningAu?: string; date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null, precision?: 'semaine' | 'mois') => void; onAuCalendrier?: () => void;
   prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
   /* D431 (GESTE-DATE-PARTOUT, CA12-PW-2) : sous les puces raccourcis, la frise partagée du Calendrier (`DureeFenetre seule`, rangée achats) ; le repère
      suit le doigt (brouillon), la date s'écrit au lâcher (`onDater(lundi)`), jamais à chaque pas. Sans date, le repère attend sur cette semaine, estompé. */
@@ -28,7 +28,9 @@ export function RubriqueQuand(p: { /** R96 (c74c) : le début du projet du Plann
   const [tire, setTire] = useState<string | null>(null);
   const tireRef = useRef<string | null>(null);
   useEffect(() => { tireRef.current = null; setTire(null); }, [lundiPose]);
-  const jourPlanning = p.planning && lundiPose && lundiDe(p.planning) === lundiPose && !tire && p.planning >= p.aujourdhui ? `${Number(p.planning.slice(8, 10))} ${MOIS_COURTS[Number(p.planning.slice(5, 7)) - 1]} ${p.planning.slice(0, 4)}` : null;
+  /* R101 (c75) : tant que la date est celle de l'import (le lundi du début, ou un jour du projet : le plan porte son dernier jour), Quand dit le début, avec son année, comme À faire (« 1 mai 2027 »), jamais « S26 » */
+  const dansLeProjet = !!p.planning && !!lundiPose && (lundiDe(p.planning) === lundiPose || (!!p.planningAu && lundiPose >= lundiDe(p.planning) && lundiPose <= p.planningAu));
+  const jourPlanning = p.planning && dansLeProjet && !tire && p.planning >= p.aujourdhui ? `${Number(p.planning.slice(8, 10))} ${MOIS_COURTS[Number(p.planning.slice(5, 7)) - 1]} ${p.planning.slice(0, 4)}` : null;
   const quand = tire ? texteIntention(tire, p.aujourdhui, 'semaine') : jourPlanning ?? texteIntention(p.date, p.aujourdhui, p.precision);
   const plage = plageDate(lundiPose ?? p.aujourdhui, p.aujourdhui);
   const [changerPrix, setChangerPrix] = useState(false);

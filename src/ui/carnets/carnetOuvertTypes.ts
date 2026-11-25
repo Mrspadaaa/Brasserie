@@ -36,6 +36,8 @@ export interface RappelsSuivi {
   onOption?: (faconId: string, vers: EtatOption, raison?: string) => void;
   /** R95 (c74c) : « Ranger » sur la carte d'un fil ancien (options, tâches, Résolu proposés par l'analyse locale) ; seul son geste écrit. */
   onRangerFil?: (proposition: import('../../domain/carnets/filAncien').PropositionFilAncien, avecResolu: boolean) => void;
+  /** R98 (c75) : la carte « Reclasser ce carnet ? » d'un carnet écrit avant les correctifs de rangement ; seul son toucher écrit (annulable). */
+  reclasser?: { proposition: import('../../domain/carnets/reclasser').PropositionReclasser; onReclasser: () => void };
   /** « Fermer grâce à l'achat ? Oui » : l'option qui a été achetée. */
   onFermerParAchat?: (optionId: string) => void;
   onRelu?: (reponse: 'oui' | 'pas-sur') => void;

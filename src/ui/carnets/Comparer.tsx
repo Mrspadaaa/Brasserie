@@ -11,6 +11,7 @@
  * case vide réservée, colonnes partagées en entier pour que les noms tiennent (L-26) ; un seul article lu (carnet Choisi) a sa colonne (L-27).
  */
 import React from 'react';
+import { fourchetteSerree } from '../../domain/carnets/alpha';
 import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
 import { estEtranger, MENTION_FRAIS, renduArticle, tauxVersChf } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
@@ -26,8 +27,8 @@ import { BoutonEscalader } from './BoutonEscalader';
 import { Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
 import {
-  aDesPaliers, compromisMatiere, departager, ditDiffèrent, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
-  classerAuKilo, plusLargeEtendue, prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
+  aDesPaliers, compromisMatiere, departager, ditDifférents, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
+  centimesRendus, classerAuKilo, plusLargeEtendue, prixAuKilo, quantiteDuChoix, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
 } from './tableauRegles';
 import './carnets-decider.css';
 import './comparer-compact.css';
@@ -507,7 +508,7 @@ export function Comparer(p: ComparerProps) {
   const lignesVues = matiere && [...venduParDe.values()].some(Boolean) && iPrix >= 0
     ? [...lignesLues.slice(0, iPrix + 1), { cle: '__vendu', nom: 'vendu par', sens: 'texte' as Sens, critere: false } as ColonneVue, ...lignesLues.slice(iPrix + 1)]
     : lignesLues;
-  const texteDe = (l: LigneT, c: ColonneVue): string | null => (c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : texteCellule(l, c));
+  const texteDe = (l: LigneT, c: ColonneVue): string | null => { const t = c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : texteCellule(l, c); return t ? fourchetteSerree(t) : t; };
   const sansValeurLue = t ? cols.filter(c => c.cle !== '__vendeur' && !lignesLues.includes(c) && !(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom)))) : [];
   /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
   const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
@@ -536,7 +537,7 @@ export function Comparer(p: ComparerProps) {
   const lignesAffichees = comparables;
   const premier = actifs.find(l => l.rang === 1);
   const libelleBouton = libelleChoisir({
-    ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour } : {}; })() : {}),
+    ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour, libelle: quantiteDuChoix(a, pour, p.taux).libelle } : {}; })() : {}),
     tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null
   });
   /* C70-1 : « Choisir · MotlerHops, 1 kg » emporte CETTE quantité et son prix au kilo rendu (≈40), jamais le sachet de 50 g de l'article */
@@ -544,7 +545,9 @@ export function Comparer(p: ComparerProps) {
     if (!matiere || !premier) return undefined;
     const a = enLice.find(x => x.id === premier.articleId);
     const pk = a ? prixAuKilo(a, pour, p.taux) : null;
-    return pk ? { kg: pour, libelle: texteQuantite(pour), centimes: pk.estime ? Math.round(pk.chf * pour) * 100 : Math.round(pk.chf * pour * 100), ...(pk.estime ? { estime: true } : {}) } : undefined;
+    /* R100 (c75) : un prix lu pour un seul sachet emporte CE sachet (« 50 g »), son prix exact ; jamais « 1 kg » */
+    const q = a ? quantiteDuChoix(a, pour, p.taux) : null;
+    return pk && q ? { kg: q.kg, libelle: q.libelle, centimes: centimesRendus(pk.chf, q.kg), ...(pk.estime ? { estime: true } : {}) } : undefined;
   })();
   const compromisMat = !compromisIA && matiere ? compromisMatiere(enLice, pour, p.taux) : null;
   const compromisAffiche = compromisIA ?? compromisMat ?? compromisLocal;
@@ -589,7 +592,7 @@ export function Comparer(p: ComparerProps) {
             <table className="cn-tableau cn-tableau-comparer">
               <thead>
                 <tr>
-                  <th scope="col">{identiques.length > 0 ? <span className="cn-mut cn-cmp-differents">{ditDiffèrent(diffèrent.length)}</span> : <span className="cn-cache">Caractéristique</span>}</th>
+                  <th scope="col">{identiques.length > 0 ? <span className="cn-mut cn-cmp-differents">{ditDifférents(diffèrent.length)}</span> : <span className="cn-cache">Caractéristique</span>}</th>
                   {ordre.map(l => {
                     const sa = apercuLigne(l, p.nonLus);
                     return (
@@ -697,7 +700,8 @@ export function Comparer(p: ComparerProps) {
             </table>
           )}
           <ARelire articles={aRelire} />
-          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={() => p.onChoisir!(premier?.articleId, quantiteChoisie)}>{libelleBouton}</button>}
+          {/* R73-13 (c75) : le même Choisir que celui de la fiche : vert */}
+          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action cn-action-vert" onClick={() => p.onChoisir!(premier?.articleId, quantiteChoisie)}>{libelleBouton}</button>}
         </>
       )}
     </article>

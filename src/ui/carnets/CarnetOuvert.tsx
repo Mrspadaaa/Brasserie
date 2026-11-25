@@ -31,6 +31,7 @@ import { ChipGenre, PastilleCategorie } from './EnTeteGenre';
 import { FilCarnetVue } from './FilCarnet';
 import { OptionsProbleme, RangeeJetons } from './OptionsProbleme';
 import { FilAncienARanger } from './FilAncienARanger';
+import { CarteReclasser } from './CarteReclasser';
 import { notePlanningDe } from '../../domain/carnets/taches';
 import { propositionFilAncien } from '../../domain/carnets/filAncien';
 import { QuestionPourquoi } from './QuestionPourquoi';
@@ -73,8 +74,11 @@ function Bande({ active, children }: { active: boolean; children: React.ReactNod
 export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
   /* k1d (h05-3, i06-4) : un projet porté du Planning a pour titre le nom de la tâche, pas sa phrase ; son budget vient du Planning */
-  const duPlanning = c.id.startsWith(PREFIXE_PLANNING);
-  const debutPlanning = duPlanning ? k.notes.map(n => notePlanningDe(n.texte)).find(Boolean)?.du : undefined;
+  /* R101 (c75) : un projet du Planning se reconnaît aussi à sa note « À faire du … au … (Planning, …) » : un id recopié ou renommé ne le fait pas perdre sa date (le relevé réel a des ids sans préfixe) */
+  const notePl = k.notes.map(n => notePlanningDe(n.texte)).find(Boolean);
+  const duPlanning = c.id.startsWith(PREFIXE_PLANNING) || !!notePl;
+  const debutPlanning = duPlanning ? notePl?.du : undefined;
+  const finPlanning = duPlanning ? notePl?.au : undefined;
   const provenance = (el: CritereV): string | null =>
     duPlanning && String(el.origine) === 'vous' ? (/Planning/.test(el.texte) ? null : 'repris du Planning') : provenanceCritere(el);
   const avecProv = (el: CritereV) => { const x = provenance(el); return x ? ` · ${x}` : ''; };
@@ -257,7 +261,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {p.bandeau}
       {p.cadre}
       {/* R95 (c74c) : un fil d'avant le suivi se range à l'ouverture par l'analyse locale : la carte propose, rien n'est écrit avant « Ranger » */}
-      {filAncien && rap?.onRangerFil && <FilAncienARanger proposition={filAncien} onRanger={avecResolu => rap.onRangerFil!(filAncien, avecResolu)} />}
+      {/* R98 (c75) : un carnet écrit avant les correctifs de rangement ; la carte dit ce qui change, un toucher l'applique (Annuler rend) */}
+      {!neuf && rap?.reclasser && <CarteReclasser proposition={rap.reclasser.proposition} onReclasser={rap.reclasser.onReclasser} />}
+      {filAncien && rap?.onRangerFil &&<FilAncienARanger proposition={filAncien} onRanger={avecResolu => rap.onRangerFil!(filAncien, avecResolu)} />}
       {!enteteGenre && ligneEtat}
       {/* D451 : un problème. Je cherche : les jetons du diagnostic sur une rangée ; les options en deux colonnes ; Décidé : « Fermer grâce à l'achat ? »
           si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
@@ -412,7 +418,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* D451 disparaît n° 4 : « Quand » ne paraît que s'il sert : une date posée, un achat, une idée ; pas pour un problème, un mémo ou une récolte sans date */}
-      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand {...(debutPlanning ? { planning: debutPlanning } : {})} date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+      {!enAttente && !problemeResolu && p.onDater && (!enteteGenre || !!c.date || genre === 'idee') && <RubriqueQuand {...(debutPlanning ? { planning: debutPlanning, ...(finPlanning ? { planningAu: finPlanning } : {}) } : {})} date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
         onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}
