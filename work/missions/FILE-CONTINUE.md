@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-25T09:08:50.595Z
+pause: 2026-11-25T09:15:38.281Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -45,7 +45,7 @@ pause: 2026-11-25T09:08:50.595Z
 - [x] (porté, D451) (D451 mode nuit : porter si le critique juge qu une base + greffes répond à tous les besoins, sinon écrire le manque ; après tour 65) Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement — VERDICT : base v01 p3 + greffes v01 p2, v05 p3, v03 p3 (D451/VERDICT.md) ; plan en cours work/missions/2026-11-24-port-d451
 - [x] (porté, D451) (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
-- [ ] URGENT (sa plainte 25.11) CARNET-SES-DONNEES-EXISTANTES : reel-73 fait (31 problèmes, 10 B, 6 causes ; données identiques) → c74b-tests en cours → c74b-fix après c74-fix ; fil ancien en vrac (rangé par analyse locale, IA d un toucher) ; NOTE-PAS-ARTICLE (note devenue article ou critère)
+- [ ] URGENT (sa plainte 25.11) CARNET-SES-DONNEES-EXISTANTES : reel-73 fait (31 problèmes, 10 B, 6 causes ; données identiques) → c74b-tests 541de81bd → c74b-fix 1d5cb0cfa → c74c-fix en cours ; fil ancien en vrac (rangé par analyse locale, IA d un toucher) ; NOTE-PAS-ARTICLE (note devenue article ou critère)
 - [attente] Ménage des ZZ SUSPENDU (sa réponse 25.11 : « Non met les sur le nouveau carnet, pareil pour les autres ») : rien supprimé ; sens à confirmer (refaire les exemples au nouveau format, ou déplacer les notes de test dans un carnet neuf)
 - [ ] URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser) + R92 CHAMP-CARNET-REPLIE (mini champ, photo et micro toujours actifs) ; tests de R92 et des constats reel-73 dans une voie c74b-tests ; c74-tests 5a522f29a (18/20 rouges, LISTE KO 50 %, 6 lignes) ; c74-fix f9edbd78a, tour 74 en ligne index-Bc5cx_3w.js ; c74b-tests 541de81bd → c74b-fix 1d5cb0cfa (35/50 : R92 champ, R93 CHF/kg, …) → c74c-fix (15 restants + décisions) en cours
 - [ ] NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; note-tests 2826603b7 (30/40) ; note-fix après banc-modeles (même fichier carnetIA.ts) ; affichage et poids sur le rang : axe des mini maquettes — note-fix 46d262a26 (40/40) ; au tour 74 ; affichage « ta note » et poids sur le rang : mini maquettes à lui montrer
