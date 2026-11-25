@@ -3,14 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>M2 · Mes notes intactes, la fiche IA au-dessus · correction 2 · 25.11</title>
+<title>M2 · Mes notes intactes, la fiche IA au-dessus · correction 3 · 25.11</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* M2 : ses notes ne bougent jamais (ordre, mots). L'IA tient une fiche au-dessus, qui cite chaque note (n° et ses mots entre guillemets).
-   Correction 2 : fiche repliée en jetons dès qu'un choix est fait ; un seul bouton plein par écran ; trois tailles (14, 16, 20) ;
-   aucune hachure ; la dalle reste « ? à vérifier » ; ce que l'IA sait sans ses notes est marqué « l'IA, pas tes notes ». */
+   Correction 3 : tout ce que le carnet réel n'a pas (notes 7 et 8, mémo, lien copié) porte la marque jaune « imaginé pour la maquette » ;
+   sans IA (hors ligne ou erreur), la fiche ne montre que ce que la lecture locale sait faire (« pas trouvée », un montant) ;
+   le pointillé veut dire « proposé, attend ton geste », rien d'autre ; un seul bouton plein, toujours à l'encre ; commandes de 44 px ;
+   la fiche se replie en jetons quand il n'y a plus de geste à faire. */
 :root{--bg:#fff;--s1:#f4f3f1;--s2:#ebe9e6;--line:#dcd9d4;--mut:#5f5f5f;--ink:#141414;--ia:#6a4fb0;--ok:#3f6b2e;--bad:#a8291f;--att:#7f5b10;--fin:#1f64a3;--prod:#9a4f1e;
---iabg:color-mix(in srgb,var(--ia) 9%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 8%,var(--bg));--attbg:color-mix(in srgb,var(--att) 13%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 10%,var(--bg))}
+--imag:#e0b400;--imagbg:#fdf1c4;--imagtx:#5c4600;
+--iabg:color-mix(in srgb,var(--ia) 9%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--attbg:color-mix(in srgb,var(--att) 13%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 10%,var(--bg))}
 *{box-sizing:border-box}
 body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-serif;color:var(--ink);display:flex;flex-wrap:wrap;gap:24px;padding:24px;font-variant-numeric:tabular-nums}
 .m2-etat{display:flex;flex-direction:column;gap:6px}
@@ -18,6 +21,12 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 .m2-ecran{width:390px;height:844px;background:var(--s1);display:flex;flex-direction:column;position:relative;overflow:hidden}
 .m2-reseau{background:#3a3a3a;color:#fff;font-size:14px;font-weight:700;padding:6px 12px;display:flex;gap:6px;align-items:center;flex:none}
 .m2-reseau svg{width:16px;height:16px}
+/* marque « imaginé pour la maquette » : jaune, jamais employé par l'app */
+.m2-imag-b{flex:none;background:var(--imagbg);color:var(--imagtx);font-size:14px;font-weight:800;padding:5px 12px;display:flex;gap:6px;align-items:center;border-bottom:2px solid var(--imag)}
+.m2-imag-b svg{width:16px;height:16px;flex:none}
+.m2-imag-sep{display:flex;align-items:center;gap:8px;margin:4px 12px 2px;font-size:14px;font-weight:800;color:var(--imagtx)}
+.m2-imag-sep::before,.m2-imag-sep::after{content:"";flex:1;height:2px;background:var(--imag)}
+.m2-imag-t{font-size:14px;font-weight:800;color:var(--imagtx);background:var(--imagbg);border-radius:6px;padding:0 6px;white-space:nowrap}
 .m2-barre{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--line);min-height:52px;flex:none}
 .m2-barre>svg{width:22px;height:22px;flex:none}
 .m2-barre h1{font-size:20px;margin:0;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -25,72 +34,67 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 .m2-dom svg{width:15px;height:15px}
 .m2-sp{flex:1}
 /* fiche */
-.m2-fiche{margin:8px 10px 6px;background:var(--bg);border:2px solid var(--ia);border-radius:16px;padding:6px 10px 10px;flex:none}
-.m2-fiche.ligne{padding:4px 6px 4px 10px}
-.m2-fiche.app{border:2px dashed #8a8a8a}
+.m2-fiche{margin:8px 10px 6px;background:var(--bg);border:2px solid var(--ia);border-radius:16px;padding:2px 10px 10px;flex:none}
+.m2-fiche.ligne{padding:2px 4px 2px 10px}
+.m2-fiche.app{border-color:#8a8a8a}
 .m2-fiche.err{border-color:var(--bad)}
-.m2-fh{display:flex;align-items:center;gap:6px;color:var(--ia);font-weight:800;min-height:36px}
+.m2-fh{display:flex;align-items:center;gap:6px;color:var(--ia);font-weight:800;min-height:44px}
 .m2-fiche.app .m2-fh{color:#444}
 .m2-fiche.err .m2-fh{color:var(--bad)}
 .m2-fh>svg{width:18px;height:18px;flex:none}
-.m2-fh .sous{font-size:14px;color:var(--mut);font-weight:600}
-.m2-rev{display:flex;align-items:center;gap:5px;border:1.5px solid var(--ia);color:var(--ia);border-radius:999px;padding:0 10px;height:36px;font-size:14px;font-weight:700;background:var(--bg);white-space:nowrap}
+.m2-fh .sous{font-size:14px;color:var(--mut);font-weight:600;white-space:nowrap}
+.m2-rev{display:flex;align-items:center;gap:5px;border:1.5px solid var(--ia);color:var(--ia);border-radius:999px;padding:0 12px;height:44px;font-size:14px;font-weight:700;background:var(--bg);white-space:nowrap}
 .m2-rev svg{width:16px;height:16px}
-.m2-repl{width:36px;height:36px;display:grid;place-items:center;color:var(--mut)}
+.m2-rev.ouvert{border-width:3px}
+.m2-repl{width:44px;height:44px;display:grid;place-items:center;color:var(--mut);flex:none;margin-right:-6px}
 .m2-repl svg{width:18px;height:18px}
 .m2-etq{font-size:14px;font-weight:800;border-radius:999px;padding:1px 9px;background:var(--s2);color:var(--ink);white-space:nowrap}
-/* frise d'état */
-.m2-frise{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:2px 0 8px}
-.m2-frise span{font-size:14px;font-weight:600;color:var(--mut);padding-top:4px;border-top:4px solid var(--s2);white-space:nowrap}
+/* frise d'état ; pointillé = proposé, attend ton geste */
+.m2-frise{display:flex;gap:4px;margin:0 0 7px}
+.m2-frise span{flex:1 1 auto;font-size:14px;font-weight:600;color:var(--mut);padding-top:3px;border-top:4px solid var(--s2);white-space:nowrap}
 .m2-frise .fait{border-color:var(--ink);color:var(--ink)}
 .m2-frise .ici{border-color:var(--ink);color:var(--ink);font-weight:800}
 .m2-frise .prop{border-top-style:dashed;border-color:var(--ia);color:var(--ia);font-weight:800}
 .m2-frise .fini{border-color:var(--ok);color:var(--ok);font-weight:800}
-/* jetons : une rangée collée sous la frise */
+.m2-frise small{font-size:14px;font-weight:600;color:var(--mut)}
+/* jetons : deux rangées au plus, jamais coupées */
 .m2-rang{display:flex;flex-wrap:wrap;gap:5px}
-.m2-pu{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:14px;font-weight:700;white-space:nowrap;min-height:28px}
+.m2-pu{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 8px;font-size:14px;font-weight:700;white-space:nowrap;min-height:28px}
 .m2-pu i{font-style:normal;font-weight:600;opacity:.75}
 .m2-pu.oui{background:var(--okbg);color:var(--ok)}
-.m2-pu.q{background:var(--bg);color:var(--ink);border:1.5px dashed #8a8a8a}
+.m2-pu.q{background:var(--bg);color:var(--ink);border:1.5px solid #8a8a8a}
 .m2-pu.cout{background:var(--s2);color:var(--ink)}
 .m2-pu.dev{background:var(--attbg);color:var(--att)}
 .m2-pu.gris{background:var(--s1);color:var(--mut);border:1px solid var(--line)}
-.m2-pu.app{background:var(--s1);border:1.5px dashed #9a9a9a;color:var(--ink)}
-.m2-neuf{box-shadow:inset 0 0 0 2px var(--ia)}
-.m2-rang.une{flex-wrap:nowrap;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 86%,transparent);mask-image:linear-gradient(90deg,#000 86%,transparent)}
 .m2-rang .lab{font-size:14px;font-weight:800;color:var(--mut);align-self:center;margin-right:2px}
 /* conseil, propositions */
-.m2-conseil{margin-top:7px;background:var(--iabg);border-radius:10px;padding:6px 9px;display:flex;gap:7px;line-height:1.3}
+.m2-conseil{margin-top:7px;background:var(--iabg);border-radius:10px;padding:5px 9px;display:flex;gap:7px;line-height:1.3}
 .m2-conseil>svg{width:16px;height:16px;color:var(--ia);flex:none;margin-top:3px}
 .m2-n2{color:var(--mut);font-weight:600;white-space:nowrap;font-size:14px}
 .m2-cite{font-style:italic}
-.m2-prop{margin-top:7px;border:1.5px dashed var(--ia);border-radius:12px;padding:6px 8px 8px 10px}
+.m2-prop{margin-top:7px;border:1.5px dashed var(--ia);border-radius:12px;padding:5px 8px 8px 10px}
 .m2-prop .t{font-size:14px;color:var(--ia);font-weight:800}
 .m2-prop .q{line-height:1.25}
 .m2-pl{display:flex;align-items:center;gap:8px;min-height:30px}
-.m2-pl .cc{width:24px;height:24px;border-radius:6px;background:var(--ia);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none}
+.m2-pl .cc,.m2-cases .cc{width:24px;height:24px;border-radius:6px;background:var(--ia);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none}
+.m2-cases{display:flex;flex-wrap:wrap;gap:4px 14px;margin:3px 0 0}
+.m2-cases>span{display:flex;align-items:center;gap:7px;min-height:30px}
 .m2-pa{display:flex;gap:8px;margin-top:6px}
 .m2-pa .m2-btn{flex:1}
-.m2-prop.ligne{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 10px}
+.m2-prop.ligne{display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px}
 .m2-prop.ligne .q{flex:1}
 .m2-btn{height:44px;min-width:48px;padding:0 12px;border-radius:10px;font:inherit;font-size:16px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid #b9b5ae;background:var(--bg);color:var(--ink);white-space:nowrap}
 .m2-btn svg{width:16px;height:16px}
 .m2-btn.plein{background:var(--ink);border-color:var(--ink);color:#fff}
-.m2-btn.ia{background:var(--ia);border-color:var(--ia);color:#fff}
 .m2-btn.cia{border-color:var(--ia);color:var(--ia)}
-.m2-cond{margin-top:7px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;padding:0 2px}
-.m2-cond .si{font-size:14px;font-weight:800;color:var(--att);background:var(--attbg);border-radius:6px;padding:0 6px;white-space:nowrap}
-.m2-cond a{color:var(--fin);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
-.m2-cond a svg{width:15px;height:15px}
+.m2-cond{margin-top:7px;font-size:14px;line-height:1.3;padding:0 2px;color:var(--ink)}
+.m2-cond .si{font-weight:800;color:var(--att);background:var(--attbg);border-radius:6px;padding:0 6px;white-space:nowrap}
 /* tâche : carte claire, case de 28 px dans une rangée de 44 */
-.m2-tache{margin-top:7px;display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--ink);border-radius:10px;padding:0 10px;min-height:44px;font-weight:700}
+.m2-tache{margin-top:6px;display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--ink);border-radius:10px;padding:0 10px;min-height:44px;font-weight:700}
 .m2-tache .case{width:28px;height:28px;border:2px solid var(--ink);border-radius:7px;flex:none}
 .m2-tache .qd{margin-left:auto;font-size:14px;color:var(--mut);white-space:nowrap;font-weight:600}
-.m2-tache.ok{border-color:transparent;background:var(--okbg);color:var(--ok)}
-.m2-tache.ok .case{background:var(--ok);border-color:var(--ok);color:#fff;display:grid;place-items:center}
 /* options */
-.m2-lt{font-size:14px;font-weight:800;color:var(--mut);margin:9px 0 0;display:flex;gap:6px;align-items:center}
-.m2-opt{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 6px 6px 10px;margin-top:5px}
+.m2-opt{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:5px 6px 5px 10px;margin-top:5px}
 .m2-opt .l{flex:1;line-height:1.25;min-width:0}
 .m2-opt .l b{display:block}
 .m2-opt .l>span{display:block;font-size:14px;color:var(--mut)}
@@ -99,28 +103,32 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 .m2-opt.conseil{border:2px solid var(--ia)}
 .m2-opt .m2-btn{padding:0 10px}
 /* décision, raison, relecture */
-.m2-dec{margin-top:4px;border-radius:10px;background:var(--okbg);padding:6px 10px}
-.m2-dec .t{font-size:14px;font-weight:800;color:var(--ok)}
-.m2-dec .c{font-weight:800}
+.m2-dec{margin-top:6px;border-radius:10px;background:var(--okbg);padding:5px 10px}
+.m2-dec .l1{display:flex;gap:8px;align-items:baseline}
+.m2-dec .c{font-weight:800;flex:1}
+.m2-dec .d{font-size:14px;color:var(--ok);font-weight:800;white-space:nowrap}
 .m2-dec .r{font-size:14px;margin-top:1px}
-.m2-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
-.m2-chip{display:inline-flex;align-items:center;gap:5px;min-height:40px;border-radius:999px;border:1.5px solid #b9b5ae;background:var(--bg);padding:0 12px;font-size:14px;font-weight:700}
-.m2-chip.on{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.m2-pq{margin-top:6px;display:flex;align-items:center;gap:8px}
+.m2-pq .q{flex:1;font-size:14px;color:var(--mut);line-height:1.3}
+.m2-pq .q b{color:var(--ink);font-size:16px}
 .m2-ro{display:flex;gap:8px;padding:5px 0;border-top:1px solid var(--s2);line-height:1.28}
 .m2-ro:first-of-type{border-top:0}
-.m2-ro .st{flex:none;width:82px;font-size:14px;font-weight:800;padding-top:1px}
-.m2-ro .st.ok{color:var(--ok)}.m2-ro .st.res{color:var(--att)}.m2-ro .st.q{color:var(--mut)}
+.m2-ro .st{flex:none;width:86px;font-size:14px;font-weight:800;padding-top:1px}
+.m2-ro .st.ok{color:var(--ok)}.m2-ro .st.res{color:var(--att)}.m2-ro .st.q{color:var(--mut)}.m2-ro .st.app{color:var(--ink)}
 .m2-ro .x{flex:1}
 .m2-ro .x small{display:block;font-size:14px;color:var(--mut)}
-.m2-trouve{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--fin);font-weight:700;margin:0 0 2px}
+.m2-trouve{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--fin);font-weight:700;margin:6px 0 0}
 .m2-trouve svg{width:15px;height:15px}
-.m2-ferme{margin-top:7px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--s2);padding-top:6px}
+.m2-ferme{margin-top:7px;display:flex;align-items:center;gap:8px}
 .m2-ferme .q{flex:1;font-size:14px;color:var(--mut);line-height:1.3}
-.m2-ferme .q b{color:var(--ok)}
+.m2-ferme .q b{color:var(--ink);font-size:16px}
+.m2-propose{font-size:14px;color:var(--mut);margin:-2px 0 6px}
+/* lu par l'app : seulement ce que la lecture locale sait poser */
+.m2-lus{font-size:14px;color:var(--mut);margin-top:4px;line-height:1.3}
 /* notes : un seul bloc de texte, numéro en marge */
 .m2-notes{margin:2px 10px 8px;background:var(--bg);border-radius:12px;padding:4px 0 6px;flex:0 1 auto;min-height:0;overflow:hidden}
 .m2-nh{font-size:14px;font-weight:800;color:var(--mut);margin:4px 12px 2px;display:flex;gap:6px}
-.m2-n{display:flex;gap:8px;padding:5px 12px 5px 6px;align-items:flex-start;border-left:3px solid transparent;line-height:1.3}
+.m2-n{display:flex;gap:8px;padding:4px 12px 4px 6px;align-items:flex-start;border-left:3px solid transparent;line-height:1.3}
 .m2-n .no{font-size:14px;color:var(--mut);flex:none;width:22px;text-align:right;padding-top:1px}
 .m2-n .tx{flex:1}
 .m2-n.lu{border-left-color:color-mix(in srgb,var(--ia) 55%,transparent)}
@@ -128,31 +136,32 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 .m2-n.attend{background:var(--s1)}
 .m2-n.cite{background:var(--okbg)}
 .m2-n .att{display:block;font-size:14px;color:var(--mut);font-weight:600}
-.m2-n .vig{width:48px;height:48px;border-radius:8px;flex:none;overflow:hidden}
-/* saisie : une ligne au repos ; photo, micro, Ajouter (sans IA) et Ranger toujours actifs */
+.m2-n .rais{display:block;font-size:14px;color:var(--ok);font-weight:800}
+.m2-notes.touche .m2-n{min-height:44px;align-items:center}
+.m2-n.imag{border-left-color:var(--imag);background:#fffbea}
+.m2-n.imag .tx{color:#3d3d3d}
+.m2-n.imag .att{color:var(--imagtx)}
+/* saisie : une ligne au repos ; en saisie, le champ prend toute la largeur */
 .m2-saisie{margin-top:auto;background:var(--bg);border-top:1px solid var(--line);padding:6px 10px 12px;display:flex;flex-direction:column;gap:6px;flex:none}
 .m2-ligne{display:flex;gap:6px;align-items:center}
-.m2-ligne:has(.plein){align-items:flex-end}
 .m2-ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--ink);background:var(--s1)}
 .m2-ic svg{width:22px;height:22px}
-.m2-champ{flex:1;min-width:0;min-height:44px;border:1.5px solid var(--line);border-radius:22px;padding:3px 3px 3px 12px;color:var(--mut);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+.m2-champ{flex:1;min-width:0;min-height:48px;border:1.5px solid var(--line);border-radius:24px;padding:0 0 0 12px;color:var(--mut);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
 .m2-champ .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.m2-champ.plein{color:var(--ink);border-color:var(--ink);white-space:normal;line-height:1.3;border-radius:18px;align-items:flex-end}
-.m2-champ.plein .tx{padding:6px 0}
-.m2-aj{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--ink);color:var(--ink);display:grid;place-items:center;flex:none;background:var(--bg)}
+.m2-champ.plein{color:var(--ink);border-color:var(--ink);white-space:normal;line-height:1.3}
+.m2-aj{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--ink);color:var(--ink);display:grid;place-items:center;flex:none;background:var(--bg);margin-right:1px}
 .m2-aj svg{width:18px;height:18px}
 .m2-ranger{height:44px;border-radius:22px;border:1.5px solid var(--ia);color:var(--ia);background:var(--bg);display:flex;align-items:center;gap:4px;padding:0 12px 0 9px;font-weight:800;flex:none}
 .m2-ranger svg{width:18px;height:18px}
-.m2-ranger.plein{background:var(--ia);color:#fff}
-.m2-ranger .pas{background:#fff;color:var(--ia);border-radius:999px;font-size:14px;padding:0 6px;margin-left:2px}
+.m2-ranger.plein{background:var(--ink);border-color:var(--ink);color:#fff}
+.m2-ranger .pas{background:#fff;color:var(--ink);border-radius:999px;font-size:14px;padding:0 6px;margin-left:2px}
 .m2-ranger.gris{border-color:#9a9a9a;color:#555}
-.m2-ranger.gris .pas{background:#555;color:#fff}
 .m2-sugg{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--mut)}
-.m2-coller{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--finbg);color:var(--fin);font-size:14px;font-weight:700;padding:0 12px;height:36px}
+.m2-coller{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--finbg);color:var(--fin);font-size:14px;font-weight:700;padding:0 12px;height:44px}
 .m2-coller svg{width:15px;height:15px}
-.m2-file{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--att);background:var(--attbg);border-radius:10px;padding:4px 4px 4px 10px}
+.m2-file{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--att);background:var(--attbg);border-radius:10px;padding:3px 3px 3px 10px}
 .m2-file svg{width:16px;height:16px;flex:none}
-.m2-file .m2-btn{height:36px;font-size:14px;border-color:var(--att);color:var(--att)}
+.m2-file .m2-btn{font-size:14px;border-color:var(--att);color:var(--att)}
 /* annuler */
 .m2-voile{position:absolute;inset:0;background:rgba(0,0,0,.4)}
 .m2-feuille{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:18px 18px 0 0;padding:10px 14px 16px}
@@ -164,7 +173,9 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 .m2-ch .c{width:28px;height:28px;border-radius:7px;border:2px solid var(--ia);display:grid;place-items:center;flex:none;font-weight:800;color:#fff;background:var(--ia)}
 .m2-ch.off .c{background:var(--bg);color:transparent}
 .m2-ch.off .t{color:var(--mut)}
+.m2-ch.fixe .c{background:var(--s2);border-color:var(--s2);color:var(--mut)}
 .m2-ch .t{flex:1;line-height:1.25}
+.m2-ch .t small{display:block;font-size:14px;color:var(--mut)}
 .m2-ch .s{font-size:14px;color:var(--mut);white-space:nowrap}
 .m2-ch .ann{font-size:14px;font-weight:800;color:var(--mut);background:var(--s2);border-radius:6px;padding:0 6px;margin-left:4px}
 .m2-actions{display:flex;gap:8px;margin-top:12px}
@@ -189,35 +200,36 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 <symbol id="m2-loupe" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
 <symbol id="m2-alerte" viewBox="0 0 24 24"><path d="M12 3l10 18H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 10v5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="18" r="1.3" fill="currentColor"/></symbol>
 <symbol id="m2-horsligne" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/></symbol>
-<!-- photo de la flaque : carrelage, siphon, flaque -->
-<symbol id="m2-flaque" viewBox="0 0 48 48"><rect width="48" height="48" fill="#cfc9bf"/><path d="M0 16h48M0 32h48M16 0v48M32 0v48" stroke="#b5ada1" stroke-width="1.5"/><ellipse cx="22" cy="29" rx="17" ry="10" fill="#7fa6c4" opacity=".75"/><circle cx="24" cy="24" r="7" fill="#8c8c8c" stroke="#555" stroke-width="1.5"/><path d="M19 24h10M24 19v10" stroke="#555" stroke-width="1.3"/></symbol>
-<symbol id="m2-sol" viewBox="0 0 48 48"><rect width="48" height="48" fill="#9fb3a3"/><path d="M0 40C12 34 24 44 48 36" stroke="#c9d8cc" stroke-width="3" fill="none"/><path d="M6 10l8 4M30 6l10 6M18 24l6 3" stroke="#bccfc0" stroke-width="2"/></symbol>
+<symbol id="m2-crayon" viewBox="0 0 24 24"><path d="M4 20l1-5L16 4l4 4L9 19z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
+<symbol id="m2-cadenas" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
 </svg>
 
-<!-- ============ 1. SAISIE : ses notes brutes, une 6e en cours ; fiche repliée en une ligne ; Ranger est le geste principal ============ -->
+<!-- ============ 1. SAISIE : ses 5 notes réelles ; la 6e en cours, le champ sur toute la largeur ============ -->
 <div class="m2-etat"><h3>1 · Noté : ses notes, telles quelles</h3>
 <section class="m2-ecran" id="avant">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche ligne"><div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="sous">· 5 notes à ranger</span><span class="m2-sp"></span><span class="m2-etq">Noté</span></div></div>
   <div class="m2-notes">
     <div class="m2-nh">Mes notes · 5<span class="m2-sp"></span>24 nov.</div>
-    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
   </div>
-  <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ plein"><span class="tx">Estimation 150 CHF (exemple).</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger plein"><svg><use href="#m2-ia"/></svg>Ranger<span class="pas">5</span></span></div></div>
+  <div class="m2-saisie">
+    <div class="m2-ligne"><span class="m2-champ plein"><span class="tx">Estimation 150 CHF (exemple).</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span></div>
+    <div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-sp"></span><span class="m2-ranger plein"><svg><use href="#m2-ia"/></svg>Ranger<span class="pas">5</span></span></div></div>
 </section></div>
 
 <!-- ============ 2. ATTENTE : l'IA range ; Arrêter ; ses notes restent lisibles ============ -->
 <div class="m2-etat"><h3>2 · L’IA range : en cours, Arrêter</h3>
 <section class="m2-ecran" id="attente">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
-  <div class="m2-fiche ligne"><div class="m2-fh"><svg><use href="#m2-ia"/></svg>Rangement<span class="sous">· 3 s</span><span class="m2-sp"></span><span class="m2-etq">Noté</span><span class="m2-btn cia" style="height:36px">Arrêter</span></div></div>
+  <div class="m2-fiche ligne"><div class="m2-fh"><svg><use href="#m2-ia"/></svg>Rangement<span class="sous">· 3 s</span><span class="m2-sp"></span><span class="m2-etq">Noté</span><span class="m2-btn cia">Arrêter</span></div></div>
   <div class="m2-notes">
     <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
-    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
@@ -232,44 +244,42 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
 <section class="m2-ecran" id="apres">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>6 changements · revoir</span><span class="m2-repl"><svg><use href="#m2-haut"/></svg></span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="sous">· 24 nov. 21:26</span><span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 6</span><span class="m2-repl"><svg><use href="#m2-haut"/></svg></span></div>
     <div class="m2-frise"><span class="fait">Noté</span><span class="prop">Je cherche ?</span><span>Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang"><span class="m2-pu oui m2-neuf">✓ joint du siphon usé <i>n°2</i></span><span class="m2-pu q m2-neuf">? dalle · à vérifier <i>n°3</i></span><span class="m2-pu cout m2-neuf">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev m2-neuf">devis attendu <i>n°5</i></span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
     <div class="m2-conseil"><svg><use href="#m2-ia"/></svg><span><b>Joint du siphon d’abord</b>, <span class="m2-cite">« trouvé usé »</span> <span class="m2-n2">n°2</span>. Si la flaque revient : sanitaire <span class="m2-n2">n°4</span>, dalle à vérifier.</span></div>
     <div class="m2-prop"><div class="t">Proposé · rien n’est posé sans toi</div>
-      <div class="m2-pl"><span class="cc">✓</span><span class="q">État : Je cherche</span></div>
-      <div class="m2-pl"><span class="cc">✓</span><span class="q">Tâche : Changer le joint du siphon</span></div>
+      <div class="m2-cases"><span><span class="cc">✓</span>Je cherche</span><span><span class="cc">✓</span>Tâche : changer le joint</span></div>
       <div class="m2-pa"><span class="m2-btn plein">Garder les 2</span><span class="m2-btn">Non</span></div></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 6</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n lu vient"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).</span></div>
   </div>
-  <div class="m2-saisie"><div class="m2-sugg">Copié :<span class="m2-coller"><svg><use href="#m2-lien"/></svg>Coller entreprise-x.ch</span></div>
+  <div class="m2-saisie"><div class="m2-sugg">Copié :<span class="m2-coller"><svg><use href="#m2-lien"/></svg>Coller entreprise-x.ch</span><span class="m2-imag-t">lien imaginé</span></div>
     <div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 4. JE CHERCHE : fiche en jetons, trois options citées, une seule pleine ============ -->
+<!-- ============ 4. JE CHERCHE (posé par lui le 25 nov., comme dans son carnet) : trois options citées, une seule pleine ============ -->
 <div class="m2-etat"><h3>4 · Je cherche : trois options</h3>
 <section class="m2-ecran" id="options">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
-    <div class="m2-frise"><span class="fait">Noté</span><span class="ici">Je cherche</span><span>Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
-    <div class="m2-lt"><svg width="15" height="15" style="color:var(--ia)"><use href="#m2-ia"/></svg>3 options tirées de tes notes</div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="sous">· 3 options</span><span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 6</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
+    <div class="m2-frise"><span class="fait">Noté</span><span class="ici">Je cherche <small>· toi, 25 nov.</small></span><span>Décidé</span><span>Résolu</span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
     <div class="m2-opt conseil"><span class="l"><b>Changer le joint soi-même</b><span><span class="tag">✦ conseillé</span> · <span class="m2-cite">« trouvé usé »</span> n°2</span><span class="ia">une pièce · l’IA, pas tes notes</span></span><span class="m2-btn plein">Retenir</span></div>
-    <div class="m2-opt"><span class="l"><b>Sanitaire pour le joint</b><span>entreprise X n°4</span><span><span class="m2-cite">« Estimation 150 CHF »</span> n°6, pour lui ?</span></span><span class="m2-btn">Retenir</span></div>
+    <div class="m2-opt"><span class="l"><b>Sanitaire pour le joint</b><span>entreprise X n°4 · <span class="m2-cite">« Estimation 150 CHF »</span> n°6, pour lui ?</span></span><span class="m2-btn">Retenir</span></div>
     <div class="m2-opt"><span class="l"><b>Chercher sous la dalle</b><span><span class="m2-cite">« pas trouvée »</span> n°3 · ? à vérifier</span></span><span class="m2-btn">Retenir</span></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 6</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
@@ -279,22 +289,22 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 5. DÉCIDER : option retenue par lui ; la raison, ce sont SES mots (il touche ses notes) ============ -->
+<!-- ============ 5. DÉCIDER : option retenue par lui ; la tâche reste ; la raison, il la touche dans ses notes ============ -->
 <div class="m2-etat"><h3>5 · Décidé : pourquoi, en tes mots</h3>
 <section class="m2-ecran" id="decide">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
-    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="ici">Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang une"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
-    <div class="m2-dec" style="margin-top:8px"><div class="t">Retenu par toi · 25 nov.</div><div class="c">Changer le joint soi-même</div></div>
-    <div class="m2-lt" style="color:var(--ink)">Pourquoi ? Touche tes mots</div>
-    <div class="m2-chips"><span class="m2-chip on">✓ « trouvé usé » n°2</span><span class="m2-chip">« Devis attendu. » n°5</span><span class="m2-chip">« 150 CHF » n°6</span><span class="m2-chip">Écrire</span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 6</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
+    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="ici">Décidé <small>· toi, 25 nov.</small></span><span>Résolu</span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
+    <div class="m2-dec"><div class="l1"><span class="d">Retenu</span><span class="c">Changer le joint soi-même</span></div><div class="r">Ta raison : <span class="m2-cite">« joint du siphon trouvé usé »</span> <span class="m2-n2">n°2, touchée par toi</span></div></div>
+    <div class="m2-tache"><span class="case"></span>Changer le joint du siphon<span class="qd">sans date</span></div>
+    <div class="m2-pq"><span class="q"><b>Pourquoi ?</b> Touche une de tes notes, ou écris.</span><span class="m2-btn">Écrire</span></div>
   </div>
-  <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 6</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
-    <div class="m2-n lu cite"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
+  <div class="m2-notes touche">
+    <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
+    <div class="m2-n lu cite"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé<span class="rais">✓ ta raison</span></span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
@@ -303,144 +313,147 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 6. TÂCHE : sa note 7 dit « samedi » ; la date est proposée depuis ses mots, il la met d'un toucher ============ -->
-<div class="m2-etat"><h3>6 · La tâche : date tirée de ta note</h3>
+<!-- ============ 6. TÂCHE : la note 7 (imaginée) dit « samedi » ; la date est proposée depuis ces mots ============ -->
+<div class="m2-etat"><h3>6 · La tâche : date tirée de la note</h3>
 <section class="m2-ecran" id="tache">
+  <div class="m2-imag-b"><svg><use href="#m2-crayon"/></svg>Suite imaginée pour la maquette : la note 7</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>1 changement · revoir</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
-    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="ici">Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang une"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
-    <div class="m2-dec" style="margin-top:8px"><div class="t">Retenu par toi</div><div class="c">Changer le joint soi-même</div><div class="r">Ta raison : <span class="m2-cite">« joint du siphon trouvé usé »</span> <span class="m2-n2">n°2</span></div></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 1</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
+    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="ici">Décidé <small>· toi, 25 nov.</small></span><span>Résolu</span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
+    <div class="m2-dec"><div class="l1"><span class="d">Retenu</span><span class="c">Changer le joint soi-même</span></div></div>
     <div class="m2-tache"><span class="case"></span>Changer le joint du siphon<span class="qd">sans date</span></div>
-    <div class="m2-prop ligne"><span class="q"><span class="t" style="display:block">Proposé · date, de ta note n°7 <span class="m2-cite" style="font-weight:600">« samedi »</span></span>Samedi 28 nov.</span><span class="m2-btn plein">Mettre</span><span class="m2-btn">Non</span></div>
-    <div class="m2-cond"><span class="si">si la flaque revient</span>contacter <a><svg><use href="#m2-lien"/></svg>Entreprise X</a> <span class="m2-n2">n°4</span></div>
+    <div class="m2-prop ligne"><span class="q"><b>Date : samedi 28 nov. ?</b><span class="t" style="display:block;font-weight:600">proposé, de la note n°7 <span class="m2-cite">« samedi »</span></span></span><span class="m2-btn plein">Mettre</span><span class="m2-btn">Non</span></div>
+    <div class="m2-cond"><span class="si">prochain nettoyage</span> flaque revenue ? entreprise X <span class="m2-n2">n°4</span></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 8</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 7<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n lu"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).</span></div>
-    <div class="m2-n lu vient"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.</span></div>
+    <div class="m2-imag-sep">imaginé pour la maquette</div>
+    <div class="m2-n imag"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.<span class="att">note imaginée · 25 nov.</span></span></div>
   </div>
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 7. RÉSOUDRE : sa note 8 ; l'IA propose « résolu ? », il l'accepte d'un toucher ============ -->
+<!-- ============ 7. RÉSOUDRE : la note 8 (imaginée, 3 déc.) ; l'IA propose « résolu ? », il l'accepte d'un toucher ============ -->
 <div class="m2-etat"><h3>7 · Résoudre : l’IA propose, tu acceptes</h3>
 <section class="m2-ecran" id="resoudre">
+  <div class="m2-imag-b"><svg><use href="#m2-crayon"/></svg>Suite imaginée pour la maquette : notes 7 et 8</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 1</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
     <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="ici">Décidé</span><span class="prop">Résolu ?</span></div>
-    <div class="m2-rang une"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
-    <div class="m2-tache"><span class="case"></span>Changer le joint du siphon<span class="qd">sam. 28 nov.</span></div>
-    <div class="m2-prop"><div class="t">Proposé, d’après ta note n°8</div>
-      <div class="q" style="margin:2px 0 2px"><span class="m2-cite">« Trois nettoyages, plus de flaque. »</span> La flaque n’est pas revenue : résolu ?</div>
-      <div class="m2-pl"><span class="cc">✓</span><span class="q">Tâche faite : Changer le joint du siphon</span></div>
-      <div class="m2-pl"><span class="cc">✓</span><span class="q">État : Résolu</span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
+    <div class="m2-prop"><div class="q"><span class="t">Proposé · note n°8</span> <span class="m2-cite">« plus de flaque »</span> : résolu ?</div>
+      <div class="m2-cases"><span><span class="cc">✓</span>Tâche faite : le joint</span><span><span class="cc">✓</span>État : Résolu</span></div>
       <div class="m2-pa"><span class="m2-btn plein">Résolu</span><span class="m2-btn">Pas encore</span></div></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 8</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 8<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n lu"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).</span></div>
-    <div class="m2-n lu"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.</span></div>
-    <div class="m2-n lu vient"><span class="no">8</span><span class="tx">Joint changé. Trois nettoyages, plus de flaque.</span></div>
+    <div class="m2-imag-sep">imaginé pour la maquette</div>
+    <div class="m2-n imag"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.<span class="att">note imaginée · 25 nov.</span></span></div>
+    <div class="m2-n imag vient"><span class="no">8</span><span class="tx">Joint changé samedi. Trois nettoyages depuis, plus de flaque.<span class="att">note imaginée · 3 déc.</span></span></div>
   </div>
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 8. RÉSOLU : fermé par lui ; ce qui a marché ; coût réel ; ce qui n'a pas servi, en gris ============ -->
-<div class="m2-etat"><h3>8 · Résolu : ce qui a marché</h3>
+<!-- ============ 8. RÉSOLU : plus de geste à faire, la fiche se replie en jetons avec l'état ============ -->
+<div class="m2-etat"><h3>8 · Résolu : la fiche repliée</h3>
 <section class="m2-ecran" id="resolu">
+  <div class="m2-imag-b"><svg><use href="#m2-crayon"/></svg>Suite imaginée pour la maquette : notes 7 et 8</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>2 changements · revoir</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
-    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="fait">Décidé</span><span class="fini">✓ Résolu</span></div>
-    <div class="m2-dec"><div class="t">A marché <span class="m2-n2" style="color:var(--ok)">n°8</span></div><div class="c">Changer le joint soi-même</div><div class="r"><span class="m2-cite">« Trois nettoyages, plus de flaque. »</span></div></div>
-    <div class="m2-tache ok"><span class="case">✓</span>Changer le joint du siphon<span class="qd" style="color:var(--ok)">fait</span></div>
-    <div class="m2-tache" style="border-color:var(--line);font-weight:600"><span>Coût réel</span><span class="qd" style="margin-left:0">pas noté</span><span class="m2-sp"></span><span class="m2-btn" style="height:36px;font-size:14px">+ Noter</span></div>
-    <div class="m2-rang" style="margin-top:8px"><span class="lab">Pas servi :</span><span class="m2-pu gris">sanitaire, entreprise X</span><span class="m2-pu gris">devis attendu</span><span class="m2-pu gris">? dalle pas vérifiée, pas eu besoin</span></div>
-    <div class="m2-ferme"><span class="q"><b>Fermé par toi · 29 nov.</b><br>proposé par l’IA, d’après ta note n°8</span><span class="m2-btn">Rouvrir</span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="sous">· repliée</span><span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 2</span><span class="m2-repl"><svg><use href="#m2-bas"/></svg></span></div>
+    <div class="m2-frise"><span class="fait">Noté</span><span class="fait">Je cherche</span><span class="fait">Décidé</span><span class="fini">✓ Résolu <small>· 3 déc.</small></span></div>
+    <div class="m2-propose">fermé par toi · proposé par l’IA, d’après la note n°8</div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint changé · plus de flaque <i>n°8</i></span><span class="m2-pu q">? dalle pas trouvée · à vérifier <i>n°3</i></span></div>
+    <div class="m2-rang" style="margin-top:5px"><span class="lab">En réserve :</span><span class="m2-pu gris">sanitaire <i>n°4</i></span><span class="m2-pu gris">devis attendu <i>n°5</i></span></div>
+    <div class="m2-ferme"><span class="q"><b>Coût réel</b> · pas noté</span><span class="m2-btn">+ Noter</span><span class="m2-btn">Rouvrir</span></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 8</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 8<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n lu"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).</span></div>
-    <div class="m2-n lu"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.</span></div>
-    <div class="m2-n lu"><span class="no">8</span><span class="tx">Joint changé. Trois nettoyages, plus de flaque.</span></div>
+    <div class="m2-imag-sep">imaginé pour la maquette</div>
+    <div class="m2-n imag"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.<span class="att">note imaginée · 25 nov.</span></span></div>
+    <div class="m2-n imag"><span class="no">8</span><span class="tx">Joint changé samedi. Trois nettoyages depuis, plus de flaque.<span class="att">note imaginée · 3 déc.</span></span></div>
   </div>
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 9. RELU EN MARS : trouvé par « siphon » ; chaque option nommée en clair, ses mots cités ============ -->
+<!-- ============ 9. RELU EN MARS : trouvé par « siphon » ; chaque option nommée comme au résolu ============ -->
 <div class="m2-etat"><h3>9 · Relu en mars : pourquoi j’ai pris ça</h3>
 <section class="m2-ecran" id="relire">
+  <div class="m2-imag-b"><svg><use href="#m2-crayon"/></svg>Suite imaginée pour la maquette : notes 7 et 8</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-pu oui">✓ Résolu</span></div>
   <div class="m2-fiche">
-    <div class="m2-trouve" style="margin-top:4px"><svg><use href="#m2-loupe"/></svg>trouvé par « siphon » · note n°2</div>
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Pourquoi ce choix<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir</span></div>
-    <div class="m2-ro"><span class="st ok">✓ Retenu</span><span class="x"><b>Changer le joint soi-même</b><small>ta raison : <span class="m2-cite">« joint du siphon trouvé usé »</span> n°2 · décidé le 25 nov.</small></span></div>
-    <div class="m2-ro"><span class="st res">En réserve</span><span class="x"><b>Sanitaire pour le joint</b><small>entreprise X n°4 · <span class="m2-cite">« Estimation 150 CHF »</span> n°6 · devis jamais reçu n°5</small></span></div>
-    <div class="m2-ro"><span class="st q">? Pas vérifié</span><span class="x"><b>Chercher sous la dalle</b><small><span class="m2-cite">« fuite sous la dalle, pas trouvée »</span> n°3</small></span></div>
-    <div class="m2-ro"><span class="st ok">Résultat</span><span class="x"><span class="m2-cite">« Trois nettoyages, plus de flaque. »</span><small>n°8 · fermé le 29 nov. · coût réel pas noté</small></span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Pourquoi ce choix<span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 2</span></div>
+    <div class="m2-ro"><span class="st ok">✓ Retenu<small style="display:block;font-weight:600;font-size:14px">25 nov.</small></span><span class="x"><b>Changer le joint soi-même</b><small>raison <span class="m2-cite">« joint du siphon trouvé usé »</span> n°2</small></span></div>
+    <div class="m2-ro"><span class="st res">En réserve</span><span class="x"><b>Sanitaire pour le joint</b><small>entreprise X n°4 · <span class="m2-cite">« Estimation 150 CHF »</span> n°6 · <span class="m2-cite">« Devis attendu. »</span> n°5</small></span></div>
+    <div class="m2-ro"><span class="st q">? à vérifier</span><span class="x"><b>Chercher sous la dalle</b><small><span class="m2-cite">« fuite sous la dalle, pas trouvée »</span> n°3</small></span></div>
+    <div class="m2-ro"><span class="st ok">Résultat</span><span class="x">Plus de flaque <span class="m2-imag-t">note 8 imaginée</span><small>fermé le 3 déc. · coût réel pas noté</small></span></div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 8<span class="m2-sp"></span>24 au 29 nov.</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 8<span class="m2-sp"></span><span class="m2-trouve" style="margin:0"><svg><use href="#m2-loupe"/></svg>trouvé par « siphon » · n°2</span></div>
+    <div class="m2-n lu"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n lu cite"><span class="no">2</span><span class="tx">Pistes : joint du <b>siphon</b> trouvé usé</span></div>
     <div class="m2-n lu"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n lu"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n lu"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n lu"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).</span></div>
-    <div class="m2-n lu"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.</span></div>
-    <div class="m2-n lu"><span class="no">8</span><span class="tx">Joint changé. Trois nettoyages, plus de flaque.</span></div>
+    <div class="m2-imag-sep">imaginé pour la maquette</div>
+    <div class="m2-n imag"><span class="no">7</span><span class="tx">Je change le joint moi-même samedi.<span class="att">note imaginée · 25 nov.</span></span></div>
+    <div class="m2-n imag"><span class="no">8</span><span class="tx">Joint changé samedi. Trois nettoyages depuis, plus de flaque.<span class="att">note imaginée · 3 déc.</span></span></div>
   </div>
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 10. UN MÉMO, PAS UN PROBLÈME : une ligne de fiche, puis le lien proposé ============ -->
+<!-- ============ 10. UN MÉMO, PAS UN PROBLÈME (carnet entier imaginé) : une ligne de fiche, puis le lien proposé ============ -->
 <div class="m2-etat"><h3>10 · Un mémo : une ligne, pas une fiche</h3>
 <section class="m2-ecran" id="memo">
+  <div class="m2-imag-b"><svg><use href="#m2-crayon"/></svg>Carnet imaginé pour la maquette</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Sol époxy de la salle</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Mémo<span class="sous">· sol de la salle</span><span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir</span></div>
-    <div class="m2-prop ligne" style="margin-top:4px"><span class="q"><span class="t" style="display:block">Proposé · lien, même sol</span>Lier à « Écoulement qui fuit »</span><span class="m2-btn plein">Lier</span><span class="m2-btn">Non</span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Mémo<span class="sous">· sol de la salle</span><span class="m2-sp"></span><span class="m2-rev"><svg><use href="#m2-hist"/></svg>revoir · 1</span></div>
+    <div class="m2-prop ligne"><span class="q"><span class="t" style="display:block">Proposé · lien, même sol</span>Lier à « Écoulement qui fuit »</span><span class="m2-btn plein">Lier</span><span class="m2-btn">Non</span></div>
   </div>
   <div class="m2-notes">
     <div class="m2-nh">Mes notes · 1<span class="m2-sp"></span>2 déc.</div>
-    <div class="m2-n lu"><span class="no">1</span><span class="tx">Le sol époxy a bien tenu.</span><svg class="vig"><use href="#m2-sol"/></svg></div>
+    <div class="m2-n imag"><span class="no">1</span><span class="tx">Le sol époxy a bien tenu.<span class="att">note imaginée · 2 déc.</span></span></div>
   </div>
   <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 11. SANS IA (hors ligne) : lu par l'app : jetons, options, tâche ; l'envoi attend, on peut l'annuler ============ -->
+<!-- ============ 11. SANS IA (hors ligne) : seulement ce que la lecture locale pose (« pas trouvée », un montant) ; le reste attend l'IA ============ -->
 <div class="m2-etat"><h3>11 · Sans IA : hors ligne, lu par l’app</h3>
 <section class="m2-ecran" id="sans-ia">
   <div class="m2-reseau"><svg><use href="#m2-horsligne"/></svg>Hors ligne · tes notes restent sur le téléphone</div>
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche app">
-    <div class="m2-fh"><svg style="color:#666"><use href="#m2-loupe"/></svg>Lu par l’app<span class="sous">· en attendant l’IA</span><span class="m2-sp"></span></div>
-    <div class="m2-frise"><span class="ici">Noté</span><span>Je cherche</span><span>Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang"><span class="m2-pu app">✓ joint du siphon usé <i>n°2</i></span><span class="m2-pu app">? dalle pas trouvée <i>n°3</i></span><span class="m2-pu app">devis attendu <i>n°5</i></span><span class="m2-pu app">150 CHF estimé <i>n°6</i></span></div>
-    <div style="margin-top:7px;line-height:1.3"><b>Options lues dans tes notes :</b> joint du siphon <span class="m2-n2">n°2</span> · sanitaire <span class="m2-n2">n°4</span></div>
-    <div class="m2-prop ligne" style="border-color:#8a8a8a"><span class="q"><span class="t" style="display:block;color:#444">Tâche ?</span>Changer le joint du siphon</span><span class="m2-btn plein">Garder</span><span class="m2-btn">Non</span></div>
+    <div class="m2-fh"><svg style="color:#666"><use href="#m2-loupe"/></svg>Lu par l’app, sans IA<span class="m2-sp"></span><span class="m2-etq">Noté</span></div>
+    <div class="m2-ro"><span class="st app">pas trouvée</span><span class="x"><span class="m2-cite">« fuite sous la dalle, pas trouvée. »</span> <span class="m2-n2">n°3</span></span></div>
+    <div class="m2-ro"><span class="st app">150 CHF</span><span class="x"><span class="m2-cite">« Estimation 150 CHF (exemple). »</span> <span class="m2-n2">n°6</span></span></div>
+    <div class="m2-lus">Trouvé, devis, options, tâche : l’IA te les proposera au retour du réseau.</div>
   </div>
   <div class="m2-notes">
-    <div class="m2-nh">Mes notes · 6</div>
-    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
+    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
@@ -451,45 +464,50 @@ body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-s
     <div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger gris"><svg><use href="#m2-hist"/></svg>Ranger</span></div></div>
 </section></div>
 
-<!-- ============ 12. ERREUR EN LIGNE : le réseau est là, l'IA n'a pas répondu ; Réessayer ; ses notes gardées ============ -->
+<!-- ============ 12. ERREUR EN LIGNE : même repli que hors ligne ; Réessayer prend la place de Ranger ============ -->
 <div class="m2-etat"><h3>12 · L’IA n’a pas pu lire (en ligne)</h3>
 <section class="m2-ecran" id="erreur">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
-  <div class="m2-fiche err ligne"><div class="m2-fh"><svg><use href="#m2-alerte"/></svg>L’IA n’a pas pu lire<span class="m2-sp"></span><span class="m2-btn ia" style="height:40px">Réessayer</span></div>
-    <div style="font-size:14px;color:var(--mut);padding:0 0 4px 24px">pas de réponse · notes gardées · <span class="m2-etq">Noté</span></div></div>
+  <div class="m2-fiche err">
+    <div class="m2-fh"><svg><use href="#m2-alerte"/></svg>L’IA n’a pas pu lire<span class="sous">· pas de réponse</span><span class="m2-sp"></span><span class="m2-etq">Noté</span></div>
+    <div class="m2-ro" style="padding-top:0"><span class="st app" style="color:#444">Lu par l’app</span><span class="x" style="font-size:14px;color:var(--mut)">en attendant, sans IA</span></div>
+    <div class="m2-ro"><span class="st app">pas trouvée</span><span class="x"><span class="m2-cite">« fuite sous la dalle, pas trouvée. »</span> <span class="m2-n2">n°3</span></span></div>
+    <div class="m2-ro"><span class="st app">150 CHF</span><span class="x"><span class="m2-cite">« Estimation 150 CHF (exemple). »</span> <span class="m2-n2">n°6</span></span></div>
+    <div class="m2-lus">Trouvé, devis, options, tâche : l’IA te les proposera quand elle répondra.</div>
+  </div>
   <div class="m2-notes">
     <div class="m2-nh">Mes notes · 6<span class="m2-sp"></span>24 nov.</div>
-    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="vig"><use href="#m2-flaque"/></svg></div>
+    <div class="m2-n"><span class="no">1</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span></div>
     <div class="m2-n"><span class="no">2</span><span class="tx">Pistes : joint du siphon trouvé usé</span></div>
     <div class="m2-n"><span class="no">3</span><span class="tx">fuite sous la dalle, pas trouvée.</span></div>
     <div class="m2-n"><span class="no">4</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span></div>
     <div class="m2-n"><span class="no">5</span><span class="tx">Devis attendu.</span></div>
     <div class="m2-n attend"><span class="no">6</span><span class="tx">Estimation 150 CHF (exemple).<span class="att">gardée · pas encore rangée</span></span></div>
   </div>
-  <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger"><svg><use href="#m2-ia"/></svg>Ranger</span></div></div>
+  <div class="m2-saisie"><div class="m2-ligne"><span class="m2-ic"><svg><use href="#m2-photo"/></svg></span><span class="m2-ic"><svg><use href="#m2-micro"/></svg></span><span class="m2-champ"><span class="tx">Une mini note…</span><span class="m2-aj" title="Ajouter sans l’IA"><svg><use href="#m2-envoi"/></svg></span></span><span class="m2-ranger plein"><svg><use href="#m2-annule"/></svg>Réessayer</span></div></div>
 </section></div>
 
-<!-- ============ 13. ANNULER : « 6 changements · revoir » ouvre la feuille ; une case par changement, sa note ; décoché = la fiche derrière suit ============ -->
-<div class="m2-etat"><h3>13 · Changé par l’IA : case par case, ou tout</h3>
+<!-- ============ 13. ANNULER : « revoir · 6 » ouvre la feuille ; une case par changement ; ce que l'IA a corrigé ne se rend pas ============ -->
+<div class="m2-etat"><h3>13 · Changé par l’IA : case par case</h3>
 <section class="m2-ecran" id="annuler">
   <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
   <div class="m2-fiche">
-    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-rev" style="background:var(--ia);color:#fff"><svg><use href="#m2-hist"/></svg>6 changements · revoir</span></div>
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="sous">· 24 nov. 21:26</span><span class="m2-sp"></span><span class="m2-rev ouvert"><svg><use href="#m2-hist"/></svg>revoir · 6</span></div>
     <div class="m2-frise"><span class="fait">Noté</span><span class="prop">Je cherche ?</span><span>Décidé</span><span>Résolu</span></div>
-    <div class="m2-rang"><span class="m2-pu oui">✓ joint du siphon usé <i>n°2</i></span><span class="m2-pu q">? dalle · à vérifier <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span></div>
+    <div class="m2-rang"><span class="m2-pu oui">✓ joint usé <i>n°2</i></span><span class="m2-pu gris">dalle pas trouvée <i>n°3</i></span><span class="m2-pu cout">150 CHF estimé <i>n°6</i></span><span class="m2-pu dev">devis attendu <i>n°5</i></span></div>
   </div>
   <div class="m2-voile"></div>
   <div class="m2-feuille">
     <div class="m2-poig"></div>
-    <h2><svg><use href="#m2-ia"/></svg>Changé par l’IA à 21:26</h2>
-    <div class="sous">Décoche : la fiche derrière revient à l’avant. Tes notes ne bougent jamais.</div>
+    <h2><svg><use href="#m2-ia"/></svg>Changé par l’IA · 6</h2>
+    <div class="sous">24 nov. 21:26 · décoche : la fiche derrière suit. Tes notes ne bougent jamais.</div>
     <div class="m2-ch"><span class="c">✓</span><span class="t">Trouvé : joint du siphon usé</span><span class="s">note 2</span></div>
-    <div class="m2-ch"><span class="c">✓</span><span class="t">Dalle : ? à vérifier, pas trouvée</span><span class="s">note 3</span></div>
-    <div class="m2-ch"><span class="c">✓</span><span class="t">Coût : 150 CHF estimé, pas un devis</span><span class="s">note 6</span></div>
-    <div class="m2-ch off"><span class="c">✓</span><span class="t">Devis attendu<span class="ann">annulé</span></span><span class="s">note 5</span></div>
+    <div class="m2-ch off"><span class="c">✓</span><span class="t">Dalle : « ? à vérifier » ajouté<span class="ann">annulé</span><small>reste « pas trouvée », tes mots</small></span><span class="s">note 3</span></div>
+    <div class="m2-ch fixe"><span class="c"><svg width="16" height="16"><use href="#m2-cadenas"/></svg></span><span class="t">Coût : 150 CHF estimé<small>l’app lisait un coût ferme · corrigé, pas de retour</small></span><span class="s">note 6</span></div>
+    <div class="m2-ch fixe"><span class="c"><svg width="16" height="16"><use href="#m2-cadenas"/></svg></span><span class="t">Devis attendu<small>l’app lisait « à acheter » · corrigé, pas de retour</small></span><span class="s">note 5</span></div>
     <div class="m2-ch"><span class="c">✓</span><span class="t">Conseil : joint du siphon d’abord</span><span class="s">notes 2, 3</span></div>
-    <div class="m2-ch"><span class="c">✓</span><span class="t">Contacter l’entreprise X : si la flaque revient</span><span class="s">note 4</span></div>
-    <div class="m2-actions"><button class="a"><svg width="18" height="18"><use href="#m2-annule"/></svg>Tout annuler</button><button class="b">Garder 5 sur 6</button></div>
+    <div class="m2-ch"><span class="c">✓</span><span class="t">Si la flaque revient : entreprise X</span><span class="s">note 4</span></div>
+    <div class="m2-actions"><button class="a"><svg width="18" height="18"><use href="#m2-annule"/></svg>Annuler le reste</button><button class="b">Garder 5 sur 6</button></div>
   </div>
 </section></div>
 </body>
