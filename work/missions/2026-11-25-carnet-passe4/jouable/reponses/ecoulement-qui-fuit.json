@@ -46,7 +46,8 @@
   "emoji": "📞",
   "titre": "Contacter l’entreprise X",
   "ligne": 3,
-  "citation": "Contacter l’entreprise X"
+  "citation": "Contacter l’entreprise X",
+  "option": 1
  },
  "echeance": null,
  "periode": null,

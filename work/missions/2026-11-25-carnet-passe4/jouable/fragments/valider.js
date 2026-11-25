@@ -51,7 +51,8 @@ function valider(brut, lignes, pages) {
     if (quand && !lignes.some(function (l) { return normA(l).toLowerCase().indexOf(normA(quand).toLowerCase()) >= 0; })) {
       erreurs.push('date de tâche absente des notes : « ' + quand + ' » (retirée)'); quand = null;
     }
-    rep.tache = { emoji: emo(brut.tache.emoji), titre: str(brut.tache.titre), quand: quand, ligne: vt ? vt.ligne : null, citation: vt ? vt.citation : null };
+    rep.tache = { emoji: emo(brut.tache.emoji), titre: str(brut.tache.titre), quand: quand, ligne: vt ? vt.ligne : null, citation: vt ? vt.citation : null,
+      option: Number.isInteger(brut.tache.option) && brut.tache.option >= 0 && brut.tache.option < (rep.options || []).length ? brut.tache.option : null };
   } else rep.tache = null;
   rep.conseil = str(brut.conseil);
   rep.resolu = brut.resolu && str(brut.resolu.question) ? { question: str(brut.resolu.question) } : null;
@@ -70,7 +71,7 @@ function valider(brut, lignes, pages) {
         var x = Array.isArray(a.valeurs) ? a.valeurs[k] : null;
         var tx = x && typeof x === 'object' ? str(x.texte) : str(x), src = x && ['notes', 'page'].indexOf(x.source) >= 0 ? x.source : 'ia';
         var det = x && typeof x === 'object' ? str(x.detail) : null;
-        if (tx && tx !== '?' && src === 'page' && textePages.indexOf(normA(tx)) < 0) { fausses++; erreurs.push('valeur « ' + tx + ' » absente des pages lues (retirée)'); tx = '?'; }
+        if (tx && tx !== '?' && src === 'page' && textePages.indexOf(normA(tx.replace(/\s*\?$/, ''))) < 0) { fausses++; erreurs.push('valeur « ' + tx + ' » absente des pages lues (retirée)'); tx = '?'; }
         if (tx && tx !== '?' && src === 'ia' && det && !nombresConnus(det)) { erreurs.push('calcul « ' + det + ' » sur des nombres non écrits (retiré)'); tx = '?'; det = null; }
         return { texte: tx || '?', source: src, emoji: x && typeof x === 'object' ? emo(x.emoji) : '', detail: det };
       });
@@ -78,7 +79,12 @@ function valider(brut, lignes, pages) {
     }).filter(Boolean);
     if (crit.length && arts.length >= 2) {
       var gag = crit.map(function (_, k) { var g = Array.isArray(cp.gagnant) ? cp.gagnant[k] : null; return Number.isInteger(g) && g >= 0 && g < arts.length && arts[g].valeurs[k].texte !== '?' ? g : null; });
-      rep.comparaison = { criteres: crit, articles: arts, gagnant: gag, compromis: str(cp.compromis) };
+      rep.comparaison = { criteres: crit, articles: arts, gagnant: gag, compromis: str(cp.compromis),
+        variete: arr(cp.variete).slice(0, 3).map(function (x) {
+          var tx = x && str(x.texte), src = x && ['notes', 'page'].indexOf(x.source) >= 0 ? x.source : 'ia';
+          if (!tx || (src === 'page' && textePages.indexOf(normA(tx)) < 0) || (src === 'notes' && texteLignes.indexOf(normA(tx)) < 0)) { if (tx) { fausses++; erreurs.push('variété « ' + tx + ' » absente (retirée)'); } return null; }
+          return { texte: tx, emoji: emo(x.emoji), source: src };
+        }).filter(Boolean) };
     } else if (cp.articles.length) erreurs.push('comparaison incomplète (retirée)');
   }
   rep.emoji = emo(brut.emoji);

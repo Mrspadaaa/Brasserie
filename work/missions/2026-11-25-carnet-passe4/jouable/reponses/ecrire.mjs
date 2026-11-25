@@ -12,12 +12,12 @@ const R = {
 'ZZ TEST — CO2 qui baisse vite dans un fût': { emoji: '🫧', categorie: { nom: 'Brasserie', sous: 'Conditionnement' }, priorite: 'normale', resume: 'Revérifier le raccord', etatPropose: 'decide', genre: 'probleme',
   pistes: [{ emoji: '🔩', mot: 'couvercle', texte: 'Joint du couvercle', statut: 'a_verifier', ligne: 2, citation: 'joint du couvercle' }, { emoji: '🔧', mot: 'raccord gaz', texte: 'Raccord gaz', statut: 'trouve', ligne: 3, citation: 'bulles au raccord gaz' }, { emoji: '🎛️', mot: 'régulateur', texte: 'Régulateur', statut: 'a_verifier', ligne: 2, citation: 'régulateur' }],
   tache: { emoji: '🔁', titre: 'Revérifier le raccord', quand: 'dans une semaine', ligne: 4, citation: 'à revérifier dans une semaine' },
-  chiffres: [{ emoji: '📉', valeur: '0,4 bar', label: 'le 22', ligne: 1 }, { emoji: '🛢️', valeur: '1,2 bar', label: 'le 15 nov.', ligne: 1 }],
+  chiffres: [{ emoji: '🛢️', valeur: '1,2 bar', label: 'le 15 nov.', ligne: 1 }, { emoji: '📉', valeur: '0,4 bar', label: 'le 22', ligne: 1 }],
   lectures: [{ ligne: 3, mot: 'bulles au raccord gaz', type: 'piste' }, { ligne: 4, mot: 'dans une semaine', type: 'date' }] },
 'ZZ TEST — écoulement qui fuit': { emoji: '💧', categorie: { nom: 'Local', sous: 'Eau' }, priorite: 'normale', resume: 'Contacter l’entreprise X', etatPropose: 'cherche', genre: 'probleme',
   pistes: [{ emoji: '🔧', mot: 'joint', texte: 'Joint du siphon', statut: 'trouve', ligne: 2, citation: 'joint du siphon trouvé usé' }, { emoji: '🧱', mot: 'dalle', texte: 'Sous la dalle', statut: 'pas_trouve', ligne: 2, citation: 'fuite sous la dalle, pas trouvée' }],
   options: [{ emoji: '🛠️', titre: 'Changer le joint', qui: 'toi', cout: '?', source: 'ia', conseille: true }, { emoji: '👷', titre: 'Le sanitaire', qui: 'sanitaire X', cout: '150 CHF', estime: true, attente: { ligne: 4, citation: 'Devis attendu' }, source: 'notes', ligne: 5, citation: 'Estimation 150 CHF', conseille: false }],
-  tache: { emoji: '📞', titre: 'Contacter l’entreprise X', ligne: 3, citation: 'Contacter l’entreprise X' },
+  tache: { emoji: '📞', titre: 'Contacter l’entreprise X', ligne: 3, citation: 'Contacter l’entreprise X', option: 1 },
   manque: [{ emoji: '✏️', texte: 'prix du joint ?' }],
   lectures: [{ ligne: 1, mot: 'fuit au joint', type: 'piste' }, { ligne: 2, mot: 'trouvé usé', type: 'piste' }, { ligne: 2, mot: 'pas trouvée', type: 'pas_trouve' }, { ligne: 3, mot: 'Contacter l’entreprise X', type: 'contacte' }, { ligne: 4, mot: 'Devis attendu', type: 'devis' }, { ligne: 5, mot: '150 CHF', type: 'montant' }],
   conseil: '🔧 Le joint d’abord : tu l’as trouvé usé.' },
@@ -85,11 +85,12 @@ const R = {
 'ZZ TEST — Houblons citra': { emoji: '🌿', categorie: { nom: 'Brasserie', sous: 'Matières premières' }, priorite: 'normale', resume: 'Vérifier le prix Brau', etatPropose: 'cherche', genre: 'achat',
   tache: { emoji: '🔁', titre: 'Vérifier prix Brau', ligne: 2, citation: 'brauundrauchshop.ch' },
   attention: [{ emoji: '⚠️', texte: 'Dur à obtenir', ligne: 3, citation: 'dur à obtenir' }],
-  manque: [{ emoji: '⚖️', texte: 'poids .fr ?' }],
-  comparaison: { criteres: ['🌿 α', '💶 Prix', '📦 Dispo', '🍋 Arômes', '🌍 Origine'], articles: [
-    { nom: 'MotlerHops', ligne: 1, citation: 'motlerhops.fr', valeurs: [{ texte: '10 % - 15 %', source: 'page' }, { texte: '3,72 €', source: 'page' }, { texte: 'en stock', source: 'page', emoji: '✅' }, { texte: '?', source: 'ia' }, { texte: 'États-Unis', source: 'page', emoji: '🇺🇸' }] },
-    { nom: 'Brau- und Rauchshop', ligne: 2, citation: 'brauundrauchshop.ch', valeurs: [{ texte: '13,6 %', source: 'page' }, { texte: 'à relire', source: 'page' }, { texte: '?', source: 'ia' }, { texte: 'citron vert, mangue, fruits tropicaux', source: 'page', emoji: '🍋🥭🌴' }, { texte: 'USA', source: 'page', emoji: '🇺🇸' }] }],
-    gagnant: [null, null, null, null, null] },
+  manque: [{ emoji: '⚖️', texte: 'quel poids ?' }],
+  comparaison: { criteres: ['α acides alpha', '💶 Prix', '📦 Dispo'], articles: [
+    { nom: 'MotlerHops', ligne: 1, citation: 'motlerhops.fr', valeurs: [{ texte: '10 % - 15 %', source: 'page' }, { texte: '3,72 € ?', source: 'page' }, { texte: 'en stock', source: 'page', emoji: '✅' }] },
+    { nom: 'Brau- und Rauchshop', ligne: 2, citation: 'brauundrauchshop.ch', valeurs: [{ texte: '13,6 %', source: 'page' }, { texte: 'à relire', source: 'page' }, { texte: '?', source: 'ia' }] }],
+    variete: [{ texte: 'citron vert, mangue, fruits tropicaux', source: 'page', emoji: '🍋🥭🌴' }, { texte: 'États-Unis', source: 'page', emoji: '🇺🇸' }],
+    gagnant: [null, null, null] },
   lectures: [{ ligne: 3, mot: 'dur à obtenir', type: 'pas_trouve' }] },
 // --- 5 cas fictifs du pilote ---
 'ZZ TEST — Chaudière en panne jour de brassage': { emoji: '🔥', categorie: { nom: 'Brasserie', sous: 'Brassage' }, priorite: 'haute', resume: 'Appeler le technicien', etatPropose: 'decide', genre: 'probleme',
@@ -126,6 +127,11 @@ const R = {
   lectures: [{ ligne: 2, mot: '12 jours', type: 'date' }, { ligne: 4, mot: 'Odeur ok', type: 'piste' }],
   conseil: '🧪 Le starter dira si elle repart bien.' }
 };
+/* relecture de l'IA après une note : la réponse change avec ce qu'il a écrit (ligne « auto » : le banc trouve la ligne dans la consigne) */
+const APRES = {
+'ZZ TEST — écoulement qui fuit': [{ si: 'prix du joint : 6 CHF', modif: r => { r.options = r.options.map((o, i) => i === 0 ? { ...o, cout: '6 CHF', source: 'notes', ligne: 'auto', citation: '6 CHF au magasin' } : o); r.manque = []; } }],
+'ZZ TEST — Levure récoltée à tester': [{ si: 'Starter lancé ce soir', modif: r => { r.pistes = [...r.pistes, { emoji: '🧪', mot: 'starter', texte: 'Starter lancé', statut: 'trouve', ligne: 'auto', citation: 'Starter lancé ce soir' }]; r.tache = { emoji: '🧫', titre: 'Ensemencer', ligne: 3, citation: "avant d'ensemencer" }; r.resume = 'Ensemencer'; delete r.conseil; } }]
+};
 const AIDES = {
 'ZZ TEST — écoulement qui fuit': { items: [
   { type: 'check', emoji: '🪣', texte: 'Teste à l’eau colorée', pourquoi: 'voir si l’eau passe sous la dalle' },
@@ -136,5 +142,6 @@ const slug = t => t.replace(/^ZZ TEST\s*—\s*/, '').normalize('NFD').replace(/[
 const index = {};
 for (const [t, r] of Object.entries(R)) { const f = slug(t) + '.json'; fs.writeFileSync(D + f, JSON.stringify({ ...V, ...r }, null, 1)); index[t] = { reponse: f }; }
 for (const [t, a] of Object.entries(AIDES)) { const f = slug(t) + '.aide.json'; fs.writeFileSync(D + f, JSON.stringify(a, null, 1)); index[t].aide = f; }
+for (const [t, l] of Object.entries(APRES)) index[t].apres = l.map((a, k) => { const r = structuredClone({ ...V, ...R[t] }); a.modif(r); const f = slug(t) + '.apres-' + (k + 1) + '.json'; fs.writeFileSync(D + f, JSON.stringify(r, null, 1)); return { si: a.si, reponse: f }; });
 fs.writeFileSync(D + 'index.json', JSON.stringify(index, null, 1));
 console.log(Object.keys(index).length, 'réponses');

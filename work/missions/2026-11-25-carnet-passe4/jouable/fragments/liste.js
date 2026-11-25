@@ -7,7 +7,7 @@ function cleDe(c) {
   if (d && !retenus(c.org).length) return { t: d.map(function (x) { return x.cout.replace(/\s*CHF$/, ''); }).join(' | ') + ' CHF' };
   var p = prochaine(c);
   if (c.etat !== 'resolu' && p && p.n >= 0 && p.n <= 45) return { t: (p.approx ? '≈ ' : '') + p.txt, date: true };
-  if (r.chiffres && r.chiffres[0]) { var x = r.chiffres[0]; return { t: (x.estime ? '≈ ' : '') + x.valeur, est: !!x.estime }; }
+  if (r.chiffres && r.chiffres[0]) { var x = r.chiffres[0]; return { t: (x.estime ? '≈ ' : '') + j1Virg(x.valeur), est: !!x.estime }; }
   var es = r.options.filter(function (o) { return o.estime && nb(o.cout) != null; })[0];
   if (es) return { t: '≈ ' + es.cout.replace(/\s*\?$/, ''), est: true };
   if (p) return { t: (p.approx ? '≈ ' : '') + p.txt, date: true };
@@ -70,7 +70,9 @@ function aFaire() {
     if (c.etat === 'resolu') return;
     var o = c.org, r = o && o.rep;
     if (r && r.echeance && !o.echeanceFaite && !(r.tache && r.tache.quand === r.echeance.quand && o.garde.tache !== false && !o.tacheFaite)) it.push({ c: c, ic: '⏳', t: r.echeance.quoi || 'Échéance', q: r.echeance.quand, sorte: 'echeance' });
-    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite && !tacheDuo(r, o)) it.push({ c: c, ic: r.tache.emoji || '☐', t: r.tache.titre, q: r.tache.quand, sorte: 'tache' });
+    var tv = r ? tacheVive(c) : null, ch = r ? choixDe(c) : null;
+    if (tv && !o.tacheFaite && !tacheDuo(r, o)) it.push({ c: c, ic: tv.emoji || '☐', t: tv.titre, q: tv.quand, sorte: 'tache' });
+    if (ch && !o.choixFait) it.push({ c: c, ic: ch.emoji, t: ch.titre, q: r.tache && tacheChoix(r, o, r.tache) ? r.tache.quand : null, sorte: 'choix' });
     (c.miens || []).forEach(function (m) { if (m.type === 'tache' && !m.fait) it.push({ c: c, ic: m.check ? '✓' : '☐', t: m.texte, q: null, sorte: 'mien', m: m }); });
   });
   it.forEach(function (x) { var d = x.q && lireDate(x.q, x.c.maj); x.d = d ? d.d : null; x.approx = d ? !!d.approx : false; });
@@ -82,10 +84,10 @@ function decisions() {
 function cocherIci(x) {
   var o = x.c.org, av = x.sorte === 'tache' ? { f: o.tacheFaite, g: o.garde.tache } : null;
   if (x.sorte === 'tache') { o.tacheFaite = true; if (o.garde.tache === undefined) o.garde.tache = true; }
-  else if (x.sorte === 'mien') x.m.fait = true; else o.echeanceFaite = true;
+  else if (x.sorte === 'mien') x.m.fait = true; else if (x.sorte === 'choix') o.choixFait = true; else o.echeanceFaite = true;
   sauver(); journal({ quand: new Date().toISOString(), geste: 'cocher (À faire)', quoi: x.t, carnetTitre: titreDe(x.c) }); rendreListe();
   toast('Fait : ' + x.t, 'Annuler', function () {
-    if (x.sorte === 'tache') { o.tacheFaite = av.f; o.garde.tache = av.g; } else if (x.sorte === 'mien') x.m.fait = false; else o.echeanceFaite = false;
+    if (x.sorte === 'tache') { o.tacheFaite = av.f; o.garde.tache = av.g; } else if (x.sorte === 'mien') x.m.fait = false; else if (x.sorte === 'choix') o.choixFait = false; else o.echeanceFaite = false;
     sauver(); rendreListe();
   });
 }
@@ -101,12 +103,16 @@ function rendreAFaire(l, items) {
   if (dates.length) {
     var js = dates.map(function (x) { return Math.max(0, joursDe(x.d)); }), max = Math.max.apply(null, js.concat([7])), niv = {}, haut = 1;
     var frise = h('div', { class: 'p4-temps', 'data-booster': 'ligne-de-temps' }, h('span', { class: 'axe' }), h('span', { class: 'auj' }));
+    var fins = [];
     dates.forEach(function (x, i) {
-      var pc = 5 + js[i] / max * 90, k = Math.round(pc / 9), lv = niv[k] = (niv[k] || 0) + 1; haut = Math.max(haut, lv);
+      /* une bulle ne chevauche jamais sa voisine : elle monte d'un étage si la place est prise */
+      var pc = 6 + js[i] / max * 86, lv = 0; while (fins[lv] != null && pc - fins[lv] < 11) lv++; fins[lv] = pc; lv++; haut = Math.max(haut, lv);
       frise.appendChild(h('button', { type: 'button', class: 'pt' + (joursDe(x.d) < 0 ? ' passe' : ''), style: 'left:' + pc + '%;bottom:' + (40 + (lv - 1) * 40) + 'px',
         'aria-label': x.t + ', ' + dateCourte(x.d), title: x.t, onclick: function () { ouvrir(x.c.id); } }, emojiDe(x.c)));
     });
     frise.style.height = (84 + (haut - 1) * 40) + 'px';
+    var m0 = new Date(); m0 = new Date(m0.getFullYear(), m0.getMonth() + 1, 1, 12);
+    while (joursDe(m0) < max) { var pm = 6 + joursDe(m0) / max * 86; if (pm > 15 && pm < 80) { frise.appendChild(h('span', { class: 'tic', style: 'left:' + pm + '%' })); frise.appendChild(h('span', { class: 'lb m', style: 'left:' + pm + '%' }, MOIS[m0.getMonth()])); } m0 = new Date(m0.getFullYear(), m0.getMonth() + 1, 1, 12); }
     frise.appendChild(h('span', { class: 'lb', style: 'left:3%' }, 'auj.'));
     frise.appendChild(h('span', { class: 'lb', style: 'right:3%' }, dateCourte(dates[dates.length - 1].d)));
     l.appendChild(frise);

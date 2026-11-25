@@ -37,15 +37,15 @@
  "periode": null,
  "chiffres": [
   {
-   "emoji": "📉",
-   "valeur": "0,4 bar",
-   "label": "le 22",
-   "ligne": 1
-  },
-  {
    "emoji": "🛢️",
    "valeur": "1,2 bar",
    "label": "le 15 nov.",
+   "ligne": 1
+  },
+  {
+   "emoji": "📉",
+   "valeur": "0,4 bar",
+   "label": "le 22",
    "ligne": 1
   }
  ],

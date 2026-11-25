@@ -7,7 +7,13 @@
  },
  "ZZ TEST — écoulement qui fuit": {
   "reponse": "ecoulement-qui-fuit.json",
-  "aide": "ecoulement-qui-fuit.aide.json"
+  "aide": "ecoulement-qui-fuit.aide.json",
+  "apres": [
+   {
+    "si": "prix du joint : 6 CHF",
+    "reponse": "ecoulement-qui-fuit.apres-1.json"
+   }
+  ]
  },
  "ZZ TEST — fête de la bière en juin": {
   "reponse": "fete-de-la-biere-en-juin.json"
@@ -55,6 +61,12 @@
   "reponse": "bar-du-centre-veut-nos-bieres.json"
  },
  "ZZ TEST — Levure récoltée à tester": {
-  "reponse": "levure-recoltee-a-tester.json"
+  "reponse": "levure-recoltee-a-tester.json",
+  "apres": [
+   {
+    "si": "Starter lancé ce soir",
+    "reponse": "levure-recoltee-a-tester.apres-1.json"
+   }
+  ]
  }
 }

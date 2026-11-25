@@ -18,7 +18,7 @@
   {
    "nom": "À faire : ligne de temps, décision sur place + Annuler, cocher + Annuler",
    "ok": true,
-   "detail": "retenu [0] puis annulé []"
+   "detail": "aucun toast du rangement sur À faire ; retenu [0] puis annulé []"
   },
   {
    "nom": "Toucher un jeton → sa ligne surlignée, puis Revenir",
@@ -28,12 +28,12 @@
   {
    "nom": "Retenir « toi » + Annuler",
    "ok": true,
-   "detail": "état decide → cherche"
+   "detail": "état decide → cherche ; pouce après Retenir : « 🛠️ Changer le joint »"
   },
   {
    "nom": "Action sous le pouce : fait, puis Annuler",
    "ok": true,
-   "detail": "tâche faite puis rétablie"
+   "detail": "tâche faite puis rétablie ; pouce après Fait : « ✏️ prix du joint ? Noter »"
   },
   {
    "nom": "Aide : feuille ✓ ☐ 💡, Garder, Non merci",
@@ -48,7 +48,7 @@
   {
    "nom": "Écrire depuis Organisé : « prix du joint ? » → Noter",
    "ok": true,
-   "detail": "« prix du joint : 6 CHF au magasin » ajouté"
+   "detail": "tout de suite : case « 6 CHF noté », manque « ✓ prix du joint : 6 CHF noté · l’IA relit » ; après l’IA : « 6 CHF|150 CHF estimé|?|devis », 0 manque"
   },
   {
    "nom": "⋯ puis feuille « Changé par l’IA »",
@@ -58,7 +58,7 @@
   {
    "nom": "Décider (frigo) : Retenir au pouce, toast, Annuler",
    "ok": true,
-   "detail": "retenu 0, annulé"
+   "detail": "retenu 0, annulé ; pouce : « 🔧 Réparer ≈ 1 déc. » → fait : « ✓ Réglé » → réglé : « ↺ Rouvrir »"
   },
   {
    "nom": "L’IA se trompe (chaudière « Décidé ») : il coupe dans « Changé par l’IA »",
@@ -68,17 +68,37 @@
   {
    "nom": "Achat (citra) : écarter un article, Annuler ; choisir",
    "ok": true,
-   "detail": "écarté 0 (annulé), choisi 0"
+   "detail": "écarté 0 (annulé), choisi 0 ; pouce : « 🛒 Commander · MotlerHops » ; prix « 3,72 € ? » ; variété au-dessus"
   },
   {
    "nom": "Échéance (assurance) : cocher une pièce",
    "ok": true,
-   "detail": "1/3"
+   "detail": "1/3 ; le toast « Choisi » de Citra n’a pas suivi"
   },
   {
    "nom": "Relecture (malt) : Toujours le bon choix ? Oui",
    "ok": true,
    "detail": "oui"
+  },
+  {
+   "nom": "Comparaison (600) : couronne au seul total complet qui couvre le besoin ; livraison inconnue marquée",
+   "ok": true,
+   "detail": "couronne : « 👑 410 CHF » ; 504 CHF + 🚚 ? ; 1 offre qui ne couvre pas 600"
+  },
+  {
+   "nom": "Ligne cassée (soufre) : jamais en carte de tête, gardée dans Mes notes",
+   "ok": true,
+   "detail": "aucune carte « fût.EST » ; tête : p4-chf ; ligne gardée dans Mes notes"
+  },
+  {
+   "nom": "Période (embouteillage) : « auj. » avant le début",
+   "ok": true,
+   "detail": "repère auj. à 26 px, début de la barre à 269 px, date de début finit à 269 px"
+  },
+  {
+   "nom": "Hors ligne : l’Organisé lu reste, daté ; la note règle la tâche (proposé) ; l’IA confirme au retour",
+   "ok": true,
+   "detail": "hors ligne : lecture gardée, « 📴 Hors ligne 1 note en file · lu 25 nov. 22:51 · l’IA relira au retour du réseau », starter proposé fait ; au retour : jeton starter ✓, pouce « 🧫 Ensemencer »"
   },
   {
    "nom": "« + » liste : noter un carnet neuf depuis la liste",
@@ -89,11 +109,6 @@
    "nom": "IA en erreur : ce que lit l’app seule, Réessayer au pouce",
    "ok": true,
    "detail": "lu sans IA : pas trouvé, 150 CHF ; Réessayer → rangé"
-  },
-  {
-   "nom": "Hors ligne : note en file, rien de perdu, lecture au retour",
-   "ok": true,
-   "detail": "en file, gardé : « Starter lancé ce soir »"
   }
  ],
  "cas": [
@@ -101,8 +116,10 @@
    "titre": "ZZ TEST — assurance à renouveler",
    "capture": "org-assurance-a-renouveler-1",
    "mots": 28,
-   "utile": 52,
+   "utile": 66,
    "pleins": 1,
+   "vide": 84,
+   "ample": true,
    "vus": [
     "⏳ Échéance",
     "1",
@@ -121,21 +138,23 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7189
+   "consigne": 7538
   },
   {
    "titre": "ZZ TEST — CO2 qui baisse vite dans un fût",
    "capture": "org-co2-qui-baisse-vite-dans-un-fut-1",
    "mots": 25,
-   "utile": 52,
+   "utile": 68,
    "pleins": 1,
+   "vide": 107,
+   "ample": true,
    "vus": [
     "Décidé",
     "2",
-    "0,4 bar",
-    "le 22",
-    "1,2 bar",
+    "🛢️ 1,2 bar",
     "le 15 nov.",
+    "📉 0,4 bar",
+    "le 22",
     "couvercle",
     "raccord gaz",
     "régulateur",
@@ -148,14 +167,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7261
+   "consigne": 7610
   },
   {
    "titre": "ZZ TEST — écoulement qui fuit",
    "capture": "org-ecoulement-qui-fuit-1",
    "mots": 26,
-   "utile": 52,
+   "utile": 63,
    "pleins": 1,
+   "vide": 45,
+   "ample": true,
    "vus": [
     "Je cherche",
     "2",
@@ -178,14 +199,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7295
+   "consigne": 7644
   },
   {
    "titre": "ZZ TEST — fête de la bière en juin",
    "capture": "org-fete-de-la-biere-en-juin-1",
    "mots": 29,
-   "utile": 52,
+   "utile": 60,
    "pleins": 1,
+   "vide": 94,
+   "ample": true,
    "vus": [
     "💡 Idée",
     "2",
@@ -208,7 +231,7 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7183
+   "consigne": 7532
   },
   {
    "titre": "ZZ TEST — frigo de garde en panne",
@@ -216,6 +239,8 @@
    "mots": 30,
    "utile": 52,
    "pleins": 0,
+   "vide": 94,
+   "ample": false,
    "vus": [
     "Je cherche",
     "3",
@@ -237,14 +262,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7271
+   "consigne": 7620
   },
   {
    "titre": "ZZ TEST — inspection électrique, fusible",
    "capture": "org-inspection-electrique-fusible-1",
    "mots": 26,
-   "utile": 52,
+   "utile": 66,
    "pleins": 1,
+   "vide": 61,
+   "ample": true,
    "vus": [
     "Je cherche",
     "1",
@@ -264,7 +291,7 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7299
+   "consigne": 7648
   },
   {
    "titre": "ZZ TEST — levure lente à démarrer",
@@ -272,6 +299,8 @@
    "mots": 30,
    "utile": 52,
    "pleins": 0,
+   "vide": 100,
+   "ample": false,
    "vus": [
     "Résolu",
     "froid",
@@ -293,14 +322,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7278
+   "consigne": 7627
   },
   {
    "titre": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
    "capture": "org-malt-pilsner-en-rupture-chez-le--1",
    "mots": 29,
-   "utile": 52,
+   "utile": 66,
    "pleins": 0,
+   "vide": 71,
+   "ample": true,
    "vus": [
     "Résolu",
     "pourquoi",
@@ -320,19 +351,19 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7271
+   "consigne": 7620
   },
   {
    "titre": "ZZ TEST — odeur de soufre dans un lot",
    "capture": "org-odeur-de-soufre-dans-un-lot-1",
-   "mots": 29,
-   "utile": 52,
+   "mots": 23,
+   "utile": 68,
    "pleins": 1,
+   "vide": 187,
+   "ample": true,
    "vus": [
     "Décidé",
     "2",
-    "« fût.EST — ranger la cave »",
-    "ligne 3 ↩",
     "J+5",
     "odeur",
     "levure lager",
@@ -346,14 +377,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7237
+   "consigne": 7586
   },
   {
    "titre": "ZZ TEST — pompe qui chauffe",
    "capture": "org-pompe-qui-chauffe-1",
    "mots": 24,
-   "utile": 52,
+   "utile": 66,
    "pleins": 0,
+   "vide": 53,
+   "ample": true,
    "vus": [
     "Résolu",
     "à sec",
@@ -371,14 +404,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7222
+   "consigne": 7571
   },
   {
    "titre": "ZZ TEST — ranger la cave",
    "capture": "org-ranger-la-cave-1",
    "mots": 22,
-   "utile": 85,
+   "utile": 107,
    "pleins": 1,
+   "vide": 239,
+   "ample": true,
    "vus": [
     "📌 Mémo",
     "2",
@@ -395,14 +430,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7159
+   "consigne": 7508
   },
   {
    "titre": "ZZ TEST — trop de vapeur au brassage",
    "capture": "org-trop-de-vapeur-au-brassage-1",
    "mots": 24,
-   "utile": 52,
+   "utile": 63,
    "pleins": 1,
+   "vide": 29,
+   "ample": true,
    "vus": [
     "comparé",
     "2",
@@ -423,17 +460,23 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7549
+   "consigne": 7898
   },
   {
    "titre": "ZZ TEST — Embouteillage — station complète (2027)",
    "capture": "org-embouteillage-station-complete-2-1",
-   "mots": 16,
-   "utile": 52,
+   "mots": 20,
+   "utile": 68,
    "pleins": 0,
+   "vide": 332,
+   "ample": true,
    "vus": [
     "📅 Planning",
     "📅 Début dans 157 j",
+    "févr.",
+    "avr.",
+    "juin",
+    "auj.",
     "01.05.2027",
     "01.07.2027",
     "2 500 CHF",
@@ -445,7 +488,7 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7119
+   "consigne": 7468
   },
   {
    "titre": "ZZ TEST — Houblons citra",
@@ -453,19 +496,22 @@
    "mots": 28,
    "utile": 52,
    "pleins": 1,
+   "vide": 89,
+   "ample": false,
    "vus": [
     "comparé",
     "1",
     "« dur à obtenir »",
     "ligne 3 ↩",
-    "✓ 7",
+    "✓ 3",
     "? 3",
     "MotlerHops",
     "Brau- und Rauchshop",
-    "10 % - 15 %",
+    "α",
+    "10–15 %",
     "13,6 %",
-    "3,72 €",
-    "poids .fr ?",
+    "3,72 € ?",
+    "quel poids ?",
     "Noter",
     "Vérifier prix Brau",
     "Aide",
@@ -475,14 +521,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7602
+   "consigne": 7951
   },
   {
    "titre": "ZZ TEST — Chaudière en panne jour de brassage",
    "capture": "org-chaudiere-en-panne-jour-de-brass-1",
    "mots": 27,
-   "utile": 52,
+   "utile": 66,
    "pleins": 1,
+   "vide": 42,
+   "ample": true,
    "vus": [
     "Décidé",
     "2",
@@ -506,18 +554,20 @@
     "lecture : citation absente de la ligne 4 : « technicien appelé »"
    ],
    "fausses": 1,
-   "consigne": 7206
+   "consigne": 7555
   },
   {
    "titre": "ZZ TEST — Idée bière au sureau",
    "capture": "org-idee-biere-au-sureau-1",
    "mots": 24,
-   "utile": 52,
+   "utile": 68,
    "pleins": 1,
+   "vide": 184,
+   "ample": true,
    "vus": [
     "💡 Idée",
     "2",
-    "4.5%",
+    "4,5%",
     "blonde légère",
     "fin mai",
     "en fleur",
@@ -533,14 +583,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7182
+   "consigne": 7531
   },
   {
    "titre": "ZZ TEST — 600 bouteilles 33 cl",
    "capture": "org-600-bouteilles-33-cl-1",
    "mots": 30,
-   "utile": 52,
+   "utile": 63,
    "pleins": 1,
+   "vide": 94,
+   "ample": true,
    "vus": [
     "comparé",
     "2",
@@ -550,9 +602,9 @@
     "Fournisseur B",
     "Occasion",
     "🧽 à laver",
-    "0.42/bt",
-    "0.55/bt",
-    "0.20/bt",
+    "0,42/bt",
+    "0,55/bt",
+    "0,20/bt",
     "≥ 1200",
     "× 600",
     "≤ 400",
@@ -568,14 +620,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7187
+   "consigne": 7536
   },
   {
    "titre": "ZZ TEST — Bar du Centre veut nos bières",
    "capture": "org-bar-du-centre-veut-nos-bieres-1",
    "mots": 23,
-   "utile": 52,
+   "utile": 68,
    "pleins": 1,
+   "vide": 226,
+   "ample": true,
    "vus": [
     "📌 Mémo",
     "2",
@@ -594,14 +648,16 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7147
+   "consigne": 7496
   },
   {
    "titre": "ZZ TEST — Levure récoltée à tester",
    "capture": "org-levure-recoltee-a-tester-1",
    "mots": 26,
-   "utile": 52,
+   "utile": 68,
    "pleins": 1,
+   "vide": 112,
+   "ample": true,
    "vus": [
     "Noté",
     "1",
@@ -620,13 +676,13 @@
    ],
    "erreurs": [],
    "fausses": 0,
-   "consigne": 7174
+   "consigne": 7523
   },
   {
    "titre": "IA en erreur (écoulement)",
    "capture": "60-ia-erreur",
    "mots": 29,
-   "utile": 52,
+   "utile": 68,
    "pleins": 1,
    "vus": [
     "Je cherche",
@@ -654,5 +710,5 @@
   "hauteurListe": 683
  },
  "erreursPage": [],
- "journal": 51
+ "journal": 57
 }

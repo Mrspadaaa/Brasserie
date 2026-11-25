@@ -15,7 +15,7 @@
  "manque": [
   {
    "emoji": "⚖️",
-   "texte": "poids .fr ?"
+   "texte": "quel poids ?"
   }
  ],
  "attention": [
@@ -36,11 +36,9 @@
  ],
  "comparaison": {
   "criteres": [
-   "🌿 α",
+   "α acides alpha",
    "💶 Prix",
-   "📦 Dispo",
-   "🍋 Arômes",
-   "🌍 Origine"
+   "📦 Dispo"
   ],
   "articles": [
    {
@@ -53,22 +51,13 @@
       "source": "page"
      },
      {
-      "texte": "3,72 €",
+      "texte": "3,72 € ?",
       "source": "page"
      },
      {
       "texte": "en stock",
       "source": "page",
       "emoji": "✅"
-     },
-     {
-      "texte": "?",
-      "source": "ia"
-     },
-     {
-      "texte": "États-Unis",
-      "source": "page",
-      "emoji": "🇺🇸"
      }
     ]
    },
@@ -88,23 +77,23 @@
      {
       "texte": "?",
       "source": "ia"
-     },
-     {
-      "texte": "citron vert, mangue, fruits tropicaux",
-      "source": "page",
-      "emoji": "🍋🥭🌴"
-     },
-     {
-      "texte": "USA",
-      "source": "page",
-      "emoji": "🇺🇸"
      }
     ]
    }
   ],
+  "variete": [
+   {
+    "texte": "citron vert, mangue, fruits tropicaux",
+    "source": "page",
+    "emoji": "🍋🥭🌴"
+   },
+   {
+    "texte": "États-Unis",
+    "source": "page",
+    "emoji": "🇺🇸"
+   }
+  ],
   "gagnant": [
-   null,
-   null,
    null,
    null,
    null

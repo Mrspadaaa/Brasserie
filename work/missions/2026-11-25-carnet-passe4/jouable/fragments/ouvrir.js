@@ -7,12 +7,13 @@ $('nouveau').addEventListener('click', function () {
   toast('Noté · l’IA le range', 'Ouvrir', function () { ouvrir(c2.id); });
 });
 $('noter').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('nouveau').click(); } });
-$('tab-carnets').addEventListener('click', function () { etat.vueListe = 'arbre'; sauver(); rendreListe(); });
-$('tab-afaire').addEventListener('click', function () { etat.vueListe = 'afaire'; sauver(); geste('À faire', ''); rendreListe(); });
+$('tab-carnets').addEventListener('click', function () { tuerToast(); etat.vueListe = 'arbre'; sauver(); rendreListe(); });
+$('tab-afaire').addEventListener('click', function () { tuerToast(); etat.vueListe = 'afaire'; sauver(); geste('À faire', ''); rendreListe(); });
 
 /* ====================================================================== ouvrir un carnet */
 var vue = 'notes';
 function ouvrir(cid) {
+  tuerToast();
   fermerFeuille();
   etat.courant = cid; sauver();
   var c = courant();
@@ -27,6 +28,7 @@ function ouvrir(cid) {
   else { basculer('notes', true); placerFin(); }
 }
 function fermer() {
+  tuerToast();
   $('doc').blur(); $('titre').blur(); fermerFlottants(); fermerFeuille();
   var c = courant(); if (c && c.aide && !c.aide.enCours) c.aide = null;
   if (vue === 'notes') { garderTexte(); autoRanger(c); }
@@ -41,6 +43,7 @@ $('t-notes').addEventListener('click', function () { basculer('notes'); });
 $('t-org').addEventListener('click', function () { if (vue === 'notes') { garderTexte(); autoRanger(courant()); } basculer('org'); });
 var defilOrg = 0;
 function basculer(v, sansFocus) {
+  if (v !== vue) tuerToast();
   var c = courant(); fermerFlottants();
   if (vue === 'org') defilOrg = $('defil').scrollTop;
   vue = v;
@@ -82,6 +85,6 @@ function menuCarnet() {
   ouvrirFeuille([h('h2', null, emojiDe(c) + ' ' + titreCourt(c)),
     ligneM('🗂️', 'Ranger dans…', (k.nom === SANS ? 'pas encore rangé' : k.nom + (k.sous ? ' › ' + k.sous : '')), function () { feuilleRanger(c); }),
     c.org ? ligneM('✦', 'Changé par l’IA', 'une case par changement', feuilleChangements) : null,
-    ligneM('↻', 'Relire avec l’IA', 'lit ta note, ne la change pas', function () { ranger(); if (vue === 'org') rendreOrg(); }),
-    ligneM('💬', 'Poser une question', 'sur ce carnet', feuilleDemander)]);
+    ligneM('↻', 'Relire avec l’IA', 'lit ta note, ne la change pas · ✦ 1 appel', function () { ranger(); if (vue === 'org') rendreOrg(); }),
+    ligneM('💬', 'Poser une question', 'sur ce carnet · ✦ 1 appel', feuilleDemander)]);
 }
