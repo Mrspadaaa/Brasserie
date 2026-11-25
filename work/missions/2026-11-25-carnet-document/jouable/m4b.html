@@ -283,9 +283,9 @@ body.edite .hors-edition{display:none}
         <button type="button" role="tab" id="t-notes" class="on">Mes notes</button>
         <button type="button" role="tab" id="t-org">Organisé <i id="point-org" hidden></i></button>
       </div>
-      <button class="m4b-ic edition-seule" id="b-undo" type="button" aria-label="Annuler"><svg><use href="#b-undo"/></svg></button>
-      <button class="m4b-ic edition-seule" id="b-redo" type="button" aria-label="Refaire"><svg><use href="#b-redo"/></svg></button>
-      <button class="m4b-ic edition-seule" id="b-fini" type="button" aria-label="Fini"><svg><use href="#b-fini"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-undo" type="button" aria-label="Annuler"><svg><use href="#b-undo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-redo" type="button" aria-label="Refaire"><svg><use href="#b-redo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-fini" type="button" aria-label="Fini"><svg><use href="#b-fini"/></svg></button>
       <span class="m4b-esp hors-edition"></span>
     </div>
     <div id="defil">
@@ -503,6 +503,7 @@ function ouvrir(cid) {
 }
 function fermer() {
   $('doc').blur(); $('titre').blur(); fermerFlottants();
+  if (vue === 'notes') { garderTexte(); autoRanger(courant()); }
   etat.courant = null; sauver();
   $('v-carnet').classList.remove('on'); $('v-liste').classList.add('on');
   if (window.CSS && CSS.highlights) CSS.highlights.delete('lu');
@@ -510,7 +511,7 @@ function fermer() {
 }
 $('b-retour').addEventListener('click', fermer);
 $('t-notes').addEventListener('click', function () { basculer('notes'); });
-$('t-org').addEventListener('click', function () { basculer('org'); });
+$('t-org').addEventListener('click', function () { if (vue === 'notes') { garderTexte(); autoRanger(courant()); } basculer('org'); });
 var defilOrg = 0;
 function basculer(v, sansFocus) {
   var c = courant(); fermerFlottants();
@@ -616,11 +617,11 @@ function edition() {
 }
 doc.addEventListener('focus', edition); doc.addEventListener('blur', function () { setTimeout(edition, 0); normaliser(); });
 titreEl.addEventListener('focus', edition); titreEl.addEventListener('blur', function () { setTimeout(edition, 0); });
-$('b-undo').addEventListener('pointerdown', function (e) { e.preventDefault(); });
-$('b-redo').addEventListener('pointerdown', function (e) { e.preventDefault(); });
-$('b-undo').addEventListener('click', function () { document.execCommand('undo'); garderTexte(); planifierLectures(); });
-$('b-redo').addEventListener('click', function () { document.execCommand('redo'); garderTexte(); planifierLectures(); });
-$('b-fini').addEventListener('click', function () { doc.blur(); titreEl.blur(); garderTexte(); rendreMeta(); });
+$('k-undo').addEventListener('pointerdown', function (e) { e.preventDefault(); });
+$('k-redo').addEventListener('pointerdown', function (e) { e.preventDefault(); });
+$('k-undo').addEventListener('click', function () { document.execCommand('undo'); garderTexte(); planifierLectures(); });
+$('k-redo').addEventListener('click', function () { document.execCommand('redo'); garderTexte(); planifierLectures(); });
+$('k-fini').addEventListener('click', function () { doc.blur(); titreEl.blur(); garderTexte(); autoRanger(courant()); rendreMeta(); });
 
 /* curseur */
 var rangeSauve = null;
@@ -916,6 +917,19 @@ function consigne(c, lignes) {
     refus
   ].join('\n');
 }
+/* il arrête d'écrire (Organisé, ✓, retour, app quittée) : l'IA lit seule, si la note a changé */
+function autoRanger(c) {
+  if (!c || (lecture && lecture.carnetId === c.id)) return;
+  var lignes = lignesDoc();
+  if (!lignes.join('').trim()) return;
+  if (c.org && c.org.lignes.join('\n') === lignes.join('\n') && !c.orgErreur) return;
+  geste('lecture automatique', '');
+  if (!navigator.onLine) { c.attente = true; sauver(); rendreOutils(); rendrePoint(); return; }
+  lancerLecture(c);
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden' && courant() && vue === 'notes') { garderTexte(); autoRanger(courant()); }
+});
 function ranger() {
   var c = courant(); if (!c) return;
   doc.blur(); normaliser(); garderTexte();
@@ -957,16 +971,18 @@ function lancerLecture(c) {
     if (!v.rep) throw { code: 'format' };
     c.orgPrec = c.org;
     c.org = { quand: new Date().toISOString(), rep: v.rep, lignes: lignes, etatDe: c.etat, garde: {}, retenu: null, retenuLe: null, tacheFaite: false, lecturesOff: [], fausses: v.fausses, erreurs: v.erreurs };
-    c.orgErreur = null; c.orgNeuf = vue !== 'org';
+    /* l'état avance seul (jamais Résolu) ; il le remet depuis « Changé par l'IA » */
+    var ep = v.rep.etatPropose;
+    if (ep && ep !== 'resolu' && RANG[ep] > RANG[c.etat]) { c.org.etatAvant = c.etat; c.etat = ep; c.etatPar = { par: 'l’IA', le: c.org.quand }; c.org.garde.etat = true; }
+    c.orgErreur = null; c.orgNeuf = !(courant() === c && vue === 'org');
     if (!c.genre && v.rep.genre) c.genre = v.rep.genre;
     sauver();
   }).catch(function (e) {
     var code = (e && e.code) || 'upstream_error';
     if (code !== 'cancelled' && code !== 'format') journal({ quand: new Date().toISOString(), carnetTitre: titreDe(c), lignes: lignes, reponse: e && e.text ? String(e.text) : null, msTemps: Math.round(performance.now() - t0), erreurs: [code], citationsFausses: 0, refus: c.refus.slice() });
     if (code === 'cancelled') { geste('arrêter la lecture', ''); return; }
-    c.orgErreur = { quand: new Date().toISOString(), code: code, message: MSG_ERREUR[code] || 'elle n’a pas répondu' };
+    c.orgErreur = { quand: new Date().toISOString(), code: code, message: MSG_ERREUR[code] || 'elle n’a pas répondu' }; c.orgNeuf = true;
     sauver();
-    if (courant() === c) basculer('org');
   }).then(function () {
     if (lecture && lecture.ctl === ctl) lecture = null;
     if (courant() === c) { rendreOutils(); rendrePoint(); if (vue === 'org') rendreOrg(); else { rendreMeta(); calcLectures(); } }
@@ -1096,7 +1112,7 @@ function rendreOrg() {
   }
   if (!c.org) {
     org.appendChild(frise(c, null));
-    if (c.etatPar) org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par toi le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
+    if (c.etatPar) org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par ' + (c.etatPar.par || 'toi') + ' le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
     if (c.orgErreur && !enCours) lectureLocale(c);
     else if (!enCours) org.appendChild(h('p', { class: 'm4b-vide' }, 'Pas encore rangé. L’IA lit ta note et la range ici : pistes, options, tâche. Elle ne change pas une lettre de ton texte.'));
     piedOrg.appendChild(bouton('Mes notes', '', function () { basculer('notes'); placerFin(); }, 'b-crayon'));
@@ -1122,7 +1138,7 @@ function rendreOrg() {
   /* frise */
   if (!memo) {
     org.appendChild(frise(c, o.garde.etat === undefined && r.etatPropose && r.etatPropose !== o.etatDe && r.etatPropose !== 'resolu' ? r.etatPropose : null));
-    if (c.etatPar && c.etat !== 'resolu') org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par toi le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
+    if (c.etatPar && c.etat !== 'resolu') org.appendChild(h('div', { class: 'm4b-fnote' }, NOM_ETAT[c.etat] + ' : posé par ' + (c.etatPar.par || 'toi') + ' le ' + jour(c.etatPar.le) + ' à ' + hm(new Date(c.etatPar.le))));
   }
   /* résolu ? */
   if ((r.resolu || r.etatPropose === 'resolu') && o.garde.resolu === undefined) {
@@ -1290,7 +1306,7 @@ function feuilleChangements() {
     corps.push(h('div', { class: 'grp' }, P.length + (P.length > 1 ? ' propositions' : ' proposition')));
     P.forEach(function (p) {
       var g = o.garde[p.cle];
-      corps.push(ligneCh('p:' + p.cle, p.label, g === true ? 'gardé par toi' : (g === false ? 'refusé' : 'proposé'), null));
+      corps.push(ligneCh('p:' + p.cle, p.label, g === true ? (p.cle === 'etat' && c.etatPar && c.etatPar.par !== 'toi' ? 'mis par l’IA, coupe pour revenir' : 'gardé par toi') : (g === false ? 'refusé' : 'proposé'), null));
     });
   }
   if (L.length) {
