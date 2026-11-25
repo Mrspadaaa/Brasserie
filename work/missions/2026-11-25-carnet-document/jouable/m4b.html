@@ -1653,7 +1653,8 @@ function rendreOrg() {
   var k = catDe(c), pr = prioDe(c);
   org.appendChild(h('div', { class: 'm4b-ctx' },
     h('button', { type: 'button', class: 'm4b-puce-c', onclick: function () { feuilleRanger(c); } }, catEmoji(k.nom) + ' ' + k.nom + (k.sous ? ' › ' + k.sous : '')),
-    h('button', { type: 'button', class: 'm4b-puce-c', 'aria-label': 'priorité ' + pr, onclick: function () { feuilleRanger(c); } }, h('i', { class: pr }), pr)));
+    h('button', { type: 'button', class: 'm4b-puce-c', 'aria-label': 'priorité ' + pr, onclick: function () { feuilleRanger(c); } }, h('i', { class: pr }), pr),
+    h('button', { type: 'button', class: 'm4b-puce-c', 'aria-label': 'état ' + (NOM_ETAT[c.etat] || 'Noté') + ', toucher pour changer', onclick: function () { var ord = ['note', 'cherche', 'decide', 'resolu']; poserEtat(c, ord[(ord.indexOf(c.etat) + 1) % 4]); } }, h('i', { style: 'background:' + COUL_ETAT[c.etat] }), NOM_ETAT[c.etat] || 'Noté')));
   var enCours = estEnLecture(c);
   if (enCours) org.appendChild(h('div', { class: 'm4b-lit m4b-lit-org', role: 'status' }, h('span', null, ico('b-ia'), lecture && lecture.carnetId === c.id ? 'L’IA lit ta note…' : 'L’IA lira ta note juste après'), h('span', { class: 'bar' }, h('i'))));
   if (c.orgErreur && !enCours) {
@@ -1671,7 +1672,7 @@ function rendreOrg() {
     finirPleins(); return;
   }
 
-  var o = c.org, r = o.rep, P = aGarder(c), memo = r.genre === 'memo' || r.genre === 'idee', sansFrise = memo || r.genre === 'planning';
+  var o = c.org, r = o.rep, P = aGarder(c), memo = r.genre === 'memo' || r.genre === 'idee', sansFrise = true; /* FRISE-GENERIQUE (25.11 soir) : plus de frise ; l'état est une petite puce en tête */
   var rg = h('div', { class: 'm4b-range' + (c.etat === 'resolu' ? ' ok' : '') }, ico(c.etat === 'resolu' ? 'b-coche' : (memo ? 'b-memo' : 'b-ia')));
   if (c.etat === 'resolu' && c.etatPar) rg.appendChild(h('span', null, 'Résolu par ' + (c.etatPar.par || 'toi') + ' ' + aLHeure(c.etatPar.le)));
   else rg.appendChild(h('span', null, (sansFrise ? NOM_GENRE[r.genre] + ' · ' : 'Rangé ') + aLHeure(o.quand).replace(/^à /, '')));
