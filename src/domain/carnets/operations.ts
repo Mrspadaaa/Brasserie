@@ -185,6 +185,10 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       d.articles.push(a); return { carnetId: c.id, cible: 'article', id: a.id };
     }
     case 'note': {
+      /* R97 (C73-4, C74B) : une phrase rangée en lignes par l'IA qui dit DEUX FOIS le même constat n'en laisse qu'une trace (même message, même texte au plié près) */
+      const plie = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const deja = d.notes.find(x => x.messageId === messageId && plie(x.texte) === plie(l.texte));
+      if (deja) return { carnetId: c.id, cible: 'note', id: deja.id, existant: true };
       const n: Note = { id: l.id ?? nouvelIdCarnet('NOTE'), texte: l.texte, genre: l.genre ?? 'note', messageId };
       d.notes.push(n); return { carnetId: c.id, cible: 'note', id: n.id };
     }

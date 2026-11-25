@@ -76,6 +76,7 @@ function calculerDestination(texte: string, ouvert: CarnetDoc, carnets: readonly
   const ici = { carnetId: ouvert.id, titre: ouvert.title };
   const t = texte.trim();
   if (!t || plusieursLignes(t) || analyserTexte(t).some(l => l.url)) return ici;
+  /* R97 (C73-2, C74B) : dans un PROBLÈME, une solution dite avec son prix (« une hotte inox, devis de 620 CHF ») est une option de CE problème, jamais un carnet neuf à son nom */
   const autres = carnets.filter(c => c.id !== ouvert.id && !c.carnet.archive);
   /* critique 8, n° 1 : une phrase qui nomme un autre objet ne devient jamais un critère d'ici : un carnet proche, sinon un neuf */
   const objet = autreObjet(t, ouvert);

@@ -48,7 +48,9 @@ export function etiquettesDuRepli(texte: string, carnetId: string, optionId?: st
  * option du problème, pas un article rangé sous une autre option : le nom court (avant la première virgule, sans « Piste : »), majuscule en tête.
  */
 export function nomOptionDe(texte: string): string {
-  const court = texte.replace(/^\s*(?:autre\s+)?(?:piste|option|solution)\s*:\s*/i, '').split(',')[0].trim();
+  /* C73-5 (R97) : « ou une balance neuve à 140 CHF » est l'option « Balance neuve » : sans le « ou » ni l'article d'en tête, sans « à 140 CHF » (le montant est le jeton de l'option) */
+  const court = texte.replace(/^\s*(?:autre\s+)?(?:piste|option|solution)\s*:\s*/i, '').replace(/^\s*ou\s+/i, '').split(',')[0]
+    .replace(/\s+(?:à|a|pour|au prix de|environ|autour de)\s+[≈~]?\d.*$/i, '').replace(/^\s*(?:une?|le|la|les|l['’])\s*/i, '').trim();
   return court ? court.charAt(0).toUpperCase() + court.slice(1) : texte.trim();
 }
 

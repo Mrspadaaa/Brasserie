@@ -52,6 +52,8 @@ export { AVIS_IA, depuisIA, depuisLocale, detailDe, libelleProposee, pucesDuCarn
 export function CarnetsVue(p: CarnetsVueProps) {
   const { magasin, items, finances, achatsPasses, mode, aides, maintenant, enLigne, carnets: carnetsBruts, tous: tousBruts, messages, faitsPlanning, anciennes, tauxEur, poserTaux } = useDonneesCarnets(p);
   const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
+  /* R97 (C73-6, C74B) : « Hors ligne : rangé sur l'appareil » se retire au retour du réseau (le rangement local reste rangé ; « Ranger maintenant » passe à l'IA) */
+  useEffect(() => { if (enLigne && etatR.etape === 'hors-ligne') setEtatR({ etape: 'repos' }); }, [enLigne, etatR.etape]);
   /* T28-11 : l'article écrit en attendant la lecture d'un lien n'est ni compté ni montré avant qu'elle ait abouti */
   const enLecture = etatR.etape === 'en-cours' && etatR.lecture ? etatR.messageId : null;
   const carnets = useMemo(() => sansArticleEnLecture(carnetsBruts, enLecture), [carnetsBruts, enLecture]);

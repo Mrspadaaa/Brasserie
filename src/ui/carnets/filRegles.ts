@@ -435,3 +435,23 @@ export function parCategorie(carnets: readonly CarnetDoc[]): { chemin: string; c
 
 /** L'état d'une option en mot court, pour son jeton dans la grille (le mot de la maquette : retenu, piste, veille, écarté). */
 export const MOT_OPTION: Record<EtatOption, string> = { retenue: 'retenu', piste: 'piste', veille: 'veille', ecartee: 'écarté' };
+
+/**
+ * R95 (C74B) : un lien dans le fil est un LIEN COURT, jamais l'adresse brute (gclid, utm, 400 caractères) : le domaine, puis le titre de l'article quand le lien est seul
+ * dans sa bulle (« pellets-exemple.test · CITRA® (US) »). Un lien dans une phrase se réduit à son domaine. La donnée stockée n'est pas touchée : la bulle ne fait que se lire.
+ */
+const ADRESSE = /https?:\/\/[^\s]+/gi;
+const domaineDeLien = (u: string): string => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u.slice(0, 30); } };
+export function texteDuFil(texte: string, titreArticle?: string): string {
+  const t = texte.trim();
+  if (/^https?:\/\/\S+$/i.test(t)) {
+    const titre = titreArticle?.trim();
+    return titre ? `${domaineDeLien(t)} · ${titre.length > 70 ? `${titre.slice(0, 69)}…` : titre}` : domaineDeLien(t);
+  }
+  return texte.replace(ADRESSE, u => domaineDeLien(u));
+}
+/** R95 : la 1re bulle d'un fil ancien qui redit le titre du carnet (« liste » → carnet neuf) n'est pas affichée : le titre est déjà en tête. */
+export const redisLeTitre = (texte: string, c: { title: string; carnet: { phrase?: string } }): boolean => {
+  const plie = (s: string) => s.normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
+  return plie(texte) === plie(c.title) || (!!c.carnet.phrase && plie(texte) === plie(c.carnet.phrase));
+};

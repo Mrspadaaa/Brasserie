@@ -42,10 +42,21 @@ export function nomAlpha(nomArticle: string | undefined, nom: string, x: ValeurA
   if (c.length < 3 || !(n === c || n.startsWith(`${c} `))) return nom;
   const ecrit = alphaDuNom(nomArticle);
   const num = String(x.valeur).replace(/%/g, '').replace(',', '.').trim();
-  return ecrit !== null && /^\d+(?:\.\d+)?$/.test(num) && Number(num) >= 1 && Number(num) <= 30 && Number(num) === Number(ecrit) ? 'Alpha' : nom;
+  const plausible = /^\d+(?:\.\d+)?$/.test(num) && Number(num) >= 1 && Number(num) <= 30;
+  /* R93 (C74B) : un vieux houblon dont le nom ne dit pas le pourcentage (« Citra T90 en sachet », ligne « Citra : 12,8 % ») : la ligne porte le nom de la variété et un pourcentage de 1 à 30 */
+  if (ecrit === null) return plausible ? 'Alpha' : nom;
+  return plausible && Number(num) === Number(ecrit) ? 'Alpha' : nom;
 }
 
 /** Cet article est-il un houblon (une matière qu'on pèse) : une ligne qui dit l'alpha, nommée ou lue sous le nom de la variété. */
 export function ditAlpha(nomArticle: string | undefined, valeurs: Record<string, ValeurAlpha> | undefined): boolean {
   return Object.entries(valeurs ?? {}).some(([nom, x]) => nomAlpha(nomArticle, nom, x) === 'Alpha');
+}
+
+/**
+ * R94 (C74B) : une fourchette se lit serrée, sans chasse fixe ni espaces autour du tiret (« 10–15 % », jamais « 10 % - 15 % » ni « 10 - 15 »). Seul un tiret ENTRE DEUX NOMBRES
+ * et ENTOURÉ d'espaces est réécrit : une date « 2026-11-24 » ou « 0 à 8 °C » reste telle quelle. Le « % » (d'un côté ou des deux) se dit une fois, à la fin.
+ */
+export function fourchetteSerree(texte: string): string {
+  return texte.replace(/(\d+(?:[.,]\d+)?)\s*(%)?\s+[-–]\s+(\d+(?:[.,]\d+)?)(\s*%)?/g, (_m, a: string, p1: string | undefined, b: string, p2: string | undefined) => `${a}–${b}${p1 || p2 ? ' %' : ''}`);
 }

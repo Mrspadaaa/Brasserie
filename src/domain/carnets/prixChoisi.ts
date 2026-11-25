@@ -7,8 +7,10 @@ import type { Article, CarnetDoc, Choix } from './modele';
 import { articleHonnete } from './prixUnitaire';
 
 /** Le prix en francs (centimes) que le choix pose : celui de la quantité cochée, sinon celui de l'article (en francs seulement). */
-export function prixCentimesDuChoix(choix: Pick<Choix, 'prixCentimes'> | undefined, a: Pick<Article, 'prixCentimes' | 'devise'>): number | undefined {
+export function prixCentimesDuChoix(choix: Pick<Choix, 'prixCentimes'> | undefined, brut: Pick<Article, 'prixCentimes' | 'devise'> & Partial<Pick<Article, 'nom' | 'prixDes' | 'conditionnement' | 'valeurs'>>): number | undefined {
   if (typeof choix?.prixCentimes === 'number' && choix.prixCentimes > 0) return choix.prixCentimes;
+  /* R93 (C74B) : un prix « dès » sans quantité (0,10 CHF le gramme d'un vieil article) n'est le prix d'aucun achat : il ne part jamais à À venir (10 centimes) */
+  const a = articleHonnete(brut);
   return typeof a.prixCentimes === 'number' && a.prixCentimes > 0 && (a.devise ?? 'CHF') === 'CHF' ? a.prixCentimes : undefined;
 }
 

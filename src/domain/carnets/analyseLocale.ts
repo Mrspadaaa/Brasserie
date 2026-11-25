@@ -457,6 +457,12 @@ export function extraireCriteres(texte: string): CriteresLus {
   return { criteres, facons };
 }
 
+/** « 4 CHF de plus », « 20 francs en moins », « +4 CHF », « plus cher de 20 » : un écart, pas un prix (R96). */
+const ECART_RELATIF = /\d\s*(?:chf|francs?|fr\.?|eur|euros?)\s+(?:de|en)\s+(?:plus|moins)\b|(?:^|\s)[+−-]\s*\d[\d.,' ]*\s*(?:chf|francs?|fr\.?|eur|euros?|€)|\b(?:plus|moins)\s+cher\b[^.]{0,16}\d/;
+/** Un verbe d'état : « est », « chauffe », « affiche » (un constat, sans marque d'exigence). */
+const VERBE_CONSTAT = /\b(?:est|sont|etait|etaient|a|ont|fait|font|affiche|chauffe|devient|reste|restent|tombe|monte|vibre|fuit|coule)\b/;
+/** « 30 min d'empâtage » : des minutes, pas le mot « min » (minimum) d'un critère. */
+const MINUTES = /(\d)\s*min\b(?=\s+(?:d|de|apres|avant|depuis|pour|au|aux|a|en|plus|moins)\b)/g;
 const MOTS_CRITERE = /\b(minimum|maximum|mini|maxi|min|max|au moins|au plus|il faut|faut que|doit|doivent|pas plus de|pas moins de|tient|tenir|supporte|minimiser|maximiser|eviter)\b/;
 
 export type SorteLocale = 'article' | 'critere' | 'note';
@@ -480,18 +486,24 @@ export interface LigneLocale {
 /** Analyse une ligne : lien, prix, quantités, genre, sorte (lien ou prix → article ; mots de seuil ou quantité seule → critère ; sinon note). */
 export function analyserLigne(texte: string, seule = true): LigneLocale {
   const lien = urlsDe(texte)[0];
-  const prix = prixDe(texte);
+  const trouve = prixDe(texte);
   const quantites = quantitesDe(texte);
-  const genre = genreLocal(texte, { prix: !!prix, url: !!lien });
   const n = normaliser(texte);
+  /* R96 (C74B, NOTE-PAS-ARTICLE) : un montant qui dit un ÉCART (« 4 CHF de plus le sac », « +4 CHF ») n'est le prix d'aucun article : la phrase reste une note (le montant reste lu : jeton, coût d'une piste) */
+  const ecart = !lien && !!trouve && ECART_RELATIF.test(n);
+  const prix = ecart ? null : trouve;
+  const genre = genreLocal(texte, { prix: !!prix, url: !!lien });
+  /* une phrase de CONSTAT (« la pompe est brûlante après 30 min d'empâtage ») n'est jamais un critère : « 30 min » sont des minutes, pas le mot « min » */
+  const nCritere = n.replace(MINUTES, '$1 mn');
+  const constat = VERBE_CONSTAT.test(n) && !MOTS_CRITERE.test(nCritere);
   const sorte: SorteLocale = lien || prix ? 'article'
-    : genre !== 'question' && genre !== 'a-acheter' && (MOTS_CRITERE.test(n) || (quantites.length > 0 && genre === 'note' && extraireCriteres(texte).criteres.some(k => !!k.caracteristique))) ? 'critere'
+    : genre !== 'question' && genre !== 'a-acheter' && (MOTS_CRITERE.test(nCritere) || (!constat && quantites.length > 0 && genre === 'note' && extraireCriteres(texte).criteres.some(k => !!k.caracteristique))) ? 'critere'
       : 'note';
   const forme = sorte === 'critere' ? critereDe(texte, seule) : mettreEnForme(texte);
   return {
     texte: forme, phrase: texte, sorte, genre, quantites, origine: 'locale',
     ...(lien ? { url: lien.url, domaine: lien.domaine } : {}),
-    ...(prix ? { prixCentimes: prix.centimes, devise: prix.devise } : {})
+    ...(trouve ? { prixCentimes: trouve.centimes, devise: trouve.devise } : {})
   };
 }
 
@@ -552,7 +564,9 @@ export function etiquettesLocales(texte: string): EtiquetteLocale[] {
   /* C72-1 : « 450 CHF, ou … 180 CHF » : le « ou » sépare des PISTES, l'une ou l'autre ; chaque montant d'une alternative se dit piste (jamais additionné) */
   const montants = gardees.filter(e => e.sorte === 'cout' || e.sorte === 'devis');
   const alternatives = montants.length >= 2 && n.split(MOT_OU).filter(morceau => prixTousDe(morceau).length > 0).length >= 2;
-  return alternatives ? [...montants.map((): EtiquetteLocale => ({ sorte: 'piste' })), ...gardees] : gardees;
+  /* C73-5 (R97) : « ou une balance neuve à 140 CHF » : le « ou » d'EN TÊTE dit une alternative à ce qui précède, même avec un seul montant : une piste */
+  const ouEnTete = montants.length === 1 && /^\s*ou\s/.test(n);
+  return alternatives || ouEnTete ? [...montants.map((): EtiquetteLocale => ({ sorte: 'piste' })), ...gardees] : gardees;
 }
 
 /** Les nombres écrits dans un texte (pour vérifier qu'aucun nombre n'est inventé). Milliers recollés. */

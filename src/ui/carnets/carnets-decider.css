@@ -328,3 +328,10 @@
 .cn-prend-ligne svg { display: inline; }
 /* le kilo rendu au gros de la carte (maquette v01 : « ≈41 CHF/kg ») : seule exception à « 14 px partout » du carnet ouvert (V4 fiche), un seul chiffre par carte */
 .cn-ouvert .cn-carte-mat .cn-carte-mat-prix b { font-size: 24px !important; }
+
+/* C74B (R94) : le reste des valeurs d'un article, replié sous « Ses autres valeurs » (jamais vingt lignes recopiées) */
+.cn-place-reste { margin: 4px 0 8px; }
+.cn-place-reste > summary { cursor: pointer; padding: 6px 0; color: var(--c-ink-2, inherit); font-size: 14px; }
+.cn-place-suite { width: 100%; border-collapse: collapse; }
+.cn-place-suite th, .cn-place-suite td { padding: 6px 0; border-top: 1px solid var(--c-line); font-weight: 400; text-align: left; }
+.cn-place-suite td { text-align: right; overflow-wrap: break-word; }

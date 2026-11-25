@@ -6,7 +6,7 @@
  * Honnêteté : l'inconnu est absent (`null`), jamais 0. Une règle se lit sur la catégorie et les caractéristiques lues, jamais sur un nom
  * de produit (B23).
  */
-import { nomAlpha } from '../../domain/carnets/alpha';
+import { fourchetteSerree, nomAlpha } from '../../domain/carnets/alpha';
 import type { Article } from '../../domain/carnets/modele';
 import { portCentimes, prixRendu, tauxVersChf, type PrixArticleDonnees } from '../../domain/carnets/prixRendu';
 import { estMatierePesee, quantiteArticle } from '../../domain/carnets/prixUnitaire';
@@ -56,7 +56,7 @@ export function alphaDe(a: ArticleRegle): string | null {
   for (const [nom, v] of Object.entries(a.valeurs)) {
     if (nomAlpha(a.nom, nom, v) !== 'Alpha') continue;
     const t = texteValeur(v);
-    if (t) return t.replace(/\s*%/g, '').replace('.', ',');
+    if (t) return fourchetteSerree(t.replace(/\s*%/g, '').replace('.', ','));
   }
   return null;
 }
@@ -107,7 +107,7 @@ export const QUANTITE_PAR_DEFAUT = 1;
 export const texteQuantite = (kg: number): string => `${String(kg).replace('.', ',')} kg`;
 
 /** Un conditionnement vendu : sa masse (kg) et son prix dans la devise de l'article (centimes). */
-export interface Palier { kg: number; centimes: number }
+export interface Palier { kg: number; centimes: number; /** R93 : le sachet vient de la ligne « Poids » (le plus petit), pas d'une offre publiée */ depuisPoids?: true }
 const KG: Record<string, number> = { g: 0.001, kg: 1 };
 
 /**
@@ -131,7 +131,8 @@ export function paliersDe(a: ArticleRegle): Palier[] {
     return tous.sort((x, y) => x.kg - y.kg);
   }
   const q = a.prixCentimes !== undefined ? quantiteArticle(a as never) : null;
-  if (q && q.dim === 'masse' && a.prixCentimes !== undefined && !q.depuisPoids) return [{ kg: q.base, centimes: a.prixCentimes }];
+  /* R93 (C74B) : un vieil article sans offres dont la ligne « Poids » dit ses sachets (« 50 g, 250 g et 500 g ») : le prix est celui du plus petit (R43), le même kilo que la fiche ; jamais « ? » quand la fiche le sait */
+  if (q && q.dim === 'masse' && a.prixCentimes !== undefined) return [{ kg: q.base, centimes: a.prixCentimes, ...(q.depuisPoids ? { depuisPoids: true as const } : {}) }];
   return [];
 }
 
@@ -147,6 +148,8 @@ export interface PrixAuKilo {
   plancher: boolean;
   /** le conditionnement dont il vient (kg) */
   palier: number;
+  /** R93 : le kilo vient d'un sachet lu dans « Poids » : on le dit à la décimale, comme la fiche (73,8), pas arrondi au franc */
+  depuisPoids?: true;
 }
 
 /**
@@ -162,19 +165,19 @@ export function prixAuKilo(a: ArticleRegle, pourKg: number, taux?: number): Prix
   const fois = pourKg / retenu.kg;
   const totalDevise = retenu.centimes * fois;
   const devise = (a.devise ?? 'CHF').toUpperCase();
-  if (devise === 'CHF') return { chf: totalDevise / 100 / pourKg, estime: false, plancher: false, palier: retenu.kg };
+  if (devise === 'CHF') return { chf: totalDevise / 100 / pourKg, estime: false, plancher: false, palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
   const donnees: PrixArticleDonnees = { prixCentimes: totalDevise, devise, ...(a.change ? { change: a.change } : {}), ...(a.livraison ? { livraison: a.livraison } : {}) };
   const t = tauxVersChf(donnees, taux);
   if (!t) return null;
   const port = portCentimes(donnees);
   const r = prixRendu({ eurCentimes: totalDevise, taux: t.taux, ...(port !== undefined ? { portEurCentimes: port } : {}) });
   if (r.totalChf === undefined) return null;
-  return { chf: r.totalChf / 100 / pourKg, estime: true, plancher: r.manque.includes('port'), palier: retenu.kg };
+  return { chf: r.totalChf / 100 / pourKg, estime: true, plancher: r.manque.includes('port'), palier: retenu.kg, ...(retenu.depuisPoids ? { depuisPoids: true as const } : {}) };
 }
 
 /** « ≈41 », « 80 », « 4,2 » : au franc près dès 10 CHF/kg, une décimale en dessous (un malt à 2,40 CHF/kg ne se dit pas « 2 »). */
 export function texteChfKg(p: PrixAuKilo): string {
-  const n = p.chf >= 10 ? Math.round(p.chf) : Math.round(p.chf * 10) / 10;
+  const n = p.chf >= 10 && !p.depuisPoids ? Math.round(p.chf) : Math.round(p.chf * 10) / 10;
   return `${p.estime ? '≈' : ''}${n.toLocaleString('fr-CH', { maximumFractionDigits: 1 }).replace(/[ ’]/g, ' ')}`;
 }
 
@@ -210,7 +213,8 @@ export function classerAuKilo<T extends { lignes: ReadonlyArray<{ articleId: str
   const arts = enLice.map(l => articles.find(a => a.id === l.articleId)).filter((a): a is ArticleRegle & { id: string } => !!a);
   if (arts.length !== enLice.length || arts.length < 2 || !estCarnetDeMatiere(arts)) return t;
   const kilos = new Map(arts.map(a => [a.id, prixAuKilo(a, pourKg, taux)?.chf ?? null] as const));
-  if ([...kilos.values()].filter(v => v !== null).length < 2) return t;
+  /* R93 (C74B) : UN kilo connu suffit à classer : l'inconnu passe après (jamais « 1 » sans base) ; aucun kilo connu : le domaine reste juge, l'écran ne dit aucun rang */
+  if ([...kilos.values()].filter(v => v !== null).length < 1) return t;
   const ordre = [...enLice].sort((x, y) => {
     const a = kilos.get(x.articleId) ?? null, b = kilos.get(y.articleId) ?? null;
     if (a === null || b === null) return a === b ? 0 : a === null ? 1 : -1;

@@ -13,7 +13,9 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { detailPrix, prixUnique } from './PrixPastille';
-import { prixAuKilo } from './tableauRegles';
+import { prixAuKilo, quantitePour, texteChfKg } from './tableauRegles';
+import { articleHonnete } from '../../domain/carnets/prixUnitaire';
+import { fourchetteSerree } from '../../domain/carnets/alpha';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
@@ -256,7 +258,8 @@ export function budgetMaxDuCarnet(c: { criteres?: readonly { texte: string }[]; 
 }
 
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
-  const a = p.article;
+  /* R93 (C74B) : un vieil article au prix « dès » sans quantité (0,10 CHF le gramme) ne dit aucun prix : jamais « 0,10 CHF » */
+  const a = articleHonnete(p.article);
   /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » ; R54 : avec une quantité cochée, son prix (1 kg : 62,20 CHF), jamais celui d'un autre sachet */
   const prix = p.quantite ? `${p.quantite.estime ? '≈' : ''}${prixTexte(p.quantite.centimes, 'CHF') ?? ''}` : prixChoix(a, p.taux);
   const detail = p.quantite ? p.quantite.libelle : detailPrix(a, p.taux);
@@ -295,12 +298,30 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
     const place: Place = { nom: 'prix', libelle: 'prix', unite: 'CHF/kg', sens: 'moins', texte: `${moi.estime ? '≈' : ''}${mien} CHF/kg · ${q.libelle}`, rang, sur: connus.length, valeur: mien * 100, meilleure: Math.min(...connus) * 100, pire: Math.max(...connus) * 100, toutes: connus.map(v => v * 100), critere: false };
     return place;
   }, [p.quantite, a.id, p.autres, p.taux]);
-  const valeurs = p.quantite
+  const valeursBrutes = p.quantite
     ? valeursToutes.flatMap(v => (v.place?.nom !== 'prix' ? [v] : prixKg ? [{ nom: nomPlace(prixKg), texte: prixKg.texte, rang: prixKg.rang!, place: prixKg } as ValeurPlaceeV & { place?: Place }] : []))
     : valeursToutes;
+  /* R94 (C74B) : une valeur se dit une fois par écran. Le prix est dit en tête (« 3,72 € · 73,80 CHF/kg ») : sa ligne ne revient dans « Ses autres valeurs » que pour dire sa PLACE (« 1er sur 2 »). L'α se lit serré (10–15 %). */
+  const toutes = valeursBrutes.filter(v => !(v.place?.nom === 'prix' && !placeTexte(v.place))).map(v => ({ ...v, texte: fourchetteSerree(v.texte) }));
+  /* R94 : Choisir tient sur un écran : 8 lignes de valeurs, celles qui classent d'abord ; le reste se déplie (« + 13 autres valeurs »), jamais recopié en bloc (20 caractéristiques d'une chambre froide) */
+  const MAX_VALEURS = 8;
+  const rangee = (v: (typeof toutes)[number]) => !!v.place && placeTexte(v.place) !== null;
+  const ordre = toutes.length > MAX_VALEURS ? [...toutes.filter(rangee), ...toutes.filter(v => !rangee(v))] : toutes;
+  const valeurs = ordre.slice(0, MAX_VALEURS);
+  const resteValeurs = ordre.slice(MAX_VALEURS);
   /* C69-13 : une valeur dit sa place (« 1er sur 2 ») ou n'en dit rien ; la colonne n'existe que si au moins une la dit */
   const aUnePlace = valeurs.some(v => ((v.place ? placeTexte(v.place) : v.rang ? rangTexte(v.rang) : '') ?? '').trim() !== '');
-  const propose = p.pourquoiPropose ?? calc.pourquoi ?? '';
+  /* R94 : « En stock, MotlerHops. » redit la tête (vendeur et dispo). Ce qui décide un houblon, c'est le prix au kilo : le dire, sans le chiffre déjà en tête. */
+  const baseKilo = useMemo(() => {
+    const kg = p.quantite?.kg ?? quantitePour(p.titre);
+    const moi = prixAuKilo(a as never, kg, p.taux);
+    if (!moi) return null;
+    const autres = p.autres.map(o => prixAuKilo(articleHonnete(o.article) as never, kg, p.taux)).filter((x): x is NonNullable<typeof x> => !!x);
+    if (!autres.length) return 'Seul prix au kilo lu';
+    return autres.every(x => Math.round(x.chf) > Math.round(moi.chf)) ? 'Le moins cher au kilo' : null;
+  }, [a, p.autres, p.quantite, p.taux, p.titre]);
+  const phraseLocale = calc.pourquoi && baseKilo && !/moins cher/i.test(calc.pourquoi) ? `${baseKilo} ; ${calc.pourquoi.charAt(0).toLowerCase()}${calc.pourquoi.slice(1)}` : calc.pourquoi;
+  const propose = p.pourquoiPropose ?? phraseLocale ?? '';
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
   /* Une page non lue ne se choisit pas : rien n'en est connu (ni nom, ni prix, ni valeurs) ; l'inconnu n'est jamais 0. */
@@ -350,6 +371,12 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             </tbody>
           </table>
         )}
+        {resteValeurs.length > 0 && (
+          <details className="cn-place-reste">
+            <summary>+ {resteValeurs.length} autres valeurs</summary>
+            <table className="cn-place-suite"><tbody>{resteValeurs.map(v => <tr key={v.nom}><th scope="row">{v.nom}</th><td>{v.texte}</td></tr>)}</tbody></table>
+          </details>
+        )}
         {/* g05-11 : critère, façon, fournisseur (◎ ✓ ✓), puis chaque écarté avec son ✕ et sa raison */}
         {!sa && (calc.criteres.length > 0 || calc.facon || a.vendeur) && (
           <ul className="cn-raisons cn-choisir-retenus" aria-label="Retenu">
@@ -390,7 +417,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
               : <div className="cn-article-tx"><b>{liesParNbsp(o.article.nom)}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
-            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
+            <div className="cn-droite">{montant(articleHonnete(o.article).prixCentimes) && <span className="cn-mono cn-prix">{montant(articleHonnete(o.article).prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
           </div>
         );
       })}

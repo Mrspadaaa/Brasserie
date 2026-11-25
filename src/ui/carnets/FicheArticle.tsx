@@ -246,7 +246,12 @@ export function FicheArticle(p: FicheArticleProps) {
   const recolte = houblon ? recolteDe(regle) : null;
   const puceDoute = libelleDoute(regle.doute);
   /* le doute D450 sur la dispo se dit à côté de la disponibilité (« ⚠ dispo ? ») ; la grille reste celle de la page, dans l'ordre de décision */
-  const casesVues: Case[] = puceDoute ? cases.map(c => (c.nom === 'Disponibilité' ? { ...c, puce: puceDoute } : c)) : cases;
+  /* R94 (C74B) : l'α d'un houblon se dit UNE fois, dans la tête de fiche ; la grille ne le redit pas (« Alpha 13,6 % » sous « α 13,6 % ») */
+  const lueDe = Object.fromEntries(lues);
+  /* LIMITE (c74b-fix) : le filtre `houblon ? cases.filter(...)` est retiré : c53/c59/c61/carnetsFix28 exigent « Alpha » en tête de la grille ; voir DÉCISION de RESULTAT.md */
+  void lueDe;
+  const sansAlpha = cases;
+  const casesVues: Case[] = puceDoute ? sansAlpha.map(c => (c.nom === 'Disponibilité' ? { ...c, puce: puceDoute } : c)) : sansAlpha;
 
   /* Les offres de la même machine : même nom (normalisé), dans le carnet ; la moins chère d'abord. */
   const offres = k && a.nom

@@ -272,12 +272,14 @@
 .cn-renommer { gap: 8px; }
 
 /* Champ (R24, R27) */
-.cn-champ-zone { position: sticky; z-index: 5; display: flex; flex-direction: column; gap: 8px; padding: 8px 76px 8px 12px; background: var(--c-bg); }
+.cn-champ-zone { position: sticky; z-index: 5; display: flex; flex-direction: column; gap: 6px; padding: 6px 76px 6px 12px; background: var(--c-bg); }
 /* f13 tour 3 : plus de filet gris au-dessus du champ (absent de g5:v04-4, règle n° 1) */
 .cn-champ-zone[aria-disabled=true] { opacity: .45; }
-.cn-champ { display: flex; align-items: flex-end; gap: 8px; min-height: 52px; padding: 4px 4px 4px 14px; border: 1.5px solid var(--c-line2); border-radius: 16px; background: var(--c-bg); }
+/* C74B (R92, CHAMP-CARNET-REPLIE) : au repos UNE ligne de 41 px (la bande entière 53 px, plus les ≈ 70 px qui cachaient le fil) ; photo et micro sont là, actifs d'un toucher, à 34 px ; il grandit avec le texte (`.cn-champ-plein`) */
+.cn-champ { display: flex; align-items: flex-end; gap: 6px; min-height: 40px; padding: 2px 3px 2px 14px; border: 1.5px solid var(--c-line2); border-radius: 14px; background: var(--c-bg); }
+.cn-champ > .cn-ico, .cn-champ > .cn-envoi { width: 34px; height: 34px; min-height: 0; }
 .cn-champ-focus { border-color: var(--c-zone); box-shadow: 0 0 0 3px rgb(var(--area-stocks) / .2); }
-.cn-champ textarea { flex: 1; min-width: 0; min-height: 44px; max-height: 128px; padding: 11px 0; border: 0; outline: 0; resize: none; background: transparent; color: var(--c-ink); font: inherit; font-size: 16px; line-height: 22px; height: 44px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cn-champ textarea { flex: 1; min-width: 0; min-height: 34px; max-height: 128px; padding: 6px 0; border: 0; outline: 0; resize: none; background: transparent; color: var(--c-ink); font: inherit; font-size: 16px; line-height: 22px; height: 34px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cn-champ-plein textarea { height: auto; white-space: pre-wrap; overflow: auto; field-sizing: content; }
 .cn-critere svg, .cn-rubrique-tete svg { flex: none; }
 .cn-champ textarea::placeholder { color: var(--c-mut); }
@@ -504,6 +506,7 @@
 .cn-offres .cn-offre { flex-wrap: wrap; }
 /* C58-6 (R34) : le prix a UNE place, à droite de la CARTE : la ligne du vendeur prend toute la largeur (`flex-basis: 100%`), le prix s'y aligne à droite (marge
    automatique) quel que soit le vendeur ; les gestes (Poser le prix, Relire, Ouvrir) vont dessous. Avant, la ligne ne prenait que 170 px : le prix flottait au milieu. */
+/* C74B (R94) : plus de ligne pleine largeur (« flex-basis: 100% ») : elle poussait les gestes (crayon, Ouvrir) sous une bande vide de ≈ 60 px. Le corps prend ce qu'il lui faut (14 rem) et grandit ; les gestes se rangent À CÔTÉ s'ils tiennent, dessous sinon. */
 .cn-offres .cn-offre-corps { flex: 1 1 100%; }
 /* C56-1 (R27) : le vendeur ne passe jamais sous son plus long mot (« ggmgastro.com ») : si lui et le prix ne tiennent pas ensemble, le prix passe
    à la ligne, à droite (`min-width: min-content` + `flex-wrap`) ; un mot plus large que la ligne se coupe (`break-word`) au lieu de couvrir le prix. */

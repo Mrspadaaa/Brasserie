@@ -227,7 +227,7 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>
-                  {l.rang && !l.ecarte ? <span className={`cn-rang${l.rang === 1 ? ' cn-rang-1' : ''}`}>{l.rang}</span> : <span className="cn-rang cn-rang-vide" aria-label="écarté">–</span>}
+                  {l.rang && !l.ecarte && matiere && !prixKg.get(l.articleId) ? <span className="cn-rang cn-rang-vide" aria-label="sans rang : le prix au kilo n'est pas connu">?</span> : l.rang && !l.ecarte ? <span className={`cn-rang${l.rang === 1 ? ' cn-rang-1' : ''}`}>{l.rang}</span> : <span className="cn-rang cn-rang-vide" aria-label="écarté">–</span>}
                   <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, b.facon?.nom, titre]} classe="cn-vignette-petite" taille={30} />
                   <span className="cn-tab-nom" role="cell">
                     {/* tour 3, f5c n° 9 : le nom entier ; deux articles de même nom se distinguent par leur vendeur (« · Brassage Romandie ») */}
@@ -248,7 +248,7 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
                   {cols.map((c, ci) => {
                     if (matiere) {
                       const txt = c.cle === '__alpha' ? (a ? alphaDe(a as never) : null) : c.cle === '__recolte' ? (a ? recolteDe(a as never) : null) : (() => { const p = prixKg.get(l.articleId); return p ? texteChfKg(p) : null; })();
-                      return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{txt ? <span className="cn-mono cn-nowrap">{txt}</span> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>;
+                      return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{txt ? <span className={`cn-nowrap${c.cle === '__alpha' && /–/.test(txt) ? '' : ' cn-mono'}`}>{txt}</span> : c.cle === '__prixkg' && a?.prixCentimes !== undefined ? <span className="cn-inconnu cn-nowrap" title="un prix sans quantité lisible : relire la page">à relire</span> : <span className="cn-inconnu" aria-label="inconnu">?</span>}</span>;
                     }
                     const brut = texteCellule(l, c);
                     /* C59-7 : le même prix que Comparer et la pastille (le rendu estimé), jamais le converti seul */

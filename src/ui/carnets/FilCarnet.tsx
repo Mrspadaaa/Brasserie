@@ -13,7 +13,7 @@ import { notePlanningDe } from '../../domain/carnets/taches';
 import { LIBELLE_ETAT, etatOption, optionRetenue } from '../../domain/carnets/suivi';
 import { GENRE_LIBELLE } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
-import { heureDe, jetonDe, libelleJour, libellePlage, libelleRepli, plagesDe, rangsEcart, texteMontant } from './filRegles';
+import { heureDe, jetonDe, libelleJour, libellePlage, libelleRepli, plagesDe, rangsEcart, redisLeTitre, texteDuFil, texteMontant } from './filRegles';
 import type { RappelsSuivi } from './carnetOuvertTypes';
 
 export interface PropsFil {
@@ -160,10 +160,12 @@ export function FilCarnetVue(p: PropsFil) {
     const heure = plusieurs ? heureDe(m.carnetMessage.le) : null;
     const photos = photosDe(m.id);
     const props = (m.carnetMessage.propositionsSuivi ?? []).map((pr, i) => ({ pr, i })).filter(x => x.pr.carnetId === c.id && !(x.pr.sorte === 'retenir' && x.pr.optionId !== undefined && x.pr.optionId === optionRetenue(c)?.id)); /* C71-2 : jamais « à retenir ? » d'une option déjà retenue */
+    if (m.carnetMessage.depuis === 'liste' && redisLeTitre(texte, c) && !photos.length && !props.length && !jetons.length && !liees.length) return null;
+    const article = c.carnet.articles.find(a => a.messageId === m.id) ?? c.carnet.articles.find(a => (m.carnetMessage.effets ?? []).some(x => x.cible === 'article' && x.id === a.id));
     const noeud = (
       <div className="cnp-b cnp-b-vous" data-message={m.id}>
         {photos.map(ph => <img key={ph.id} className="cnp-photo" src={ph.jpeg} alt={`Photo du ${libelleJour(m.carnetMessage.le.slice(0, 10), annee)}`} loading="lazy" />)}
-        <p>{texte}</p>
+        <p className="cnp-texte-court">{texteDuFil(texte, article?.nom)}</p>
         {e.rattache && <p className="cnp-rattache cn-mut">rattaché : « {e.rattache.citation} »</p>}
         {(jetons.length > 0 || heure || (liees.length === 1 && onNote)) && (
           <div className="cnp-pd">

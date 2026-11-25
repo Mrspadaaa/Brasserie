@@ -9,7 +9,8 @@ import { echeanceDe } from './taches';
 
 const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 const sansAccent = (s: string): string => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-const MARQUE = /\b(?:avant|pour|d['’]ici|au plus tard)\s+(?:le\s+)?(1er|\d{1,2})\s+([a-zéûè]+)\b/iu;
+/* C73-1 (R97) : « la semaine du 14 décembre » dit sa date comme « avant le 14 décembre » (le lundi de sa semaine) */
+const MARQUE = /\b(?:avant|pour|d['’]ici|au plus tard|(?:la\s+)?semaine\s+du)\s+(?:le\s+)?(1er|\d{1,2})\s+([a-zéûè]+)\b/iu;
 
 export interface TacheDatee { texte: string; echeance: string }
 
