@@ -1,0 +1,26 @@
+{
+ "v5-ecoulement": {
+  "repos": {
+   "n": 17,
+   "mots": "À vérifier Devis Seule cause À faire Contacter X 150 CHF CHF Fait Joint Dalle Aide Ajouter…",
+   "utileTop": 48,
+   "barre": 48,
+   "debord": false
+  },
+  "geste": {
+   "n": 24
+  }
+ },
+ "v5-citra": {
+  "repos": {
+   "n": 13,
+   "mots": "👑1 👑2 À vérifier Stock Prix/g À faire Fait α 13,6 Aide Ajouter…",
+   "utileTop": 48,
+   "barre": 48,
+   "debord": false
+  },
+  "geste": {
+   "n": 22
+  }
+ }
+}

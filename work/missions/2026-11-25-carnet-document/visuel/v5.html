@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Organisé v5 — Kanban à vignettes</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--car:#8ab4f8;
+--iabg:color-mix(in srgb,var(--ia) 17%,var(--card));--okbg:color-mix(in srgb,var(--ok) 15%,var(--card));--badbg:color-mix(in srgb,var(--bad) 15%,var(--card));--attbg:color-mix(in srgb,var(--att) 16%,var(--card));--finbg:color-mix(in srgb,var(--fin) 15%,var(--card))}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);overscroll-behavior:none}
+body{font:16px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:640px;margin:0 auto;min-height:100vh;position:relative}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.fl{display:inline-block;width:20px;height:14px;border-radius:3px;flex:none;vertical-align:-2px}
+.fl-fr{background:linear-gradient(90deg,#3b63c4 0 33%,#f4f4f4 33% 66%,#e2464d 66%)}
+.fl-ch{background:#e2464d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Cpath fill='%23fff' d='M8.5 3h3v2.5H14v3h-2.5V11h-3V8.5H6v-3h2.5z'/%3E%3C/svg%3E") center/contain no-repeat;width:16px;height:16px;border-radius:3px}
+.ia-d{border:1.5px dashed color-mix(in srgb,var(--ia) 75%,var(--bg))!important}
+.c-voile{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.c-sheet{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:#1c1c1f;border-radius:18px 18px 0 0;padding:8px 14px 18px;z-index:21;box-shadow:0 -8px 30px rgba(0,0,0,.6);animation:c-up .2s ease-out}
+.c-sheet:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px}
+@keyframes c-up{from{transform:translateY(30px);opacity:.4}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);border-radius:4px;padding:0 2px}
+.c-ln{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:var(--s2);color:var(--mut);font-size:14px;font-weight:700}
+.c-quote{display:flex;gap:10px;align-items:flex-start;font-size:19px;line-height:1.4;margin:4px 0 14px}
+.c-quote p{margin:0}
+.c-ret{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:15px}
+.c-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.c-star{display:flex;align-items:center;gap:6px;height:44px;padding:0 16px;border-radius:999px;background:var(--ink);color:#000;font-weight:800;font-size:15px}
+.c-meta{position:absolute;z-index:15;background:#232327;border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mut);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+
+.v5-top{display:flex;align-items:center;gap:6px;height:48px;padding:0 8px}
+.v5-top h1{flex:1;min-width:0;margin:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v5-ib{width:40px;height:40px;display:grid;place-items:center;font-size:19px;color:var(--mut)}
+.v5-duel{display:flex;align-items:center;gap:8px;margin:0 10px 8px;height:52px;border-radius:16px;background:var(--card);padding:0 12px;font-weight:800;font-size:17px}
+.v5-duel .bar{flex:1;height:12px;border-radius:6px;display:flex;overflow:hidden;gap:2px}
+.v5-b{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 8px 84px}
+.v5-col{border-radius:18px;padding:6px;min-height:calc(100vh - 136px);display:flex;flex-direction:column;gap:6px}
+.v5-col.v{background:color-mix(in srgb,var(--att) 8%,#0c0c0e)} .v5-col.f{background:color-mix(in srgb,var(--fin) 8%,#0c0c0e)} .v5-col.d{background:color-mix(in srgb,var(--ok) 8%,#0c0c0e)}
+.v5-h{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 4px;font-weight:800;font-size:14px}
+.v5-h .i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:900;color:#000}
+.v5-col.v .i{background:var(--att)} .v5-col.f .i{background:var(--fin)} .v5-col.d .i{background:var(--ok)}
+.v5-v{position:relative;min-height:124px;border-radius:14px;background:var(--card);perspective:600px;text-align:center}
+.v5-v .in{position:relative;width:100%;min-height:124px;transition:transform .25s;transform-style:preserve-3d}
+.v5-v.flip .in{transform:rotateY(180deg)}
+.v5-v .fr,.v5-v .bk{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px}
+.v5-v .bk{transform:rotateY(180deg);background:#2a2340;font-size:14px;line-height:1.3;justify-content:flex-start;text-align:left;align-items:stretch}
+.v5-v .e{font-size:32px;line-height:1}
+.v5-v .m{font-weight:800;font-size:15px}
+.v5-v .bd{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:900}
+.v5-v.ok .bd{background:var(--ok);color:#000} .v5-v.non{opacity:.7} .v5-v.non .m{text-decoration:line-through;color:var(--mut)} .v5-v.non .bd{background:var(--s2);color:var(--mut)}
+.v5-v.ia{background:var(--iabg)} .v5-v.ia .m{color:var(--ia)}
+.v5-v.tache{border:2px solid var(--ink)} .v5-v.tache .bd{border:2.5px solid var(--ink);border-radius:6px;background:none}
+.v5-v.opt .bd{background:var(--ia);color:#000}
+.v5-v.w{min-height:110px}.v5-v.w .in{min-height:110px}
+body:has(.v5-duel) .v5-col{min-height:calc(100vh - 232px)}
+.v5-plus{height:40px;border-radius:12px;border:2px dashed var(--line);color:var(--mut);font-size:20px}
+.v5-bas{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;display:flex;gap:8px;padding:8px 10px 14px;background:#000;border-top:1px solid #1f1f22}
+.v5-bas input{flex:1;min-width:0;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--card);padding:0 14px}
+.v5-bas button{height:46px;padding:0 14px;border-radius:14px;border:1px solid var(--line);font-weight:800}
+.v5-bas .a{background:var(--ia);color:#000;border:0}
+</style></head>
+<body>
+
+<header class="v5-top"><button class="v5-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v5-ib" aria-label="Détails" onclick="meta(this)">⋯</button></header>
+<div id="duel"></div>
+<main class="v5-b" id="b"></main>
+<div class="v5-bas"><button aria-label="Mes notes">📝</button><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="a">💡 Aide</button></div>
+<script>
+const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
+
+const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
+function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
+function fermer(){document.querySelectorAll('.c-voile,.c-sheet').forEach(e=>e.remove());}
+function feuille(html){fermer();const v=document.createElement('div');v.className='c-voile';v.onclick=fermer;const s=document.createElement('div');s.className='c-sheet';s.setAttribute('role','dialog');s.innerHTML=html;document.body.append(v,s);return s;}
+function ligneHTML(n,cit,ic,opt){return '<div class="c-quote"><span class="c-ln mono">'+n+'</span><p>'+(ic?ic+' ':'')+marque(n,cit)+'</p></div><div class="c-row">'+(opt?'<button class="c-star" data-retenir>☆ Retenir</button>':'')+'<button class="c-ret">📝 Mes notes ↩</button></div>';}
+function versLigne(it,opt){if(!it.ligne){feuille('<div class="c-quote"><span class="c-ln">✦</span><p>'+esc(it.ic+' '+it.mot)+'</p></div><div class="c-row">'+(opt?'<button class="c-star">☆ Retenir</button>':'')+'<button class="c-ret">✕</button></div>');return;}feuille(ligneHTML(it.ligne,it.cit,it.ic,opt));}
+function meta(btn){const o=document.querySelector('.c-meta');if(o){o.remove();return;}const m=document.createElement('div');m.className='c-meta';m.textContent=D.meta;const r=btn.getBoundingClientRect();m.style.top=(r.bottom+6+scrollY)+'px';m.style.right='10px';document.body.append(m);}
+
+
+document.querySelector('[data-titre]').textContent=D.titre;
+const b=document.getElementById('b');
+const V=(k,cls,e,m,bd,g)=>'<button class="v5-v '+cls+'" data-k="'+k+'"'+(g?' data-geste':'')+'><div class="in"><div class="fr"><span class="e">'+e+'</span><span class="m">'+m+'</span>'+(bd?'<span class="bd">'+bd+'</span>':'')+'</div><div class="bk"></div></div></button>';
+const col=(cls,ic,lab,inner,plus)=>'<section class="v5-col '+cls+'"><div class="v5-h"><span class="i">'+ic+'</span>'+lab+'</div>'+inner+(plus?'<button class="v5-plus" aria-label="Ajouter">+</button>':'')+'</section>';
+if(CAS==='ecoulement'){
+ b.innerHTML=col('v','?','À vérifier',V('devis','','⏳','Devis','')+V('cause','ia ia-d','🔧','Seule cause ?',''),1)+
+  col('f','☐','À faire',V('tache','tache','📞','Contacter X',' ')+V('optX','opt','👷','<span class="mono">150 CHF</span>','★')+V('optJ','ia ia-d','🔧','<span class="mono">? CHF</span>',''),1)+
+  col('d','✓','Fait',V('joint','ok','🔧','Joint','✓')+V('dalle','non','🧱','Dalle','✗',1),0);
+ b.querySelector('.v5-col.d').setAttribute('data-utile','');
+}else{const A=D.A,B=D.B;
+ document.querySelectorAll('.v5-col').forEach(c=>c.style.minHeight='calc(100vh - 232px)');document.getElementById('duel').innerHTML='<div class="v5-duel" data-utile>'+fl('fr')+'<span>👑1</span><span class="bar"><i style="flex:1;background:var(--fin)"></i><i style="flex:2;background:var(--ok)"></i></span><span>👑2</span>'+fl('ch')+'</div>';
+ b.innerHTML=col('v','?','À vérifier',V('stock','','📦',fl('fr')+' Stock','⚠',1)+V('prix','ia ia-d','💰',fl('ch')+' Prix/g',''),1)+
+  col('f','☐','À faire',V('A','opt w','☆',fl('fr'),'')+V('B','opt w','☆',fl('ch'),'👑'),1)+
+  col('d','✓','Fait',V('alpha','ok','α','<span class="mono">13,6 %</span>','✓')+V('aro','ok','🍋🥭','🌴','✓'),0);
+}
+b.onclick=e=>{const v=e.target.closest('.v5-v');if(!v)return;const k=v.dataset.k;
+ let it=D.it&&D.it[k];if(!it&&D[k])it=D[k];if(!it&&(k==='alpha'||k==='aro'))it=D.B;
+ if(v.classList.contains('flip')){v.classList.remove('flip');return;}
+ document.querySelectorAll('.v5-v.flip').forEach(x=>x.classList.remove('flip'));
+ v.querySelector('.bk').innerHTML=it.ligne?'<span class="c-ln mono" style="align-self:flex-start">'+it.ligne+'</span><span>'+marque(it.ligne,it.cit)+'</span><span style="margin-top:auto;color:var(--ia);font-weight:800">📝↩</span>':'<span class="c-ln">✦</span><span style="color:var(--ia)">IA</span>';
+ v.classList.add('flip');};
+
+</script>
+</body></html>

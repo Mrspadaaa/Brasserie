@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Organisé v1 — Carte mentale</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--car:#8ab4f8;
+--iabg:color-mix(in srgb,var(--ia) 17%,var(--card));--okbg:color-mix(in srgb,var(--ok) 15%,var(--card));--badbg:color-mix(in srgb,var(--bad) 15%,var(--card));--attbg:color-mix(in srgb,var(--att) 16%,var(--card));--finbg:color-mix(in srgb,var(--fin) 15%,var(--card))}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);overscroll-behavior:none}
+body{font:16px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:640px;margin:0 auto;min-height:100vh;position:relative}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.fl{display:inline-block;width:20px;height:14px;border-radius:3px;flex:none;vertical-align:-2px}
+.fl-fr{background:linear-gradient(90deg,#3b63c4 0 33%,#f4f4f4 33% 66%,#e2464d 66%)}
+.fl-ch{background:#e2464d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Cpath fill='%23fff' d='M8.5 3h3v2.5H14v3h-2.5V11h-3V8.5H6v-3h2.5z'/%3E%3C/svg%3E") center/contain no-repeat;width:16px;height:16px;border-radius:3px}
+.ia-d{border:1.5px dashed color-mix(in srgb,var(--ia) 75%,var(--bg))!important}
+.c-voile{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.c-sheet{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:#1c1c1f;border-radius:18px 18px 0 0;padding:8px 14px 18px;z-index:21;box-shadow:0 -8px 30px rgba(0,0,0,.6);animation:c-up .2s ease-out}
+.c-sheet:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px}
+@keyframes c-up{from{transform:translateY(30px);opacity:.4}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);border-radius:4px;padding:0 2px}
+.c-ln{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:var(--s2);color:var(--mut);font-size:14px;font-weight:700}
+.c-quote{display:flex;gap:10px;align-items:flex-start;font-size:19px;line-height:1.4;margin:4px 0 14px}
+.c-quote p{margin:0}
+.c-ret{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:15px}
+.c-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.c-star{display:flex;align-items:center;gap:6px;height:44px;padding:0 16px;border-radius:999px;background:var(--ink);color:#000;font-weight:800;font-size:15px}
+.c-meta{position:absolute;z-index:15;background:#232327;border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mut);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+
+.v1-top{display:flex;align-items:center;gap:6px;height:48px;padding:0 8px}
+.v1-top h1{flex:1;min-width:0;margin:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v1-ib{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;font-size:20px;color:var(--mut)}
+.v1-map{position:relative;height:716px}
+.v1-map svg.v1-l{position:absolute;inset:0;width:100%;height:100%}
+.v1-n{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:15px}
+.v1-n .o{position:relative;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-size:28px;background:var(--card);border:2.5px solid var(--line)}
+.v1-n .b{position:absolute;right:-6px;top:-6px;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:900;padding:0 4px}
+.v1-n.ok .o{border-color:var(--ok);background:var(--okbg)} .v1-n.ok .b{background:var(--ok);color:#000}
+.v1-n.non .o{border-color:var(--mut);opacity:.75} .v1-n.non .b{background:var(--s2);color:var(--mut)} .v1-n.non span{color:var(--mut);text-decoration:line-through}
+.v1-n.att .o{border-color:var(--att);background:var(--attbg)} .v1-n.att span{color:var(--att)}
+.v1-n.opt .o{border-radius:18px;border-color:var(--fin);background:var(--finbg)} .v1-n.opt .b{background:var(--ia);color:#000}
+.v1-n.ia .o{border-style:dashed;border-color:var(--ia);background:var(--iabg)} .v1-n.ia span{color:var(--ia)}
+.v1-n.tache .o{border-radius:14px;border-color:var(--ink)} .v1-n.tache .b{background:var(--bg);border:2px solid var(--ink);width:24px}
+.v1-n.plus .o{width:40px;height:40px;border:2px dashed var(--line);font-size:22px;color:var(--mut);background:none}
+.v1-n.big .o{width:82px;height:82px;font-size:34px;border-width:3px}
+.v1-n .px{font-size:14px;padding:2px 8px;border-radius:999px;background:var(--s2)}
+.v1-n .lc{display:flex;flex-direction:column;align-items:center;gap:3px}
+.v1-c{position:absolute;transform:translate(-50%,-50%);width:132px;height:132px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(#141418 60%,#000)}
+.v1-c svg{position:absolute;inset:0}
+.v1-c .e{font-size:40px;line-height:1}
+.v1-c .k{font-size:15px;font-weight:800;margin-top:2px}
+.v1-c .k b{font-size:26px}
+.v1-bas{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:8px 10px 14px;background:linear-gradient(transparent,#000 30%)}
+.v1-bas input{flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid var(--line);background:var(--card);padding:0 16px;font-size:16px}
+.v1-rond{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:var(--card);border:1px solid var(--line)}
+.v1-aide{height:46px;padding:0 16px;border-radius:23px;background:var(--ia);color:#000;font-weight:800;display:flex;gap:6px;align-items:center}
+</style></head>
+<body>
+
+<header class="v1-top"><button class="v1-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v1-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button></header>
+<main class="v1-map" id="map"></main>
+<div class="v1-bas"><button class="v1-rond" aria-label="Mes notes">📝</button><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="v1-aide" data-geste-aide>💡 Aide</button></div>
+<script>
+const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
+
+const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
+function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
+function fermer(){document.querySelectorAll('.c-voile,.c-sheet').forEach(e=>e.remove());}
+function feuille(html){fermer();const v=document.createElement('div');v.className='c-voile';v.onclick=fermer;const s=document.createElement('div');s.className='c-sheet';s.setAttribute('role','dialog');s.innerHTML=html;document.body.append(v,s);return s;}
+function ligneHTML(n,cit,ic,opt){return '<div class="c-quote"><span class="c-ln mono">'+n+'</span><p>'+(ic?ic+' ':'')+marque(n,cit)+'</p></div><div class="c-row">'+(opt?'<button class="c-star" data-retenir>☆ Retenir</button>':'')+'<button class="c-ret">📝 Mes notes ↩</button></div>';}
+function versLigne(it,opt){if(!it.ligne){feuille('<div class="c-quote"><span class="c-ln">✦</span><p>'+esc(it.ic+' '+it.mot)+'</p></div><div class="c-row">'+(opt?'<button class="c-star">☆ Retenir</button>':'')+'<button class="c-ret">✕</button></div>');return;}feuille(ligneHTML(it.ligne,it.cit,it.ic,opt));}
+function meta(btn){const o=document.querySelector('.c-meta');if(o){o.remove();return;}const m=document.createElement('div');m.className='c-meta';m.textContent=D.meta;const r=btn.getBoundingClientRect();m.style.top=(r.bottom+6+scrollY)+'px';m.style.right='10px';document.body.append(m);}
+
+
+document.querySelector('[data-titre]').textContent=D.titre;
+const map=document.getElementById('map');const W=390;
+const C={x:195,y:340};
+function ring(parts){// parts: [[couleur,fraction]] autour du cœur
+  let a=-90,s='';const r=60,cx=66,cy=66;for(const [c,f] of parts){const b=a+f*360-4;const p=(d)=>[cx+r*Math.cos(d*Math.PI/180),cy+r*Math.sin(d*Math.PI/180)];const [x1,y1]=p(a),[x2,y2]=p(b);s+='<path d="M'+x1+' '+y1+' A'+r+' '+r+' 0 '+(b-a>180?1:0)+' 1 '+x2+' '+y2+'" stroke="'+c+'" stroke-width="7" fill="none" stroke-linecap="round"/>';a+=f*360;}
+  return '<svg viewBox="0 0 132 132">'+s+'</svg>';}
+let nodes=[],lines='';
+function N(x,y,cls,o,lab,badge,data,col,dash){nodes.push('<button class="v1-n '+cls+'" style="left:'+x+'px;top:'+y+'px" '+(data||'')+'><span class="o">'+o+(badge?'<i class="b">'+badge+'</i>':'')+'</span>'+(lab?'<span>'+lab+'</span>':'')+'</button>');
+  if(col){const mx=(C.x+x)/2+(y-C.y)*.18,my=(C.y+y)/2-(x-C.x)*.18;lines+='<path d="M'+C.x+' '+C.y+' Q'+mx+' '+my+' '+x+' '+y+'" stroke="'+col+'" stroke-width="'+(dash?2:4)+'" fill="none" '+(dash?'stroke-dasharray="6 6"':'')+' opacity=".8"/>';}}
+if(CAS==='ecoulement'){const I=D.it;
+  N(78,72,'ok',I.joint.ic,'Joint','✓','data-k="joint" data-utile','var(--ok)');
+  N(196,52,'non',I.dalle.ic,'Dalle','✗','data-k="dalle" data-geste','var(--mut)');
+  N(316,96,'ia',I.cause.ic,'Seule cause ?','','data-k="cause"','var(--ia)',1);
+  N(330,330,'att',I.devis.ic,'Devis','','data-k="devis"','var(--att)');
+  N(80,560,'tache big',I.tache.ic,'Contacter X','','data-k="tache"','var(--ink)');
+  N(312,560,'opt',I.optX.ic,'<span class="px mono">150 CHF</span>','★','data-k="optX" data-opt','var(--fin)');
+  N(196,630,'ia',I.optJ.ic,'<span class="px mono">? CHF</span>','','data-k="optJ" data-opt','var(--ia)',1);
+  N(40,300,'plus','+','','','aria-label="Ajouter une piste"');N(362,450,'plus','+','','','aria-label="Ajouter une option"');N(30,440,'plus','+','','','aria-label="Ajouter une tâche"');
+  map.innerHTML='<svg class="v1-l">'+lines+'</svg>'+nodes.join('')+'<div class="v1-c" style="left:'+C.x+'px;top:'+C.y+'px">'+ring([['var(--ok)',.5],['var(--att)',.5]])+'<div><div class="e">💧</div><div class="k mono"><b style="color:var(--ok)">✓1</b> <b style="color:var(--att)">?2</b></div></div></div>';
+}else{const A=D.A,B=D.B;
+  N(80,340,'big opt',fl('fr'),'<span class="lc">MotlerHops<span class="px mono">3,42 CHF</span></span>','👑1','data-art="A"','var(--fin)');
+  N(310,340,'big opt',fl('ch'),'<span class="lc">Brau<span class="px mono">0,10 ?</span></span>','👑2','data-art="B"','var(--fin)');
+  N(300,80,'ok','<b style="font-size:26px">α</b>','<span class="mono">13,6 %</span>','👑','data-art="B" data-utile','var(--ok)');
+  N(318,590,'ok','🍋','🥭🌴','👑','data-art="B"','var(--ok)');
+  N(84,90,'att',D.it.stock.ic,'⚠','','data-k="stock" data-geste','var(--att)');
+  N(196,620,'ia','💰','<span class="px mono">Prix/g ?</span>','','data-k="prix"','var(--ia)',1);
+  N(60,590,'plus','+','','','aria-label="Ajouter"');
+  map.innerHTML='<svg class="v1-l">'+lines+'</svg>'+nodes.join('')+'<div class="v1-c" style="left:'+C.x+'px;top:'+C.y+'px">'+ring([['var(--fin)',.333],['var(--line)',.333],['var(--line)',.334]])+'<div><div class="e">⚖️</div><div class="k">comparé</div></div></div>';
+}
+map.onclick=e=>{const b=e.target.closest('.v1-n');if(!b)return;if(b.dataset.k)versLigne(D.it[b.dataset.k],b.hasAttribute('data-opt'));else if(b.dataset.art){const a=D[b.dataset.art];feuille(ligneHTML(a.ligne,a.cit,'',true));}};
+document.querySelector('[data-geste-aide]').onclick=()=>feuille('<div style="display:flex;flex-direction:column;gap:10px">'+D.aide.map(a=>'<div class="c-row" style="font-size:18px;font-weight:800"><span class="c-ln" style="width:44px;height:44px;font-size:22px">'+a.ic+'</span><span style="flex:1">'+esc(a.mot)+'</span><button class="c-ret" aria-label="Écarter">✕</button><button class="c-star" aria-label="Garder">＋</button></div>').join('')+'</div>');
+
+</script>
+</body></html>

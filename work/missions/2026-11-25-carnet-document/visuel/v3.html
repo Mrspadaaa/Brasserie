@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Organisé v3 — Chemin du genre</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--car:#8ab4f8;
+--iabg:color-mix(in srgb,var(--ia) 17%,var(--card));--okbg:color-mix(in srgb,var(--ok) 15%,var(--card));--badbg:color-mix(in srgb,var(--bad) 15%,var(--card));--attbg:color-mix(in srgb,var(--att) 16%,var(--card));--finbg:color-mix(in srgb,var(--fin) 15%,var(--card))}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);overscroll-behavior:none}
+body{font:16px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:640px;margin:0 auto;min-height:100vh;position:relative}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+input{font:inherit;color:var(--ink)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.fl{display:inline-block;width:20px;height:14px;border-radius:3px;flex:none;vertical-align:-2px}
+.fl-fr{background:linear-gradient(90deg,#3b63c4 0 33%,#f4f4f4 33% 66%,#e2464d 66%)}
+.fl-ch{background:#e2464d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Cpath fill='%23fff' d='M8.5 3h3v2.5H14v3h-2.5V11h-3V8.5H6v-3h2.5z'/%3E%3C/svg%3E") center/contain no-repeat;width:16px;height:16px;border-radius:3px}
+.ia-d{border:1.5px dashed color-mix(in srgb,var(--ia) 75%,var(--bg))!important}
+.c-voile{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.c-sheet{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:#1c1c1f;border-radius:18px 18px 0 0;padding:8px 14px 18px;z-index:21;box-shadow:0 -8px 30px rgba(0,0,0,.6);animation:c-up .2s ease-out}
+.c-sheet:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px}
+@keyframes c-up{from{transform:translateY(30px);opacity:.4}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);border-radius:4px;padding:0 2px}
+.c-ln{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:var(--s2);color:var(--mut);font-size:14px;font-weight:700}
+.c-quote{display:flex;gap:10px;align-items:flex-start;font-size:19px;line-height:1.4;margin:4px 0 14px}
+.c-quote p{margin:0}
+.c-ret{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:15px}
+.c-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.c-star{display:flex;align-items:center;gap:6px;height:44px;padding:0 16px;border-radius:999px;background:var(--ink);color:#000;font-weight:800;font-size:15px}
+.c-meta{position:absolute;z-index:15;background:#232327;border-radius:12px;padding:10px 12px;font-size:14px;color:var(--mut);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+
+.v3-top{display:flex;align-items:center;gap:8px;height:48px;padding:0 10px}
+.v3-top h1{flex:1;min-width:0;margin:0;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v3-ib{width:40px;height:40px;display:grid;place-items:center;font-size:19px;color:var(--mut)}
+.v3-notes{height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:700;color:var(--mut)}
+.v3-p{position:relative;padding:6px 10px 0 66px;min-height:calc(100vh - 230px);display:flex;flex-direction:column;justify-content:space-between;margin-bottom:84px}
+.v3-p:before{content:"";position:absolute;left:33px;top:30px;bottom:60px;width:4px;border-radius:2px;background:linear-gradient(var(--ok),var(--att) 55%,var(--line) 80%)}
+.v3-s{position:relative;min-height:70px;margin-bottom:14px}
+.v3-st{position:absolute;left:-56px;top:0;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:#000;border:3px solid var(--line)}
+.v3-s.ok .v3-st{border-color:var(--ok);background:var(--okbg)}
+.v3-s.ici .v3-st{border-color:var(--att);background:var(--attbg);box-shadow:0 0 0 6px color-mix(in srgb,var(--att) 25%,transparent)}
+.v3-s.vide .v3-st{opacity:.6}
+.v3-chips{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+.v3-c{display:flex;align-items:center;gap:8px;height:58px;padding:0 16px 0 12px;border-radius:18px;background:var(--card);font-weight:800;font-size:21px;border:2px solid transparent}
+.v3-c .e{font-size:25px}
+.v3-c.ok{background:var(--okbg);color:var(--ok)} .v3-c.non{color:var(--mut)} .v3-c.non b{text-decoration:line-through}
+.v3-c.att{background:var(--attbg);color:var(--att)} .v3-c.opt{background:var(--finbg)} .v3-c.ia{color:var(--ia);background:var(--iabg)}
+.v3-c.tache{border-color:var(--ink);height:76px;font-size:25px;flex-basis:100%;padding:0 18px}
+.v3-c .q{width:22px;height:22px;border:2.5px solid currentColor;border-radius:6px}
+.v3-c .st{font-size:18px;color:var(--mut)}
+.v3-c.plus{border:2px dashed var(--line);color:var(--mut);background:none;padding:0 14px}
+.v3-bub{flex-basis:100%;background:#232327;border-radius:4px 16px 16px 16px;padding:10px 12px;font-size:17px;line-height:1.4;animation:c-up .18s ease-out;display:flex;gap:10px;align-items:flex-start}
+.v3-bub p{margin:0;flex:1}
+.v3-duel{display:grid;grid-template-columns:34px 1fr 1fr;gap:4px;align-items:center;background:var(--card);border-radius:16px;padding:8px;font-size:16px}
+.v3-duel .h{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;padding:4px 6px}
+.v3-duel .k{font-size:20px;text-align:center}
+.v3-duel .v{height:50px;font-size:17px;border-radius:10px;display:flex;align-items:center;gap:6px;padding:0 8px;font-weight:700}
+.v3-duel .v.w{background:var(--okbg);color:var(--ok)} .v3-duel .v.x{color:var(--mut)} .v3-duel .v.a{background:var(--attbg);color:var(--att)}
+.v3-bas{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;display:flex;gap:8px;padding:8px 10px 14px;background:linear-gradient(transparent,#000 25%)}
+.v3-bas input{flex:1;min-width:0;height:46px;border-radius:12px;border:1px solid var(--line);background:#111;padding:0 14px}
+.v3-aide{height:46px;padding:0 14px;border-radius:12px;border:1.5px solid var(--ia);color:var(--ia);font-weight:800}
+</style></head>
+<body>
+
+<header class="v3-top"><button class="v3-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v3-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button><button class="v3-ib" aria-label="Mes notes">📝</button></header>
+<main class="v3-p" id="p"></main>
+<div class="v3-bas"><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="v3-aide">💡 Aide</button></div>
+<script>
+const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
+
+const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
+function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
+function fermer(){document.querySelectorAll('.c-voile,.c-sheet').forEach(e=>e.remove());}
+function feuille(html){fermer();const v=document.createElement('div');v.className='c-voile';v.onclick=fermer;const s=document.createElement('div');s.className='c-sheet';s.setAttribute('role','dialog');s.innerHTML=html;document.body.append(v,s);return s;}
+function ligneHTML(n,cit,ic,opt){return '<div class="c-quote"><span class="c-ln mono">'+n+'</span><p>'+(ic?ic+' ':'')+marque(n,cit)+'</p></div><div class="c-row">'+(opt?'<button class="c-star" data-retenir>☆ Retenir</button>':'')+'<button class="c-ret">📝 Mes notes ↩</button></div>';}
+function versLigne(it,opt){if(!it.ligne){feuille('<div class="c-quote"><span class="c-ln">✦</span><p>'+esc(it.ic+' '+it.mot)+'</p></div><div class="c-row">'+(opt?'<button class="c-star">☆ Retenir</button>':'')+'<button class="c-ret">✕</button></div>');return;}feuille(ligneHTML(it.ligne,it.cit,it.ic,opt));}
+function meta(btn){const o=document.querySelector('.c-meta');if(o){o.remove();return;}const m=document.createElement('div');m.className='c-meta';m.textContent=D.meta;const r=btn.getBoundingClientRect();m.style.top=(r.bottom+6+scrollY)+'px';m.style.right='10px';document.body.append(m);}
+
+
+document.querySelector('[data-titre]').textContent=D.titre;
+const p=document.getElementById('p');
+const chip=(k,cls,inner)=>'<button class="v3-c '+cls+'" data-k="'+k+'">'+inner+'</button>';
+if(CAS==='ecoulement'){const I=D.it;
+ p.innerHTML=
+ 
+ '<section class="v3-s ok" data-utile><span class="v3-st">🔎</span><div class="v3-chips">'+chip('joint','ok','<span class="e">🔧</span><b>Joint</b><span>✓</span>')+chip('dalle','non" data-geste="1','<span class="e">🧱</span><b>Dalle</b><span>✗</span>')+chip('cause','ia ia-d','<span class="e">✓</span><b>Seule cause ?</b>')+'<button class="v3-c plus" aria-label="Ajouter une piste">+</button></div></section>'+
+ '<section class="v3-s ici"><span class="v3-st">📞</span><div class="v3-chips">'+chip('tache','tache','<span class="q"></span><span class="e">📞</span><b>Contacter X</b>')+chip('devis','att','<span class="e">⏳</span><b>Devis</b>')+'</div></section>'+
+ '<section class="v3-s vide"><span class="v3-st">🛠️</span><div class="v3-chips">'+chip('optX','opt','<span class="e">👷</span><b class="mono">150 CHF</b><span style="color:var(--ia)">★</span>')+chip('optJ','ia ia-d','<span class="e">🔧</span><b class="mono">? CHF</b>')+'<button class="v3-c plus" aria-label="Ajouter une option">+</button></div></section>';
+}else{const A=D.A,B=D.B;
+ p.innerHTML=
+ '<section class="v3-s ici" data-utile><span class="v3-st">⚖️</span><div class="v3-duel">'+
+  '<span></span><button class="h" data-art="A">'+fl('fr')+'MotlerHops</button><button class="h" data-art="B">'+fl('ch')+'Brau 👑</button>'+
+  '<span class="k">α</span><span class="v x mono">10–15</span><span class="v w mono">13,6 %</span>'+
+  '<span class="k">💰</span><span class="v x mono">3,42 CHF</span><span class="v x mono">0,10 ?</span>'+
+  '<span class="k">📦</span><button class="v a" data-k="stock" data-geste="1">✓ ⚠</button><span class="v x">?</span>'+
+  '<span class="k">🍋</span><span class="v x">–</span><span class="v w">🍋🥭🌴</span>'+
+ '</div></section>'+
+ '<section class="v3-s"><span class="v3-st">✋</span><div class="v3-chips">'+chip('prix','ia ia-d','<span class="e">✓</span><b>Prix/g</b>'+fl('ch'))+'<button class="v3-c opt" data-art="A">☆ '+fl('fr')+'</button><button class="v3-c opt" data-art="B">☆ '+fl('ch')+'</button></div></section>'+
+ '<section class="v3-s vide"><span class="v3-st">📦</span><div class="v3-chips"><button class="v3-c plus" aria-label="Ajouter">+</button></div></section>';
+}
+p.onclick=e=>{const b=e.target.closest('[data-k],[data-art]');if(!b)return;document.querySelectorAll('.v3-bub').forEach(x=>x.remove());
+ const it=b.dataset.k?D.it[b.dataset.k]:D[b.dataset.art];const bub=document.createElement('div');bub.className='v3-bub';
+ bub.innerHTML=it.ligne?'<span class="c-ln mono">'+it.ligne+'</span><p>'+marque(it.ligne,it.cit)+'</p><button class="c-ret" style="height:36px;padding:0 10px" aria-label="Ouvrir dans Mes notes">📝↩</button>':'<span class="c-ln">✦</span><p style="color:var(--ia)">'+esc(D.conseil)+'</p>';
+ const host=b.closest('.v3-chips')||b.closest('.v3-s');host.append(bub);};
+
+</script>
+</body></html>
