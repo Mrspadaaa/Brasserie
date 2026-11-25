@@ -42,7 +42,7 @@ const pictoParDefaut = (c: CarnetDoc): React.ReactNode => (
 );
 
 export function AFaire({ carnets, maintenant, plans = [], messages = [], onCocher, onOuvrir, onEcheance, picto = pictoParDefaut }: AFaireProps) {
-  const liste = useMemo(() => aFaireDe(carnets, maintenant), [carnets, maintenant]);
+  const liste = useMemo(() => aFaireDe(carnets, typeof maintenant === 'function' ? maintenant() : maintenant), [carnets, maintenant]);
   const parId = useMemo(() => new Map(carnets.map(c => [c.id, c])), [carnets]);
   const [cochees, setCochees] = useState<ReadonlySet<string>>(new Set());
   const [quand, setQuand] = useState<TacheVue | null>(null);

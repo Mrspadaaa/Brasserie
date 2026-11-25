@@ -102,7 +102,7 @@ export function texteBandeau(b: BandeauV): string {
       const raison = raisonNonLue(b.statut);
       return `✓ Lien rangé ici · page non lue${raison ? ` : ${raison}` : ''}`;
     }
-    case 'photo': return '✓ Photo rangée ici';
+    case 'photo': return b.ici === false ? '✓ Photo rangée dans À ranger' : '✓ Photo rangée ici';
     case 'article': return `${b.faconNom ? `✓ Article rangé ici, dans ${b.faconNom}` : '✓ Article rangé ici, à l\'instant'}${b.rang ? ` · ${b.rang}` : ''}`;
     case 'deuxieme': return `${b.nom} rangé, ${b.rang === 1 ? '1er' : `${b.rang}e`}`;
     case 'ailleurs': return `Rangé dans ${b.carnet}, à l'instant${b.rang ? ` · ${b.rang}` : ''}`;

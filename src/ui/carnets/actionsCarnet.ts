@@ -183,7 +183,11 @@ export function actionsCarnet(x: ActionsV) {
     /* L-10, L-12 : un plan supprimé d'À venir est reposé ; un plan suivi prend l'étape et le prix du choix (sans montant seulement, Q-1) */
     if (!existant) { await ecrirePlanLie(plan); appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le })); }
     else if (existant.status === 'cancelled') await ecrirePlanLie(planRepris(existant));
-    else await planSuitLeChoix(c);
+    else if (!/^\d{4}-\d{2}-\d{2}/.test(existant.date ?? '')) {
+      /* R64 : un achat envoyé sans date est posé au Calendrier à la date par défaut (il s'y déplace), au mois près */
+      await ecrirePlanLie({ ...existant, date: plan.date, ...(existant.upgrade ? { upgrade: { ...existant.upgrade, datePrecision: 'month' as const } } : {}) });
+      await planSuitLeChoix(c);
+    } else await planSuitLeChoix(c);
     const date = existant?.date || plan.date;
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: plan.id } }));
   }
@@ -202,7 +206,8 @@ export function actionsCarnet(x: ActionsV) {
   /** « Envoyer dans À venir » (R32) : un seul plan (clé `PLAN-CARNET-<id>`), puis le carnet le retient ; aucun montant ici. */
   async function envoyerAVenir(c: CarnetDoc) {
     const le = maintenant().toISOString();
-    const plan = planDepuisChoix(c, { le });
+    /* R64 (C67B-2) : aucune date que personne n'a donnée ; « Sans date » dans À venir, « Fixer la date » la pose */
+    const plan = planDepuisChoix(c, { le, sansDate: true });
     if (!plan) { p.onMessage?.('Choisissez d’abord un article.'); return; }
     /* L-10 : un plan déjà posé (Au calendrier) n'était jamais réécrit : il reste « à chercher » au prix d'avant ; il suit le choix */
     if (!finances.plans.some(x => x.id === plan.id)) await ecrirePlanLie(plan);

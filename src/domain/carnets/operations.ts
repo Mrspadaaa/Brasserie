@@ -787,7 +787,23 @@ export function dansTroisMois(le: string): string {
   return new Date(Date.UTC(base.getUTCFullYear() + Math.floor(m / 12), m % 12, 1)).toISOString().slice(0, 10);
 }
 
-export function planDepuisChoix(c: CarnetDoc, args: { le: string }): FinancialPlan | null {
+/**
+ * R64 (C67B-2) : le libellé de l'achat est celui de l'ARTICLE choisi (« CITRA® (US) · MotlerHops · 1 kg »), pas celui du carnet (« ZZ TEST — pellets ») :
+ * À venir liste des achats, le carnet d'origine reste dit à part (« du carnet … »). Sans nom d'article : le titre du carnet.
+ */
+export function libelleAchat(c: Pick<CarnetDoc, 'title' | 'carnet'>): string {
+  const choix = c.carnet.choix;
+  const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
+  const nom = a?.nom?.trim();
+  if (!choix || !a || !nom) return c.title;
+  return [nom, a.vendeur?.trim(), choix.quantite?.libelle?.trim()].filter(Boolean).join(' · ');
+}
+
+/**
+ * `sansDate` (R64, « Envoyer dans À venir ») : aucune date que le brasseur n'a donnée ; le plan arrive « Sans date » (À venir dit « Fixer la date »). Par défaut
+ * (Placer, Au calendrier : la chose doit se voir sur une semaine du Calendrier) le 1er du mois dans trois mois.
+ */
+export function planDepuisChoix(c: CarnetDoc, args: { le: string; sansDate?: boolean }): FinancialPlan | null {
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   if (!choix || !a) return null;
@@ -795,7 +811,7 @@ export function planDepuisChoix(c: CarnetDoc, args: { le: string }): FinancialPl
   const prix = prixCentimesDuChoix(choix, a);
   const connu = prix !== undefined;
   return {
-    id: idPlanDuCarnet(c.id), title: c.title, date: dansTroisMois(args.le), amountCents: connu ? prix : 0, direction: 'out', category: 'materiel', source: 'equipment',
+    id: idPlanDuCarnet(c.id), title: libelleAchat(c), date: args.sansDate ? '' : dansTroisMois(args.le), amountCents: connu ? prix : 0, direction: 'out', category: 'materiel', source: 'equipment',
     status: 'draft', createdAt: args.le, ...(a.vendeur ? { vendor: a.vendeur } : {}), ...(choix.quantite ? { notes: choix.quantite.libelle } : {}),
     upgrade: {
       version: 1, timing: 'soon', stage: connu ? 'ready' : 'research', budgetKnown: connu, datePrecision: 'month', estimateSource: 'estimate',
@@ -935,7 +951,20 @@ export function planSuitCarnet(plan: FinancialPlan, geste: { date?: string | nul
  * Q-1 A (D435, « le choix fait le prix ») : le prix de l'article choisi devient le prix d'achat du plan, l'estimé d'avant compris (À venir,
  * Calendrier et carnet disent le même chiffre) ; livraison et pose restent. Le vendeur manquant est repris. Rien ne change : le même objet.
  */
+/** R64 : le libellé de l'achat suit l'article choisi, sauf un titre que le brasseur a écrit lui-même (ni celui du carnet, ni celui d'un article du carnet). */
+function avecLibelleAchat(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
+  if (!plan.upgrade || (plan.upgrade.sourceCarnetId && plan.upgrade.sourceCarnetId !== c.id)) return plan;
+  const titre = libelleAchat(c);
+  if (titre === plan.title) return plan;
+  const derive = memeTexte(plan.title, c.title) || c.carnet.articles.some(x => !!x.nom?.trim() && plan.title.startsWith(x.nom.trim()));
+  return derive ? { ...plan, title: titre } : plan;
+}
+
 export function planSuitChoix(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
+  return avecLibelleAchat(planSuitPrix(plan, c), c);
+}
+
+function planSuitPrix(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   const prix = a ? prixCentimesDuChoix(choix, a) : undefined;

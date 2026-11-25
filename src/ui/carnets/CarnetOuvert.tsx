@@ -105,7 +105,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const doc = c as unknown as CarnetDoc;
   const genrePose = doc.carnet.genre?.valeur;
   /* C67-3 : l'écran du carnet tout juste créé (en-tête d'idée) cède AUSSITÔT quand il pose un autre genre (··· › Problème, Mémo) : sans sortir ni revenir */
-  const genreChoisi = doc.carnet.genre?.origine === 'vous' && genrePose !== 'idee' && genrePose !== 'achat';
+  /* R68 (C67B-6) : et quand l'IA (ou le calcul local) le range « problème » à la création : l'écran du problème (Noté · Je cherche · Décidé · Résolu) s'ouvre d'emblée, jamais l'écran idée
+     (« Ensuite : l'IA cherche les façons ») ; la liste disait déjà « Je cherche » : le genre posé, par qui que ce soit, fait l'écran. */
+  const genreChoisi = !!genrePose && genrePose !== 'idee' && genrePose !== 'achat';
   const neuf = !!p.vientDEtreCree && c.status === 'idea' && !genreChoisi;
   const genre: GenreCarnet = genreDe(doc);
   /* l'en-tête du genre seulement pour un carnet dont le genre est posé (par l'IA ou par lui), hors achat ; un carnet ancien garde son en-tête (règle n° 1 : rien de plus) */

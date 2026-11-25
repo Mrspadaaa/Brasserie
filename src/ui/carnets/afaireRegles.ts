@@ -17,10 +17,14 @@ import { etatDe, genreDe, jourLocal, optionRetenue } from '../../domain/carnets/
 import { echeanceDe, finDuMois, type CleGroupe, type TacheVue } from '../../domain/carnets/taches';
 import type { FinancialPlan } from '../../domain/finance/types';
 
-export type Maintenant = string | number | Date;
+/** Un instant, ou l'horloge de la vue (`maintenant` de CarnetsVue : une fonction qui rend la date). */
+export type Maintenant = string | number | Date | (() => string | number | Date);
 
 /** Le jour (AAAA-MM-JJ) d'un instant, à l'heure locale (Europe/Zurich sur l'appareil du brasseur). */
-export const aujourdhuiDe = (m: Maintenant): string => (typeof m === 'string' ? jourLocal(m) : jourLocal(new Date(m).toISOString()));
+export const aujourdhuiDe = (m: Maintenant): string => {
+  const v = typeof m === 'function' ? m() : m;
+  return typeof v === 'string' ? jourLocal(v) : jourLocal(new Date(v).toISOString());
+};
 
 /* ---------- groupes ---------- */
 
@@ -174,7 +178,10 @@ export function quandTouche(le: string, maintenant: Maintenant): string {
 export function propositionARanger(el: ElementARanger, carnets: readonly CarnetDoc[], messages: readonly MessageDoc[], maintenant: Maintenant): PropositionARanger {
   const mince = texteMince(el.texte);
   if (!(el.photo && mince)) return mince ? { sorte: 'rien-d-autre' } : { sorte: 'aucune' };
-  const ouverts = carnets.filter(c => c.id !== el.carnetId && genreDe(c) === 'probleme' && etatDe(c) !== 'resolu');
+  /* R66 (C67B-4) : « ouvert » se dit comme le coup d'œil de la liste (« 8 je cherche ») : un carnet en recherche ou décidé, quel que soit son genre (un achat qui cherche, une idée décidée), et tout
+     problème non résolu ; le genre « problème » seul laissait « Aucun problème ouvert » devant 8 carnets « je cherche ». Archivé : jamais. */
+  const ouverts = carnets.filter(c => c.id !== el.carnetId && !c.carnet.archive && etatDe(c) !== 'resolu'
+    && (genreDe(c) === 'probleme' || etatDe(c) === 'cherche' || etatDe(c) === 'decide'));
   let choisi: { c: CarnetDoc; le: string } | null = null;
   for (const c of ouverts) {
     const le = dernierTouche(c, messages);

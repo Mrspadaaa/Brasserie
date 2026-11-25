@@ -130,7 +130,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       aFaire={aFaireDe(tous, auj).total} rangeEnCours={rangeEnCours} anciennes={anciennes} onExemple={t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); }}
       corpsAFaire={<AFaire carnets={tous} maintenant={auj} plans={finances.plans} messages={messages} onCocher={cocherALaListe} onOuvrir={id => ouvrirCarnet(id)} onEcheance={echeanceALaListe} />}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
-      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>} onOuvrir={ouvrirCarnet} onRelecture={() => setVue({ sorte: 'relecture' })} onRattacher={rattacherA} onNouveauProbleme={nouveauProbleme} />;
+      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>} onOuvrir={ouvrirCarnet} onRelecture={() => setVue({ sorte: 'relecture' })} onRattacher={rattacherA} onNouveauProbleme={nouveauProbleme} montrer={vientDEtreCree} />;
   } else if (!ouvert || vue.sorte === 'liste') {
     ecran = <ListeCarnets rangeEnCours={rangeEnCours} carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}

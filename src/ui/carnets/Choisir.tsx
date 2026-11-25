@@ -12,7 +12,7 @@ import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, Target, 
 import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
-import { detailPrix, prixTexteArticle } from './PrixPastille';
+import { detailPrix, prixUnique } from './PrixPastille';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
@@ -27,7 +27,8 @@ export type CarnetPourChoisir = Pick<DonneesCarnet, 'criteres' | 'facons' | 'art
 
 /** D447 : « ≈1 360 CHF » pour un prix hors franc converti, « 690 CHF » sinon (`prixTexte` de comparer.ts). */
 function prixChoix(a: ArticleV, taux?: number): string | null {
-  const t = prixTexteArticle(a, taux);
+  /* R63 (C67B-8) : UN prix du sachet partout : le rendu arrondi (≈4 CHF), celui de la liste, de la fiche et de Comparer ; jamais le converti nu (≈3) */
+  const t = prixUnique(a, taux);
   /* seul le prix converti change de forme ; en francs, le format d'avant (`prixTexte`) */
   return t?.approx ? `≈${t.montant} ${t.devise}` : prixTexte(a.prixCentimes, a.devise);
 }
@@ -123,6 +124,7 @@ export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean
   const borne = (v: number) => (prix ? chiffre(Math.round(v / 100)) : nombreTexte(v));
   const etendue = place.pire - place.meilleure;
   const pos = (v: number) => (etendue === 0 ? 0 : Math.max(0, Math.min(1, (v - place.meilleure!) / etendue)));
+  /* R65 (C67B-3) : l'unité se dit aux DEUX bornes (« ‹ moins cher · 67 CHF/kg » … « 68 CHF/kg »), jamais un « 67 » nu */
   const unite = place.unite ? ` ${place.unite}` : '';
   return (
     <div className={`cn-reglette${sansTete ? ' cn-reglette-seule' : ''}`} role="img" aria-label={`${place.libelle ?? place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
@@ -131,7 +133,7 @@ export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean
         {place.toutes.map((v, i) => <i key={i} style={{ left: `${pos(v) * 100}%` }} />)}
         <i className="cn-reglette-moi" style={{ left: `${pos(place.valeur) * 100}%` }} />
       </div>
-      <div className="cn-reglette-bornes cn-mut" aria-hidden><span>‹ {prix ? 'moins cher' : 'mieux'} · {borne(place.meilleure)}</span><span>{borne(place.pire)}{unite}</span></div>
+      <div className="cn-reglette-bornes cn-mut" aria-hidden><span>‹ {prix ? 'moins cher' : 'mieux'} · {borne(place.meilleure)}{unite}</span><span>{borne(place.pire)}{unite}</span></div>
     </div>
   );
 }
@@ -162,8 +164,10 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   /* n° 37 : « 2 600 CHF », espace avant les milliers, comme partout (prixTexte) */
-  const prix = prixChoix(a, p.taux);
-  const detail = detailPrix(a, p.taux);
+  /* R63 (C67B-1) : un choix fait avec une quantité (1 kg cochée) dit CETTE quantité et son prix (≈40 CHF · 1 kg), jamais le sachet de 50 g de l'article */
+  const qte = p.choix.quantite && typeof p.choix.prixCentimes === 'number' && p.choix.prixCentimes > 0 ? { libelle: p.choix.quantite.libelle, centimes: p.choix.prixCentimes } : null;
+  const prix = qte ? `${(a.devise ?? 'CHF') === 'CHF' ? '' : '≈'}${prixTexte(qte.centimes, 'CHF') ?? ''}` : prixChoix(a, p.taux);
+  const detail = qte ? qte.libelle : detailPrix(a, p.taux);
   /* P17 : la phrase avec ses valeurs (calcul local sur le tableau), ses réglettes (le critère chiffré qui classe, puis le prix), les ✕ */
   const calc = useMemo(() => {
     const c = p.carnet ?? null;
@@ -177,10 +181,11 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
       /* f5c n° 8, f9 n° 1 : les critères qui ont classé le choix, dans l'ordre (« tient 80 °C, puis le débit ») ; le critère reçu
          (le 1er du carnet) seulement si aucun ne classe : sans valeur à comparer (« capter la buée »), il n'a pas fait le choix */
       criteres: ((r: CritereV[]) => (r.length ? r : p.critere ? [p.critere] : []))(criteresQuiRangent(c, t)),
-      reglettes: [premierChiffre, prixPl].filter((x): x is Place => !!x && x.sur > 1),
+      /* R63 : la place « Prix » est celle du sachet ; un choix à la quantité (1 kg) ne la redit pas sous son prix du kilo (comme ChoisirArticle) */
+      reglettes: [premierChiffre, qte ? undefined : prixPl].filter((x): x is Place => !!x && x.sur > 1),
       ecartes: ecartesDe(p, c)
     };
-  }, [p.carnet, a.id, p.ecartes]);
+  }, [p.carnet, a.id, p.ecartes, qte?.centimes]);
   const sienne = p.choix.pourquoi.trim();
   return (
     <article ref={haut} className="cn-page cn-choisi">
@@ -317,7 +322,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={chiffree ? 'cn-place-avec-reglette' : undefined}><th scope="row">{v.nom}</th><td className="cn-mono">{v.texte}</td><td className={v.rang === 1 ? 'cn-vert' : 'cn-mut'}>{rang}</td></tr>
+                    <tr className={chiffree ? 'cn-place-avec-reglette' : undefined}><th scope="row">{v.nom}</th><td className={`cn-mono${v.texte.length > 14 ? ' cn-place-long' : ''}`}>{v.texte}</td><td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td></tr>
                     {chiffree && <tr className="cn-place-reglette"><td colSpan={3}><Reglette place={pl!} sansTete /></td></tr>}
                   </React.Fragment>
                 );

@@ -230,6 +230,22 @@ moulin, froid, cuves, pompes, embouteillage), "meuble" (étagères, armoires), "
 salle de brassage), est « brasserie » : « local » seulement quand le souci n'a rien à voir avec la bière. Depuis un carnet ouvert, une
 ligne qui n'en sort pas va dans « depuis ».
 
+Un MÉMO est un fait accompli ou un constat (« ça a bien tenu », « c'est réglé », « on a changé… », « ça marche ») : ce n'est pas une envie,
+donc jamais une "idee" neuve quand un carnet de « carnets » parle du MÊME SUJET. Cherche ce carnet par le sens, pas par les mots exacts : le
+même objet, équipement ou partie du local que son titre, son chemin, ses critères, façons, articles, notes ou « derniers » (un synonyme, une
+partie pour le tout, une autre formulation comptent). S'il existe : une ligne "note" (genre "note") avec « carnetId » = ce carnet et
+« citation » = les mots du message qui le désignent ; « carnetNeuf » seulement quand aucun carnet ne parle de ce sujet. Une envie, un besoin,
+un souci à suivre ou une question gardent leur chemin d'avant.
+
+Un besoin ou un manque que le message dit (une chose à racheter, à commander, à prévoir ; « il faut… », « besoin de… », « penser à… ») est un
+geste : propose toujours « tachePropose » sur la ligne qui le range (« texte » à l'infinitif, « quand » "un-jour" quand aucune date n'est dite,
+« prix » seulement s'il est écrit) ; une tâche se propose, elle ne s'écrit jamais seule.
+
+Une solution envisagée pour un problème (une « piste », une « option », un produit ou une méthode comparés) tapée dans le carnet d'un problème est
+une "facon" nommée par son objet (« texte » = le nom court de la solution, sans le mot « piste » ni le prix ni le vendeur) ; ce qu'il en dit (montant,
+vendeur, raison) reste dans une ligne "note" de ce carnet, avec « etiquette » "cout" ou "devis" et « prix » quand un montant est écrit.
+Un "article" est un produit précis lu sur une page : sans lien, une phrase ne devient pas un article.
+
 Rien d'inventé : « url », « prix », « quantite » et « vendeur » seulement s'ils sont écrits dans le texte ou lus dans « pages ».
 « prix » en unités (690, 1450.5), « devise » ISO (CHF, EUR). Un champ inconnu est nul, jamais 0.
 

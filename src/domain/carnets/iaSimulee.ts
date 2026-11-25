@@ -14,6 +14,7 @@ import { fixtureCarnets } from './fixture';
 import { prixLus, sansLiensNiPrix, titreNeufDe, type CarnetDoc } from './modele';
 import { etiquettesLocales, extraireCriteres, genreDEtiquette, genreLocal, jetons as jetonsLocaux, mettreEnForme, objetDe, parleDuBrassin, phrasesEtiquetees, quantitesDe, sansPrefixeBanc, TITRE_BRASSIN, urlsDe } from './analyseLocale';
 import { aucunCarnetNEnParle, rattacher } from './rattacher';
+import { carnetDuSujet, commenceParUnInfinitif, estUnMemo, LIBELLE_PISTE, nomDePiste } from './memo';
 import { domaineParMots, sousDomaineParMots } from '../../ui/carnets/domaineMots';
 
 type Brut = Record<string, unknown>;
@@ -654,7 +655,11 @@ function avecSuivi(r: ReponseSimulee, texte: string): ReponseSimulee {
   const t = sansAccents(texte);
   const [jeton] = etiquettesLocales(texte);
   let jetonPose = false, neufPose = false;
+  const memo = estUnMemo(texte);
   const unSeulMorceau = morceauxDe(texte).length <= 1;
+  const premier = unSeulMorceau && !memo ? formerLigne(morceauxDe(texte)[0] ?? texte) : null;
+  const tacheBesoin = premier && (premier.genre === 'a-faire' || premier.genre === 'a-acheter') && commenceParUnInfinitif(premier.texte) ? premier.texte : null;
+  let tachePosee = false;
   const lignes = r.lignes.map((l) => {
     const sortie: Brut = { ...l };
     const note = l.sorte === 'note';
@@ -665,7 +670,13 @@ function avecSuivi(r: ReponseSimulee, texte: string): ReponseSimulee {
     }
     if (note && l.genre === 'a-faire') {
       const quand = QUAND_MOIS.test(t) ? 'mois' : QUAND_SEMAINE.test(t) ? 'semaine' : null;
-      if (quand) sortie.tachePropose = { texte: l.texte, quand };
+      if (quand && !tachePosee) { tachePosee = true; sortie.tachePropose = { texte: l.texte, quand }; }
+    }
+    /* C67-2 : un message qui dit un BESOIN ou un geste (« il faut racheter… », « besoin de commander… », « penser à acheter… ») propose sa tâche à l'infinitif sur la ligne qui le range
+       (l'idée neuve, ou la note), datée seulement si le message dit quand ; un mémo (fait accompli) n'en propose pas */
+    if (tacheBesoin && !tachePosee && (l.sorte === 'idee' || note || l.carnetNeuf !== undefined)) {
+      tachePosee = true;
+      sortie.tachePropose = { texte: tacheBesoin, quand: QUAND_MOIS.test(t) ? 'mois' : QUAND_SEMAINE.test(t) ? 'semaine' : 'un-jour' };
     }
     // le sujet neuf : l'idée, ou la ligne rangée dans un carnet neuf ; une seule ligne porte le genre
     if (!neufPose && (l.sorte === 'idee' || (l.carnetNeuf !== undefined && l.carnetId === undefined)) && MOTS_PROBLEME.test(t)) {
@@ -693,6 +704,13 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
   const liens = liensDuTexte(texte).slice(0, 3);
   // Une note de plusieurs lignes n'est jamais prise par une aide d'une seule phrase (m390-2 : G29 rangeait les 3 lignes dans Évier).
   if (morceaux.length > 1 && !liens.length) return decoupe(ctx, morceaux);
+  /* R67 (C67B-5) : un MÉMO (un fait accompli : « a très bien tenu », « est réglé ») dit depuis la liste va dans le carnet existant de son SUJET, en note ; jamais une idée
+     neuve quand un carnet en parle. Le sujet est lu dans le sens (le nom de l'objet du carnet est un mot du message), jamais dans une liste d'objets. */
+  if (!ctx.depuis && morceaux.length === 1 && !liens.length && estUnMemo(texte)) {
+    const sujet = carnetDuSujet(texte, docsDuContexte(ctx));
+    const carnet = sujet ? ctx.carnets.find((c) => c.id === sujet.carnetId) : undefined;
+    if (carnet && sujet) return reponse([{ sorte: 'note', ...formerLigne(morceaux[0]), genre: 'note', ...rangement(ctx, carnet, '', sujet.mots[0]) }]);
+  }
   const aide = aides(texte, t, ctx);
   if (aide) return aide;
 
@@ -731,6 +749,13 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
   // Un prix écrit sans lien (« Ventilateur moteur EC 189,90 CHF ») : un article au nom de la phrase sans son prix ; le prix lu dans la
   // phrase par `prixTousDe` (décision du pilote : « 189,90 CHF » en CHF ; EUR seulement s'il est écrit). Pas de critère : c'est un objet.
   const ligneSeule = morceaux.length === 1 ? morceaux[0] : '';
+  /* C67-8 : « Piste : … » (ou toute solution envisagée dite dans un PROBLÈME) est une OPTION du problème, nommée par son objet ; ce qu'il en dit (montant, vendeur) reste dans ses mots, en note.
+     Un article est un produit lu sur une page : sans lien, une phrase de problème n'en fait pas un. */
+  const piste = !liens.length && ligneSeule && ici && (LIBELLE_PISTE.test(sansPrefixeBanc(ligneSeule)) || (ici.genre === 'probleme' && prixEcrits.length === 1)) ? nomDePiste(ligneSeule) : '';
+  if (piste && ici) {
+    const reste = sansPrefixeBanc(ligneSeule).replace(LIBELLE_PISTE, '').trim();
+    return reponse([{ sorte: 'facon', texte: piste, titre: piste, ...rangement(ctx, ici, piste) }, ...(reste.toLowerCase() !== piste.toLowerCase() ? [{ sorte: 'note', texte: reste.charAt(0).toLocaleUpperCase('fr-CH') + reste.slice(1), genre: 'note', ...rangement(ctx, ici, piste) }] : [])]);
+  }
   if (!liens.length && ligneSeule && prixEcrits.length === 1 && genreLocal(ligneSeule) !== 'question') {
     const brut = sansLiensNiPrix(sansPrefixeBanc(ligneSeule));
     const nom = brut.charAt(0).toLocaleUpperCase('fr-CH') + brut.slice(1);

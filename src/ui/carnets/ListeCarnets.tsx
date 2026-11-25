@@ -129,6 +129,12 @@ export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: strin
   if (c.status === 'validated' && c.carnet.choix) {
     const a0 = c.carnet.articles.find(x => x.id === c.carnet.choix!.articleId);
     const a = a0 ? articleHonnete(a0) : undefined;
+    /* R63 (C67B-1) : un choix fait à une quantité cochée (1 kg) dit CETTE quantité et son prix, jamais « ≈4 CHF les 50 g » du sachet de l'article */
+    const ch = c.carnet.choix;
+    if (ch.quantite && typeof ch.prixCentimes === 'number' && ch.prixCentimes > 0) {
+      const m = montant(ch.prixCentimes);
+      if (m) return { des: false, texte: `${(a0?.devise ?? 'CHF') === 'CHF' ? '' : '≈'}${m}`, devise: 'CHF', quantite: `pour ${ch.quantite.libelle}` };
+    }
     const m = prixListe(a);
     const q = a ? quantiteArticle(a as never) : null;
     return m ? { des: false, texte: m.texte, devise: m.devise, ...(q && !q.deLUnite ? { quantite: `les ${q.texte}` } : {}) } : null;

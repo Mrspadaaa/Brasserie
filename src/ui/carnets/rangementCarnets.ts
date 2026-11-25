@@ -13,7 +13,7 @@ import { lireCarnet, sansIndefinis, type Etiquette, type PropositionSuivi } from
 import { comportementSimule, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { AVIS, appelsSimules, creerRangement, planVrac, prixEcrits, versLignesAnnoncees, type EtatRangement } from './rangement';
-import { CARNET_NEUF, destinationDans, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, prefixeDe } from './envoiRegles';
+import { CARNET_NEUF, destinationDans, estLaPhrase, genreSousNote, ligneBrute, memeTexte, morceauxPerdus, plusieursLignes, prefixeDe } from './envoiRegles';
 import { depuisIA, depuisLocale, pourIA, vuesVrac } from './lignesRegles';
 import type { RetourDe } from './retourCarnet';
 import type { Annonce, Appliquer, AReprendre, Attente, AvisIA, Boite, CarnetsVueProps, Etat, Retour, RetourNeuf, Vue } from './carnetsTypes';
@@ -447,7 +447,11 @@ export function creerRangementCarnets(x: RangementV) {
         /* rangé dans un carnet existant (ou en vrac) : le carnet local a disparu ; retour à la liste, sans carte « créée » en tête */
         setEnTete(undefined); setVientDEtreCree(null);
         /* D417 : née de la liste, la fiche où l'IA a rangé s'ouvre une fois ; sinon la liste reste */
-        if (enAttente?.neuf && final.carnetId && connu(final.carnetId) && vueRef.current.sorte === 'liste') setVue({ sorte: 'carnet', id: final.carnetId });
+        /* R67 (C67B-5) : une phrase seule (un mémo) que l'IA a versée dans UN carnet existant : le bandeau « ailleurs » ne portait pas ce carnet depuis la liste ; la feuille « rangé pour toi »
+           (OK · Changer · Rattacher à… · Annuler) le dit, comme pour un carnet neuf, au lieu de laisser la liste sans un mot du rangement. */
+        const cibles = new Set(lireMessages(vu).find(m => m.id === messageId)?.carnetMessage.effets.filter(e => e.cible !== 'carnet' && !e.carnetSupprime).map(e => e.carnetId) ?? []);
+        const cibleId = final.carnetId ?? (final.bandeau.sorte === 'ailleurs' && !estLienSeul(txt) && !plusieursLignes(txt) && cibles.size === 1 ? [...cibles][0] : undefined);
+        if (enAttente?.neuf && cibleId && connu(cibleId) && vueRef.current.sorte === 'liste') setVue({ sorte: 'carnet', id: cibleId });
         else setVue({ sorte: 'liste' });
       }
     })(depuisPasse === undefined ? depuis : depuisPasse)

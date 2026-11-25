@@ -34,7 +34,7 @@ export interface ArticleV {
 }
 export interface NoteV { id: string; texte: string; genre: GenreNote; le?: string; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }
 export interface PhotoV { id: string; jpeg: string; messageId?: string; le?: string }
-export interface ChoixV { articleId: string; faconId?: string; pourquoi: string; ecartes: { articleId: string; raison: string }[]; aRevoirSi?: string; le: string; remplaces: ChoixV[] }
+export interface ChoixV { articleId: string; faconId?: string; pourquoi: string; ecartes: { articleId: string; raison: string }[]; aRevoirSi?: string; le: string; remplaces: ChoixV[]; /** R63 (C67B-1) : la quantité cochée au choix (1 kg) et son prix en centimes */ quantite?: { kg: number; libelle: string }; prixCentimes?: number }
 export interface ContenuCarnetV {
   creeLe: string; phrase: string; criteres: CritereV[]; facons: FaconV[]; articles: ArticleV[]; notes: NoteV[]; photos: PhotoV[];
   choix?: ChoixV; sortie?: SortieV; archive?: { le: string; raison: string };

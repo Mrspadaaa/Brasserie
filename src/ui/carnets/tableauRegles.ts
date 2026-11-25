@@ -229,6 +229,23 @@ export function venduPar(a: ArticleRegle): string | null {
   return p.length === 1 ? dit(p[0].kg) : `${dit(p[0].kg)} à ${dit(p[p.length - 1].kg)}`;
 }
 
+/**
+ * R69 (C67B-7) : sur la ligne « vendu par », le meilleur est celui qui vend la plus large étendue de quantités (de 1 g à 20 kg : on y achète un échantillon comme un sac) ; les autres
+ * sont devant lui, jamais à égalité. Mesurée par le rapport plus gros / plus petit conditionnement. Moins de 2 articles qui disent un conditionnement, ou une égalité : aucun coché.
+ */
+export function plusLargeEtendue(articles: ReadonlyArray<ArticleRegle & { id: string }>): Set<string> {
+  const etendues = articles.flatMap(a => {
+    const p = paliersDe(a);
+    if (!p.length) return [];
+    const kgs = p.map(x => x.kg).filter(k => k > 0);
+    return kgs.length ? [[a.id, Math.max(...kgs) / Math.min(...kgs)] as const] : [];
+  });
+  if (etendues.length < 2) return new Set();
+  const max = Math.max(...etendues.map(([, e]) => e));
+  const premiers = etendues.filter(([, e]) => e === max);
+  return premiers.length === etendues.length ? new Set() : new Set(premiers.map(([id]) => id));
+}
+
 /** « 1 et 5 kg, MotlerHops ; 20 kg, Brau (39 CHF/kg). » : qui gagne à chaque quantité ; les quantités voisines du même gagnant se réunissent. `null` : un seul gagnant partout. */
 export function phraseSelonLaQuantite(lignes: readonly LigneQuantite[], nom: (id: string) => string): string | null {
   const gagnant = (l: LigneQuantite) => (l.gagnants.size === 1 ? [...l.gagnants][0] : null);

@@ -315,7 +315,7 @@ export const sansPrefixeBanc = (t: string): string => t.replace(PREFIXE_BANC, ''
 const majuscule = (t: string): string => (t ? t.charAt(0).toLocaleUpperCase('fr-CH') + t.slice(1) : t);
 
 /** Les tournures qui annoncent un geste : « il faut appeler », « penser à commander » → « Appeler », « Commander » (infinitif en tête). */
-const ANNONCE_GESTE = /^(?:il\s+faut\s+que\s+je\s+|il\s+faudrait\s+|il\s+faut\s+|faut\s+|je\s+dois\s+|on\s+doit\s+|je\s+vais\s+|penser\s+à\s+|pense\s+à\s+|ne\s+pas\s+oublier\s+de\s+|n[’']oublie\s+pas\s+de\s+)/i;
+const ANNONCE_GESTE = /^(?:il\s+faut\s+que\s+je\s+|il\s+faudrait\s+|il\s+faut\s+|faut\s+|je\s+dois\s+|on\s+doit\s+|je\s+vais\s+|besoin\s+(?:de\s+|d[’'])|penser\s+à\s+|pense\s+à\s+|ne\s+pas\s+oublier\s+de\s+|n[’']oublie\s+pas\s+de\s+)/i;
 
 /** Une ligne mise en forme : sans préfixe de test, l'infinitif en tête quand une tournure l'annonce, une majuscule si elle a changé. */
 export function mettreEnForme(ligne: string): string {

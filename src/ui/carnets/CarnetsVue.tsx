@@ -38,6 +38,7 @@ import { FeuilleRangement, type ModeFeuille } from './FeuilleRangement';
 import { poserDomaine } from '../../domain/carnets/operations';
 import { poserGenre } from '../../domain/carnets/suivi';
 import { reduirePhoto } from './photo';
+import { propositionARanger } from './afaireRegles';
 import './carnets.css';
 import './carnets-fil.css';
 
@@ -347,7 +348,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (!r) return;
     /* P21 : « ✓ Photo rangée ici · Annuler », là où elle est : le carnet ouvert, ou le carnet neuf qu'elle ouvre depuis la liste */
     setRetour(retourDe(message.id, message.texte, depuis, r.inverse) ?? { bandeau: { sorte: 'photo', ici: true }, inverse: r.inverse, messageId: message.id });
-    if (!depuis && dest.carnetNeuf) { setEnTete(dest.carnetNeuf.id); setVientDEtreCree(dest.carnetNeuf.id); setVue({ sorte: 'carnet', id: dest.carnetNeuf.id }); }
+    if (!depuis && dest.carnetNeuf) {
+      /* R66 (C67B-4, D451 option B) : une photo seule posée depuis la liste, avec un carnet ouvert à qui la rattacher, reste sur la liste : la carte « Rattacher à … ? » (Oui · Nouveau problème · Laisser)
+         est amenée en vue ; l'ouvrir sur l'écran idée « Photo » la laissait tout en bas de l'arbre, hors de vue, sans proposition. Sans carnet à proposer : le carnet neuf s'ouvre comme avant. */
+      const neufId = dest.carnetNeuf.id;
+      const prop = propositionARanger({ carnetId: neufId, photo: jpeg, le: message.le }, lireCarnets(magasin.lire(), { archives: true }), lireMessages(magasin.lire()), maintenant);
+      setEnTete(neufId); setVientDEtreCree(neufId);
+      if (prop.sorte === 'rattacher') { setRetour({ bandeau: { sorte: 'photo', ici: false }, inverse: r.inverse, messageId: message.id }); return; }
+      setVue({ sorte: 'carnet', id: neufId });
+    }
   };
   /**
    * P34 : Annuler une suppression de note : la note revient, et le bandeau « Note supprimée · Annuler » part avec tout retour qui la

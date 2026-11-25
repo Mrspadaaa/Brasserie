@@ -24,7 +24,7 @@ import { Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
 import {
   aDesPaliers, compromisMatiere, departager, ditDiffèrent, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
-  classerAuKilo, prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
+  classerAuKilo, plusLargeEtendue, prixAuKilo, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
 } from './tableauRegles';
 import './carnets-decider.css';
 import './comparer-compact.css';
@@ -491,7 +491,8 @@ export function Comparer(p: ComparerProps) {
   /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
   const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
   /* n° 17 : une caractéristique dont personne n'a la valeur n'a pas de ligne (une rangée de « – » ne compare rien) ; elle se nomme dessous */
-  const lignesLues = t ? cols.filter(c => c.cle.startsWith('__') || (!(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom))) && t.lignes.some(l => l.cellules[c.cle] !== undefined))) : [];
+  /* R69 (C67B-7) : l'en-tête de chaque colonne dit déjà le vendeur (« MotlerHops · FR ») ; une ligne « vendeur » le redirait */
+  const lignesLues = t ? cols.filter(c => c.cle !== '__vendeur').filter(c => c.cle.startsWith('__') || (!(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom))) && t.lignes.some(l => l.cellules[c.cle] !== undefined))) : [];
   /* v01 : « vendu par 50 g à 1 kg » juste après le prix, pour un carnet de matière dont un article dit ses conditionnements ; l'inconnu reste « ? » */
   const venduParDe = new Map(enLice.map(a => [a.id, matiere ? venduPar(a as never) : null] as const));
   const iPrix = lignesLues.findIndex(c => c.cle === '__prix');
@@ -507,6 +508,7 @@ export function Comparer(p: ComparerProps) {
   const kilos = new Map(enLice.map(a => [a.id, matiere ? prixAuKilo(a, pour, p.taux) : null] as const));
   const prixKgDe = new Map([...kilos].flatMap(([id, pk]) => (pk ? [[id, texteChfKg(pk)] as const] : [])));
   const meilleursKg = meilleursPrixAuKilo(kilos);
+  const meilleursVendu = matiere ? plusLargeEtendue(enLice as never) : new Set<string>();
   const barresMatiere = (() => {
     if (matiere) {
       const rows = enLice.flatMap(a => { const pk = prixAuKilo(a, pour, p.taux); return pk ? [{ id: a.id, nom: vendeurCourt(a), valeur: pk.chf, texte: texteChfKg(pk) }] : []; });
@@ -594,7 +596,7 @@ export function Comparer(p: ComparerProps) {
               <tbody>
                 {lignesAffichees.map(({ c }) => {
                   /* C66-5 : le meilleur est coché sur CHAQUE ligne chiffrée qui diffère : le kilo rendu, et l'alpha le plus haut (le prix n'est pas la seule ligne cochée) */
-                  const meilleurs = matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, matiere && NOM_ALPHA.test(sansAccentNom(c.nom)) ? { ...c, sens: 'plus' } : c);
+                  const meilleurs = matiere && c.cle === '__vendu' ? meilleursVendu : matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, matiere && NOM_ALPHA.test(sansAccentNom(c.nom)) ? { ...c, sens: 'plus' } : c);
                   const replie = identiques.some(x => x.cle === c.cle) && !identiquesDepliees;
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);

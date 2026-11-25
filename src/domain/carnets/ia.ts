@@ -16,6 +16,7 @@ import {
   type ContexteRangerCarnet, type EtatSuiviIA, type EtiquetteCarnet, type GenreCarnet, type GenreSuivi, type PageLue, type SensCarnet, type SorteCarnet
 } from '../../../functions/src/carnetIA';
 import { estimeAutour, jetons, prixTousDe } from './analyseLocale';
+import { estUnMemo } from './memo';
 import type { CarnetDoc, Etiquette, MessageDoc, PropositionSuivi, Rattache } from './modele';
 import { rapprocherChemin } from './arbre';
 import { echeanceDe } from './taches';
@@ -391,7 +392,10 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
        l'IA n'est qu'une suggestion. Un lien collé (G21 : « Rangé dans … · Déplacer ») et une note en vrac (découpe annoncée ligne à ligne)
        gardent le carnet de l'IA. */
     /* une proposition de critère (P10, P23) n’écrit rien : elle reste permise */
-    const connu = connuDemande && (!phraseDeListe || (r.propose === true && r.sorte === 'critere'));
+    /* R67 (C67B-5) : un MÉMO (un fait accompli, « a très bien tenu », « est réglé ») est une note du carnet de son sujet : l'IA le verse dans le carnet existant qu'elle désigne, jamais une idée neuve
+       (maquette v01-memo : « une note réussi dans le carnet Sol ») ; l'écriture se défait d'un toucher (« Annuler », « Changer »). Une idée, un besoin, un souci, une question gardent l'annonce. */
+    const memoDeListe = phraseDeListe && sorte === 'note' && estUnMemo(ctx.texte);
+    const connu = connuDemande && (!phraseDeListe || memoDeListe || (r.propose === true && r.sorte === 'critere'));
     /* BL-1 (banc réel de liens, 23.11) : un lien collé DANS un carnet ouvert y reste, quoi que propose l'IA (4 articles versés dans un vrai
        carnet du brasseur) : son carnet existant n'est qu'une suggestion « Déplacer vers … ? », son carnet neuf rien. Depuis la liste (G21),
        inchangé. */

@@ -272,8 +272,11 @@ export function FicheArticle(p: FicheArticleProps) {
     }
   };
 
+  /* R69 (C67B-9) : une fiche s'ouvre EN HAUT (nom, α, « je prends »), y compris l'article voisin atteint par › depuis le bas de la précédente (la page gardait le défilement d'avant) */
+  const haut = React.useRef<HTMLElement>(null);
+  React.useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   return (
-    <article className="cn-page cn-fiche" {...(p.onSuivant || p.onPrecedent ? balayer : {})}>
+    <article ref={haut} className="cn-page cn-fiche" {...(p.onSuivant || p.onPrecedent ? balayer : {})}>
       <div className="cn-tete">
         {/* critique 6, n° 33 (h01-6 « ‹ Articles · Embouteillage ») : le fil d'Ariane tient sur une ligne à 390, le titre coupé sur un
             mot (`filArianeCourt`) ; à 1280, le titre entier. Le nom complet reste lu par le lecteur d'écran. */}

@@ -6,7 +6,7 @@
  * Le champ « Une idée, un problème… », le + volant et la barre du bas sont ceux de l'app. Disparaît (PLAN) : les groupes par état, les puces
  * Tous / Local / Brasserie, « dès » et le prix à droite, « votre lien ». L'ancienne liste (`ListeCarnets`) reste joignable par `?carnet=v0`.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Bell, ChevronRight, HelpCircle, Search, Check, Wrench } from 'lucide-react';
 import type { CarnetDoc, MessageDoc } from '../../domain/carnets/modele';
 import { arbreDe, coupDOeil } from '../../domain/carnets/arbre';
@@ -53,6 +53,8 @@ export interface ListeArbreProps {
   onRattacher: (sourceId: string, versId: string) => void;
   /** « Nouveau problème » : le carnet à ranger devient un problème. */
   onNouveauProbleme: (sourceId: string) => void;
+  /** R66 : le carnet « à ranger » tout juste posé (une photo seule) : sa carte est amenée en vue. */
+  montrer?: string | null;
   onExemple?: (texte: string) => void;
 }
 
@@ -134,6 +136,9 @@ export function ListeArbre(p: ListeArbreProps) {
   const [rechercheOuverte, setRechercheOuverte] = useState(false);
   const [ouverts, setOuverts] = useState<ReadonlySet<string>>(() => new Set());
   const [laissees, setLaissees] = useState<ReadonlySet<string>>(() => new Set());
+  /* R66 (C67B-4) : une photo seule vient d'être posée : le groupe « À ranger » (sa ligne, sa carte « Rattacher à … ? ») est amené en vue, au lieu de rester tout en bas de l'arbre */
+  const sectionARanger = useRef<HTMLElement>(null);
+  useEffect(() => { if (p.montrer) sectionARanger.current?.scrollIntoView?.({ block: 'start' }); }, [p.montrer]);
   const mot = requete(q);
   const annee = jourAnnee(p.maintenant);
   const vivants = p.carnets.filter(c => !c.carnet.archive);
@@ -178,7 +183,7 @@ export function ListeArbre(p: ListeArbreProps) {
         </section>
       ))}
       {arbre.aRanger.length > 0 && (
-        <section className="cnl-domaine cnl-aranger" aria-label="À ranger">
+        <section ref={sectionARanger} className="cnl-domaine cnl-aranger" aria-label="À ranger">
           <div className="cnl-dn cnl-dn-aranger"><HelpCircle size={18} aria-hidden /><span className="cnl-dn-nom">À ranger</span><span className="cn-mono cnl-dn-n">{arbre.aRanger.length}</span></div>
           {arbre.aRanger.map(c => <LigneARanger key={c.id} c={c} onOuvrir={p.onOuvrir} />)}
           {arbre.aRanger.filter(c => c.carnet.photos.length > 0 && !laissees.has(c.id)).map(c => {
