@@ -33,6 +33,10 @@ import { actionsCarnet } from './actionsCarnet';
 import { bandeauxCarnet } from './bandeauxCarnet';
 import { apercuCarnet } from './apercuCarnet';
 import { ecranCarnet } from './ecransCarnet';
+import { deplacerLesLignesDuMessage, type FiltreOeil, type OngletListe } from './listeRegles';
+import { FeuilleRangement, type ModeFeuille } from './FeuilleRangement';
+import { poserDomaine } from '../../domain/carnets/operations';
+import { poserGenre } from '../../domain/carnets/suivi';
 import { reduirePhoto } from './photo';
 import './carnets.css';
 import './carnets-fil.css';
@@ -49,7 +53,12 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const carnets = useMemo(() => sansArticleEnLecture(carnetsBruts, enLecture), [carnetsBruts, enLecture]);
   const tous = useMemo(() => sansArticleEnLecture(tousBruts, enLecture), [tousBruts, enLecture]);
   const [vue, setVue] = useState<Vue>({ sorte: 'liste' });
-  const idOuvert = vue.sorte === 'liste' ? null : vue.id;
+  /** D451 : la rangée « Arbre · À faire · cloche » et le filtre du coup d'œil ; la recherche de Relecture (le champ du bas) ; `?carnet=v0` rend l'ancienne liste (PLAN, risque 9). */
+  const [onglet, setOnglet] = useState<OngletListe>('arbre');
+  const [filtre, setFiltre] = useState<FiltreOeil>(null);
+  const [requeteRelecture, setRequeteRelecture] = useState('');
+  const ancienneListe = useMemo(() => typeof location !== 'undefined' && new URLSearchParams(location.search).get('carnet') === 'v0', []);
+  const idOuvert = 'id' in vue ? vue.id : null;
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
   const [texte, setTexte] = useState(p.texteInitial ?? '');
   /** D448 : la carte des étapes repliée en barre (v01) ; la carte de fin ou d'échec fermée (par son message). */
@@ -166,8 +175,20 @@ export function CarnetsVue(p: CarnetsVueProps) {
 
   /* ---------- le fil : un champ, l'IA met en forme et range ---------- */
   const depuis = ouvert && vue.sorte !== 'liste' ? ouvert.id : null;
+  /* D451 (saisie rapide, maquettes3/v01 `saisie`) : une phrase tapée sur la liste qui range dans UN carnet ne l'ouvre plus : la feuille « rangé pour toi » se
+     pose sur la liste (OK · Changer · Rattacher à… · Annuler). Un lien, une note en vrac, une photo seule gardent leur parcours. */
+  const [feuilleRang, setFeuilleRang] = useState<{ messageId: string; mode: ModeFeuille } | null>(null);
+  const envoiListe = useRef(false);
+  const setVueRange = useCallback((v: Vue | ((v: Vue) => Vue)) => {
+    const msg = neDeListe.current;
+    if (envoiListe.current && msg && typeof v !== 'function' && v.sorte === 'carnet' && vueRef.current.sorte === 'liste' && !ancienneListe) {
+      setFeuilleRang(f => ({ messageId: msg, mode: f?.messageId === msg ? f.mode : 'carte' }));
+      return;
+    }
+    setVue(v);
+  }, [ancienneListe]);
   const rangement = useMemo(() => creerRangementCarnets({ p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR,
-    setRangeEnCours, setEnTete, setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef,
+    setRangeEnCours, setEnTete, setVientDEtreCree, setVue: setVueRange, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef,
     retourRef, vueRef, neDeListe, suivi, inversesLiens }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis, suivi]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* IA-ETAPES-VISIBLES, LE-1 (24.11) : une lecture lancée avant la fermeture de l'app reste gardée ; l'ouvrir ne la rejoue PLUS (regarder n'écrit
@@ -256,6 +277,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const pr = rattacher(txt, carnets);
       if (pr && nommeLeCarnet(txt, pr.titre)) { setTexte(''); setVue({ sorte: 'carnet', id: pr.carnetId }); return; }
     }
+    envoiListe.current = !depuis && !estLienSeul(txt) && !plusieursLignes(txt);
+    if (envoiListe.current) setFeuilleRang(null);
     gardeAPartRef.current = aPart && !!depuis; setAPart(false);
     aForcer.current = depuis && !edition ? corrige : null; setCorrige(null); setPresse(undefined);
     /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
@@ -366,8 +389,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* ---------- calculs passés aux vues (R44, R45, R47) ---------- */
   const liens: LienV[] = ouvert ? liensDe(ouvert, finances.plans, finances.transactions, finances.payments) : [];
   const { sortieV, planSuivi, sortieFinie, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere, deplacerVersSuggere, retirerCriteres,
-    retirerArticle, deplacerArticle, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir } = actionsCarnet({ p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete,
-    setVientDEtreCree, setSupprime });
+    retirerArticle, deplacerArticle, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir, geste, rappelsDe, cocherALaListe, echeanceALaListe, rattacherA, nouveauProbleme } = actionsCarnet({ p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete,
+    setVientDEtreCree, setSupprime, champRef });
   /* R26 : le tableau vient de `comparer.ts`, passé tel quel aux vues ; `null` à 0 ou 1 article. */
   const tableauV = ouvert ? tableauDe(ouvert) : null;
 
@@ -377,18 +400,42 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const { cadre, champ } = apercuCarnet({ ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet,
     setCorrigeCarnet, corrige, setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef,
     ajouterEnFacon, aPart, setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse,
-    setPresse, lectureUi, aReprendre });
-  const ecran = ecranCarnet({ p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci,
+    setPresse, lectureUi, aReprendre, requeteRelecture, setRequeteRelecture });
+  const ecran = ecranCarnet({ messages, tous, onglet, setOnglet, filtre, setFiltre, requeteRelecture, ancienneListe, geste, rappelsDe, cocherALaListe, echeanceALaListe, rattacherA, nouveauProbleme, p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci,
     proposeesNode, rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition,
     setEdition, finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree,
     noteSupprimee, setNoteSupprimee, annulerSuppressionNote, autresPour, achatsPasses, enV, ecrirePlanLie, voirSortie, planSuitLeChoix, sortieV, envoyerAVenir, sortieFinie,
     placer, supprimerAvecPlan, retirerCriteres, retirerArticle, deplacerArticle, dater, auCalendrier, prixDuCarnet, planSuivi });
+
+  /* la feuille « rangé pour toi » : lue dans le magasin (le message, le carnet où il a rangé) ; fermée si le carnet a disparu ou si l'on a quitté la liste */
+  const feuilleNode = (() => {
+    if (!feuilleRang || vue.sorte !== 'liste') return null;
+    const m = messages.find(x => x.id === feuilleRang.messageId);
+    const effets = m?.carnetMessage.effets ?? [];
+    const cid = (effets.find(e => e.cible === 'carnet') ?? effets.find(e => !e.carnetSupprime))?.carnetId;
+    const c = cid ? tous.find(x => x.id === cid) : undefined;
+    if (!m || !c) return null;
+    const neuf = effets.some(e => e.cible === 'carnet' && e.carnetId === c.id);
+    const fermer = () => setFeuilleRang(null);
+    return <FeuilleRangement message={m} carnet={c} autres={autresPour(c.id, m.carnetMessage.texte)} mode={feuilleRang.mode} onMode={mo => setFeuilleRang({ messageId: m.id, mode: mo })}
+      onOK={fermer}
+      onAnnuler={() => { const r = retourRef.current; if (r && (!r.messageId || r.messageId === m.id)) annuler(r.inverse); setRetour(null); fermer(); }}
+      onRattacher={versId => {
+        if (neuf) rattacherA(c.id, versId);
+        else geste(deplacerLesLignesDuMessage(magasin.lire(), { messageId: m.id, depuis: c.id, vers: versId }));
+        fermer();
+      }}
+      onDomaine={d => { appliquer(poserDomaine(magasin.lire(), { carnetId: c.id, domaine: d })); }}
+      onGenre={g => { appliquer(poserGenre(magasin.lire(), { carnetId: c.id, genre: g, origine: 'vous' })); }}
+      onAjouter={() => { fermer(); setVue({ sorte: 'carnet', id: c.id }); setTimeout(() => champRef.current?.focus(), 0); }} />;
+  })();
 
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       {/* f13 tour 3 (critique n° 1) : nommée pour que, sous la bande du carnet tout juste créé, elle s'élargisse aux bords de l'écran (carnets.css) */}
       <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{fixe}{ecran}</div>
       {champ}
+      {feuilleNode}
     </div>
   );
 }

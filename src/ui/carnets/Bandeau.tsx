@@ -67,6 +67,8 @@ export type BandeauV =
   | { sorte: 'archive'; titre: string }
   /* Lot 11 (L-20, hors lot du lot 3) : « Retirer » d'un critère, avec Annuler */
   | { sorte: 'critere-retire'; texte: string }
+  /* D451 (liste) : un geste du suivi ou du rangement (tâche faite, rattaché, état changé…) ; `texte` dit ce qui vient d'être fait, Annuler le défait d'un toucher */
+  | { sorte: 'geste'; texte: string }
   /* BL-3 (banc réel de liens, 23.11) : « Retirer » un article, par le ⋯ de la ligne Articles, avec Annuler */
   | { sorte: 'article-retire'; texte: string }
   /* T25-5 (tour 25) : le lien collé est déjà dans ce carnet (même adresse) : rien n'est ajouté */
@@ -111,6 +113,7 @@ export function texteBandeau(b: BandeauV): string {
     case 'carnet-supprime': return 'Carnet supprimé';
     case 'archive': return '✓ Carnet archivé';
     case 'critere-retire': return 'Critère retiré';
+    case 'geste': return `✓ ${b.texte}`;
     case 'article-retire': return 'Article retiré';
     case 'doublon': return `✓ Déjà dans ${b.carnet ? `« ${b.carnet} »` : 'ce carnet'} : rien de plus rangé`;
   }

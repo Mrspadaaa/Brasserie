@@ -13,7 +13,7 @@ const lireSession = (k: string): string | null => { try { return sessionStorage.
 const ecrireSession = (k: string, v: string | null) => { try { if (v) sessionStorage.setItem(k, v); else sessionStorage.removeItem(k); } catch { /* sans stockage : rien n'est gardé */ } };
 /** L-13 : l'écran d'où l'on vient : la fiche, Comparer, Choisir, Renommer et Supprimer remontent au carnet ; le carnet, à la liste. */
 function vueParente(v: Vue): Vue {
-  if (v.sorte === 'liste' || v.sorte === 'carnet') return { sorte: 'liste' };
+  if (v.sorte === 'liste' || v.sorte === 'carnet' || v.sorte === 'relecture') return { sorte: 'liste' };
   return { sorte: 'carnet', id: v.id };
 }
 
@@ -44,7 +44,7 @@ export function useNavigationCarnet({ p, items, vue, setVue, setRetour, champRef
     aRouvrir.current = null;
     setVue(v => (v.sorte === 'liste' ? { sorte: 'carnet', id } : v));
   }, [items]);
-  useEffect(() => { if (!aRouvrir.current) ecrireSession(CLE_OUVERT, vue.sorte === 'liste' ? null : vue.id); }, [vue]);
+  useEffect(() => { if (!aRouvrir.current) ecrireSession(CLE_OUVERT, 'id' in vue ? vue.id : null); }, [vue]);
   // P12 : la note en modification a disparu (supprimée, ou autre vue) : le mode se referme et le texte qu'il avait mis dans le champ part.
   useEffect(() => {
     if (edition && !(ouvert && vue.sorte === 'carnet' && ouvert.carnet.notes.some(n => n.id === edition))) { setEdition(null); setTexte(''); }
@@ -62,7 +62,7 @@ export function useNavigationCarnet({ p, items, vue, setVue, setRetour, champRef
   useEffect(() => {
     const h = histoire.current;
     if (vue.sorte !== 'liste' && !h.pousse) {
-      const marque = { id: vue.id, jeton: h.jeton };
+      const marque = { id: 'id' in vue ? vue.id : 'relecture', jeton: h.jeton };
       if (marqueOrpheline(window.history.state)) window.history.replaceState(avecMarque(window.history.state, marque), '');
       else window.history.pushState(avecMarque(window.history.state, marque), '');
       h.pousse = true;

@@ -19,3 +19,119 @@
 /* L-35 : les Faits laissés de côté par la recherche, sur une ligne d'en-tête de groupe */
 .cnl-faits-caches { gap: 8px; }
 .cnl-faits-caches .cn-lien { flex: none; min-height: 28px; }
+
+/* ==========================================================================================================================================
+   D451, voie liste (25.11) : la liste en arbre (maquettes3/v01 passe 3, `liste` et `epreuve`). Classes préfixées `cnl-` (L26). Couleurs d'état
+   `--p-*` (carnets-fil.css, clair et sombre). Rangées bord à bord ; aucun texte sous 14 px.
+   ========================================================================================================================================== */
+.cn-page.cnl-liste { gap: 0; padding: 0 0 16px; }
+.cnl-haut { padding: 0 12px; }
+.cnl-haut:empty { display: none; }
+.cnl-haut > * { margin-top: 8px; }
+
+/* le coup d'œil : quatre cases colorées, chacune filtre */
+.cnl-oeil { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 10px 4px; }
+.cnl-case { display: flex; flex-direction: column; align-items: flex-start; gap: 0; min-height: 56px; padding: 6px 8px; border-radius: 12px; border: 2px solid transparent; text-align: left; line-height: 1.1; }
+.cnl-case b { font-size: 24px; font-weight: 600; letter-spacing: -.05em; line-height: 1.05; }
+.cnl-case span { font-size: 14px; line-height: 1.1; }
+.cnl-case[data-etat='cherche'] { background: var(--p-cherche-bg); color: var(--p-cherche-fg); }
+.cnl-case[data-etat='decide'] { background: var(--p-decide-bg); color: var(--p-decide-fg); }
+.cnl-case[data-etat='note'] { background: var(--p-note-bg); color: var(--p-note-fg); }
+.cnl-case[data-etat='resolu'] { background: var(--p-resolu-bg); color: var(--p-resolu-fg); }
+.cnl-case[aria-pressed='true'] { border-color: currentColor; }
+
+/* la rangée Arbre · À faire n · cloche n, et la loupe */
+.cnl-onglets { display: flex; align-items: center; gap: 6px; padding: 4px 10px 6px; }
+.cnl-jt { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border-radius: 18px; font-size: 15px; border: 1px solid var(--c-line2); background: transparent; color: var(--c-ink); white-space: nowrap; }
+.cnl-jt[aria-selected='true'] { background: var(--c-ink); color: var(--c-bg); border-color: var(--c-ink); font-weight: 600; }
+.cnl-loupe { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; color: var(--c-ink2); }
+.cnl-recherche { flex: 1 1 140px; min-width: 0; min-height: 36px; padding: 0 10px; border-radius: 18px; border: 1px solid var(--c-line2); background: transparent; color: var(--c-ink); font-size: 15px; }
+.cnl-filtre { margin: 0; padding: 0 12px 4px; font-size: 14px; color: var(--c-mut); }
+.cnl-rien { padding: 12px; }
+.cnl-corps { display: flex; flex-direction: column; }
+
+/* un domaine : en-tête (picto, nom, nombre), puis ses lignes */
+.cnl-domaine { display: flex; flex-direction: column; }
+.cnl-dn { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 34px; padding: 0 12px; background: var(--c-s1); border-top: 1px solid var(--c-line); border-bottom: 1px solid var(--c-line); font-size: 16px; font-weight: 700; color: var(--c-ink); text-align: left; }
+.cnl-dn-nom { flex: 1 1 auto; min-width: 0; }
+.cnl-dn-n { font-weight: 400; color: var(--c-mut); }
+.cnl-dn-aranger { background: var(--p-decide-bg); color: var(--p-decide-fg); }
+.cnl-dn-resolus { background: var(--p-resolu-bg); color: var(--p-resolu-fg); min-height: 44px; }
+.cnl-dn-resolus .cnl-dn-n { color: inherit; }
+
+/* une ligne : picto 34 px, titre, jauge + état + dernier pas */
+.cnl-pb { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 5px 12px; text-align: left; color: var(--c-ink); }
+.cnl-picto, .cnl-pb .cnl-vignette { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 9px; background: var(--c-s2); color: var(--c-ink2); }
+.cnl-pb .cnl-vignette { object-fit: cover; }
+.cnl-miniature { flex: none; width: 34px; height: 34px; border-radius: 9px; object-fit: cover; background: var(--c-s2); }
+.cnl-tx { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; gap: 1px; }
+.cnl-t { font-size: 16px; font-weight: 600; line-height: 1.2; color: var(--c-ink); overflow-wrap: anywhere; }
+.cnl-sub { display: flex; align-items: center; flex-wrap: nowrap; gap: 0 6px; font-size: 14px; line-height: 1.25; color: var(--c-mut); min-width: 0; }
+.cnl-pas { min-width: 0; flex: 0 1 auto; color: var(--c-ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnl-etat { font-weight: 700; white-space: nowrap; flex: none; }
+.cnl-etat[data-etat='note'] { color: var(--p-note-fg); }
+.cnl-etat[data-etat='cherche'] { color: var(--p-cherche-fg); }
+.cnl-etat[data-etat='decide'] { color: var(--p-decide-fg); }
+.cnl-etat[data-etat='resolu'] { color: var(--p-resolu-fg); }
+.cnl-jauge { display: inline-flex; gap: 3px; align-items: center; }
+.cnl-jauge i { width: 9px; height: 9px; border-radius: 50%; background: var(--p-trait); display: block; }
+.cnl-jauge[data-etat='note'] i[data-on] { background: var(--p-note-fg); }
+.cnl-jauge[data-etat='cherche'] i[data-on] { background: var(--p-cherche-fg); }
+.cnl-jauge[data-etat='decide'] i[data-on] { background: var(--p-decide-fg); }
+.cnl-jauge[data-etat='resolu'] i[data-on] { background: var(--p-resolu-fg); }
+
+/* un sous-domaine replié : ▸ Nom n  résumé ; déplié, ses carnets en lignes */
+.cnl-sd { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 40px; padding: 0 12px; text-align: left; font-size: 15px; color: var(--c-ink2); overflow: hidden; }
+.cnl-sd b { color: var(--p-cherche-fg); font-weight: 700; white-space: nowrap; }
+.cnl-sd-n { color: var(--p-cherche-fg); }
+.cnl-fleche { flex: none; width: 14px; color: var(--p-cherche-fg); }
+.cnl-sd { contain: inline-size; }
+.cnl-sdres { max-width: 100%; min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--c-ink2); }
+.cnl-sd-resolus { min-height: 40px; padding-left: 12px; color: var(--p-resolu-fg); }
+.cnl-sdres-resolus { color: var(--p-resolu-fg); }
+.cnl-autre .cnl-t { font-weight: 500; }
+
+/* les éléments à ranger : la carte « Rattacher à … ? » se pose dans la page, marge de la liste */
+.cnl-aranger .af-hote { padding: 8px 10px 0; }
+
+/* Résolus › Relecture : une route de la liste, avec son retour */
+.cnl-route { display: flex; flex-direction: column; }
+.cnl-route-tete { display: flex; align-items: center; gap: 6px; min-height: 48px; padding: 0 12px 0 4px; font-size: 20px; color: var(--c-ink); }
+.cnl-route-tete b { font-weight: 700; }
+.cnl-retour { display: inline-grid; place-items: center; width: 44px; height: 44px; color: var(--cave-accent, var(--p-cherche-fg)); }
+
+/* La saisie rapide : la feuille « rangé pour toi » (maquettes3/v01 `saisie`) posée sur la liste */
+.cnl-feuille-boite { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; justify-content: flex-end; }
+.cnl-voile { position: absolute; inset: 0; background: rgb(17 17 17 / .38); border: 0; padding: 0; cursor: default; }
+.cn-page.cnl-feuille { position: relative; gap: 0; padding: 0 0 8px; border-radius: 18px 18px 0 0; box-shadow: 0 -6px 24px rgb(0 0 0 / .18); max-height: 88dvh; overflow-y: auto; max-width: 760px; width: 100%; margin: 0 auto; }
+.cnl-poignee { width: 40px; height: 5px; border-radius: 3px; background: var(--c-line2); margin: 8px auto 4px; }
+.cnl-fil { display: flex; flex-direction: column; gap: 6px; padding: 4px 10px 6px; }
+.cnl-bulle-vous { align-self: flex-end; max-width: 300px; display: flex; flex-direction: column; gap: 6px; padding: 7px 10px; background: var(--p-vous-bg); border: 1px solid var(--p-vous-bord); border-radius: 16px 16px 4px 16px; font-size: 15px; color: var(--c-ink); }
+.cnl-bulle-vous p { margin: 0; overflow-wrap: anywhere; }
+.cnl-bulle-photo { width: 100%; max-height: 150px; object-fit: cover; border-radius: 10px; }
+.cnl-bulle-photo-vide { display: grid; place-items: center; height: 80px; background: var(--c-s2); color: var(--c-mut); }
+.cnl-carte-ia { align-self: flex-start; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 4px; padding: 7px 10px; background: var(--p-ia-bg); border: 1px solid var(--p-ia-bord); border-radius: 16px 16px 16px 4px; font-size: 15px; color: var(--c-ink); }
+.cnl-carte-tete { display: flex; align-items: center; gap: 6px; }
+.cnl-ia-mot { display: inline-flex; align-items: center; gap: 4px; color: var(--p-ia-fg); font-weight: 600; font-size: 14px; }
+.cnl-annuler { display: inline-flex; align-items: center; gap: 3px; min-height: 36px; font-size: 14px; }
+.cnl-carte-corps { display: flex; align-items: center; gap: 8px; }
+.cnl-jetons { display: flex; flex-wrap: wrap; gap: 6px; }
+.cnl-jeton { display: inline-flex; align-items: center; min-height: 26px; padding: 0 8px; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--p-note-bg); color: var(--p-note-fg); max-width: 100%; overflow-wrap: anywhere; }
+.cnl-jeton-etat[data-etat='cherche'] { background: var(--p-cherche-bg); color: var(--p-cherche-fg); }
+.cnl-jeton-etat[data-etat='decide'] { background: var(--p-decide-bg); color: var(--p-decide-fg); }
+.cnl-jeton-etat[data-etat='resolu'] { background: var(--p-resolu-bg); color: var(--p-resolu-fg); }
+.cnl-tache { margin: 2px 0 0; padding-top: 5px; border-top: 1px solid var(--p-ia-bord); font-size: 15px; }
+.cnl-boutons { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 2px; }
+.cnl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; font-size: 15px; font-weight: 700; border: 1px solid var(--c-line2); background: transparent; color: var(--c-ink); white-space: nowrap; }
+.cnl-btn-ok { background: var(--p-retenu-bg); border-color: var(--p-retenu-bg); color: var(--p-retenu-fg); }
+.cnl-changer { display: flex; flex-direction: column; gap: 4px; }
+.cnl-changer-titre { margin: 4px 0 0; font-size: 14px; font-weight: 700; color: var(--c-mut); }
+.cnl-puces { display: flex; flex-wrap: wrap; gap: 6px; }
+.cnl-puce { display: inline-flex; align-items: center; gap: 5px; min-height: 40px; padding: 0 12px; border-radius: 20px; border: 1px solid var(--c-line2); font-size: 15px; color: var(--c-ink); }
+.cnl-puce[aria-pressed='true'] { background: var(--c-ink); color: var(--c-bg); border-color: var(--c-ink); font-weight: 600; }
+.cnl-autres { list-style: none; margin: 0; padding: 0; max-height: 36dvh; overflow-y: auto; }
+.cnl-autre-ligne { width: 100%; min-height: 44px; padding: 0 6px; text-align: left; font-size: 16px; border-top: 1px solid var(--c-line); color: var(--c-ink); }
+.cnl-champ-faux { display: flex; align-items: center; gap: 8px; margin: 4px 10px 0; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid var(--c-line2); color: var(--c-mut); font-size: 16px; text-align: left; width: calc(100% - 20px); }
+.cnl-champ-texte { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnl-champ-texte b { color: var(--c-ink); }
+.cn-page.cn-liste .cnl-t { font-size: 16px; line-height: 1.2; -webkit-line-clamp: unset; }

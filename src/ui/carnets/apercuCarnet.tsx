@@ -40,6 +40,8 @@ export interface ApercuV {
   photo: (fichier: File) => Promise<void>; jointe: Jointe | null; retirerJointe: () => void; pliage: Boite<ReturnType<typeof setTimeout> | undefined>;
   presse: string | undefined; setPresse: Etat<string | undefined>;
   lectureUi: LectureUi;
+  /** D451 : la recherche de Résolus › Relecture, tapée dans le champ du bas (« Chercher dans les résolus… »). */
+  requeteRelecture: string; setRequeteRelecture: Etat<string>;
   /** C56-5 : les messages en échec que le bandeau de reprise porte déjà (avec son Relire) : l'avis de l'aperçu ne le redit pas. */
   aReprendre: readonly { messageId: string; echec?: true }[];
 }
@@ -71,7 +73,7 @@ export interface LectureUi {
 export function apercuCarnet(x: ApercuV) {
   const { ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet, setCorrigeCarnet, corrige,
     setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef, ajouterEnFacon, aPart,
-    setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse, setPresse, lectureUi, aReprendre } = x;
+    setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse, setPresse, lectureUi, aReprendre, requeteRelecture, setRequeteRelecture } = x;
   const tranche = ouvert ? critereQuiTranche(ouvert) : null;
   /* n° 5 et 21 : la bulle G8 seulement pour « ajouter · avant » (carnet au repos, champ pris et vide : ChampCarnet tient le focus) ;
      jamais sous un retour, une IA en cours ou une modification */
@@ -194,7 +196,9 @@ export function apercuCarnet(x: ApercuV) {
     return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte: horsSujetVu ?? texte, origine: 'locale', ...(vers ? { vers } : {}), ...(vaDansCarnet && auto ? { rangeeGenre: true } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
   };
   const renomme = vue.sorte === 'renommer' && ouvert ? ouvert : null;
-  const champ = renomme ? (
+  const champ = vue.sorte === 'relecture' ? (
+    <ChampCarnet valeur={requeteRelecture} inputRef={champRef} onChange={setRequeteRelecture} onEnvoyer={() => champRef.current?.blur()} invite="Chercher dans les résolus…" libelleEnvoi="Chercher" />
+  ) : renomme ? (
     /* n° 26 (g4:v01-13) : le titre dans le champ du bas, « Renommer », puis « Annuler · Entrée = renommer » */
     <ChampCarnet valeur={titreEdite} inputRef={champRef} onChange={setTitreEdite} onEnvoyer={() => renommerOuvert(renomme, titreEdite)}
       titreCarnet={renomme.title} libelleEnvoi="Renommer"

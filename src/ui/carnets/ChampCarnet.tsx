@@ -1,7 +1,7 @@
 /**
  * Le champ unique du carnet (R24, R27, R37 ; gestes 1, 4, 5, 7) : il écrit ou colle, un geste envoie, l'IA range.
  * - En bas, au-dessus du clavier : `useKeyboardInset` (visualViewport) retranche le clavier (CARNET-CLAV).
- * - Sur la liste : « Une idée, un besoin… » et ↑ ; dans un carnet : « Ajouter à <titre>… » (G7) et « Ajouter »
+ * - Sur la liste : « Une idée, un problème… » et ↑ ; dans un carnet : « Ajouter à <titre>… » (G7) et « Ajouter »
  *   (§ Points ouverts 6). Pendant une modification : « Enregistrer ».
  * - 📷 (photo, § Points ouverts 8) et un petit 🎤 seulement si le navigateur sait dicter (CR-VOIX, R37).
  * - Puce « Coller : … » au-dessus quand le presse-papier tient un lien (R15).
@@ -334,9 +334,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const mesurer = placeTexte > 0 ? mesureurDe(zoneTexte.current) : null;
   const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(titreAffiche(p.titreCarnet), placeTexte - 2, mesurer) : large ? titreAffiche(p.titreCarnet) : titreCourt(titreAffiche(p.titreCarnet))) : '';
   /* f13 tour 3 (n° 4) : le texte voulu par la vue, s'il tient (mesuré) ; sinon sans sa virgule (« Écrire ou coller un lien… ») */
-  const invite = p.invite && dansCarnet ? ([p.invite, p.invite.replace(', ou ', ' ou ')].find(t => !mesurer || mesurer(t) <= placeTexte - 2) ?? p.invite.replace(', ou ', ' ou ')) : null;
-  const placeholder = ecoute ? 'J’écoute…' : renomme ? 'Nouveau titre du carnet…' : invite ? invite : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
-  const libelle = renomme ? 'Nouveau titre du carnet' : dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un besoin…';
+  const invite = p.invite && !dansCarnet ? p.invite : p.invite && dansCarnet ? ([p.invite, p.invite.replace(', ou ', ' ou ')].find(t => !mesurer || mesurer(t) <= placeTexte - 2) ?? p.invite.replace(', ou ', ' ou ')) : null;
+  const placeholder = ecoute ? 'J’écoute…' : renomme ? 'Nouveau titre du carnet…' : invite ? invite : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un problème…';
+  const libelle = renomme ? 'Nouveau titre du carnet' : p.invite && !dansCarnet ? p.invite : dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un problème…';
   /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
      v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */
   const envoi = p.libelleEnvoi ?? 'Ajouter';

@@ -432,7 +432,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
  * « Une note en vrac marche aussi. » (G2). Aucune flèche ni bulle vers le champ (D-108 la refuse). Pendant la frappe, le cadre du
  * geste (`enHaut`) prend la place de la carte exemple.
  */
-function ListeVide({ enHaut, onExemple, pied }: { enHaut?: React.ReactNode; onExemple?: (t: string) => void; pied?: React.ReactNode }) {
+export function ListeVide({ enHaut, onExemple, pied }: { enHaut?: React.ReactNode; onExemple?: (t: string) => void; pied?: React.ReactNode }) {
   const cadreGeste = React.isValidElement(enHaut) ? hasContenu(enHaut) : Boolean(enHaut);
   return (
     <div className="cn-page cn-liste cn-vide-page">

@@ -29,9 +29,20 @@ import { prixEstChoisi } from '../../domain/carnets/prixChoisi';
 import { jourIso } from './lignesRegles';
 import type { ActionsCarnet } from './actionsCarnet';
 import type { Appliquer, AvisIA, Boite, CarnetsVueProps, Etat, FinancesCarnet, Retour, RetourNeuf, Supprime, Vue } from './carnetsTypes';
+import type { MessageDoc } from '../../domain/carnets/modele';
+import { aFaireDe } from '../../domain/carnets/taches';
+import { repondreRelu } from '../../domain/carnets/suivi';
+import { ChevronLeft } from 'lucide-react';
+import { ListeArbre } from './ArbreCarnets';
+import { AFaire } from './AFaire';
+import { RelectureResolus } from './RelectureResolus';
+import type { FiltreOeil, OngletListe } from './listeRegles';
 
 export interface EcransV extends Pick<ActionsCarnet, 'enV' | 'ecrirePlanLie' | 'voirSortie' | 'planSuitLeChoix' | 'sortieV' | 'envoyerAVenir' | 'sortieFinie' | 'placer'
-  | 'supprimerAvecPlan' | 'retirerCriteres' | 'retirerArticle' | 'deplacerArticle' | 'dater' | 'auCalendrier' | 'prixDuCarnet' | 'planSuivi'> {
+  | 'supprimerAvecPlan' | 'retirerCriteres' | 'retirerArticle' | 'deplacerArticle' | 'dater' | 'auCalendrier' | 'prixDuCarnet' | 'planSuivi'
+  | 'geste' | 'rappelsDe' | 'cocherALaListe' | 'echeanceALaListe' | 'rattacherA' | 'nouveauProbleme'> {
+  /** D451 : les messages du magasin, tous les carnets (archivés compris), la rangée de la liste, la recherche de Relecture, l'ancienne liste (`?carnet=v0`). */
+  messages: MessageDoc[]; tous: CarnetDoc[]; onglet: OngletListe; setOnglet: Etat<OngletListe>; filtre: FiltreOeil; setFiltre: Etat<FiltreOeil>; requeteRelecture: string; ancienneListe: boolean;
   p: CarnetsVueProps; ouvert: CarnetDoc | null; vue: Vue; setVue: Etat<Vue>; carnets: CarnetDoc[]; faitsPlanning: ReturnType<typeof faitsDuPlanning>;
   anciennes: ReturnType<typeof anciennesNotes>; enTete: string | undefined; retour: Retour | null; setRetour: (r: RetourNeuf | null) => void;
   supprime: Supprime | null; setSupprime: Etat<Supprime | null>; annuler: (inverse: EcritureCarnet[]) => void; repriseNode: React.ReactNode;
@@ -48,7 +59,8 @@ export interface EcransV extends Pick<ActionsCarnet, 'enV' | 'ecrirePlanLie' | '
 }
 
 export function ecranCarnet(x: EcransV): React.ReactNode {
-  const { p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci, proposeesNode,
+  const { messages, tous, onglet, setOnglet, filtre, setFiltre, requeteRelecture, ancienneListe, geste, rappelsDe, cocherALaListe, echeanceALaListe, rattacherA, nouveauProbleme,
+    p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci, proposeesNode,
     rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition, setEdition,
     finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree, noteSupprimee,
     setNoteSupprimee, annulerSuppressionNote, autresPour, achatsPasses, enV, ecrirePlanLie, voirSortie, planSuitLeChoix, sortieV, envoyerAVenir, sortieFinie, placer,
@@ -100,7 +112,25 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
 
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
-  if (!ouvert || vue.sorte === 'liste') {
+  const ouvrirCarnet = (id: string) => { setVue({ sorte: 'carnet', id }); setRetour(null); };
+  if (vue.sorte === 'relecture') {
+    /* Résolus › Relecture (maquettes3/v01 `relecture`) : la fiche, les autres résolus par catégorie ; le champ du bas cherche dans les résolus */
+    ecran = (
+      <div className="cnl-route">
+        <div className="cnl-route-tete"><button type="button" className="cnl-retour" aria-label="Retour à la liste" onClick={() => setVue({ sorte: 'liste' })}><ChevronLeft size={22} aria-hidden /></button><b>Résolus</b></div>
+        {bandeauIci && <div className="cnl-haut">{bandeauIci}</div>}
+        <RelectureResolus key={requeteRelecture} carnets={tous} messages={messages} requete={requeteRelecture} onOuvrir={ouvrirCarnet}
+          rappels={{ onRelu: (carnetId, reponse) => { geste(repondreRelu(magasin.lire(), { carnetId, reponse, le: maintenant().toISOString() })); } }} />
+      </div>
+    );
+  } else if ((!ouvert || vue.sorte === 'liste') && !ancienneListe) {
+    const auj = maintenant();
+    ecran = <ListeArbre carnets={carnets} tous={tous} messages={messages} maintenant={auj} onglet={onglet} onOnglet={setOnglet} filtre={filtre} onFiltre={setFiltre}
+      aFaire={aFaireDe(tous, auj).total} rangeEnCours={rangeEnCours} anciennes={anciennes} onExemple={t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); }}
+      corpsAFaire={<AFaire carnets={tous} maintenant={auj} plans={finances.plans} messages={messages} onCocher={cocherALaListe} onOuvrir={id => ouvrirCarnet(id)} onEcheance={echeanceALaListe} />}
+      supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
+      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>} onOuvrir={ouvrirCarnet} onRelecture={() => setVue({ sorte: 'relecture' })} onRattacher={rattacherA} onNouveauProbleme={nouveauProbleme} />;
+  } else if (!ouvert || vue.sorte === 'liste') {
     ecran = <ListeCarnets rangeEnCours={rangeEnCours} carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
       enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>}
@@ -187,7 +217,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const manque = iaManquee[c.id];
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
-      <CarnetOuvert carnet={enV(c)} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+      <CarnetOuvert carnet={enV(c)} messages={messages} carnetsDocs={tous} rappels={rappelsDe(c)} onRelecture={() => setVue({ sorte: 'relecture' })} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}

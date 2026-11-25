@@ -11,18 +11,25 @@ import { EVENEMENT_CALENDRIER } from '../calendrier/LienSection';
 import { montant, type CarnetV } from './EtatIA';
 import { majusculeFr } from './envoiRegles';
 import { jourIso, lundiIso } from './lignesRegles';
-import type { Appliquer, CarnetsVueProps, Etat, FinancesCarnet, Retour, RetourNeuf, Supprime, Vue } from './carnetsTypes';
+import type { Appliquer, Boite, CarnetsVueProps, Etat, FinancesCarnet, Retour, RetourNeuf, Supprime, Vue } from './carnetsTypes';
+import type { CreativeItem } from '../../types';
+import type { RappelsSuivi } from './carnetOuvertTypes';
+import { accepterPropositionSuivi, refuserPropositionSuivi } from '../../domain/carnets/fil';
+import { changerEtat, changerOption, fermerParAchat, poserAvantApres, poserGenre, repondreRelu, retenirOption, retirerEtiquette, rouvrir } from '../../domain/carnets/suivi';
+import { ajouterTache, cocherTache, poserEcheance } from '../../domain/carnets/taches';
+import { planDeLAchat } from './afaireRegles';
+import { deplacerLesLignesDuMessage, enchainer, rattacherContenu } from './listeRegles';
 
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
 
 export interface ActionsV {
   p: CarnetsVueProps; finances: FinancesCarnet; magasin: MagasinCarnets; appliquer: Appliquer; annuler: (inverse: EcritureCarnet[]) => void; maintenant: () => Date;
   setTexte: Etat<string>; setVue: Etat<Vue>; setRetour: (r: RetourNeuf | null) => void; setEnTete: Etat<string | undefined>; setVientDEtreCree: Etat<string | null>;
-  setSupprime: Etat<Supprime | null>;
+  setSupprime: Etat<Supprime | null>; champRef?: Boite<HTMLTextAreaElement | null>;
 }
 
 export function actionsCarnet(x: ActionsV) {
-  const { p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete, setVientDEtreCree, setSupprime } = x;
+  const { p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete, setVientDEtreCree, setSupprime, champRef } = x;
   /* Critique 7, n° 5 : `estRealise` gouverne la liste, la fiche et Choisir ; un plan payé se dit réalisé et « Voir » ouvre Réalisés. */
   const sortieV = (c: CarnetDoc) => {
     const e = etatSortie(c, finances.plans, finances.transactions, finances.payments);
@@ -203,7 +210,77 @@ export function actionsCarnet(x: ActionsV) {
     const r = appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le }));
     if (r) p.onMessage?.('Dans À venir.');
   }
+
+  /* ---------- D451 : les gestes du suivi, de la liste et du rangement (un seul Annuler pour chacun) ---------- */
+  const leMaintenant = () => maintenant().toISOString();
+  /** Un geste du domaine : écrit, puis « ✓ <ce qui est fait> · Annuler » (l'inverse vient du domaine). */
+  const geste = (r: Resultat, carnetId?: string) => {
+    const ap = appliquer(r);
+    if (ap) setRetour({ bandeau: { sorte: 'geste', texte: ap.avis.startsWith('✓') ? ap.avis.slice(1).trim() : ap.avis }, inverse: ap.inverse, ...(carnetId ? { carnetId } : {}) });
+    return ap;
+  };
+  /** Les rappels de l'écran d'un carnet (`CarnetOuvert`, props `rappels`) : chaque geste passe par l'intention du domaine. */
+  function rappelsDe(c: CarnetDoc): RappelsSuivi {
+    return {
+      onEtat: vers => { geste(changerEtat(magasin.lire(), { carnetId: c.id, vers, le: leMaintenant() }), c.id); },
+      onRouvrir: () => { geste(rouvrir(magasin.lire(), { carnetId: c.id, le: leMaintenant() }), c.id); },
+      onOption: (faconId, vers, raison) => {
+        const args = { carnetId: c.id, faconId, le: leMaintenant(), ...(raison ? { raison } : {}) };
+        geste(vers === 'retenue' ? retenirOption(magasin.lire(), args) : changerOption(magasin.lire(), { ...args, vers }), c.id);
+      },
+      onFermerParAchat: optionId => { geste(fermerParAchat(magasin.lire(), { carnetId: c.id, optionId, le: leMaintenant() }), c.id); },
+      onRelu: reponse => { geste(repondreRelu(magasin.lire(), { carnetId: c.id, reponse, le: leMaintenant() }), c.id); },
+      onAvantApres: (avant, apres) => {
+        geste(poserAvantApres(magasin.lire(), { carnetId: c.id, ...(avant !== undefined ? { avantPhotoId: avant } : {}), ...(apres !== undefined ? { apresPhotoId: apres } : {}) }), c.id);
+      },
+      onProposition: (messageId, index, quoi) => {
+        const etat = magasin.lire();
+        const pr = lireMessages(etat).find(m => m.id === messageId)?.carnetMessage.propositionsSuivi?.[index];
+        if (!pr) return;
+        const retirer = (e: readonly CreativeItem[]) => refuserPropositionSuivi(e, { messageId, index });
+        if (quoi === 'non') { geste(retirer(etat), c.id); return; }
+        if (quoi === 'plus-tard') {
+          /* « Plus tard » : la tâche entre sans échéance (« Un jour »), la carte part ; un seul Annuler */
+          geste(enchainer(etat, [e => ajouterTache(e, { carnetId: pr.carnetId, texte: pr.texte ?? '', le: leMaintenant(), messageId, origine: pr.origine,
+            ...(pr.optionId ? { optionId: pr.optionId } : {}), ...(pr.coutCentimes !== undefined ? { coutCentimes: pr.coutCentimes } : {}), ...(pr.devise ? { devise: pr.devise } : {}) }), retirer], 'Tâche ajoutée, sans date'), c.id);
+          return;
+        }
+        /* « Rattacher à … ? » : le domaine ne déplace pas ; ici, sur le geste du brasseur seulement, les lignes de CE message passent dans le carnet proposé */
+        if (pr.sorte === 'deplacer') {
+          if (!pr.versCarnetId) { p.onMessage?.('Rattacher : le carnet visé n’est plus connu.'); return; }
+          geste(deplacerLesLignesDuMessage(etat, { messageId, depuis: pr.carnetId, vers: pr.versCarnetId, retirerCarte: retirer }), c.id);
+          return;
+        }
+        geste(accepterPropositionSuivi(etat, { messageId, index, le: leMaintenant() }), c.id);
+      },
+      onEcrire: amorce => { setTexte(amorce); setTimeout(() => champRef?.current?.focus(), 0); },
+      onGenre: genre => { geste(poserGenre(magasin.lire(), { carnetId: c.id, genre, origine: 'vous' }), c.id); },
+      onRetirerEtiquette: (messageId, index) => { geste(retirerEtiquette(magasin.lire(), { messageId, index }), c.id); },
+      onCocherTache: (tacheId, faite) => { geste(cocherTache(magasin.lire(), { carnetId: c.id, tacheId, le: leMaintenant(), faite }), c.id); }
+    };
+  }
+  /** « À faire » : cocher d'un toucher (« ✓ … · Annuler »). */
+  const cocherALaListe = (carnetId: string, tacheId: string, faite: boolean) => { geste(cocherTache(magasin.lire(), { carnetId, tacheId, le: leMaintenant(), faite })); };
+  /** « À faire » : changer l'échéance ; un achat de l'option retenue pose (ou suit) son plan d'À venir. */
+  const echeanceALaListe = (carnetId: string, tacheId: string, quand: { date: string | null; precision: 'semaine' | 'mois' }) => {
+    const ap = geste(poserEcheance(magasin.lire(), { carnetId, tacheId, echeance: quand.date, precision: quand.precision }));
+    if (!ap) return;
+    const doc = lireCarnets(magasin.lire(), { archives: true }).find(x => x.id === carnetId);
+    const tache = doc?.carnet.taches?.find(t => t.id === tacheId);
+    const plan = doc && tache ? planDeLAchat(doc, tache, leMaintenant()) : null;
+    if (!doc || !plan) return;
+    void Promise.resolve(ecrirePlanLie(plan)).then(() => { if (!doc.carnet.sortie) appliquer(poserSortie(magasin.lire(), { carnetId, planId: plan.id, le: leMaintenant() })); });
+  };
+  /** « Oui » d'une photo seule, « Rattacher à… » de la feuille : tout le contenu du carnet à ranger passe dans l'autre carnet ; Annuler le rend. */
+  const rattacherA = (sourceId: string, versId: string) => { geste(rattacherContenu(magasin.lire(), { depuis: sourceId, vers: versId })); };
+  /** « Nouveau problème » : le carnet à ranger devient un problème (genre posé par lui) et s'ouvre. */
+  const nouveauProbleme = (sourceId: string) => {
+    const ap = geste(poserGenre(magasin.lire(), { carnetId: sourceId, genre: 'probleme', origine: 'vous' }), sourceId);
+    if (ap) setVue({ sorte: 'carnet', id: sourceId });
+  };
+
   return { sortieV, planOuvert, planSuivi, sortieFinie, avecDateDuPlan, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere,
-    deplacerVersSuggere, retirerArticle, deplacerArticle, retirerCriteres, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir };
+    deplacerVersSuggere, retirerArticle, deplacerArticle, retirerCriteres, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir,
+    geste, rappelsDe, cocherALaListe, echeanceALaListe, rattacherA, nouveauProbleme };
 }
 export type ActionsCarnet = ReturnType<typeof actionsCarnet>;
