@@ -2922,3 +2922,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 matin (champ du carnet) : « Le champs text aussi toujours actif, je veux pas + d'action pour écrire... »
 - 25.11 matin (carnet ZZ « malt pilsner en rupture », fil en bulles brutes, capture plaintes/2026-11-25-notes-vrac.jpg) : « Mais les notes sont complètement en vrac ? Je comprends pas, qu'est-ce qui c'est passé ??? »
 - 25.11 matin (une note « Autre fournisseur : en stock, 4 CHF de plus le sac. » devenue un ARTICLE à 4 CHF avec veille du prix et Choisir, capture plaintes/2026-11-25-note-devenue-article.jpg) : « ¿?????? »
+- 25.11 matin (carnet ZZ « pompe qui chauffe » : genre Idée, la phrase du problème devenue « Critère », titre redit en 1re bulle, « Résolu » écrit mais état non suivi ; capture plaintes/2026-11-25-note-devenue-critere.jpg) : « ?????? »
