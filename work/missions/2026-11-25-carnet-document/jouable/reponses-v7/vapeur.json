@@ -1,0 +1,116 @@
+{
+ "titre": "ZZ TEST — trop de vapeur au brassage",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : jouable/reponses/zz-trop-de-vapeur-au.json, complété v7",
+ "reponse": {
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "💨",
+    "titre": "Steam condenser",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "Plutôt un steam condenser sur la cuve",
+    "conseille": true
+   }
+  ],
+  "tache": {
+   "emoji": "🛒",
+   "titre": "Acheter le condenser",
+   "quand": "fin du mois",
+   "ligne": 7,
+   "citation": "Achat prévu fin du mois."
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "Le 18 nov.",
+    "type": "date"
+   },
+   {
+    "ligne": 6,
+    "mot": "pas en stock",
+    "type": "pas_trouve"
+   },
+   {
+    "ligne": 7,
+    "mot": "fin du mois",
+    "type": "date"
+   },
+   {
+    "ligne": 8,
+    "mot": "pas utile",
+    "type": "pas_trouve"
+   }
+  ],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix",
+    "📦 Stock",
+    "🔩 Raccord"
+   ],
+   "articles": [
+    {
+     "nom": "KegLand",
+     "ligne": 4,
+     "citation": "kegland.com.au",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "ia"
+      },
+      {
+       "texte": "?",
+       "source": "ia"
+      },
+      {
+       "texte": "2 inch tri-clover",
+       "source": "notes"
+      }
+     ]
+    },
+    {
+     "nom": "Brewtools",
+     "ligne": 5,
+     "citation": "brewtools.com",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "ia"
+      },
+      {
+       "texte": "pas en stock",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "ia"
+      }
+     ]
+    }
+   ],
+   "gagnant": [
+    null,
+    null,
+    null
+   ],
+   "compromis": "KegLand si le Brewtools reste sans stock."
+  },
+  "resolu": null,
+  "emoji": "💨",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Brassage"
+  },
+  "priorite": "haute",
+  "resume": "Acheter le condenser",
+  "etatPropose": "decide",
+  "genre": "probleme"
+ }
+}

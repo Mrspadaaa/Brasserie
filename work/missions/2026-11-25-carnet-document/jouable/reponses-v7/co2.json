@@ -1,0 +1,92 @@
+{
+ "titre": "ZZ TEST — CO2 qui baisse vite dans un fût",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/co2.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "🔗",
+    "texte": "Raccord gaz",
+    "statut": "trouve",
+    "ligne": 3,
+    "citation": "bulles au raccord gaz"
+   },
+   {
+    "emoji": "⭕",
+    "texte": "Joint du couvercle",
+    "statut": "a_verifier",
+    "ligne": 2,
+    "citation": "joint du couvercle"
+   },
+   {
+    "emoji": "🎛️",
+    "texte": "Régulateur",
+    "statut": "a_verifier",
+    "ligne": 2,
+    "citation": "régulateur"
+   }
+  ],
+  "options": [],
+  "tache": {
+   "emoji": "🔁",
+   "titre": "Revérifier le raccord",
+   "quand": "dans une semaine",
+   "ligne": 4,
+   "citation": "à revérifier dans une semaine"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "📈",
+    "valeur": "1,2 bar",
+    "label": "15.11",
+    "ligne": 1
+   },
+   {
+    "emoji": "📉",
+    "valeur": "0,4 bar",
+    "label": "22.11",
+    "ligne": 1
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [
+   {
+    "emoji": "🔧",
+    "texte": "Raccord changé",
+    "ligne": 4,
+    "citation": "Raccord gaz changé"
+   }
+  ],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "le 15 nov.",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "bulles au raccord gaz",
+    "type": "piste"
+   },
+   {
+    "ligne": 4,
+    "mot": "dans une semaine",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🫧",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Conditionnement"
+  },
+  "priorite": "haute",
+  "resume": "Revérifier le raccord",
+  "etatPropose": "decide",
+  "conseil": "🧼 Refais le test savonneux sur le raccord neuf.",
+  "genre": "probleme"
+ }
+}

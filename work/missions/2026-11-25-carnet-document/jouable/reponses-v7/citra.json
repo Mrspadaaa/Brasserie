@@ -1,0 +1,100 @@
+{
+ "titre": "ZZ TEST — Houblons citra",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/citra.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "🌐",
+    "texte": "Site français",
+    "statut": "a_verifier",
+    "ligne": 3,
+    "citation": "dur à obtenir sur le site français"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "",
+    "titre": "MotlerHops",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 1,
+    "citation": "motlerhops.fr",
+    "conseille": false
+   },
+   {
+    "emoji": "",
+    "titre": "Brau und Rauchshop",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "brauundrauchshop.ch",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "🔗",
+   "titre": "Ouvrir les liens"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix",
+    "📦 Dispo"
+   ],
+   "articles": [
+    {
+     "nom": "MotlerHops",
+     "ligne": 1,
+     "citation": "motlerhops.fr",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    },
+    {
+     "nom": "Brau und Rauchshop",
+     "ligne": 2,
+     "citation": "brauundrauchshop.ch",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    }
+   ],
+   "gagnant": [
+    null,
+    null
+   ],
+   "compromis": "Prix et stock derrière les liens."
+  },
+  "resolu": null,
+  "emoji": "🌿",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Matières premières"
+  },
+  "priorite": "normale",
+  "resume": "Ouvrir les liens",
+  "etatPropose": "cherche",
+  "conseil": "🔗 Ouvre les deux liens pour lire les prix.",
+  "genre": "achat"
+ }
+}

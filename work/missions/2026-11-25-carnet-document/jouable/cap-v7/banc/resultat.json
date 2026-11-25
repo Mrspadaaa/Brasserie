@@ -1,0 +1,832 @@
+{
+ "validation": [
+  {
+   "t": "ZZ TEST — assurance à renouveler",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — CO2 qui baisse vite dans un fût",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — écoulement qui fuit",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — fête de la bière en juin",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — frigo de garde en panne",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — inspection électrique, fusible",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — levure lente à démarrer",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — odeur de soufre dans un lot",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — pompe qui chauffe",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — ranger la cave",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — trop de vapeur au brassage",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Embouteillage — station complète (2027)",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Houblons citra",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Chaudière en panne jour de brassage",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Idée bière au sureau",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — 600 bouteilles 33 cl",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Bar du Centre veut nos bières",
+   "fausses": 0,
+   "erreurs": []
+  },
+  {
+   "t": "ZZ TEST — Levure récoltée à tester",
+   "fausses": 0,
+   "erreurs": []
+  }
+ ],
+ "consigneV7": [
+  "\"faits\":true",
+  "\"besoin\":true",
+  "\"offre\":true",
+  "18. \"tache\":true",
+  "21. Coût total:true"
+ ],
+ "repos": {
+  "assurance": {
+   "n": 23,
+   "mots": "Mes notes Organisé Demander une offre Renouveler l’assurance J-36 31 déc. plus tard Police actuelle Inventaire matériel Chiffre d’affaires 2026 Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Demander une offre"
+  },
+  "bar": {
+   "n": 26,
+   "mots": "Mes notes Organisé Rappeler le gérant J-5 lundi plus tard 2 fûts par mois Demande 20 L fût Assez de fûts Prix pro Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Rappeler le gérant"
+  },
+  "bouteilles": {
+   "n": 33,
+   "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "choisir",
+    "comparer",
+    "jauge",
+    "jauge",
+    "jauge"
+   ],
+   "heros": "Choisir l’offre"
+  },
+  "cave": {
+   "n": 24,
+   "mots": "Mes notes Organisé Ranger la cave J-11 samedi 6 déc. dimanche plus tard Trier les cartons Monter une étagère Jeter les seaux Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Ranger la cave"
+  },
+  "chaudiere": {
+   "n": 26,
+   "mots": "Mes notes Organisé Appeler le technicien Brassage IPA J-1 demain 7h plus tard Voyant rouge Reset 10 min Technicien conseillé Décaler au jeudi Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Appeler le technicien"
+  },
+  "citra": {
+   "n": 18,
+   "mots": "Mes notes Organisé IA Ouvrir les liens plus tard MotlerHops Brau und Rauchshop Site français Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Ouvrir les liens"
+  },
+  "co2": {
+   "n": 29,
+   "mots": "Mes notes Organisé Revérifier le raccord J-6 1 déc. plus tard 1,2 bar 15.11 0,4 bar 22.11 1/3 Raccord gaz Joint du couvercle Régulateur Raccord changé Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "paire",
+    "trouve"
+   ],
+   "heros": "Revérifier le raccord"
+  },
+  "ecoulement": {
+   "n": 30,
+   "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Changer le joint IA prix inconnu Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "trouve"
+   ],
+   "heros": "Contacter entreprise X"
+  },
+  "fete": {
+   "n": 28,
+   "mots": "Mes notes Organisé Réserver le stand J-96 avant mars plus tard 1 500 CHF Budget 3 bières Pression Tireuse 2 tonnelles Gobelets consignés 10 fûts Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Réserver le stand"
+  },
+  "levure": {
+   "n": 21,
+   "mots": "Mes notes Organisé Faire un starter plus tard 3e génération US-05 12 jours Au frigo 2/2 Odeur Mousse Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "trouve"
+   ],
+   "heros": "Faire un starter"
+  },
+  "pilsner": {
+   "n": 22,
+   "mots": "Mes notes Organisé Réglé Commandé 2 sacs, brassin maintenu Brassin J-8 3 déc. Rouvrir Autre fournisseur en stock Détail 3 Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "regle"
+   ],
+   "heros": "Commandé 2 sacs, brassin maintenu"
+  },
+  "sureau": {
+   "n": 18,
+   "mots": "Mes notes Organisé Goûter la voisine plus tard 4.5% Base blonde Fin d’ébullition À froid Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Goûter la voisine"
+  },
+  "frigo": {
+   "n": 29,
+   "mots": "Mes notes Organisé Comparer les devis J-6 avant décembre plus tard 14 °C visé 2 Réparer Frigo neuf CHF 480 1 200 1/1 Compresseur Fûts déplacés Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "comparer",
+    "trouve"
+   ],
+   "heros": "Comparer les devis"
+  },
+  "inspection": {
+   "n": 22,
+   "mots": "Mes notes Organisé Acheter un testeur plus tard 5×20 mm fusible 6,3 A calibre 1/1 Fusible grillé Fusible Brewtools Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "trouve"
+   ],
+   "heros": "Acheter un testeur"
+  },
+  "levure-lente": {
+   "n": 28,
+   "mots": "Mes notes Organisé Réglé Monté à 19 °C Rouvrir 36 h sans activité 16 °C au départ Réhydrater la levure Ensemencer à 18 °C Détail 5 Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "regle"
+   ],
+   "heros": "Monté à 19 °C"
+  },
+  "odeur": {
+   "n": 18,
+   "mots": "Mes notes Organisé Sentir à nouveau J-14 9 déc. plus tard J+5 odeur Levure lager Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros"
+   ],
+   "heros": "Sentir à nouveau"
+  },
+  "pompe": {
+   "n": 20,
+   "mots": "Mes notes Organisé Réglé Débit réglé à la sortie Rouvrir 30 min d’empâtage Vanne d’entrée ouverte Détail 3 Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "regle"
+   ],
+   "heros": "Débit réglé à la sortie"
+  },
+  "vapeur": {
+   "n": 25,
+   "mots": "Mes notes Organisé Acheter le condenser J-5 30 nov. plus tard KegLand Brewtools pas en stock 2 inch tri-clover inconnu Steam condenser conseillé Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "comparer"
+   ],
+   "heros": "Acheter le condenser"
+  },
+  "embouteillage": {
+   "n": 18,
+   "mots": "Mes notes Organisé Faire la station J-157 01.05.2027 plus tard 2 500 CHF budget 01.05.2027 01.07.2027 Aide Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros",
+    "periode"
+   ],
+   "heros": "Faire la station"
+  }
+ },
+ "gestes": {
+  "g01-co2-fait": {
+   "ok": true,
+   "m": {
+    "n": 27,
+    "mots": "Mes notes Organisé Fait Revérifier le raccord Pas fait 1,2 bar 15.11 0,4 bar 22.11 1/3 Raccord gaz Joint du couvercle Régulateur Raccord changé Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "paire",
+     "trouve"
+    ],
+    "heros": "Revérifier le raccord"
+   }
+  },
+  "g02-bar-tard": {
+   "ok": true,
+   "m": {
+    "n": 23,
+    "mots": "Mes notes Organisé Rappeler le gérant J-5 2 fûts par mois Demande 20 L fût Assez de fûts Prix pro Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros"
+    ],
+    "heros": "Rappeler le gérant"
+   }
+  },
+  "g03-bouteilles-prendre": {
+   "ok": true,
+   "m": {
+    "n": 36,
+    "mots": "Mes notes Organisé choisi Commander chez Fournisseur B J-20 15 déc. plus tard Rouvrir Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "achat",
+     "comparer",
+     "jauge",
+     "jauge",
+     "jauge"
+    ],
+    "heros": "Commander chez Fournisseur B"
+   }
+  },
+  "g04-bouteilles-commande": {
+   "ok": true,
+   "m": {
+    "n": 33,
+    "mots": "Mes notes Organisé commandé Fournisseur B J-20 15 déc. Pas encore Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "achat",
+     "comparer",
+     "jauge",
+     "jauge",
+     "jauge"
+    ],
+    "heros": "Fournisseur B"
+   }
+  },
+  "g05-bouteilles-rouvrir": {
+   "ok": true,
+   "m": {
+    "n": 33,
+    "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "choisir",
+     "comparer",
+     "jauge",
+     "jauge",
+     "jauge"
+    ],
+    "heros": "Choisir l’offre"
+   }
+  },
+  "g06-bouteilles-colonne": {
+   "ok": true,
+   "m": {
+    "n": 45,
+    "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu 3 Occasion sur annonce 0.20/bt, à laver, 400 seulement Mes notes Prendre Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "choisir",
+     "comparer",
+     "jauge",
+     "jauge",
+     "jauge"
+    ],
+    "heros": "Choisir l’offre"
+   }
+  },
+  "g07-pilsner-repos-puis-rouvrir": {
+   "ok": true,
+   "m": {
+    "n": 31,
+    "mots": "Mes notes Organisé Commandé chez l’autre J-8 3 déc. plus tard 2 sacs Commandé Autre fournisseur +4 CHF/sac Décaler le brassin Autre malt prix inconnu Autre fournisseur en stock Aide Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros"
+    ],
+    "heros": "Commandé chez l’autre"
+   }
+  },
+  "g08-levure-lente-detail": {
+   "ok": true,
+   "m": {
+    "n": 34,
+    "mots": "Mes notes Organisé Réglé Monté à 19 °C Rouvrir 36 h sans activité 16 °C au départ 1/3 Moût froid Levure proche date Pas réhydratée Réhydrater la levure Ensemencer à 18 °C Aide Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "regle",
+     "trouve"
+    ],
+    "heros": "Monté à 19 °C"
+   }
+  },
+  "g09-ecoulement-toucher": {
+   "ok": true,
+   "m": {
+    "n": 45,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon 2 Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée. Mes notes Sous la dalle Sanitaire entreprise X 150 CHF conseillé Changer le joint IA prix inconnu Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g10-ecoulement-sa-ligne": {
+   "ok": true,
+   "m": {
+    "n": 62,
+    "mots": "Mes notes Organisé ZZ TEST écoulement qui fuit mar. 24 nov. 21:26 Je cherche lu par l’IA à 22:32 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée. Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu. Estimation 150 CHF (exemple). Revenir à Joint du siphon",
+    "utileY": 0,
+    "barre": 52,
+    "sousBarre": -52,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g11-ecoulement-refus": {
+   "ok": true,
+   "m": {
+    "n": 24,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g12-ecoulement-aide": {
+   "ok": true,
+   "m": {
+    "n": 39,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Aide 4 IA idée 1/4 Demande si le joint suffit avant le devis. non plus tard Garder Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g13-ecoulement-aide-suite": {
+   "ok": true,
+   "m": {
+    "n": 36,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Aide 4 IA à vérifier 2/4 Teste à l’eau colorée non plus tard Garder Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g14-ecoulement-aide-garde": {
+   "ok": true,
+   "m": {
+    "n": 39,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Teste à l’eau colorée IA Aide 3 IA tâche 2/3 Photographie le siphon non plus tard Garder Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g15-ecoulement-aide-non": {
+   "ok": true,
+   "m": {
+    "n": 39,
+    "mots": "Mes notes Organisé Contacter entreprise X plus tard 1/2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Teste à l’eau colorée IA Aide 2 IA idée 2/2 Joint silicone provisoire non plus tard Garder Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "trouve"
+    ],
+    "heros": "Contacter entreprise X"
+   }
+  },
+  "g16-cave-coche": {
+   "ok": true,
+   "m": {
+    "n": 25,
+    "mots": "Mes notes Organisé Ranger la cave J-11 samedi 6 déc. dimanche plus tard Trier les cartons Monter une étagère Jeter les seaux 1/3 Aide Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros"
+    ],
+    "heros": "Ranger la cave"
+   }
+  },
+  "g17-cave-meta": {
+   "ok": true,
+   "m": {
+    "n": 36,
+    "mots": "Mes notes Organisé mémo Local Rangement haute Noté lu à 22:32 Ranger Changements Question Ranger la cave J-11 samedi 6 déc. dimanche plus tard Trier les cartons Monter une étagère Jeter les seaux 1/3 Aide Ajouter…",
+    "utileY": 173,
+    "barre": 52,
+    "sousBarre": 121,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros"
+    ],
+    "heros": "Ranger la cave"
+   }
+  },
+  "g18-co2-ecrire": {
+   "ok": true,
+   "m": {
+    "n": 30,
+    "mots": "Mes notes Organisé Fait Revérifier le raccord Pas fait 1,2 bar 15.11 0,4 bar 22.11 1/4 Raccord gaz Joint du couvercle Régulateur Fuite au régulateur Raccord changé Aide 1 Ajouter…",
+    "utileY": 90,
+    "barre": 52,
+    "sousBarre": 38,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "paire",
+     "trouve"
+    ],
+    "heros": "Revérifier le raccord"
+   }
+  },
+  "g19-co2-mes-notes": {
+   "ok": true,
+   "m": {
+    "n": 63,
+    "mots": "Mes notes Organisé ZZ TEST CO2 qui baisse vite dans un fût mer. 25 nov. 22:32 Décidé lu par l’IA à 22:32 Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22. Pistes joint du couvercle, raccord gaz ou régulateur. Test à l’eau savonneuse bulles au raccord gaz. Raccord gaz changé, à revérifier dans une semaine. Piste Fuite au régulateur",
+    "utileY": 0,
+    "barre": 52,
+    "sousBarre": -52,
+    "tronq": [],
+    "debord": false,
+    "boosters": [
+     "heros",
+     "paire",
+     "trouve"
+    ],
+    "heros": "Revérifier le raccord"
+   }
+  }
+ },
+ "malt4": {
+  "m": {
+   "n": 39,
+   "mots": "Mes notes Organisé Choisir l’offre Prendre Brouwland total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur conseillé 40 /kg 1.90 1.75 2.10 1.50 inconnu Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "choisir",
+    "jauge",
+    "comparer"
+   ],
+   "heros": "Choisir l’offre"
+  },
+  "fausses": [
+   0,
+   []
+  ],
+  "prendre": {
+   "n": 42,
+   "mots": "Mes notes Organisé choisi Commander chez Brouwland plus tard Rouvrir total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur conseillé 40 /kg 1.90 1.75 2.10 1.50 inconnu Aide 1 Ajouter…",
+   "utileY": 90,
+   "barre": 52,
+   "sousBarre": 38,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "achat",
+    "jauge",
+    "comparer"
+   ],
+   "heros": "Commander chez Brouwland"
+  }
+ },
+ "sansia": {
+  "assurance": {
+   "n": 51,
+   "mots": "Mes notes Organisé IA absente Réessayer À faire lu par l’app Renouveler l’assurance avant le 31 déc. J-36 31 déc. plus tard 4 1 Échéance le 31 déc. 31 déc. J-36 2 Pièces police actuelle, inventaire du matériel, chiffre d’affaires 2026. 3 Demander une offre à un 2e assureur. Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Renouveler l’assurance avant le 31 déc."
+  },
+  "cave": {
+   "n": 56,
+   "mots": "Mes notes Organisé IA absente Réessayer À faire lu par l’app Ranger la cave le samedi 6 déc. au matin. J-11 samedi 6 déc. dimanche plus tard 3 1 À faire trier les cartons vides, monter une étagère, jeter les vieux seaux. 2 Prévu le samedi 6 déc. au matin. samedi 6 déc. J-11 Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Ranger la cave le samedi 6 déc. au matin."
+  },
+  "bouteilles": {
+   "n": 54,
+   "mots": "Mes notes Organisé IA absente Réessayer Daté lu par l’app Besoin avant le 15 du mois J-20 15 déc. 4 1 Verallia 0.42/bt, palette de 1200 min 0.42/bt 1200 min 2 Fournisseur B 0.55/bt par 600, livraison 80 CHF 0.55/bt 80 CHF 3 Occasion sur annonce 0.20/bt, à laver, 400 seulement 0.20/bt Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Besoin avant le 15 du mois"
+  },
+  "co2": {
+   "n": 60,
+   "mots": "Mes notes Organisé IA absente Réessayer Daté lu par l’app Raccord gaz changé, à revérifier dans une semaine. J-7 2 déc. 4 1 Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22. 1,2 bar 0,4 bar 2 Pistes joint du couvercle, raccord gaz ou régulateur. 3 Test à l’eau savonneuse bulles au raccord gaz. Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Raccord gaz changé, à revérifier dans une semaine."
+  },
+  "chaudiere": {
+   "n": 50,
+   "mots": "Mes notes Organisé IA absente Réessayer Daté lu par l’app Brassage IPA prévu demain 7h J-1 demain 7h 2 1 Chaudière s'arrête toute seule, voyant rouge 3 Reset marche 10 min puis recoupe 10 min 4 Technicien numéro sur l'autocollant 5 Plan B décaler au jeudi jeudi J-1 Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Brassage IPA prévu demain 7h"
+  },
+  "citra": {
+   "n": 26,
+   "mots": "Mes notes Organisé IA absente Réessayer 1 motlerhops.fr /collections/tous-nos-houblons/products/citra-us motlerhops.fr 2 brauundrauchshop.ch /citra-136-2 brauundrauchshop.ch 3 Ça semble dur à obtenir sur le site français Aide Ajouter…",
+   "utileY": 88,
+   "barre": 52,
+   "sousBarre": 36,
+   "tronq": [],
+   "debord": false,
+   "boosters": [],
+   "heros": null
+  },
+  "toucher": {
+   "n": 72,
+   "mots": "Mes notes Organisé IA absente Réessayer À faire lu par l’app Ranger la cave le samedi 6 déc. au matin. J-11 samedi 6 déc. dimanche plus tard 3 1 À faire trier les cartons vides, monter une étagère, jeter les vieux seaux. 1 À faire trier les cartons vides, monter une étagère, jeter les vieux seaux. Mes notes 2 Prévu le samedi 6 déc. au matin. samedi 6 déc. J-11 Aide Ajouter…",
+   "utileY": 146,
+   "barre": 52,
+   "sousBarre": 94,
+   "tronq": [],
+   "debord": false,
+   "boosters": [
+    "heros-local"
+   ],
+   "heros": "Ranger la cave le samedi 6 déc. au matin."
+  }
+ },
+ "erreurs": []
+}

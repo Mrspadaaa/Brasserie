@@ -1,0 +1,72 @@
+{
+ "titre": "ZZ TEST — Bar du Centre veut nos bières",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/bar.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "🛢️",
+    "texte": "Assez de fûts",
+    "statut": "a_verifier",
+    "ligne": 4,
+    "citation": "assez de fûts 20 L"
+   },
+   {
+    "emoji": "💶",
+    "texte": "Prix pro",
+    "statut": "a_verifier",
+    "ligne": 2,
+    "citation": "prix pro"
+   }
+  ],
+  "options": [],
+  "tache": {
+   "emoji": "📞",
+   "titre": "Rappeler le gérant",
+   "quand": "lundi",
+   "ligne": 3,
+   "citation": "Rappeler lundi"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🛢️",
+    "valeur": "2 fûts par mois",
+    "label": "Demande",
+    "ligne": 1
+   },
+   {
+    "emoji": "📏",
+    "valeur": "20 L",
+    "label": "/ fût",
+    "ligne": 4
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 3,
+    "mot": "lundi",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "Rappeler",
+    "type": "contacte"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🍻",
+  "categorie": {
+   "nom": "Sans catégorie"
+  },
+  "priorite": "haute",
+  "resume": "Rappeler lundi",
+  "etatPropose": "note",
+  "conseil": "💶 Prépare le prix pro avant lundi.",
+  "genre": "memo"
+ }
+}

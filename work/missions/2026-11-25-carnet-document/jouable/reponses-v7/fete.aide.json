@@ -1,0 +1,22 @@
+{
+ "items": [
+  {
+   "type": "tache",
+   "emoji": "📝",
+   "texte": "Demande l’autorisation",
+   "pourquoi": "débit de boissons sur une fête"
+  },
+  {
+   "type": "check",
+   "emoji": "🧊",
+   "texte": "Vérifie le refroidissement",
+   "pourquoi": "tireuse et fûts en plein juin"
+  },
+  {
+   "type": "suggestion",
+   "emoji": "🍋",
+   "texte": "Une bière sans alcool",
+   "pourquoi": "pour ceux qui conduisent"
+  }
+ ]
+}

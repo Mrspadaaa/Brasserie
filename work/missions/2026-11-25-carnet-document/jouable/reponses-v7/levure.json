@@ -1,0 +1,67 @@
+{
+ "titre": "ZZ TEST — Levure récoltée à tester",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/levure.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "👃",
+    "texte": "Odeur",
+    "statut": "trouve",
+    "ligne": 4,
+    "citation": "Odeur ok"
+   },
+   {
+    "emoji": "🫧",
+    "texte": "Mousse",
+    "statut": "trouve",
+    "ligne": 4,
+    "citation": "pas de mousse bizarre"
+   }
+  ],
+  "options": [],
+  "tache": {
+   "emoji": "🧪",
+   "titre": "Faire un starter",
+   "ligne": 3,
+   "citation": "Faire un starter"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🔁",
+    "valeur": "3e génération",
+    "label": "US-05",
+    "ligne": 1
+   },
+   {
+    "emoji": "❄️",
+    "valeur": "12 jours",
+    "label": "Au frigo",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "12 jours",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🧫",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Fermentation"
+  },
+  "priorite": "normale",
+  "resume": "Faire un starter",
+  "etatPropose": "note",
+  "conseil": "⏳ Si le starter ne part pas, ne l’ensemence pas.",
+  "genre": "memo"
+ }
+}

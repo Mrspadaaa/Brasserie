@@ -1,0 +1,56 @@
+{
+ "titre": "ZZ TEST — ranger la cave",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/cave.json, retouché v7",
+ "reponse": {
+  "pistes": [],
+  "options": [],
+  "tache": {
+   "emoji": "🧹",
+   "titre": "Ranger la cave",
+   "quand": "samedi 6 déc. au matin",
+   "ligne": 2,
+   "citation": "Prévu le samedi 6 déc. au matin"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [
+   {
+    "texte": "Trier les cartons",
+    "ligne": 1,
+    "citation": "trier les cartons vides"
+   },
+   {
+    "texte": "Monter une étagère",
+    "ligne": 1,
+    "citation": "monter une étagère"
+   },
+   {
+    "texte": "Jeter les seaux",
+    "ligne": 1,
+    "citation": "jeter les vieux seaux"
+   }
+  ],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "samedi 6 déc.",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "📦",
+  "categorie": {
+   "nom": "Local",
+   "sous": "Rangement"
+  },
+  "priorite": "haute",
+  "resume": "Samedi 6 déc.",
+  "etatPropose": "note",
+  "conseil": null,
+  "genre": "memo"
+ }
+}

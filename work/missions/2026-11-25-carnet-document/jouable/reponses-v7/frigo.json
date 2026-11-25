@@ -1,0 +1,138 @@
+{
+ "titre": "ZZ TEST — frigo de garde en panne",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : jouable/reponses/zz-frigo-de-garde-en.json, complété v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "⚙️",
+    "texte": "Compresseur",
+    "statut": "trouve",
+    "ligne": 3,
+    "citation": "compresseur HS"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🔧",
+    "titre": "Réparer",
+    "cout": "480 CHF",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "réparation 480 CHF",
+    "conseille": false
+   },
+   {
+    "emoji": "🆕",
+    "titre": "Frigo neuf",
+    "cout": "1 200 CHF",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "frigo neuf 1 200 CHF",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "⚖️",
+   "titre": "Comparer les devis",
+   "quand": "avant décembre",
+   "ligne": 4,
+   "citation": "Devis à comparer avant décembre."
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🌡️",
+    "valeur": "14 °C",
+    "label": "visé 2",
+    "ligne": 1
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [
+   {
+    "emoji": "🛢️",
+    "texte": "Fûts déplacés",
+    "ligne": 2,
+    "citation": "Fûts déplacés"
+   }
+  ],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "Le 21 nov.",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "480 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "1 200 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 4,
+    "mot": "avant décembre",
+    "type": "date"
+   }
+  ],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix",
+    "⏱️ Délai"
+   ],
+   "articles": [
+    {
+     "nom": "Réparer",
+     "ligne": 3,
+     "citation": "réparation 480 CHF",
+     "valeurs": [
+      {
+       "texte": "480 CHF",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "ia"
+      }
+     ]
+    },
+    {
+     "nom": "Frigo neuf",
+     "ligne": 3,
+     "citation": "frigo neuf 1 200 CHF",
+     "valeurs": [
+      {
+       "texte": "1 200 CHF",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "ia"
+      }
+     ]
+    }
+   ],
+   "gagnant": [
+    0,
+    null
+   ],
+   "compromis": "Réparer : 720 CHF de moins, durée de vie inconnue."
+  },
+  "resolu": null,
+  "emoji": "🧊",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Froid"
+  },
+  "priorite": "haute",
+  "resume": "Comparer les devis",
+  "etatPropose": "cherche",
+  "genre": "probleme",
+  "conseil": "❄️ Demande combien de temps tient le compresseur réparé."
+ }
+}

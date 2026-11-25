@@ -1,0 +1,98 @@
+{
+ "titre": "ZZ TEST — écoulement qui fuit",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/ecoulement.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "🔩",
+    "texte": "Joint du siphon",
+    "statut": "trouve",
+    "ligne": 2,
+    "citation": "joint du siphon trouvé usé"
+   },
+   {
+    "emoji": "🧱",
+    "texte": "Sous la dalle",
+    "statut": "pas_trouve",
+    "ligne": 2,
+    "citation": "fuite sous la dalle, pas trouvée"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🧰",
+    "titre": "Sanitaire entreprise X",
+    "cout": "150 CHF",
+    "source": "notes",
+    "ligne": 5,
+    "citation": "Estimation 150 CHF",
+    "conseille": true
+   },
+   {
+    "emoji": "🔧",
+    "titre": "Changer le joint",
+    "cout": "?",
+    "source": "ia",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "📞",
+   "titre": "Contacter entreprise X",
+   "ligne": 3,
+   "citation": "Contacter l’entreprise X"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "💰",
+    "valeur": "150 CHF",
+    "label": "Estimation",
+    "ligne": 5
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "trouvé usé",
+    "type": "piste"
+   },
+   {
+    "ligne": 2,
+    "mot": "pas trouvée",
+    "type": "pas_trouve"
+   },
+   {
+    "ligne": 3,
+    "mot": "Contacter",
+    "type": "contacte"
+   },
+   {
+    "ligne": 4,
+    "mot": "Devis attendu",
+    "type": "devis"
+   },
+   {
+    "ligne": 5,
+    "mot": "150 CHF",
+    "type": "montant"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "💧",
+  "categorie": {
+   "nom": "Local",
+   "sous": "Eau"
+  },
+  "priorite": "normale",
+  "resume": "Devis attendu",
+  "etatPropose": "cherche",
+  "conseil": "🔍 Demande si le joint suffit avant le devis.",
+  "genre": "probleme"
+ }
+}

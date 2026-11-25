@@ -1,0 +1,196 @@
+{
+ "titre": "ZZ TEST — 600 bouteilles 33 cl",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/bouteilles.json, retouché v7",
+ "reponse": {
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "🏭",
+    "titre": "Verallia",
+    "cout": "0.42/bt",
+    "source": "notes",
+    "ligne": 1,
+    "citation": "0.42/bt",
+    "conseille": false
+   },
+   {
+    "emoji": "🚚",
+    "titre": "Fournisseur B",
+    "cout": "0.55/bt",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "0.55/bt par 600",
+    "conseille": true
+   },
+   {
+    "emoji": "♻️",
+    "titre": "Occasion",
+    "cout": "0.20/bt",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "0.20/bt",
+    "conseille": false
+   }
+  ],
+  "tache": null,
+  "echeance": {
+   "quand": "avant le 15 du mois",
+   "quoi": "Avoir les bouteilles",
+   "ligne": 4
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🍾",
+    "valeur": "1200",
+    "label": "Minimum Verallia",
+    "ligne": 1
+   },
+   {
+    "emoji": "🚚",
+    "valeur": "80 CHF",
+    "label": "Livraison B",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "0.42/bt",
+    "type": "montant"
+   },
+   {
+    "ligne": 2,
+    "mot": "80 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "0.20/bt",
+    "type": "montant"
+   },
+   {
+    "ligne": 4,
+    "mot": "avant le 15 du mois",
+    "type": "date"
+   }
+  ],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix/bt",
+    "📦 Quantité",
+    "🚚 Livraison",
+    "🧽 État"
+   ],
+   "articles": [
+    {
+     "nom": "Verallia",
+     "ligne": 1,
+     "citation": "Verallia",
+     "valeurs": [
+      {
+       "texte": "0.42/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "1200 min",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "0.42/bt",
+      "min": "1200 min"
+     }
+    },
+    {
+     "nom": "Fournisseur B",
+     "ligne": 2,
+     "citation": "Fournisseur B",
+     "valeurs": [
+      {
+       "texte": "0.55/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "par 600",
+       "source": "notes"
+      },
+      {
+       "texte": "80 CHF",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "0.55/bt",
+      "livraison": "livraison 80 CHF"
+     }
+    },
+    {
+     "nom": "Occasion",
+     "ligne": 3,
+     "citation": "Occasion sur annonce",
+     "valeurs": [
+      {
+       "texte": "0.20/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "400 seulement",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "à laver",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "0.20/bt",
+      "max": "400 seulement"
+     }
+    }
+   ],
+   "gagnant": [
+    2,
+    1,
+    null,
+    null
+   ],
+   "compromis": "B : 600 pile, mais le plus cher.",
+   "besoin": {
+    "quantite": 600,
+    "ligne": 0,
+    "citation": "600 bouteilles"
+   }
+  },
+  "resolu": null,
+  "emoji": "🍾",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Conditionnement"
+  },
+  "priorite": "normale",
+  "resume": "Choisir une offre",
+  "etatPropose": "cherche",
+  "conseil": "⚖️ Seul B livre 600 pile.",
+  "genre": "achat"
+ }
+}

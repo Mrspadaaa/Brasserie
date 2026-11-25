@@ -1,0 +1,51 @@
+{
+  "_note": "Cas fictifs écrits par le pilote le 25.11 soir pour éprouver les variantes ; jamais montrés aux concepteurs avant le tour 1. Notes courtes, comme il les écrit.",
+  "cas": [
+    {
+      "titre": "ZZ TEST — Chaudière en panne jour de brassage",
+      "lignes": [
+        "Chaudière s'arrête toute seule, voyant rouge",
+        "Brassage IPA prévu demain 7h",
+        "Reset marche 10 min puis recoupe",
+        "Technicien ? numéro sur l'autocollant",
+        "Plan B : décaler au jeudi ?"
+      ]
+    },
+    {
+      "titre": "ZZ TEST — Idée bière au sureau",
+      "lignes": [
+        "Sureau en fleur fin mai, cueillir au bord de la forêt",
+        "Base blonde légère 4.5%",
+        "Infuser les fleurs en fin d'ébullition ou à froid ?",
+        "Goûter celle de la brasserie voisine"
+      ]
+    },
+    {
+      "titre": "ZZ TEST — 600 bouteilles 33 cl",
+      "lignes": [
+        "Verallia : 0.42/bt, palette de 1200 min",
+        "Fournisseur B : 0.55/bt par 600, livraison 80 CHF",
+        "Occasion sur annonce : 0.20/bt, à laver, 400 seulement",
+        "Besoin avant le 15 du mois"
+      ]
+    },
+    {
+      "titre": "ZZ TEST — Bar du Centre veut nos bières",
+      "lignes": [
+        "Rencontré le gérant samedi, veut 2 fûts par mois",
+        "Il demande un prix pro",
+        "Rappeler lundi",
+        "Vérifier si on a assez de fûts 20 L"
+      ]
+    },
+    {
+      "titre": "ZZ TEST — Levure récoltée à tester",
+      "lignes": [
+        "Levure récoltée du fermenteur 2 (US-05), 3e génération",
+        "Gardée au frigo depuis 12 jours",
+        "Faire un starter avant d'ensemencer",
+        "Odeur ok, pas de mousse bizarre"
+      ]
+    }
+  ]
+}

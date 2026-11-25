@@ -1,0 +1,66 @@
+{
+ "ZZ TEST — assurance à renouveler": {
+  "rep": "assurance.json"
+ },
+ "ZZ TEST — Bar du Centre veut nos bières": {
+  "rep": "bar.json"
+ },
+ "ZZ TEST — 600 bouteilles 33 cl": {
+  "rep": "bouteilles.json"
+ },
+ "ZZ TEST — ranger la cave": {
+  "rep": "cave.json"
+ },
+ "ZZ TEST — Chaudière en panne jour de brassage": {
+  "rep": "chaudiere.json"
+ },
+ "ZZ TEST — Houblons citra": {
+  "rep": "citra.json"
+ },
+ "ZZ TEST — CO2 qui baisse vite dans un fût": {
+  "rep": "co2.json"
+ },
+ "ZZ TEST — écoulement qui fuit": {
+  "rep": "ecoulement.json",
+  "aide": "ecoulement.aide.json"
+ },
+ "ZZ TEST — fête de la bière en juin": {
+  "rep": "fete.json",
+  "aide": "fete.aide.json"
+ },
+ "ZZ TEST — Levure récoltée à tester": {
+  "rep": "levure.json"
+ },
+ "ZZ TEST — malt pilsner en rupture chez le fournisseur": {
+  "rep": "pilsner.json"
+ },
+ "ZZ TEST — Idée bière au sureau": {
+  "rep": "sureau.json"
+ },
+ "ZZ TEST — frigo de garde en panne": {
+  "rep": "frigo.json",
+  "aide": "frigo.aide.json"
+ },
+ "ZZ TEST — inspection électrique, fusible": {
+  "rep": "inspection.json"
+ },
+ "ZZ TEST — levure lente à démarrer": {
+  "rep": "levure-lente.json"
+ },
+ "ZZ TEST — odeur de soufre dans un lot": {
+  "rep": "odeur.json"
+ },
+ "ZZ TEST — pompe qui chauffe": {
+  "rep": "pompe.json"
+ },
+ "ZZ TEST — trop de vapeur au brassage": {
+  "rep": "vapeur.json",
+  "aide": "vapeur.aide.json"
+ },
+ "ZZ TEST — Embouteillage — station complète (2027)": {
+  "rep": "embouteillage.json"
+ },
+ "ZZ TEST — 50 kg de malt, 4 offres": {
+  "rep": "malt4.json"
+ }
+}

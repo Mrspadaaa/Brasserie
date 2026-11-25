@@ -1,0 +1,188 @@
+{
+ "titre": "ZZ TEST — 50 kg de malt, 4 offres",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : écrit pour le banc (4 offres)",
+ "reponse": {
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "🏭",
+    "titre": "Malterie A",
+    "cout": "1.90/kg",
+    "source": "notes",
+    "ligne": 1,
+    "citation": "Malterie A",
+    "conseille": false
+   },
+   {
+    "emoji": "🌀",
+    "titre": "Moulin B",
+    "cout": "1.75/kg",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "Moulin B",
+    "conseille": false
+   },
+   {
+    "emoji": "🏪",
+    "titre": "Brouwland",
+    "cout": "2.10/kg",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "Brouwland",
+    "conseille": false
+   },
+   {
+    "emoji": "🍺",
+    "titre": "Voisin brasseur",
+    "cout": "1.50/kg",
+    "source": "notes",
+    "ligne": 4,
+    "citation": "Voisin brasseur",
+    "conseille": true
+   }
+  ],
+  "tache": null,
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "30 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "15 CHF",
+    "type": "montant"
+   }
+  ],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix/kg",
+    "📦 Quantité",
+    "🚚 Livraison"
+   ],
+   "besoin": {
+    "quantite": 50,
+    "ligne": 0,
+    "citation": "50 kg"
+   },
+   "articles": [
+    {
+     "nom": "Malterie A",
+     "ligne": 1,
+     "citation": "Malterie A",
+     "valeurs": [
+      {
+       "texte": "1.90/kg",
+       "source": "notes"
+      },
+      {
+       "texte": "sac de 25 kg",
+       "source": "notes"
+      },
+      {
+       "texte": "30 CHF",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "1.90/kg",
+      "livraison": "livraison 30 CHF"
+     }
+    },
+    {
+     "nom": "Moulin B",
+     "ligne": 2,
+     "citation": "Moulin B",
+     "valeurs": [
+      {
+       "texte": "1.75/kg",
+       "source": "notes"
+      },
+      {
+       "texte": "100 kg min",
+       "source": "notes"
+      },
+      {
+       "texte": "offerte",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "1.75/kg",
+      "min": "100 kg min",
+      "livraison": "livraison offerte"
+     }
+    },
+    {
+     "nom": "Brouwland",
+     "ligne": 3,
+     "citation": "Brouwland",
+     "valeurs": [
+      {
+       "texte": "2.10/kg",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "15 CHF",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "2.10/kg",
+      "livraison": "livraison 15 CHF"
+     }
+    },
+    {
+     "nom": "Voisin brasseur",
+     "ligne": 4,
+     "citation": "Voisin brasseur",
+     "valeurs": [
+      {
+       "texte": "1.50/kg",
+       "source": "notes"
+      },
+      {
+       "texte": "40 kg seulement",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ],
+     "offre": {
+      "prix": "1.50/kg",
+      "max": "40 kg seulement"
+     }
+    }
+   ],
+   "gagnant": [
+    3,
+    null,
+    1
+   ],
+   "compromis": "Brouwland : 50 kg pile, livraison comprise au plus bas."
+  },
+  "resolu": null,
+  "emoji": "🌾",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Matières premières"
+  },
+  "priorite": "normale",
+  "resume": "Choisir une offre",
+  "etatPropose": "cherche",
+  "genre": "achat",
+  "conseil": "🌾 Le voisin n’a que 40 kg : il en manque 10."
+ }
+}

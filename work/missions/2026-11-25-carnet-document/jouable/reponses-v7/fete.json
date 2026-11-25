@@ -1,0 +1,88 @@
+{
+ "titre": "ZZ TEST — fête de la bière en juin",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/fete.json, retouché v7",
+ "reponse": {
+  "pistes": [],
+  "options": [],
+  "tache": {
+   "emoji": "🎟️",
+   "titre": "Réserver le stand",
+   "quand": "avant mars",
+   "ligne": 3,
+   "citation": "stand à réserver avant mars"
+  },
+  "echeance": {
+   "quand": "avant mars",
+   "quoi": "Réserver le stand",
+   "ligne": 3
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "💰",
+    "valeur": "1 500 CHF",
+    "label": "Budget",
+    "ligne": 3
+   },
+   {
+    "emoji": "🍺",
+    "valeur": "3 bières",
+    "label": "Pression",
+    "ligne": 1
+   },
+   {
+    "emoji": "🛢️",
+    "valeur": "10 fûts",
+    "label": "Fûts",
+    "ligne": 2
+   }
+  ],
+  "liste": [
+   {
+    "texte": "Tireuse",
+    "ligne": 2,
+    "citation": "tireuse"
+   },
+   {
+    "texte": "2 tonnelles",
+    "ligne": 2,
+    "citation": "2 tonnelles"
+   },
+   {
+    "texte": "Gobelets consignés",
+    "ligne": 2,
+    "citation": "gobelets consignés"
+   },
+   {
+    "texte": "10 fûts",
+    "ligne": 2,
+    "citation": "10 fûts"
+   }
+  ],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 3,
+    "mot": "1 500 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "avant mars",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🎪",
+  "categorie": {
+   "nom": "Événements"
+  },
+  "priorite": "normale",
+  "resume": "Réserver le stand",
+  "etatPropose": "note",
+  "conseil": "🍋 Choisis la blanche tôt pour la brasser à temps.",
+  "genre": "planning"
+ }
+}

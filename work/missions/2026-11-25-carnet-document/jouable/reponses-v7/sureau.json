@@ -1,0 +1,65 @@
+{
+ "titre": "ZZ TEST — Idée bière au sureau",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/sureau.json, retouché v7",
+ "reponse": {
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "♨️",
+    "titre": "Fin d’ébullition",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "en fin d'ébullition",
+    "conseille": false
+   },
+   {
+    "emoji": "❄️",
+    "titre": "À froid",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "à froid",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "🍺",
+   "titre": "Goûter la voisine",
+   "ligne": 4,
+   "citation": "Goûter celle de la brasserie voisine"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🍺",
+    "valeur": "4.5%",
+    "label": "Base blonde",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "fin mai",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🌼",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Brassage"
+  },
+  "priorite": "basse",
+  "resume": "Goûter la voisine",
+  "etatPropose": "note",
+  "conseil": "🧪 Essaie les deux infusions sur un petit lot.",
+  "genre": "idee"
+ }
+}

@@ -1,0 +1,87 @@
+{
+ "titre": "ZZ TEST — Chaudière en panne jour de brassage",
+ "ecritPar": "concepteur (Opus), à la main ; aucun appel IA. Source : visuel/reponses/chaudiere.json, retouché v7",
+ "reponse": {
+  "pistes": [
+   {
+    "emoji": "🔴",
+    "texte": "Voyant rouge",
+    "statut": "a_verifier",
+    "ligne": 1,
+    "citation": "voyant rouge"
+   },
+   {
+    "emoji": "🔁",
+    "texte": "Reset 10 min",
+    "statut": "a_verifier",
+    "ligne": 3,
+    "citation": "Reset marche 10 min puis recoupe"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🧑‍🔧",
+    "titre": "Technicien",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 4,
+    "citation": "Technicien ?",
+    "conseille": true
+   },
+   {
+    "emoji": "📅",
+    "titre": "Décaler au jeudi",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 5,
+    "citation": "décaler au jeudi",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "📞",
+   "titre": "Appeler le technicien",
+   "ligne": 4,
+   "citation": "numéro sur l'autocollant"
+  },
+  "echeance": {
+   "quand": "demain 7h",
+   "quoi": "Brassage IPA",
+   "ligne": 2
+  },
+  "periode": null,
+  "chiffres": [],
+  "liste": [],
+  "retenir": [],
+  "faits": [],
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "demain 7h",
+    "type": "date"
+   },
+   {
+    "ligne": 4,
+    "mot": "Technicien",
+    "type": "contacte"
+   },
+   {
+    "ligne": 5,
+    "mot": "jeudi",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "resolu": null,
+  "emoji": "🔥",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Brassage"
+  },
+  "priorite": "haute",
+  "resume": "Appeler le technicien",
+  "etatPropose": "cherche",
+  "conseil": "📸 Note le code du voyant avant d’appeler.",
+  "genre": "probleme"
+ }
+}

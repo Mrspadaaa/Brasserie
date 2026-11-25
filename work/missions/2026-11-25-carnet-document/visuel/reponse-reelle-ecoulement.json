@@ -1,0 +1,17 @@
+{
+  "carnetTitre": "ZZ TEST — Écoulement qui fuit",
+  "citationsFausses": 0,
+  "erreurs": [],
+  "lignes": [
+    "L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.",
+    "Pistes : joint du siphon trouvé usé",
+    "fuite sous la dalle, pas trouvée.",
+    "Contacter l’entreprise X (exemple) pour un sanitaire.",
+    "Devis attendu.",
+    "Estimation 150 CHF (exemple).test"
+  ],
+  "msTemps": 6307,
+  "quand": "2026-11-25T19:32:36.952Z",
+  "refus": [],
+  "reponse": "{\"etatPropose\":\"cherche\",\"pistes\":[{\"texte\":\"Joint du siphon usé\",\"statut\":\"trouve\",\"ligne\":2,\"citation\":\"joint du siphon trouvé usé\"},{\"texte\":\"Fuite sous la dalle écartée pour l'instant\",\"statut\":\"pas_trouve\",\"ligne\":3,\"citation\":\"fuite sous la dalle, pas trouvée\"}],\"options\":[{\"titre\":\"Attendre le devis de l'entreprise X\",\"cout\":\"150 CHF estimés\",\"source\":\"notes\",\"ligne\":6,\"citation\":\"Estimation 150 CHF\",\"conseille\":true},{\"titre\":\"Remplacer le joint du siphon\",\"cout\":\"?\",\"source\":\"ia\",\"conseille\":false}],\"tache\":{\"titre\":\"Contacter l'entreprise X\",\"ligne\":4,\"citation\":\"Contacter l’entreprise X\"},\"conseil\":\"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l'entreprise X de confirmer que le joint est la seule cause avant de valider le devis.\",\"resolu\":null,\"lectures\":[{\"ligne\":2,\"mot\":\"joint du siphon trouvé usé\",\"type\":\"piste\"},{\"ligne\":3,\"mot\":\"pas trouvée\",\"type\":\"pas_trouve\"},{\"ligne\":4,\"mot\":\"Contacter\",\"type\":\"contacte\"},{\"ligne\":5,\"mot\":\"Devis attendu\",\"type\":\"devis\"},{\"ligne\":6,\"mot\":\"150 CHF\",\"type\":\"montant\"}],\"comparaison\":null,\"genre\":\"probleme\"}"
+}
