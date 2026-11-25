@@ -126,28 +126,50 @@ export interface ResumeJetons {
   devis: { n: number; centimes?: number } | null;
   /** « ≈ total » des coûts connus (devis et coûts écrits, en francs) ; `null` s'il n'y a pas au moins deux montants à additionner. */
   total: { centimes: number; n: number } | null;
+  /** C67-4 : des montants de plusieurs options ALTERNATIVES (l'une OU l'autre) ne s'additionnent pas : la fourchette des options, du plus bas au plus haut ; `null` sinon. */
+  fourchette?: { min: number; max: number; n: number } | null;
 }
 
 /** Ce que le fil a compté : « cause » est un trouvé ; un montant dans une autre devise n'entre pas dans le total (rien n'est converti en silence). */
-export function resumeJetons(messages: readonly MessageDoc[], carnetId: string): ResumeJetons | null {
+export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, retenueId?: string): ResumeJetons | null {
   let trouve = 0, pas = 0;
   const devis: Etiquette[] = [];
   const montants: number[] = [];
+  /* les montants par option (clé vide : aucune option visée) : deux options sont deux façons de faire la même chose, jamais deux coûts cumulés */
+  const parOption = new Map<string, number[]>();
   for (const m of messages) {
     for (const e of m.carnetMessage.etiquettes ?? []) {
       if (e.carnetId !== carnetId) continue;
       if (e.sorte === 'trouve' || e.sorte === 'cause') trouve += 1;
       else if (e.sorte === 'pas-trouve') pas += 1;
       else if (e.sorte === 'devis') devis.push(e);
-      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && (e.devise ?? 'CHF') === 'CHF') montants.push(e.montantCentimes);
+      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && (e.devise ?? 'CHF') === 'CHF') {
+        montants.push(e.montantCentimes);
+        parOption.set(e.optionId ?? '', [...(parOption.get(e.optionId ?? '') ?? []), e.montantCentimes]);
+      }
     }
   }
   if (!trouve && !pas && !devis.length && !montants.length) return null;
+  const somme = (l: readonly number[]) => l.reduce((s, x) => s + x, 0);
+  const optionsChiffrees = [...parOption.keys()].filter(k => k !== '');
+  let total: ResumeJetons['total'] = montants.length >= 2 ? { centimes: somme(montants), n: montants.length } : null;
+  let fourchette: ResumeJetons['fourchette'] = null;
+  if (optionsChiffrees.length >= 2) {
+    /* l'option retenue dit le coût ; sinon, les pistes ne se cumulent pas : leur fourchette */
+    const gardee = retenueId ? parOption.get(retenueId) : undefined;
+    if (gardee) total = { centimes: somme([...gardee, ...(parOption.get('') ?? [])]), n: gardee.length + (parOption.get('')?.length ?? 0) };
+    else {
+      total = null;
+      const parPiste = optionsChiffrees.map(k => somme(parOption.get(k)!));
+      const min = Math.min(...parPiste), max = Math.max(...parPiste);
+      fourchette = { min, max, n: parPiste.length };
+    }
+  }
   const unSeul = devis.length === 1 && devis[0].montantCentimes !== undefined && (devis[0].devise ?? 'CHF') === 'CHF';
   return {
     trouve, pasTrouve: pas,
     devis: devis.length ? { n: devis.length, ...(unSeul ? { centimes: devis[0].montantCentimes } : {}) } : null,
-    total: montants.length >= 2 ? { centimes: montants.reduce((s, x) => s + x, 0), n: montants.length } : null
+    total, fourchette
   };
 }
 
@@ -222,7 +244,8 @@ export function texteFermeture(c: CarnetDoc): string | null {
   return par.texte ? `Fermé : ${par.texte}` : null;
 }
 
-export interface OptionFermee { id: string; nom: string; texte: string }
+/** `raison` : ce qu'il a dit en l'écartant (C67-5, maquette v01-resolu) ; absente pour « pas pris » (la fermeture n'est pas un « non » de lui) et quand elle répète seulement « non ». */
+export interface OptionFermee { id: string; nom: string; texte: string; raison?: string }
 
 /**
  * Les options qui n'ont pas été prises, avec leur raison, en jeton d'état comme la grille (« pas pris », comme « retenu » ou « écarté » : un mot d'état,
@@ -237,7 +260,8 @@ export function optionsFermees(c: CarnetDoc, annee?: number): OptionFermee[] {
     if ((dernier?.raison ?? f.raison ?? '').trim().toLowerCase() === 'pas pris') return { id: f.id, nom: f.nom, texte: 'pas pris' };
     const jour = dernier?.le ? libelleJour(jourLocal(dernier.le), annee) : null;
     const fois = foisEcartee(f);
-    return { id: f.id, nom: f.nom, texte: `non${jour ? `, ${jour}` : ''}${fois >= 2 ? ` · ${rangEn(fois)} fois` : ''}` };
+    const raison = (dernier?.raison ?? f.raison ?? '').trim();
+    return { id: f.id, nom: f.nom, texte: `non${jour ? `, ${jour}` : ''}${fois >= 2 ? ` · ${rangEn(fois)} fois` : ''}`, ...(raison && plier(raison) !== 'non' ? { raison } : {}) };
   });
 }
 

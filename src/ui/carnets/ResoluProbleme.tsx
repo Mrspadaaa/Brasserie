@@ -57,7 +57,9 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
   const fermeture = texteFermeture(c);
   const fermees = optionsFermees(c, annee);
   const { tuiles } = resolusDe(carnets, messages, annee);
-  const plan = destinationPlan(liens);
+  /* C67-5 (maquette v01-resolu) : un problème résolu autrement que par un achat (réparation, geste, texte) est lui-même un réalisé : « ira dans Réalisés ».
+     Fermé par un achat, c'est le plan de l'achat qui y va : sans plan lié, rien ne se dit (D451, carnetsProblemeEcran). Un plan déjà réalisé le dit au présent. */
+  const plan = destinationPlan(liens) ?? (resolu?.par?.sorte === 'achat' ? null : 'ira');
   const cat = categorieDe(c);
   const photoApres = av?.apres, photoAvant = av?.avant;
   const jourApres = jourPhoto(photoApres) ?? (resolu ? libelleJour(jourLocal(resolu.le), annee) : null);
@@ -92,6 +94,7 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
               <li key={o.id}>
                 <VignetteObjet photo={c.carnet.articles.find(a => a.faconId === o.id && a.photo)?.photo} mots={[o.nom, c.title]} classe="cnp-opt-vignette" taille={28} />
                 <span className="cn-sp">{o.nom}</span><span className="cnp-jeton" data-j="ecart">{o.texte}</span>
+                {o.raison && <span className="cn-mut cnp-raison">« {o.raison} »</span>}
               </li>
             ))}
           </ul>

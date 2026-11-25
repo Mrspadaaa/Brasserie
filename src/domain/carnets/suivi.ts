@@ -229,6 +229,8 @@ function appliquerOption(c: CarnetDoc, s: SuiviCarnet, f: Facon, vers: EtatOptio
   f.suivi.etat = vers;
   f.etat = vers === 'retenue' ? 'retenue' : vers === 'ecartee' ? 'ecartee' : 'ouverte';
   if (vers === 'ecartee' && a.raison) f.raison = a.raison;
+  /* C67-7 : la raison d'un écart se dit avec l'écart seulement ; l'option reprise (retenue, piste, veille) ne la garde pas (elle reste dans son historique) */
+  if (vers !== 'ecartee' && avant === 'ecartee') delete f.raison;
   ajouterEvenement(s, sansIndefinis({ id: idEvenement(), le: a.le, sorte: vers === 'veille' || avant === 'veille' ? 'veille' : 'option', optionId: f.id, de: avant, vers, raison: a.raison, origine: a.origine }));
   return true;
 }

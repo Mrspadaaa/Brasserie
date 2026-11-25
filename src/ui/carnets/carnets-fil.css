@@ -308,3 +308,5 @@ span.cnp-tuile { cursor: default; }
   .cnp-b { max-width: 480px; }
   .cnp-photo { max-width: 360px; }
 }
+.cnp-fermees li { flex-wrap: wrap; }
+.cnp-fermees .cnp-raison { flex: 1 0 100%; padding-left: 36px; font-size: 12px; line-height: 1.3; overflow-wrap: anywhere; }

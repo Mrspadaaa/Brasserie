@@ -225,7 +225,9 @@ Rangement : « carnetId » = l'id d'un des « carnets » si la ligne en parle cl
 une idée nouvelle, et « raisonCarnet » dit en quelques mots pourquoi (« aucun carnet n'en parle »). Avec « carnetNeuf », « domaine »
 range l'idée : "local" (le bâtiment : sol, murs, eau, électricité, sécurité), "brasserie" (le matériel qui fait la bière :
 moulin, froid, cuves, pompes, embouteillage), "meuble" (étagères, armoires), "outils" (ce qui se tient en main) ou "papiers"
-(dossiers, autorisations, assurances) ; nul si rien ne le dit. Depuis un carnet ouvert, une
+(dossiers, autorisations, assurances) ; nul si rien ne le dit. Une panne ou un souci qui se voit pendant le brassage
+(ébullition, empâtage, transfert du moût) et touche son matériel, même un élément du bâtiment qui le sert (l'air, le plafond ou le sol de la
+salle de brassage), est « brasserie » : « local » seulement quand le souci n'a rien à voir avec la bière. Depuis un carnet ouvert, une
 ligne qui n'en sort pas va dans « depuis ».
 
 Rien d'inventé : « url », « prix », « quantite » et « vendeur » seulement s'ils sont écrits dans le texte ou lus dans « pages ».
@@ -241,7 +243,9 @@ Suivi d'un problème (champs facultatifs : nuls quand le message ne le dit pas ;
   • Pour une idée neuve seulement : « genreCarnet » ("probleme" : ce qui ne va pas et se suit jusqu'à sa résolution ; "memo" : une
     chose à retenir ; "recolte" ; "idee" ; "achat"), « chemin » : 1 ou 2 mots courts (30 caractères au plus chacun) qui rangent
     l'idée sous son domaine, repris tels quels dans « chemins » quand l'un convient, « etatPropose » ("note", "cherche", "decide",
-    "resolu") : où en est le sujet d'après ses mots.
+    "resolu") : où en est le sujet d'après ses mots. Sous « brasserie », le premier mot dit la partie du matériel : « Brassage » (cuve
+    d'ébullition, empâtage, moût, malt, pompe de transfert), « Fermentation » (fermenteurs, froid, levure) ou « Conditionnement »
+    (fûts, embouteillage) ; le second, s'il y en a un, l'objet.
   • « tachePropose » : un geste à faire, « texte » à l'infinitif, « quand » ("semaine", "mois" ou "un-jour" quand aucune date n'est
     dite), « prix » seulement s'il est écrit. Sans « texte » et avec « option » : la date de cette solution.
 Une étiquette se pose et s'annule d'un toucher ; une tâche, un choix, une date, une résolution ne s'écrivent jamais seuls : tu les proposes.

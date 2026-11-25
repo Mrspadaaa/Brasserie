@@ -104,6 +104,8 @@ export interface CarnetOuvertProps {
   onDater?: (lundi: string | null, precision?: 'semaine' | 'mois') => void;
   /** D437 : un toucher sur la pastille pose le domaine du carnet (son choix passe avant celui de l'IA). */
   onDomaine?: (d: import('../../domain/carnets/domaines').DomaineCarnet) => void;
+  /** C67-12 : un toucher sur un sous-domaine du menu pose le domaine et la catégorie (`chemin`) d'un coup ; sans `chemin`, comme `onDomaine`. */
+  onRanger?: (d: import('../../domain/carnets/domaines').DomaineCarnet, chemin?: string[]) => void;
   /** K2 (côté Carnet) : « Au calendrier › », la chose posée à aujourd'hui si elle n'a pas de date, puis la bascule au Calendrier. */
   onAuCalendrier?: () => void;
   /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */

@@ -2,7 +2,7 @@
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
 import type { SuiviLectures } from '../../domain/carnets/lecture';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
-import { appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
+import { appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, etiquettesLocales, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
 import { pourIASuivi, suiviDesLignes, type LigneCarnet } from '../../domain/carnets/ia';
@@ -93,6 +93,9 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
   }
   return ecritures.length ? { ecritures, inverse } : null;
 }
+
+/** C67-2 : au-delà, une phrase n'est plus un titre. */
+const TITRE_MAX = 60;
 
 /** Appelé dans le `useMemo` du conteneur, avec les mêmes dépendances : le rangement est recréé quand elles changent, jamais autrement. */
 export function creerRangementCarnets(x: RangementV) {
@@ -401,6 +404,13 @@ export function creerRangementCarnets(x: RangementV) {
       }
       /* D451 : ce que l'IA dit du suivi (jetons, cartes « OK · Non », catégorie d'une idée neuve) s'écrit dans la même écriture annulable ; elle
          n'écrit jamais d'état, de choix, de date ni de tâche seule, et MESSAGE-RESTE-DANS-SON-CARNET devient « Rattacher à … ? » */
+      /* C67-2 (maquette v01-saisie : « titre court proposé ») : une phrase de plus de 60 caractères n'est pas un titre. Pour un PROBLÈME que ce message vient de
+         créer, le titre court que l'IA propose le remplace tout de suite (la phrase reste dans le carnet, `renommer` garde l'ancien titre) ; sinon la règle
+         « votre phrase en titre » reste (une idée, une phrase courte). */
+      if (an?.sorte === 'cree' && propose && an.titre.length > TITRE_MAX && propose.titre.length <= TITRE_MAX && lignes.some(l => l.genreCarnet === 'probleme')) {
+        const rn = appliquer(renommer(vu, { carnetId: propose.carnetId, titre: propose.titre, messageId }));
+        if (rn) { fait.inverse.unshift(...rn.inverse); vu = appliquerEcritures(vu, rn.ecritures); }
+      }
       const suiviIA = poserSuiviIA(vu, { messageId, lignes, depuis, le: maintenant().toISOString(), cibleDe: l => vers.get(l) ?? l.carnetId });
       if (suiviIA) {
         const g = appliquer({ ok: true, ecritures: suiviIA.ecritures, inverse: suiviIA.inverse, avis: 'Suivi posé' });

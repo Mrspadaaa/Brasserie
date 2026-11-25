@@ -5,6 +5,7 @@ import type React from 'react';
 import type { CarnetDoc } from '../../domain/carnets/modele';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
   poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+import { poserRangement } from '../../domain/carnets/arbre';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, type LigneLocale } from '../../domain/carnets/analyseLocale';
 import { carnetProche } from '../../domain/carnets/rattacher';
@@ -255,6 +256,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
         {...(sortieFinie(c) ? {} : { onAuCalendrier: () => void auCalendrier(c) })}
         prix={{ centimes: prixDuCarnet(c), choisi: prixEstChoisi(c, prixDuCarnet(c)), semblable: prixSemblable({ nom: c.title }, achatsPasses), propose: prixPropose(c) }}
         onDomaine={d => { appliquer(poserDomaine(magasin.lire(), { carnetId: c.id, domaine: d })); }}
+        onRanger={(d, chemin) => { appliquer(poserRangement(magasin.lire(), { carnetId: c.id, domaine: d, ...(chemin ? { chemin } : {}) })); }}
         onPrix={x => {
           const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' });
           /* L-11 : le prix posé au carnet est celui de son plan (À venir, Calendrier) ; CA13-3 : archivé aussi */

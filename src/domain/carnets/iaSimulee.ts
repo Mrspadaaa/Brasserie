@@ -14,6 +14,7 @@ import { fixtureCarnets } from './fixture';
 import { prixLus, sansLiensNiPrix, titreNeufDe, type CarnetDoc } from './modele';
 import { etiquettesLocales, extraireCriteres, genreDEtiquette, genreLocal, jetons as jetonsLocaux, mettreEnForme, objetDe, parleDuBrassin, phrasesEtiquetees, quantitesDe, sansPrefixeBanc, TITRE_BRASSIN, urlsDe } from './analyseLocale';
 import { aucunCarnetNEnParle, rattacher } from './rattacher';
+import { domaineParMots, sousDomaineParMots } from '../../ui/carnets/domaineMots';
 
 type Brut = Record<string, unknown>;
 export interface ReponseSimulee { lignes: Brut[]; exemple: true }
@@ -639,7 +640,7 @@ export function reponseSimulee(ctx: ContexteRangerCarnet): ReponseSimulee | null
 }
 
 /** Les mots qui disent qu'un sujet neuf est un problème à suivre (et non une envie ou un achat). Générique : aucun objet nommé. */
-const MOTS_PROBLEME = /\b(?:fuit|fuite|panne|casse|bouche|bouchee|probleme|ne (?:marche|demarre|ferme|tient|chauffe) (?:plus|pas)|trop de|bruit anormal)\b/;
+const MOTS_PROBLEME = /\b(?:fuit|fuite|panne|casse|bouche|bouchee|probleme|ne \w+ (?:plus|pas)|n['’]\w+ (?:plus|pas)|trop de|bruit anormal)\b/;
 const QUAND_SEMAINE = /\b(?:cette semaine|semaine prochaine|dans la semaine)\b/;
 const QUAND_MOIS = /\b(?:fin du mois|fin de mois|ce mois|mois prochain)\b/;
 
@@ -653,6 +654,7 @@ function avecSuivi(r: ReponseSimulee, texte: string): ReponseSimulee {
   const t = sansAccents(texte);
   const [jeton] = etiquettesLocales(texte);
   let jetonPose = false, neufPose = false;
+  const unSeulMorceau = morceauxDe(texte).length <= 1;
   const lignes = r.lignes.map((l) => {
     const sortie: Brut = { ...l };
     const note = l.sorte === 'note';
@@ -669,6 +671,14 @@ function avecSuivi(r: ReponseSimulee, texte: string): ReponseSimulee {
     if (!neufPose && (l.sorte === 'idee' || (l.carnetNeuf !== undefined && l.carnetId === undefined)) && MOTS_PROBLEME.test(t)) {
       neufPose = true;
       sortie.genreCarnet = 'probleme'; sortie.etatPropose = 'note';
+      /* R57 : un problème de matériel de la brasserie se range dans sa partie (premier niveau du chemin), lue dans ses mots comme le domaine */
+      const partie = domaineParMots(texte) === 'brasserie' ? sousDomaineParMots(texte) : null;
+      if (partie) sortie.chemin = [partie];
+    }
+    /* R57 : le domaine d'un carnet neuf, lu dans le SENS du message (règle partagée `domaineMots.ts`) ; nul quand aucun mot ne le dit */
+    if (l.carnetNeuf !== undefined && l.carnetId === undefined && l.domaine === undefined) {
+      const d = domaineParMots(unSeulMorceau ? texte : String(l.texte ?? texte));
+      if (d) sortie.domaine = d;
     }
     return sortie;
   });

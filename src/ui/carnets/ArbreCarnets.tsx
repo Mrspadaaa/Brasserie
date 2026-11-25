@@ -91,8 +91,10 @@ function LigneTrouvee({ t }: { t: Trouve }) {
   return <span className="cnl-pas cnd-cite" data-trouve={t.sorte}>· {t.sorte === 'article' ? 'article' : 'note'} : <InsecMarque t={t.texte ?? ''} debut={t.debut ?? 0} fin={t.fin ?? 0} /></span>;
 }
 
-function LigneAutre({ c, maintenant, trouve, onOuvrir }: { c: CarnetDoc; maintenant: Date; trouve?: Trouve | null; onOuvrir: (id: string) => void }) {
+/** `avecEtat` (C67-1) : sous un filtre du coup d'œil, le chiffre de la case compte tous les genres ; la ligne qu'il fait voir porte donc sa jauge et son état, comme un problème. */
+function LigneAutre({ c, maintenant, trouve, onOuvrir, avecEtat }: { c: CarnetDoc; maintenant: Date; trouve?: Trouve | null; onOuvrir: (id: string) => void; avecEtat?: boolean }) {
   const val = valeurUtile(c, maintenant);
+  const e = etatDe(c);
   const k = c.carnet;
   const photo = k.articles.find(a => a.photo)?.photo ?? k.photos[0]?.jpeg;
   return (
@@ -100,7 +102,9 @@ function LigneAutre({ c, maintenant, trouve, onOuvrir }: { c: CarnetDoc; mainten
       <VignetteObjet photo={photo} mots={[c.title, k.phrase, ...k.facons.map(f => f.nom)]} classe="cnl-vignette" taille={24} />
       <span className="cnl-tx">
         <b className="cnl-t cn-carnet-titre">{liesParNbsp(titreLigne(c))}</b>
-        {trouve && trouve.sorte !== 'titre' ? <span className="cnl-sub"><LigneTrouvee t={trouve} /></span> : val ? <span className="cnl-sub"><span className="cnl-pas">{val}</span></span> : null}
+        {avecEtat
+          ? <span className="cnl-sub"><Jauge etat={e} /> <b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>{trouve && trouve.sorte !== 'titre' ? <LigneTrouvee t={trouve} /> : val ? <span className="cnl-pas">· {val}</span> : null}</span>
+          : trouve && trouve.sorte !== 'titre' ? <span className="cnl-sub"><LigneTrouvee t={trouve} /></span> : val ? <span className="cnl-sub"><span className="cnl-pas">{val}</span></span> : null}
       </span>
     </button>
   );
@@ -157,7 +161,7 @@ export function ListeArbre(p: ListeArbreProps) {
           <div className="cnl-dn"><PictoDomaine d={n.domaine} taille={18} /><span className="cnl-dn-nom">{DOMAINE_LIBELLE[n.domaine]}</span><span className="cn-mono cnl-dn-n">{n.n}</span></div>
           {n.ouverts.map(c => <LigneProbleme key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
           {n.groupes.map(g => {
-            if (g.chemin === null) return g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />);
+            if (g.chemin === null) return g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
             const cle = `${n.domaine}/${g.chemin}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
             const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
@@ -167,7 +171,7 @@ export function ListeArbre(p: ListeArbreProps) {
                   <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{g.chemin}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
                   {!ouvert && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
-                {ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
+                {ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
               </React.Fragment>
             );
           })}
@@ -197,7 +201,7 @@ export function ListeArbre(p: ListeArbreProps) {
               <Check size={18} aria-hidden /><span className="cnl-dn-nom">{nom}</span><span className="cn-mono cnl-dn-n">{r.carnets.length}</span>
             </button>
             {deplie
-              ? r.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)
+              ? r.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)
               : <button type="button" className="cnl-sd cnl-sd-resolus" onClick={p.onRelecture}><span className="cnl-sdres cnl-sdres-resolus">{ligneResolus(r.carnets)}</span><ChevronRight size={16} aria-hidden /></button>}
           </section>
         );

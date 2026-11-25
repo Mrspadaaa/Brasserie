@@ -8,7 +8,7 @@
  */
 import { DOMAINES, domaineDe, plier, type DomaineCarnet, type ParMots } from './domaines';
 import { lireCarnet, type CarnetDoc, type OrigineVousIA } from './modele';
-import { Brouillon, refus, type Etat, type Resultat } from './operations';
+import { Brouillon, appliquerEcritures, poserDomaine, refus, type Etat, type Resultat } from './operations';
 import { etatDe, genreDe, jourLocal, suiviDe } from './suivi';
 
 export const NIVEAU_MAX = 30;
@@ -58,6 +58,25 @@ export function rapprocherChemin(chemin: readonly string[], vocabulaire: readonl
   if (chemin.length < 2) return [premier];
   const memeParent = vocabulaire.filter(v => v[0] && plie(v[0]) === plie(premier) && v[1]).map(v => v[1]);
   return [premier, rapprocherMot(chemin[1], parFrequence(memeParent))];
+}
+
+/** Les sous-domaines déjà employés, par domaine (premier niveau de la catégorie posée) : le menu du domaine les propose (D451 : domaine › sous-domaine). Le plus employé d'abord. */
+export function sousDomainesEmployes(carnets: readonly CarnetDoc[], parMots?: ParMots): Partial<Record<DomaineCarnet, string[]>> {
+  const n = new Map<DomaineCarnet, string[]>();
+  for (const c of carnets) {
+    const d = domaineDe(c, parMots), sd = c.carnet.categorie?.chemin[0];
+    if (d && sd) n.set(d, [...(n.get(d) ?? []), sd]);
+  }
+  return Object.fromEntries([...n.entries()].map(([d, l]) => [d, parFrequence(l)]));
+}
+
+/** Un toucher dans le menu du domaine : le domaine, et (s'il choisit un sous-domaine) sa catégorie, en une seule écriture annulable. Son choix passe avant celui de l'IA. */
+export function poserRangement(etat: Etat, args: { carnetId: string; domaine: DomaineCarnet; chemin?: readonly string[] }): Resultat {
+  const r1 = poserDomaine(etat, { carnetId: args.carnetId, domaine: args.domaine });
+  if (!r1.ok || !args.chemin?.length) return r1;
+  const r2 = poserCategorie(appliquerEcritures(etat, r1.ecritures), { carnetId: args.carnetId, chemin: args.chemin, origine: 'vous' });
+  if (!r2.ok) return r1;
+  return { ok: true, ecritures: [...r1.ecritures, ...r2.ecritures], inverse: [...r2.inverse, ...r1.inverse], avis: r2.avis };
 }
 
 const majuscule = (t: string): string => `${t.charAt(0).toLocaleUpperCase('fr-CH')}${t.slice(1)}`;

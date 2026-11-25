@@ -69,13 +69,14 @@ export function OptionsProbleme({ c, onOption }: { c: CarnetDoc; onOption?: (fac
 
 /** « ✓ trouvé 1 · ✗ pas trouvé 2 · devis 850 · ≈ 910 CHF » : les jetons du diagnostic sur une rangée ; rien de compté, pas de rangée. */
 export function RangeeJetons({ resume }: { resume: ResumeJetons | null }) {
-  if (!resume || (!resume.trouve && !resume.pasTrouve && !resume.devis && !resume.total)) return null;
+  if (!resume || (!resume.trouve && !resume.pasTrouve && !resume.devis && !resume.total && !resume.fourchette)) return null;
   return (
     <div className="cnp-jetons" role="group" aria-label="Où en est le diagnostic">
       {resume.trouve > 0 && <span className="cnp-jeton" data-j="trouve"><Check size={14} aria-hidden /> trouvé {resume.trouve}</span>}
       {resume.pasTrouve > 0 && <span className="cnp-jeton" data-j="pas"><X size={14} aria-hidden /> pas trouvé {resume.pasTrouve}</span>}
       {resume.devis && <span className="cnp-jeton" data-j="devis">{resume.devis.centimes !== undefined ? `devis ${montant(resume.devis.centimes)}` : resume.devis.n > 1 ? `${resume.devis.n} devis` : 'devis'}</span>}
       <span className="cn-sp" />
+      {resume.fourchette && <b className="cnp-total" data-fourchette title={`${resume.fourchette.n} options, l'une ou l'autre : jamais additionnées`}>{resume.fourchette.min === resume.fourchette.max ? `≈ ${montant(resume.fourchette.min)} CHF` : `${montant(resume.fourchette.min)} à ${montant(resume.fourchette.max)} CHF`}</b>}
       {resume.total && <b className="cnp-total" title={`Somme de ${resume.total.n} montants écrits, en francs`}>≈ {montant(resume.total.centimes)} CHF</b>}
     </div>
   );

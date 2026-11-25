@@ -443,6 +443,12 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
   });
 }
 
+/** C67-8 : ce que la page dit d'un article qu'on ne peut pas avoir maintenant (« plus disponible », « rupture », « épuisé »). Inconnu : disponible (rien n'est supposé). */
+const INDISPONIBLE = /\b(?:plus (?:en stock|disponible)|rupture|epuis\w*|indisponible|hors stock|non disponible|pas disponible|sold out|out of stock)\b/;
+const indisponible = (a: Article): boolean => { const d = dispoDe(a); return !!d && INDISPONIBLE.test(normaliser(d)); };
+/** Un article qu'on ne peut pas avoir se range après ceux qu'on peut avoir, même s'il est le moins cher : il n'est jamais le 1er (l'ordre reste celui du tri dans chaque groupe). */
+const enStockDAbord = (l: readonly Article[]): Article[] => [...l.filter(a => !indisponible(a)), ...l.filter(indisponible)];
+
 /** La règle en mots, tirée des clés mêmes du tri : ce qu'affiche l'en-tête est ce qui classe (P32). */
 function rangeParCles(cles: readonly Cle[]): string | null {
   const noms = cles.map(k => (k.sorte === 'prix' ? `${k.parUnite === 'volume' ? 'le prix au litre' : k.parUnite ? 'le prix au kilo' : 'le prix'}${k.converti ? ' en CHF' : ''}` : avecArticle(k.colonne.nom, k.colonne.sens)));
@@ -564,7 +570,7 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
   const seuils = seuilsDe(c, d.criteres);
   const colonnes = [...criteres, ...colonnesLues([...libres, ...ecartes], criteres)];
   const cles = clesDe(criteres, libres);
-  const enLice = trier(libres, cles);
+  const enLice = enStockDAbord(trier(libres, cles));
   /* L4-4 : deux colonnes, deux lignes ou deux candidats de la bulle G8 ne se nomment jamais pareil */
   const ordre = [...enLice, ...ecartes];
   const noms = new Map(nomsDistincts(ordre).map((n, i) => [ordre[i].id, n]));

@@ -73,14 +73,16 @@ export function dansAVenir(t: Pick<TacheVue, 'carnetId' | 'planId' | 'optionId' 
 
 /**
  * L'achat daté d'une tâche → son plan d'À venir (et donc le Calendrier), clé idempotente `PLAN-CARNET-<id>` : un seul plan par carnet, celui
- * de l'option retenue ; ses prix et date suivent la tâche. Les autres achats restent des tâches avec leur coût (`null`). Pas d'écriture ici :
+ * de l'option retenue ; ses prix et date suivent la tâche. Une tâche sans coût (un appel) ou un autre achat restent des tâches (`null`). Pas d'écriture ici :
  * l'appelant écrit le plan (`ecrirePlan`) et, s'il vient d'être créé, la sortie du carnet (`poserSortie`).
  */
 export function planDeLAchat(c: CarnetDoc, t: Tache, le: string): FinancialPlan | null {
   const retenue = optionRetenue(c);
   if (!retenue || t.optionId !== retenue.id || !t.echeance || t.faiteLe) return null;
   const centimes = typeof t.coutCentimes === 'number' && t.coutCentimes > 0 && (t.devise ?? 'CHF') === 'CHF' ? t.coutCentimes : undefined;
-  return planSuitCarnet(planAuCalendrier(c, { le, date: t.echeance }), { date: t.echeance, precision: t.precision ?? 'semaine', ...(centimes !== undefined ? { centimes } : {}) });
+  /* C67-6 : seul un ACHAT, qui a un coût, entre dans À venir ; un appel, une visite ou un contrôle datés restent une tâche (jamais un plan sans montant) */
+  if (centimes === undefined) return null;
+  return planSuitCarnet(planAuCalendrier(c, { le, date: t.echeance }), { date: t.echeance, precision: t.precision ?? 'semaine', centimes });
 }
 
 /* ---------- changer l'échéance ---------- */
