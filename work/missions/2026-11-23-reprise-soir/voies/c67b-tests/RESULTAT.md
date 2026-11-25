@@ -1,4 +1,4 @@
-TESTS ROUGES 30 rouges / 35 total — tests/unit/c67bRegles.test.tsx, fixtures tests/fixtures/c67b/ (hash : voir la réponse, commit « c67b-tests »)
+TESTS ROUGES 30 rouges / 35 total — tests/unit/c67bRegles.test.tsx, fixtures tests/fixtures/c67b/ (commit 24e310786)
 
 Aucun fichier de `src/` ni `functions/` écrit (le `M src/ui/carnets/CarnetsVue.tsx` du `git status` date d'avant la voie).
 
@@ -6,7 +6,7 @@ Aucun fichier de `src/` ni `functions/` écrit (le `M src/ui/carnets/CarnetsVue.
 - `tests/unit/c67bRegles.test.tsx` (35 tests, un bloc `describe` par règle R63 à R69)
 - `tests/fixtures/c67b/pellets.ts` (carnet de pellets MotlerHops / Hopfenmarkt / Brau tiré de la fixture c66 et de la vraie page Brau)
 - `tests/fixtures/c67b/sujets.ts` (3 sujets neufs de mémo : pompe, levure, sonde)
-- `voies/c67b-tests/tests-rouge.log` (sortie `--reporter=dot`), ce RESULTAT.md
+- `voies/c67b-tests/tests-rouge.log` (sortie `--reporter=dot`, sur disque : le dépôt l'ignore, donc non commité), ce RESULTAT.md
 - Le `.skip` du cas R4 de `c48Regles.test.tsx` : non touché (aucune raison).
 
 ## Sortie décisive (`tests-rouge.log`)
