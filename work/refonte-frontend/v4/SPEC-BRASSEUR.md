@@ -2931,3 +2931,16 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 après-midi (carnet ZZ CO2, fil en bulles brutes, capture plaintes/2026-11-25-fil-non-classe.jpg) : « Les notes sont pas du tout classé, rien ?? »
 - 25.11 après-midi (carnet ZZ « écoulement qui fuit » : Je cherche, fil en bulles brutes, aucune option, aucun devis, aucune tâche ; capture plaintes/2026-11-25-aucune-problematique.jpg) : « Ça répond à Aucune problématique ??? »
 - 25.11 après-midi (liste, boutons En tête / Monter / Descendre, capture plaintes/2026-11-25-glisser.jpg) : « C'est pas par drag and drop ??? Je voudrais aussi faire du drag and drop pour lui changer sa catégorie »
+- 25.11 (classement passe 3) : Carnet, suivi d’un problème (passe 3), classement par écran (24.11)
+- 25.11 (classement passe 3) : Liste : tout ce qui est ouvert, d'un coup d'œil : 2 v01 · 3 v03, v04
+- 25.11 (classement passe 3) : Saisie rapide : deux lignes ou une photo : 2 v03, v04 · 3 v01
+- 25.11 (classement passe 3) : Problème ouvert : trop de vapeur, achat fin du mois : 3 actuel, v01, v02, v03 (actuel : Pas de vrai bonne proposition...)
+- 25.11 (classement passe 3) : Problème ouvert : écoulement qui fuit, devis : 2 v02, v03
+- 25.11 (classement passe 3) : Résolu : fermé grâce à l'achat : 3 v01, v02
+- 25.11 (classement passe 3) : Relecture des mois plus tard : pourquoi j'ai pris ça : 3 v01 · 4 v02, v04, v05
+- 25.11 (classement passe 3) : À faire : les tâches de tous les problèmes : 3 actuel, v05
+- 25.11 (classement passe 3) : Autre usage : du CO2 qui baisse dans un fût : 3 v02, v03 · 4 actuel, v01
+- 25.11 (classement passe 3) : Autre usage : malt en rupture chez le fournisseur : 3 v02, v03 · 4 v01
+- 25.11 (classement passe 3) : Épreuve : 4 cas jamais utilisés pour dessiner : 3 v01, v03
+- 25.11 (classement passe 3) : 
+- 25.11 (classement passe 3) : Beaucoup ne répond que à un problèmematique ou pas du tout...
