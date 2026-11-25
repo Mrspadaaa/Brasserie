@@ -1,0 +1,49 @@
+{
+  "_releve": {
+    "source": "RECONSTRUIT d'après voies/reel-80/RESULTAT.md n° 23 (R80-3) : carnet « ZZ TEST — fenêtre qui ferme mal » (24.11), dont le fil ne montre qu'un séparateur « 24 nov. » au-dessus du vide (cap/Z07.png). Forme de tests/fixtures/c79/zz-fete-de-la-biere.json ; le fil ne porte que le message de création « liste » égal au titre (FilCarnet l. 188 le retire, le jour reste) ; aucune note rangée. Aucun document réel de ce carnet n'est versé aux fixtures.",
+    "simule": false,
+    "reconstruit": true
+  },
+  "carnet": {
+    "id": "CARNET-c80-01",
+    "carnet": {
+      "notes": [],
+      "phrase": "ZZ TEST — fenêtre qui ferme mal",
+      "genre": {
+        "origine": "vous",
+        "valeur": "note"
+      },
+      "photos": [],
+      "version": 1,
+      "criteres": [],
+      "articles": [],
+      "facons": [],
+      "creeLe": "2026-11-24T20:21:00.000Z"
+    },
+    "type": "carnet",
+    "title": "ZZ TEST — fenêtre qui ferme mal",
+    "status": "idea"
+  },
+  "messages": [
+    {
+      "carnetMessage": {
+        "texte": "ZZ TEST — fenêtre qui ferme mal",
+        "effets": [
+          {
+            "carnetId": "CARNET-c80-01",
+            "id": "CARNET-c80-01",
+            "cible": "carnet"
+          }
+        ],
+        "depuis": "liste",
+        "rangement": "locale",
+        "le": "2026-11-24T20:21:00.000Z"
+      },
+      "type": "carnet-message",
+      "status": "done",
+      "id": "MSG-c80-01",
+      "title": "ZZ TEST — fenêtre qui ferme mal"
+    }
+  ],
+  "plan": null
+}
