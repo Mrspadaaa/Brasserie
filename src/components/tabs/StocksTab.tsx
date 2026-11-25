@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-import { Plus, Scale, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, ClipboardCheck, Undo2, ArrowLeft } from 'lucide-react';
-import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
+import { Plus, Scale, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, ClipboardCheck, Undo2, ArrowLeft, ChevronDown } from 'lucide-react';import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
 import { Units } from '../../services/units';
@@ -27,7 +26,7 @@ import { FinanceService } from '../../services/financeService';
 import { isUpgradePlan, upgradeBudget, upgradeDetails } from '../../domain/finance/upgrades';
 import type { AVenirLigne } from '../../ui/equipment/ListeParc';
 import { estRealise } from '../../domain/finance/upgradeRing';
-import { BARRE_BASE, BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
+import { BARRE_BASE, BARRE_COLONNE, BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
 /* Critique 5, n° 41 : la barre de Matériel ancre le + volant au bord de la colonne (règle dans carnets-decider.css). */
 import '../../ui/carnets/carnets-decider.css';
 import { Sheet } from '../../ui/Sheet';
@@ -63,6 +62,12 @@ const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ Carn
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 import { tracesDesArticles } from '../../domain/consommation/gestes';
 
+/**
+ * D451 (voie onglets, VERDICT « Ce qui disparaît » n° 1) : dans Matériel seulement, la double rangée (Articles · Recompter · Courses · Fûts · Matériel,
+ * puis Parc · À venir · Carnets · Réalisés) devient une seule rangée « Matériel ▾ · Parc · À venir · Carnets · Réalisés ». Le menu ▾ garde l'accès à
+ * Articles, Recompter, Courses et Fûts. `false` rend l'état d'avant (deux rangées) ; ailleurs que dans Matériel rien ne change, drapeau ou non.
+ */
+const MATERIEL_UNE_RANGEE = true;
 
 const readRecipes = () => StorageService.getRecipes();
 // Hors du composant : `useStorageValue` relit à chaque changement de `read` ; une flèche écrite dans le rendu
@@ -130,6 +135,70 @@ interface StocksTabProps {
 // D420 (d1a, 22.11) : Recompter est un sous-onglet ; l'onglet Houblons et la bascule Étagère | Recompter sont retirés.
 type SubTab = 'stock' | 'recompter' | 'courses' | 'futs' | 'materiel';
 const SOUS_ONGLETS: readonly SubTab[] = ['stock', 'recompter', 'courses', 'futs', 'materiel'];
+
+const LIBELLE_SEG_MATERIEL: Record<SegMateriel, string> = { parc: 'Parc', avenir: 'À venir', carnets: 'Carnets', realises: 'Réalisés' };
+
+/**
+ * La rangée unique de Matériel (maquette v01-liste : « Matériel ▾ | Parc · À venir 11 · Carnets 16 · Réalisés 5 »). Le déclencheur « Matériel ▾ » ouvre un menu
+ * des autres sous-onglets de Stocks (rien ne se perd, D420 : Recompter y reste). Le menu est hors du défilement horizontal des segments, sinon il serait rogné.
+ * Le `nav` des segments garde son nom « Vue du matériel » (les parcours de contrôle le visent).
+ */
+function RangeeMateriel({ seg, comptes, onSeg, entrees, onSousOnglet, className }: {
+  seg: SegMateriel;
+  comptes: Partial<Record<SegMateriel, number>>;
+  onSeg: (seg: SegMateriel) => void;
+  entrees: ReadonlyArray<{ id: SubTab; label: string; Icon: typeof Boxes }>;
+  onSousOnglet: (id: SubTab) => void;
+  className: string;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+  const racine = useRef<HTMLDivElement>(null);
+  const declencheur = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!ouvert) return;
+    racine.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    const dehors = (e: PointerEvent) => { if (!racine.current?.contains(e.target as Node)) setOuvert(false); };
+    const touche = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOuvert(false); declencheur.current?.focus(); } };
+    document.addEventListener('pointerdown', dehors);
+    document.addEventListener('keydown', touche);
+    return () => { document.removeEventListener('pointerdown', dehors); document.removeEventListener('keydown', touche); };
+  }, [ouvert]);
+  const deplacer = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const boutons = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')];
+    const i = boutons.indexOf(document.activeElement as HTMLButtonElement);
+    boutons[(i + (e.key === 'ArrowDown' ? 1 : boutons.length - 1)) % boutons.length]?.focus();
+  };
+  return (
+    <div ref={racine} className={className}>
+      <button ref={declencheur} type="button" aria-haspopup="menu" aria-expanded={ouvert} onClick={() => setOuvert((v) => !v)}
+        className="shrink-0 min-h-touch pl-2 pr-1 flex items-center gap-0.5 text-sm font-semibold text-cave-50 rounded-control hover:bg-cave-850">
+        <span>Matériel</span><ChevronDown className={`w-4 h-4 shrink-0 text-cave-400 transition-transform ${ouvert ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      <span className="shrink-0 self-stretch my-1.5 w-px bg-cave-700" aria-hidden="true" />
+      <nav aria-label="Vue du matériel" className="min-w-0 flex-1 flex gap-0.5 overflow-x-auto scrollbar-none">
+        {SEGMENTS_MATERIEL.map((s) => (
+          <button key={s} type="button" onClick={() => onSeg(s)} aria-current={seg === s ? 'page' : undefined}
+            className={`flex-1 min-w-fit px-1.5 min-h-touch rounded-control flex items-center justify-center gap-1.5 text-sm font-medium transition-colors ${seg === s ? 'bg-ebc-straw text-cave-950' : 'text-cave-400 hover:text-cave-50'}`}>
+            <span>{LIBELLE_SEG_MATERIEL[s]}</span>{comptes[s] !== undefined && <span className="font-mono">{comptes[s]}</span>}
+          </button>
+        ))}
+      </nav>
+      {ouvert && (
+        <div role="menu" aria-label="Autres vues des stocks" onKeyDown={deplacer}
+          className="absolute left-1 top-full mt-1 z-30 min-w-[11rem] rounded-control border border-cave-800 bg-cave-900 p-1 shadow-lift">
+          {entrees.map(({ id, label, Icon }) => (
+            <button key={id} type="button" role="menuitem" onClick={() => { setOuvert(false); onSousOnglet(id); }}
+              className="w-full min-h-touch px-2 rounded-control flex items-center gap-2 text-sm font-medium text-cave-200 hover:bg-cave-850 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-water">
+              <Icon className="w-4 h-4 shrink-0" aria-hidden="true" /><span>{label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * Écran Stocks.
@@ -537,6 +606,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     { id: 'materiel', label: 'Matériel', Icon: Wrench }
   ];
 
+  const uneRangee = MATERIEL_UNE_RANGEE && subTab === 'materiel';
   const mobile = useMobileLayout();
   // Une frappe ou un filtre ne cache jamais le champ de recherche ni la ligne de filtre (vd, verdict bdd71433 n° 2 et 3) : le bloc défile avec la liste, donc si l'on avait
   // descendu, on remonte juste assez pour que le champ soit en haut de l'écran ; si le champ est déjà visible, rien ne bouge.
@@ -637,7 +707,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   return (
     // Articles et Courses défilent avec la fenêtre : l'en-tête de l'app part comme ailleurs (APP-ENTETE-COLLE, 19.11). Fûts, Matériel, Houblons gardent leur hauteur.
     <div className={`stocks-screen flex flex-col ${subTab === 'stock' || subTab === 'courses' ? 'stocks-fenetre' : 'h-[calc(100dvh-var(--main-header-box,2.5rem)-var(--main-navigation-height,2.5rem)-1rem)]'} pt-1 gap-1`}>
-      <div className="min-w-0 shrink-0">
+      {!uneRangee && <div className="min-w-0 shrink-0">
       <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
       <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
         {tabs.map(({ id, label, Icon, badge }) => (
@@ -667,7 +737,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         ))}
       </nav>
       </ViewNavigation>
-      </div>
+      </div>}
 
       {subTab === 'stock' && catalogue && <>
         <div className="shrink-0 px-[10px] pt-2"><button type="button" className="inline-flex min-h-touch items-center gap-2 text-sm font-semibold text-cave-200" data-catalogue-retour onClick={() => setCatalogue(false)}><ArrowLeft size={18} aria-hidden="true" />Articles</button></div>
@@ -812,11 +882,23 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} clients={clients} className="flex-1"
         addOpen={addingKegs} onAddClose={() => setAddingKegs(false)} onMessage={onSuccessMessage} />}
 
-      {subTab === 'materiel' && (
+      {subTab === 'materiel' && uneRangee && (
+        /* D451 : une seule rangée, « Matériel ▾ » à gauche (menu des autres sous-onglets). Barre opaque comme avant (m390-6), sans défilement propre : le menu déborde. */
+        <RangeeMateriel
+          className={`relative z-20 shrink-0 flex items-center gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 shadow-lift ${segMateriel === 'parc' ? '' : `${BARRE_COLONNE} ${BARRE_SUR_DEFILEMENT}`}`}
+          seg={segMateriel}
+          comptes={{ avenir: segments.avenir, carnets: segments.carnets, realises: segments.realises }}
+          onSeg={(seg) => { if (seg === 'carnets' && segMateriel === 'carnets') setRacineCarnets(Date.now()); setSegMateriel(seg); }}
+          entrees={tabs.filter((t) => t.id !== 'materiel')}
+          onSousOnglet={setSubTab}
+        />
+      )}
+
+      {subTab === 'materiel' && !uneRangee && (
         /* m390-6 : barre opaque, avec l'ombre `shadow-lift` (voir BARRE_MATERIEL). */
         <nav aria-label="Vue du matériel" className={segMateriel === 'parc' ? BARRE_BASE : `${BARRE_MATERIEL} ${BARRE_SUR_DEFILEMENT}`}>
           {SEGMENTS_MATERIEL.map((seg) => {
-            const libelle = seg === 'parc' ? 'Parc' : seg === 'avenir' ? 'À venir' : seg === 'carnets' ? 'Carnets' : 'Réalisés';
+            const libelle = LIBELLE_SEG_MATERIEL[seg];
             const n = seg === 'avenir' ? segments.avenir : seg === 'carnets' ? segments.carnets : seg === 'realises' ? segments.realises : undefined;
             return (
               <button key={seg} type="button" onClick={() => { if (seg === 'carnets' && segMateriel === 'carnets') setRacineCarnets(Date.now()); setSegMateriel(seg); }} aria-current={segMateriel === seg ? 'page' : undefined}
