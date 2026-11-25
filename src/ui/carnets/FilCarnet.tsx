@@ -12,6 +12,7 @@ import type { CarnetDoc, Etiquette, EvenementSuivi, MessageDoc, Note, Propositio
 import { notePlanningDe } from '../../domain/carnets/taches';
 import { LIBELLE_ETAT, etatOption, optionRetenue } from '../../domain/carnets/suivi';
 import { GENRE_LIBELLE } from './EtatIA';
+import { BoutonRelire } from './BoutonRelire';
 import { heureDe, jetonDe, libelleJour, libellePlage, libelleRepli, plagesDe, rangsEcart, texteMontant } from './filRegles';
 import type { RappelsSuivi } from './carnetOuvertTypes';
 
@@ -67,6 +68,8 @@ function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { 
       case 'resoudre': return ['résolu ?', opt ? `Fermer grâce à l'achat de ${opt} ?` : 'Marquer résolu ?'];
       case 'veiller': return ['veille ?', opt ? `Veiller ${opt} ?` : 'Veiller cette option ?'];
       case 'deplacer': return ['ailleurs ?', cible ? `Rattacher à ${cible} ?` : 'Rattacher à un autre carnet ?'];
+      /* N4 : la vérification que sa note appelle ; « Relire » lit la page de l'article (jamais lancée seule : une lecture est facturée) */
+      case 'verifier': return ['à vérifier ?', p.texte ?? 'Vérifier la page de l’article'];
     }
   })();
   const geste = rappels?.onProposition;
@@ -78,7 +81,9 @@ function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { 
       <p>{corps}</p>
       {geste && (
         <div className="cnp-carte-gestes">
-          {p.sorte === 'tache'
+          {p.sorte === 'verifier'
+            ? <>{rappels?.onVerifier && <BoutonRelire onRelire={() => rappels.onVerifier!(messageId, index)} />}<button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'non')}>Non</button></>
+            : p.sorte === 'tache'
             ? <><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'ok')}>À faire</button><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'plus-tard')}>Plus tard</button></>
             : <><button type="button" className="cnp-btn cnp-btn-plein" onClick={() => geste(messageId, index, 'ok')}>OK</button><button type="button" className="cnp-btn" onClick={() => geste(messageId, index, 'non')}>Non</button></>}
         </div>

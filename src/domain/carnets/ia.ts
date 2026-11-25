@@ -21,6 +21,7 @@ import type { CarnetDoc, Etiquette, MessageDoc, PropositionSuivi, Rattache } fro
 import { rapprocherChemin } from './arbre';
 import { echeanceDe } from './taches';
 import { etatDe, etatOption, genreDe } from './suivi';
+import { articleVise, pageSansProduit } from './noteSurArticle';
 
 export type { PageLue } from '../../../functions/src/carnetIA';
 export type SorteLigne = SorteCarnet;
@@ -92,6 +93,8 @@ export interface LigneCarnet {
   etatPropose?: EtatSuiviIA;
   tachePropose?: TachePropose;
   citation?: string;
+  /** N1 : l'article du carnet qu'une NOTE concerne ; gardé seulement si sa citation le désigne seul (`articleVise`). */
+  articleId?: string;
 }
 
 /** Une tâche proposée : `echeance` est un lundi (précision `semaine` ou `mois`), absente pour « un jour » ; le coût seulement s'il est écrit. */
@@ -115,7 +118,7 @@ export interface CarnetPourIA {
   /** `origine` et `source` (L-6) : un critère de sa phrase compte comme ses mots quand l'IA le reprend. */
   criteres?: ReadonlyArray<{ texte: string; caracteristique?: Caracteristique; origine?: string; source?: string }>;
   facons?: ReadonlyArray<{ nom: string; etat?: string }>;
-  articles?: ReadonlyArray<{ nom?: string; valeurs?: Readonly<Record<string, { valeur: unknown; unite?: string }>> }>;
+  articles?: ReadonlyArray<{ id?: string; nom?: string; domaine?: string; vendeur?: string; pays?: string; valeurs?: Readonly<Record<string, { valeur: unknown; unite?: string }>> }>;
   notes?: ReadonlyArray<{ id: string; texte: string }>;
 }
 
@@ -174,9 +177,11 @@ export function contexteModele(texte: string, saisie: Date, depuis: string | nul
       criteres: (c.criteres ?? []).map((k) => (k.caracteristique ? { texte: k.texte, caracteristique: k.caracteristique } : { texte: k.texte })),
       facons: (c.facons ?? []).map((f) => f.nom),
       articles: (c.articles ?? []).flatMap((a) => {
-        if (!a.nom) return [];
+        const nom = a.nom ?? (a.id ? a.domaine : undefined);
+        if (!nom) return [];
         const v = Object.entries(a.valeurs ?? {}).flatMap(([k, x]) => x && x.valeur !== undefined && x.valeur !== null ? [[k, `${String(x.valeur)}${x.unite ? ' ' + x.unite : ''}`]] : []);
-        return [v.length ? { nom: a.nom, valeurs: Object.fromEntries(v) } : { nom: a.nom }];
+        /* N1 : l'id, le domaine et le vendeur : sans eux, l'IA ne peut pas dire de quel article parle une note */
+        return [{ nom, ...(a.id ? { id: a.id } : {}), ...(a.domaine ? { domaine: a.domaine } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(v.length ? { valeurs: Object.fromEntries(v) } : {}) }];
       }),
       notes: (c.notes ?? []).map((n) => ({ id: n.id, texte: n.texte })),
       /* D451 : le suivi, borné (12 options, 8 tâches, 3 messages de 160 caractères) ; aucune photo n'est jamais envoyée (accord du 17.11) */
@@ -396,9 +401,14 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     const r = l as Record<string, unknown>;
     const texte = chaine(r.texte);
     if (!SORTES.has(r.sorte as string) || !texte) continue;
-    const sorte = r.sorte as SorteLigne;
+    /* N5 (LIEN-PAS-PRODUIT, 25.11) : une page lue qui n'a ni prix, ni offre, ni photo, ni dispo, ni caractéristique (frais d'envoi, conditions de vente, guide) n'est pas un
+       produit à comparer : rendue en « article » par l'IA, elle devient une note qui garde le lien ; jamais une ligne de Comparer. */
+    const urlDite = chaine(r.url, 2000);
+    const pageDite = urlDite && urlDansTexte(urlDite, ctx.texte) ? (ctx.pages ?? []).find((p) => formeUrl(p.url) === formeUrl(urlDite)) : undefined;
+    const sorte: SorteLigne = r.sorte === 'article' && pageSansProduit(pageDite) && !(typeof r.prix === 'number' && r.prix > 0) && !prixTousDe(ctx.texte).length ? 'note' : (r.sorte as SorteLigne);
     const ligne: LigneCarnet = { sorte, texte, origine };
     if (typeof r.genre === 'string' && GENRES.has(r.genre)) ligne.genre = r.genre as GenreLigne;
+    if (sorte !== r.sorte) ligne.genre = 'note';
     const titre = chaine(r.titre, 120);
     if (titre) ligne.titre = titre;
 
@@ -540,6 +550,12 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
       ligne.titrePropose = propose;
 
     suiviDeLigne(r, ligne, ctx, nombresTexte);
+
+    /* N1 (NOTE-EXPLOITEE) : une note qui parle d'UN article le désigne ; le client ne le croit que si le passage cité (sous-chaîne exacte de son message) ne désigne que lui. */
+    if (sorte === 'note') {
+      const vise = articleVise(r.articleId, ligne.citation, parId.get(ligne.carnetId ?? ctx.depuis ?? '')?.articles);
+      if (vise) ligne.articleId = vise;
+    }
 
     sortie.push(ligne);
   }

@@ -2,9 +2,10 @@
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
 import type { SuiviLectures } from '../../domain/carnets/lecture';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
-import { garderMessageAPart, poserDomaine, appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
+import { garderMessageAPart, noterSurArticle, poserDomaine, poserPortDuVendeur, appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, etiquettesLocales, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
+import { faitDeNote, pageSansProduit, siteDe, verificationProposee } from '../../domain/carnets/noteSurArticle';
 import { tacheDatee } from '../../domain/carnets/tacheDatee';
 import { titreCourt } from '../../domain/carnets/titreCourt';
 import { ajouterTache } from '../../domain/carnets/taches';
@@ -80,13 +81,24 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
   });
   /* C70-7 : « Rattacher à … ? » ne se propose pas entre deux sujets que les mots séparent (un ventilateur mural du bâtiment, un malt de la brasserie) : la phrase et le carnet visé
      disent chacun leur domaine ; s'ils diffèrent, la carte n'a pas de sens et se tait (inconnu d'un côté : on la garde, l'IA a vu le carnet). */
-  const s = { ...s0, propositions: s0.propositions.filter(p => {
+  /* N1, N4 (NOTE-EXPLOITEE) : une note qui désigne UN article (le client a vérifié que son passage cité ne désigne que lui) devient un fait de cet article ; la vérification que ce fait appelle
+     (« Vérifier la dispo chez … ») se PROPOSE avec « Relire » : une lecture est facturée, rien ne part seul. */
+  const notesSurArticles = a.lignes.flatMap(l => {
+    const cid = existe(a.cibleDe(l));
+    const art = cid && l.articleId && l.citation ? carnets.find(c => c.id === cid)?.carnet.articles.find(x => x.id === l.articleId) : undefined;
+    return cid && art && l.citation ? [{ cid, art, fait: faitDeNote({ messageId: a.messageId, message: m.carnetMessage.texte, citation: l.citation, le: a.le, origine: l.origine }), origine: l.origine }] : [];
+  });
+  const verifications: PropositionSuivi[] = notesSurArticles.flatMap(n => {
+    const texte = verificationProposee(n.fait.sujet, n.art);
+    return texte ? [{ sorte: 'verifier' as const, carnetId: n.cid, articleId: n.art.id, texte, origine: n.origine }] : [];
+  });
+  const s = { ...s0, propositions: [...s0.propositions.filter(p => {
     if (p.sorte !== 'deplacer' || !p.versCarnetId) return true;
     const cible = carnets.find(c => c.id === p.versCarnetId);
     const dit = p.texte ? domaineParMots(p.texte) : null;
     const leur = cible ? domaineDe(cible, domaineParMots) : null;
     return !(dit && leur && dit !== leur);
-  }) };
+  }), ...verifications] };
   let courant: EtatDocs = etat;
   const ecritures: EcritureCarnet[] = [], inverse: EcritureCarnet[] = [];
   const passer = (r: Resultat) => {
@@ -102,6 +114,14 @@ export function poserSuiviIA(etat: EtatDocs, a: ArgsSuiviIA): { ecritures: Ecrit
     if (poseDeFait && genreDe(poseDeFait) === 'probleme' && n.genre === 'probleme' && n.etat && n.etat !== 'resolu') passer(changerEtat(courant, { carnetId: n.carnetId, vers: n.etat, le: a.le, origine: 'ia' }));
   }
   for (const e of s.etiquettes) passer(etiqueter(courant, { messageId: a.messageId, etiquette: e }));
+  for (const n of notesSurArticles) passer(noterSurArticle(courant, { carnetId: n.cid, articleId: n.art.id, fait: n.fait }));
+  /* N5 (LIEN-PAS-PRODUIT) : le port que dit une page d'information du vendeur est un fait du VENDEUR : il s'applique à SES articles du carnet (même site) ; les autres n'en reçoivent aucun */
+  for (const l of a.lignes) {
+    const cid = existe(a.cibleDe(l)), p = l.page, port = p?.livraison;
+    if (!cid || !p || !port || l.sorte !== 'note' || !pageSansProduit(p)) continue;
+    const centimes = typeof port.prix === 'number' && Number.isFinite(port.prix) && port.prix >= 0 ? Math.round(port.prix * 100) : undefined;
+    passer(poserPortDuVendeur(courant, { carnetId: cid, site: siteDe(p.domaine), livraison: sansIndefinis({ prixCentimes: centimes, devise: centimes !== undefined ? port.devise : undefined, gratuite: port.gratuite, refusee: port.refusee }) }));
+  }
   if (s.propositions.length || s.rattache) {
     const b = new Brouillon(courant);
     const msg = b.messages().find(x => x.id === a.messageId);

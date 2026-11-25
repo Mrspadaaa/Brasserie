@@ -101,6 +101,12 @@ export function lienMort(depart: URL, finale: URL): boolean {
  * Lecture pure d'une page (testée sur des pages réelles capturées, `banc-liens/pages`). La cascade (D446) est dans `lienProduit.ts` :
  * schema.org (JSON-LD, microdata, RDFa), puis Open Graph, puis le HTML visible ; chaque étape rend son statut.
  */
+/**
+ * N5 (LIEN-PAS-PRODUIT, 25.11) : le titre d'une page d'INFORMATION du vendeur (frais d'envoi, livraison, conditions de vente). Sans fiche produit, le premier montant écrit sous un tel
+ * titre (« Frais de port vers la Suisse : 7,50 € ») est un PORT, jamais le prix d'un article : lu comme un prix, la page devenait un 3e article à comparer.
+ */
+const TITRE_INFORMATION = /^\s*(?:frais\s+(?:d['’]\s?|de\s+)?(?:envoi|port|livraison|exp[eé]dition)|livraison|exp[eé]dition|conditions\s+(?:g[eé]n[eé]rales\s+)?de\s+(?:vente|livraison)|versandkosten|versand|shipping)\b/i;
+
 export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   const base: PageLue = { url: url.href, domaine: domaineDe(url), statut: 'illisible', luLe };
   const x = extraireProduit(html, url);
@@ -109,6 +115,10 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
      (« Bienvenue »). Elle reste « illisible » (« lien · page non lue ») plutôt que de montrer ce titre comme le nom d'un objet. */
   const sansDonnees = x.etapes.some((e) => e.nom === 'donnees' && e.statut === 'absent');
   if ((!x.nom || (sansDonnees && !x.valeurs.length)) && !x.photos.length && x.prix === undefined) return { ...base, etapes: etapes.map((e) => e.nom === 'page' ? { ...e, statut: 'douteux' as const, detail: 'ni nom, ni prix, ni photo' } : e) };
+  if (sansDonnees && x.nom && TITRE_INFORMATION.test(x.nom) && !x.photos.length && !x.valeurs.length && x.prix !== undefined && x.devise) {
+    const port = { prix: x.prix, devise: x.devise };
+    return { ...base, statut: 'lue', nom: x.nom, livraison: port, etapes: etapes.map((e) => e.nom === 'prix' ? { nom: 'prix' as const, statut: 'absent' as const, detail: 'page d’information : le montant est un port, pas un prix' } : e.nom === 'devise-frais' ? { nom: 'devise-frais' as const, statut: 'trouve' as const, detail: `port ${x.prix} ${x.devise}` } : e) };
+  }
   return {
     ...base, statut: 'lue',
     ...(x.nom ? { nom: x.nom } : {}),

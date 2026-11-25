@@ -93,12 +93,14 @@ export interface Etiquette { carnetId: string; sorte: SorteEtiquette; texte?: st
 /** C70-3 : ce que l'IA dit du carnet NEUF que la phrase créerait (genre, état d'un problème, chemin, domaine) : la carte « Garder à part » le montre et le pose. */
 export interface NeufDit { genre?: GenreCarnet; etat?: EtatSuivi; chemin?: string[]; domaine?: string }
 export interface Rattache { carnetId: string; citation: string; neuf?: NeufDit }
-export type SorteProposition = 'tache' | 'retenir' | 'dater' | 'resoudre' | 'veiller' | 'deplacer';
-export const SORTES_PROPOSITION: readonly SorteProposition[] = ['tache', 'retenir', 'dater', 'resoudre', 'veiller', 'deplacer'];
+export type SorteProposition = 'tache' | 'retenir' | 'dater' | 'resoudre' | 'veiller' | 'deplacer' | 'verifier';
+export const SORTES_PROPOSITION: readonly SorteProposition[] = ['tache', 'retenir', 'dater', 'resoudre', 'veiller', 'deplacer', 'verifier'];
 /** Ce que l'IA propose sans l'écrire (carte « OK · Non ») : la tâche, retenir, dater, résoudre, veiller, écrire dans un autre carnet. */
 export interface PropositionSuivi {
   sorte: SorteProposition; carnetId: string; texte?: string; optionId?: string; echeance?: string; precision?: PrecisionTache; coutCentimes?: number; devise?: string;
   versCarnetId?: string; origine: Origine;
+  /** N4 : `verifier` (« Vérifier la dispo chez … ») vise un article ; sa carte offre « Relire » (jamais lancée seule : une lecture est facturée). */
+  articleId?: string;
 }
 
 /** Une valeur lue pour une caractéristique (clé = son nom). `luLe` : date de lecture, si elle a été lue. */
@@ -119,6 +121,17 @@ export interface ChangeArticle { taux: number; date: string; source: 'BCE' }
  * relève réelle attend son accord. Tant qu'il manque, la fiche dit « demandée · pas encore relevée ».
  */
 export interface Veille { active: boolean; depuis: string; releveLe?: string }
+
+/**
+ * N1, N2 (NOTE-EXPLOITEE, 25.11) : de quoi parle une note qui désigne un article : sa disponibilité, sa qualité, son délai de livraison. Absent : la phrase ne le dit pas.
+ */
+export type SujetNote = 'dispo' | 'qualite' | 'delai';
+export const SUJETS_NOTE: readonly SujetNote[] = ['dispo', 'qualite', 'delai'];
+/**
+ * Une note du brasseur qui parle d'UN article (« le site français semble ne plus avoir de stock ») : un fait de cet article, à côté de ce que la page dit, jamais à
+ * sa place. `mots` : SA phrase, telle qu'il l'a écrite (jamais la réécriture de l'IA) ; `le` : la date de sa saisie ; aucun score de confiance. Se retire d'un toucher.
+ */
+export interface NoteSurArticle { messageId: string; mots: string; le: string; sujet?: SujetNote; origine: Origine }
 
 /** PX (R39) : une quantité de poids ou de volume, telle que la page l'écrit. */
 export type UniteQuantite = 'g' | 'kg' | 'ml' | 'cl' | 'dl' | 'l';
@@ -163,6 +176,8 @@ export interface Article {
   valeurs: Record<string, Valeur>;
   lecture: LectureArticle;
   veille?: Veille;
+  /** N1, N2 : ce que ses notes disent de cet article (« dispo douteuse · ta note, 24 nov. »), du plus ancien au plus récent ; 5 au plus. */
+  notesSur?: NoteSurArticle[];
   messageId?: string;
   /** D'où viennent son nom, son prix et son vendeur (picto de provenance, Q19) ; « exemple » au banc. Absent : inconnu. */
   origine?: Origine;
@@ -443,7 +458,7 @@ function lirePhotos(v: unknown): string[] | undefined {
 
 const CLES_ARTICLE = [
   'id', 'url', 'domaine', 'nom', 'prixCentimes', 'prixDes', 'doute', 'conditionnement', 'prixUnite', 'offres', 'taxe', 'prixTTCCentimes', 'livraison', 'change', 'devise', 'vendeur', 'pays',
-  'dispo', 'photo', 'photos', 'faconId', 'valeurs', 'lecture', 'veille', 'messageId', 'origine'
+  'dispo', 'photo', 'photos', 'faconId', 'valeurs', 'lecture', 'veille', 'notesSur', 'messageId', 'origine'
 ];
 function lireArticle(v: unknown): Article | null {
   if (!estObjet(v) || !texteNonVide(v.id)) return null;
@@ -462,8 +477,14 @@ function lireArticleConnu(v: Record<string, unknown>, id: string, prixOk: boolea
     livraison: lireLivraison(v.livraison), change: prixOk ? lireChange(v.change) : undefined,
     devise: optTexte(v.devise), vendeur: optTexte(v.vendeur), pays: optTexte(v.pays), dispo: optTexte(v.dispo), photo: optTexte(v.photo), photos: lirePhotos(v.photos),
     faconId: optTexte(v.faconId), valeurs: lireValeurs(v.valeurs), lecture: LECTURES.includes(v.lecture as LectureArticle) ? (v.lecture as LectureArticle) : 'a-lire',
-    veille: lireVeille(v.veille), messageId: optTexte(v.messageId), origine: ORIGINES.includes(v.origine as Origine) ? (v.origine as Origine) : undefined
+    veille: lireVeille(v.veille), notesSur: lireNotesSur(v.notesSur), messageId: optTexte(v.messageId), origine: ORIGINES.includes(v.origine as Origine) ? (v.origine as Origine) : undefined
   });
+}
+const NOTES_SUR_MAX = 5;
+function lireNotesSur(v: unknown): NoteSurArticle[] | undefined {
+  const l = Array.isArray(v) ? v.flatMap((n): NoteSurArticle[] => estObjet(n) && texteNonVide(n.messageId) && texteNonVide(n.mots) && texteNonVide(n.le)
+    ? [sansIndefinis<NoteSurArticle>({ messageId: n.messageId, mots: n.mots, le: n.le, sujet: SUJETS_NOTE.includes(n.sujet as SujetNote) ? (n.sujet as SujetNote) : undefined, origine: origineLue(n.origine) })] : []).slice(-NOTES_SUR_MAX) : [];
+  return l.length ? l : undefined;
 }
 
 const CLES_NOTE = ['id', 'texte', 'genre', 'modifieeLe', 'messageId', 'groupe', 'fusionDe'];
@@ -633,7 +654,7 @@ function lireRattache(v: unknown): Rattache | undefined {
   return { ...inconnues(v, ['carnetId', 'citation', 'neuf']), carnetId: v.carnetId, citation: v.citation, ...(neuf ? { neuf } : {}) };
 }
 
-const CLES_PROPOSITION_SUIVI = ['sorte', 'carnetId', 'texte', 'optionId', 'echeance', 'precision', 'coutCentimes', 'devise', 'versCarnetId', 'origine'];
+const CLES_PROPOSITION_SUIVI = ['sorte', 'carnetId', 'texte', 'optionId', 'echeance', 'precision', 'coutCentimes', 'devise', 'versCarnetId', 'origine', 'articleId'];
 function lirePropositionSuivi(v: unknown): PropositionSuivi | null {
   if (!estObjet(v) || !SORTES_PROPOSITION.includes(v.sorte as SorteProposition) || !texteNonVide(v.carnetId)) return null;
   const cout = centimesLus(v.coutCentimes);
@@ -641,7 +662,7 @@ function lirePropositionSuivi(v: unknown): PropositionSuivi | null {
     ...inconnues(v, CLES_PROPOSITION_SUIVI),
     ...sansIndefinis({
       sorte: v.sorte as SorteProposition, carnetId: v.carnetId, texte: optTexte(v.texte), optionId: optTexte(v.optionId), echeance: dateJour(v.echeance), precision: dateJour(v.echeance) ? precisionLue(v.precision) : undefined,
-      coutCentimes: cout, devise: cout !== undefined ? optTexte(v.devise) : undefined, versCarnetId: optTexte(v.versCarnetId), origine: origineLue(v.origine)
+      coutCentimes: cout, devise: cout !== undefined ? optTexte(v.devise) : undefined, versCarnetId: optTexte(v.versCarnetId), articleId: optTexte(v.articleId), origine: origineLue(v.origine)
     })
   };
 }

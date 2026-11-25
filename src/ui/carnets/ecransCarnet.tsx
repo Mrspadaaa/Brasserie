@@ -2,9 +2,10 @@
  *  sortis de CarnetsVue.tsx : une fonction de rendu appelée en place, au même moment du rendu. */
 import { prixPropose } from '../../domain/carnets/prixPropose';
 import type React from 'react';
-import type { CarnetDoc } from '../../domain/carnets/modele';
+import { lireMessages, type CarnetDoc } from '../../domain/carnets/modele';
+import { refuserPropositionSuivi } from '../../domain/carnets/fil';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
-  poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+  detacherNoteArticle, poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
 import { poserRangement } from '../../domain/carnets/arbre';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, type LigneLocale } from '../../domain/carnets/analyseLocale';
@@ -111,6 +112,17 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     if (r) p.onMessage?.(r.avis);
   };
 
+  /**
+   * N4 : « Relire » sur la carte « Vérifier la dispo chez … » : la page de l'article visé est relue (un geste du brasseur, jamais seule), puis la carte part.
+   */
+  const verifier = async (messageId: string, index: number): Promise<void> => {
+    const c = ouvert;
+    const pr = lireMessages(magasin.lire()).find(m => m.id === messageId)?.carnetMessage.propositionsSuivi?.[index];
+    if (!c || !pr?.articleId) return;
+    await relire(pr.articleId);
+    geste(refuserPropositionSuivi(magasin.lire(), { messageId, index }), c.id);
+  };
+
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   const ouvrirCarnet = (id: string) => { setVue({ sorte: 'carnet', id }); setRetour(null); };
@@ -150,6 +162,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     ecran = a ? <FicheArticle key={a.id} taux={tauxEur} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
       {...(suivant ? { onSuivant: suivant } : {})} {...(precedent ? { onPrecedent: precedent } : {})}
       {...(a.url && a.lecture === 'lue' ? { onRelire: () => relire(a.id), onEscalader: () => escalader(a.id) } : {})}
+      onDetacherNote={messageId => { appliquer(detacherNoteArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, messageId })); }}
       onPrix={centimes => {
         const r = appliquer(poserPrixArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, centimes }));
         const doc = r?.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined;
@@ -222,7 +235,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const manque = iaManquee[c.id];
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
-      <CarnetOuvert carnet={enV(c)} messages={messages} carnetsDocs={tous} rappels={rappelsDe(c)} onRelecture={() => setVue({ sorte: 'relecture', depuis: c.id })} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+      <CarnetOuvert carnet={enV(c)} messages={messages} carnetsDocs={tous} rappels={{ ...rappelsDe(c), onVerifier: verifier }} onRelecture={() => setVue({ sorte: 'relecture', depuis: c.id })} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}

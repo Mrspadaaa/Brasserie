@@ -31,6 +31,8 @@ export interface ArticleV {
   /** PX (R39 à R41), R48 et R49 : la quantité du prix, les conditionnements publiés et le prix à l'unité avec ses paliers (types du modèle). */
   conditionnement?: import('../../domain/carnets/modele').ConditionnementArticle; prixUnite?: import('../../domain/carnets/modele').PrixUniteArticle; offres?: import('../../domain/carnets/modele').OffreArticle[];
   lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible' | 'introuvable'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
+  /** N2 : ce que ses notes disent de cet article (« dispo douteuse · ta note, 24 nov. »). */
+  notesSur?: import('../../domain/carnets/modele').NoteSurArticle[];
 }
 export interface NoteV { id: string; texte: string; genre: GenreNote; le?: string; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }
 export interface PhotoV { id: string; jpeg: string; messageId?: string; le?: string }

@@ -41,6 +41,8 @@ export interface RappelsSuivi {
   onAvantApres?: (avantPhotoId?: string | null, apresPhotoId?: string | null) => void;
   /** Une carte « OK · Non » : `ok`, `non`, ou `plus-tard` (une tâche sans date). `index` : la place de la proposition dans le message. */
   onProposition?: (messageId: string, index: number, geste: 'ok' | 'non' | 'plus-tard') => void;
+  /** N4 : « Relire » sur la carte « Vérifier la dispo chez … » : lit la page de l'article visé, puis la carte part. Un geste du brasseur (une lecture est facturée). */
+  onVerifier?: (messageId: string, index: number) => void | Promise<void>;
   /** « Pourquoi B plutôt que A ? · Ajouter » : amorce le champ du bas, le message reste dans ce carnet. */
   onEcrire?: (amorce: string) => void;
   /** Le menu ⋯ : lui qui pose le genre du carnet (problème, mémo, récolte, idée) ; son choix passe avant celui de l'IA. */

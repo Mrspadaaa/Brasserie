@@ -215,7 +215,8 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
 export function pourIA(carnets: readonly CarnetDoc[]): CarnetPourIA[] {
   return carnets.slice(0, 30).map(c => ({
     id: c.id, titre: c.title, criteres: c.carnet.criteres, facons: c.carnet.facons,
-    articles: c.carnet.articles.map(a => ({ nom: a.nom, valeurs: a.valeurs })), notes: c.carnet.notes.map(n => ({ id: n.id, texte: n.texte }))
+    /* N1 : l'id, le domaine, le vendeur et le pays de chaque article : de quoi désigner celui qu'une note concerne */
+    articles: c.carnet.articles.map(a => ({ id: a.id, nom: a.nom, domaine: a.domaine, vendeur: a.vendeur, pays: a.pays, valeurs: a.valeurs })), notes: c.carnet.notes.map(n => ({ id: n.id, texte: n.texte }))
   }));
 }
 

@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { articleHonnete } from '../../domain/carnets/prixUnitaire';
+import { FaitsNoteFiche } from './FaitNote';
 import { Camera, Check, ChevronLeft, ChevronRight, ExternalLink, Eye, Pencil } from 'lucide-react';
 import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
 import { dispoDe } from '../../domain/carnets/modele';
@@ -72,6 +73,8 @@ export interface FicheArticleProps {
   onRelire?: () => void | Promise<void>;
   /** ESCALADER-SUR-MANQUE : relire avec l'IA forte quand un champ manque ou que les deux lectures se contredisent ; absent : pas de bouton. */
   onEscalader?: () => void | Promise<void>;
+  /** N2 : « Détacher ma note » : le fait d'une note quitte l'article, la note reste dans le carnet. */
+  onDetacherNote?: (messageId: string) => void;
   /** L-16 : l'article suivant ou précédent du carnet (balayer, ou ‹ ›). */
   onSuivant?: () => void;
   onPrecedent?: () => void;
@@ -321,6 +324,8 @@ export function FicheArticle(p: FicheArticleProps) {
           <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>
         </div>
       ) : <h2 className="cn-titre">{liesParNbsp(a.nom ?? a.domaine ?? 'Lien sans aperçu')}</h2>}
+      {/* NOTE-EXPLOITEE (N2) : ce que SES notes disent de l'article, à côté de ce que la page dit (« en stock »), jamais à sa place */}
+      {houblon ? null : <FaitsNoteFiche faits={a.notesSur} onDetacher={p.onDetacherNote} />}
       {houblon && (
         <>
           <p className="cn-fiche-qui cn-mut">
@@ -349,6 +354,7 @@ export function FicheArticle(p: FicheArticleProps) {
               {noteImport(regle, pour, p.taux) && <p className="cn-mut cn-prend-note">{noteImport(regle, pour, p.taux)}</p>}
             </section>
           )}
+          <FaitsNoteFiche faits={a.notesSur} onDetacher={p.onDetacherNote} />
         </>
       )}
       {(p.facon || ajoute) && (

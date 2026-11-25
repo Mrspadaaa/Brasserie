@@ -1,0 +1,8 @@
+/* NOTE-EXPLOITEE (25.11) : le fait d'une note sur un article, « dispo douteuse · ta note, 24 nov. ». Petit, à côté de ce que la page dit, jamais à sa place. */
+.cn-fait-note { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 0 8px; border-radius: 8px; background: var(--c-attbg); color: var(--c-att); font-size: 12px; font-weight: 600; line-height: 20px; }
+.cn-fait-note svg { flex: none; }
+.cn-fait-note-fiche { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; padding: 8px 10px; border-radius: 10px; background: var(--c-attbg); }
+.cn-fait-note-fiche .cn-fait-note { padding: 0; background: none; }
+.cn-fait-note-fiche q { font-style: normal; color: var(--c-encre, inherit); }
+.cn-fait-note-fiche .cn-lien { align-self: flex-start; }
+.cn-fait-note-th { display: block; margin-top: 4px; font-weight: 600; }

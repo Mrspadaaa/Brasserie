@@ -23,7 +23,7 @@ import { critereMesurable, jetons, normaliser, quantitesDe } from './analyseLoca
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, ajouterEvenement, PHOTOS_CARNET_MAX, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
-  type Etiquette, type GenreNote, type MessageDoc, type Note, type Origine, type PropositionCritere, type PropositionSuivi, type Rangement, type Rattache, type Valeur
+  type Etiquette, type GenreNote, type LivraisonArticle, type MessageDoc, type Note, type NoteSurArticle, type Origine, type PropositionCritere, type PropositionSuivi, type Rangement, type Rattache, type Valeur
 } from './modele';
 
 export type EcritureCarnet = { op: 'put'; doc: CreativeItem } | { op: 'remove'; id: string };
@@ -667,6 +667,52 @@ export function basculerVeille(etat: Etat, args: { carnetId: string; articleId: 
   else delete a.veille;
   poser(b, c);
   return b.resultat(allumer ? 'Veille demandée' : 'Veille arrêtée');
+}
+
+/**
+ * N1, N2 (NOTE-EXPLOITEE) : sa note qui parle d'UN article en devient un fait (« dispo douteuse · ta note, 24 nov. »). Écrit avec le rangement du message, donc
+ * annulé avec lui ; la note elle-même reste dans le carnet. Un message ne se rattache qu'une fois à un même article.
+ */
+export function noterSurArticle(etat: Etat, args: { carnetId: string; articleId: string; fait: NoteSurArticle }): Resultat {
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  const a = c?.carnet.articles.find(x => x.id === args.articleId);
+  if (!c || !a) return refus('Article introuvable.');
+  if ((a.notesSur ?? []).some(n => n.messageId === args.fait.messageId)) return refus('Cette note est déjà rattachée.');
+  a.notesSur = [...(a.notesSur ?? []), args.fait].slice(-5);
+  poser(b, c);
+  return b.resultat('Note rattachée à l’article');
+}
+
+/** N2 : « Détacher » d'un toucher : le fait quitte l'article, la note reste dans le carnet. */
+export function detacherNoteArticle(etat: Etat, args: { carnetId: string; articleId: string; messageId: string }): Resultat {
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  const a = c?.carnet.articles.find(x => x.id === args.articleId);
+  if (!c || !a) return refus('Article introuvable.');
+  const reste = (a.notesSur ?? []).filter(n => n.messageId !== args.messageId);
+  if (reste.length === (a.notesSur ?? []).length) return refus('Cette note n’est pas rattachée à l’article.');
+  if (reste.length) a.notesSur = reste; else delete a.notesSur;
+  poser(b, c);
+  return b.resultat('Note détachée de l’article');
+}
+
+/**
+ * N5 (LIEN-PAS-PRODUIT) : le port que dit une page d'information du vendeur (« frais d'envoi : 7,50 € ») est un fait du VENDEUR : il s'applique à ses articles du carnet
+ * (même site) qui n'ont pas déjà le leur (le port lu sur la page de l'article est plus précis et ne bouge pas). Les autres vendeurs n'en reçoivent aucun (inconnu, jamais 0).
+ */
+export function poserPortDuVendeur(etat: Etat, args: { carnetId: string; site: string; livraison: LivraisonArticle }): Resultat {
+  const l = args.livraison;
+  if (l.prixCentimes === undefined && !l.gratuite && !l.refusee) return refus('Aucun port lu.');
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  if (!c) return refus('Carnet introuvable.');
+  const site = (d: string | undefined) => (d ?? '').trim().toLowerCase().replace(/^www\./, '');
+  const vises = c.carnet.articles.filter(a => !!args.site && site(a.domaine) === site(args.site) && !a.livraison);
+  if (!vises.length) return refus('Aucun article de ce vendeur sans port.');
+  for (const a of vises) a.livraison = { ...l };
+  poser(b, c);
+  return b.resultat('Port du vendeur posé sur ses articles');
 }
 
 /**

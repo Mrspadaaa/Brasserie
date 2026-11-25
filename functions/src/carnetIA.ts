@@ -102,7 +102,8 @@ export interface CarnetCompact {
   titre: string;
   criteres: Array<{ texte: string; caracteristique?: CaracteristiqueCompacte }>;
   facons: string[];
-  articles: Array<{ nom: string; valeurs?: Record<string, string> }>;
+  /** N1 (25.11) : `id`, `domaine` et `vendeur` : de quoi désigner l'article qu'une note concerne (sans eux, l'IA ne pouvait que deviner). */
+  articles: Array<{ nom: string; id?: string; domaine?: string; vendeur?: string; valeurs?: Record<string, string> }>;
   notes: Array<{ id: string; texte: string }>;
   /** D451, tout facultatif (un client ancien ne les envoie pas) : genre, état, domaine, chemin ; les options qui ne sont pas de simples pistes ; tâches ouvertes ; derniers messages. */
   genre?: GenreSuivi;
@@ -175,6 +176,7 @@ export const RANGER_CARNET_SCHEMA = S({
       etatPropose: { type: 'STRING', enum: [...ETATS_SUIVI_IA], nullable: true },
       tachePropose: { ...S({ texte: str, quand: { type: 'STRING', enum: [...QUAND_TACHE] }, prix: num }, ['quand']), nullable: true },
       citation: str,
+      articleId: str,
       raisonCarnet: str,
       url: str,
       prix: num,
@@ -294,6 +296,12 @@ Suivi d'un problème (champs facultatifs : nuls quand le message ne le dit pas ;
 Une étiquette se pose et s'annule d'un toucher ; une tâche, un choix, une date, une résolution ne s'écrivent jamais seuls : tu les proposes.
 Exemple neutre (inventé) : « devis reçu de la menuiserie, 480 CHF » → etiquette "devis", prix 480, citation absente.
 
+Une NOTE qui parle d'UN article de « articles » du carnet (« le site français semble ne plus avoir de stock », « les pellets suisses étaient
+éventés », « MotlerHops met trois semaines à livrer ») garde sa ligne "note" et désigne cet article : « articleId » = son « id », « citation » = les
+mots EXACTS du message qui le désignent (le vendeur, le site, son pays). Seulement quand un seul article correspond à ce passage ; sinon « articleId » nul.
+Ta mise en forme de « texte » ne change pas ce qu'il a dit : « semble » reste un doute, jamais une certitude, et tu ne donnes aucun score.
+Une page de référence dont « pages » ne donne ni prix ni produit (frais d'envoi, conditions de vente, guide) est une "note", jamais un "article".
+
 Aides (seulement quand c'est sûr, sinon nul) :
   • « doublonDe » (sur une note) : l'id d'une note des « carnets » qui dit la même chose.
   • « commeCritere » (sur une note) : true si la note est en fait une exigence pour choisir.
@@ -311,7 +319,7 @@ Aides (seulement quand c'est sûr, sinon nul) :
 const SORTES = new Set<string>(SORTES_CARNET);
 const GENRES = new Set<string>(GENRES_CARNET);
 const SENS = new Set<string>(SENS_CARNET);
-const CHAINES = ['genre', 'titre', 'carnetId', 'carnetNeuf', 'raisonCarnet', 'url', 'devise', 'unite', 'vendeur', 'consequence', 'doublonDe', 'titrePropose'] as const;
+const CHAINES = ['genre', 'titre', 'carnetId', 'articleId', 'carnetNeuf', 'raisonCarnet', 'url', 'devise', 'unite', 'vendeur', 'consequence', 'doublonDe', 'titrePropose'] as const;
 const chaine = (v: unknown, max = 300): string | undefined => typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : undefined;
 
 /** Un chemin lu : 1 à 2 niveaux (le reste est coupé) ; un niveau de plus de 30 caractères refuse tout le chemin. `undefined` : rien. */
@@ -415,7 +423,8 @@ function carnetCompact(c: unknown): CarnetCompact | null {
     if (!nom) return [];
     const v = o?.valeurs && typeof o.valeurs === 'object' ? Object.entries(o.valeurs as Record<string, unknown>).slice(0, 8)
       .flatMap(([k, val]) => typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean' ? [[k.slice(0, 60), String(val).slice(0, 60)]] : []) : [];
-    return [v.length ? { nom, valeurs: Object.fromEntries(v) } : { nom }];
+    const id = chaine(o?.id, 120), domaine = chaine(o?.domaine, 120), vendeur = chaine(o?.vendeur, 80);
+    return [sansVide({ nom, id, domaine, vendeur, valeurs: v.length ? Object.fromEntries(v) : undefined })];
   });
   const notes = liste(r.notes, NOTES_MAX).flatMap((x) => {
     const o = x as Record<string, unknown> | null;

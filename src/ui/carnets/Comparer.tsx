@@ -19,6 +19,9 @@ import { compromisDe, ecartPrixDit, perteDite, groupeDeLigne, LIGNE_CRITERE, LIG
 import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import { BoutonRelire } from './BoutonRelire';
+import { FaitNote } from './FaitNote';
+import { portDit } from './PrixPastille';
+import type { NoteSurArticle } from '../../domain/carnets/modele';
 import { BoutonEscalader } from './BoutonEscalader';
 import { Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
@@ -419,12 +422,13 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 }
 
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
-function CellulePrix({ l, taux, onRelire, onEscalader, prixKg }: { l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void>; prixKg?: string | null }) {
+function CellulePrix({ l, taux, onRelire, onEscalader, prixKg, port }: { port?: string | null; l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void>; prixKg?: string | null }) {
   const escalader = onEscalader && !l.ecarte && l.aEscalader?.length ? <BoutonEscalader onEscalader={() => onEscalader(l.articleId)} raison={l.aEscalader.map(x => (x === 'doute' ? 'les deux lectures ne s\u2019accordent pas' : `${x} manquant`)).join(' ; ')} classe="cn-escalader-cellule" /> : null;
   /* C48-1 : l'article est lu mais son prix ne l'est pas : « Relire » est un geste du brasseur (rien ne part tout seul) */
   if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}{escalader}</>;
   /* D451 (maquette v01, « CHF/kg ≈ 41 ») : un carnet de matière pesée compare le kilo rendu à la quantité d'achat du carnet ; les gestes de la cellule restent */
-  if (prixKg) return <><span className="cn-mono">{prixKg}</span>{escalader}</>;
+  /* N5 : le port que dit le vendeur (sa page d'information, ou la page de l'article) se dit sous le prix rendu ; jamais inventé : absent, rien */
+  if (prixKg) return <><span className="cn-mono">{prixKg}</span>{port ? <small className="cn-mut cn-mono">{port}</small> : null}{escalader}</>;
   if (estEtranger(l)) {
     const r = renduArticle(l, taux);
     const dev = (l.devise ?? '').toUpperCase();
@@ -598,6 +602,7 @@ export function Comparer(p: ComparerProps) {
                           <span className="cn-cmp-nom">{liesParNbsp(sa ? sa.titre : l.nom)}</span>
                           {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend">{[l.vendeur, l.pays].filter(Boolean).join(' · ')}</span>}
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
+                          <FaitNote faits={(p.articles?.find(x => x.id === l.articleId) as { notesSur?: NoteSurArticle[] } | undefined)?.notesSur} classe="cn-fait-note-th" />
                         </button>
                       </th>
                     );
@@ -628,7 +633,7 @@ export function Comparer(p: ComparerProps) {
                         const hors = l.horsSeuil?.[c.cle];
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} prixKg={matiere ? prixKgDe.get(l.articleId) ?? null : null} />
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} prixKg={matiere ? prixKgDe.get(l.articleId) ?? null : null} port={(() => { const art = p.articles?.find(x => x.id === l.articleId); return art ? portDit(art as unknown as ArticleV) : null; })()} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">?</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}

@@ -17,6 +17,7 @@ import { alphaDe, conditionnementsDe, ligneDuPour, prixAuKilo, puceDoute, QUANTI
 import { libelleEcarte, prixTexte, trouverValeur, valeursLuesDe, valeursLuesOrdonnees } from '../../domain/carnets/comparer';
 import { memeCaracteristique } from '../../../functions/src/lienFusion';
 import { dispoDe } from '../../domain/carnets/modele';
+import { FaitNote } from './FaitNote';
 import { montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
 import { VignetteObjet } from './pictos';
 import { detailPrix, PrixPastille, PrixRenduDetail, PrixTexte } from './PrixPastille';
@@ -312,7 +313,7 @@ export function CarteClassee(p: CarteClasseeProps) {
   const [rendu, setRendu] = React.useState(false);
   const qui = [a.vendeur ?? a.domaine, a.pays].filter(Boolean).join(' · ');
   return (
-    <div className={`cn-classee${p.ecarte ? ' cn-ecarte' : ''}`}>
+    <div className={`cn-classee${p.ecarte ? ' cn-ecarte' : ''}`} data-article={a.id}>
       <button type="button" className="cn-classee-corps" onClick={p.onOuvrir} aria-label={`${a.nom ?? 'Article'}${p.rang ? `, ${rangTexte(p.rang)}` : ''}`}>
         <span className="cn-classee-photo">
           <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
@@ -323,6 +324,7 @@ export function CarteClassee(p: CarteClasseeProps) {
           {/* « exemple » se dit une fois, au pied de la feuille (h06-5 « Vendeurs, prix et photos : exemple ») */}
           <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}</span>
           {dispoDe(a) && <span><span className={`cn-dispo${/stock/i.test(dispoDe(a)!) ? ' cn-vert' : ' cn-att'}`}>{dispoDe(a)}</span></span>}
+          {a.notesSur?.length ? <span><FaitNote faits={a.notesSur} /></span> : null}
         </span>
         <span className="cn-classee-reserve" aria-hidden />
       </button>
@@ -401,7 +403,7 @@ export function CarteMatiere(p: CarteMatiereProps) {
   const plusieurs = conds.length > 1;
   const prixGros = pk ? texteChfKg(pk) : null;
   const corps = (
-    <div className={`cn-carte-mat${p.rang === 1 ? ' cn-carte-mat-1' : ''}${p.ecarte ? ' cn-ecarte' : ''}`}>
+    <div className={`cn-carte-mat${p.rang === 1 ? ' cn-carte-mat-1' : ''}${p.ecarte ? ' cn-ecarte' : ''}`} data-article={a.id}>
       <button type="button" className="cn-carte-mat-corps" onClick={p.onOuvrir} aria-label={`${nom}${p.rang ? `, ${rangTexte(p.rang)}` : ''}`}>
         {p.rang ? <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span> : null}
         <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
@@ -418,6 +420,7 @@ export function CarteMatiere(p: CarteMatiereProps) {
         {alpha && <span className="cn-pastille cn-carte-mat-alpha">α <span className="cn-mono">{alpha}</span></span>}
         {dispo && <span className={`cn-pastille ${dispoClasse(dispo)}`}>{dispo}</span>}
         {doute && <span className="cn-tag-att"><TriangleAlert size={14} aria-hidden /> {doute}</span>}
+        <FaitNote faits={a.notesSur} />
         <span className="cn-sp" />
         {choisie && <span className="cn-carte-mat-petit"><span className="cn-mut">{choisie.libelle}</span> <span className="cn-mono">{textePrixConditionnement(choisie)}</span></span>}
       </span>
