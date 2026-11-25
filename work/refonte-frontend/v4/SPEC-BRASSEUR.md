@@ -2925,3 +2925,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 matin (carnet ZZ « pompe qui chauffe » : genre Idée, la phrase du problème devenue « Critère », titre redit en 1re bulle, « Résolu » écrit mais état non suivi ; capture plaintes/2026-11-25-note-devenue-critere.jpg) : « ?????? »
 - 25.11 matin (réponse au ménage des ZZ et des 3 notes de test dans ses carnets) : « Non met les sur le nouveau carnet, pareil pour les autres »
 - 25.11 (exemples ZZ) : « A (refaire les exemples au nouveau format) oui »
+- 25.11 après-midi (Brassins › Atelier › Carnet ; captures plaintes/2026-11-25-bas-vide.jpg (bande vide entourée sous le champ, autour du +), -co2-incoherent.jpg, -citra-tour80.jpg) : « Mais il se passe quoi avec ce carnet ???? »
