@@ -201,7 +201,7 @@ describe('R93 · CARNET-SES-DONNEES-EXISTANTES (cause A) : un article ancien mon
     await citra();
     const tab = celluleKg(ligneDe(MOTLER));
     await ouvrirFiche(MOTLER);
-    const fiche = lu(document.querySelector('.cn-offres'));
+    const fiche = lu(document.body); // R78-2 (25.11) : le CHF/kg de la fiche vit dans la colonne « je prends », plus dans .cn-offres
     const m = /(\d[\d  ]*[.,]\d+)\s*CHF\/kg/.exec(fiche);
     expect(m, `la fiche dit son CHF/kg : « ${fiche} »`).toBeTruthy();
     expect(sans(tab), `tableau « ${tab} » ≠ fiche « ${m?.[1]} »`).toContain(sans(m![1]).replace(/\s/g, '').slice(0, 4));
