@@ -105,8 +105,10 @@ export function accepterPropositionSuivi(etat: Etat, args: { messageId: string; 
   switch (p.sorte) {
     case 'tache': {
       /* C70-5 : la date que sa phrase dit (« avant le 12 décembre », « en mai ») prime sur celle que l'IA a supposée (la semaine courante) */
-      const dite = echeanceDite(m.carnetMessage.texte, new Date(args.le));
-      r = ajouterTache(etat, { carnetId: p.carnetId, texte: p.texte ?? '', le: args.le, echeance: dite?.echeance ?? p.echeance, precision: dite?.precision ?? p.precision, coutCentimes: p.coutCentimes, devise: p.devise, optionId: p.optionId, messageId: m.id, origine: p.origine });
+      /* R110 : « dans 2 semaines » se compte depuis le jour où la phrase a été écrite, comme la carte le dit */
+      const ecrite = new Date(m.carnetMessage.le);
+      const dite = echeanceDite(m.carnetMessage.texte, Number.isNaN(ecrite.getTime()) ? new Date(args.le) : ecrite);
+      r = ajouterTache(etat, { carnetId: p.carnetId, texte: p.texte ?? '', le: args.le, echeance: dite?.echeance ?? p.echeance, precision: dite?.precision ?? p.precision, ...(dite ? { echeancePosee: true as const } : {}), coutCentimes: p.coutCentimes, devise: p.devise, optionId: p.optionId, messageId: m.id, origine: p.origine });
       break;
     }
     case 'dater': {

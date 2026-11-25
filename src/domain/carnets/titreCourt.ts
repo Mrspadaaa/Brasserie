@@ -19,6 +19,28 @@ const MOT_OUTIL_FINAL = /(?:^|[\s'’])(?:fait|font|est|sont|a|ont|va|vont|de|du
 /** Sans le dernier mot (et son apostrophe d'élision), ni ponctuation de fin. */
 const sansDernierMot = (t: string): string => t.replace(/[\s'’]*[^\s'’]+$/u, '').replace(/[\s,;:.–—-]+$/u, '');
 
+/** Un nom d'option plus long que ceci est une phrase : l'écran en dit le nom court (la phrase reste dans le fil et dans la donnée). */
+export const NOM_OPTION_MAX = 45;
+const ETIQUETTE_OPTION = /^\s*(?:pistes?|options?|idées?|première idée|solutions?|autre idée)\s*:\s*/iu;
+const DEBUT_OPTION = /^\s*(?:plutôt|peut-être|finalement)\s+(?:(?:un|une|le|la|l['’]|des|du)\s*)?/iu;
+/**
+ * R111 (EXA-5, c79) : « Pistes : joint du couvercle, raccord gaz ou régulateur. » devient UNE option nommée par sa phrase. L'écran dit son nom court : sans l'étiquette (« Pistes : »)
+ * ni l'adverbe d'ouverture (« Plutôt un … »), coupé à la première proposition ; un nom déjà court est rendu tel quel. Les mots du brasseur ne sont jamais réécrits : seulement coupés.
+ */
+export function nomCourtOption(nom: string): string {
+  const brut = nom.trim();
+  if (brut.length <= NOM_OPTION_MAX) return brut;
+  let corps = brut.replace(ETIQUETTE_OPTION, '').replace(DEBUT_OPTION, '');
+  const coupe = /^(.{6,}?)\s*(?:[,;:]|\.(?=\s|$))/u.exec(`${corps}`);
+  if (coupe) corps = coupe[1].trim();
+  corps = corps.replace(/[\s,;:.–—-]+$/u, '');
+  if (corps.length > NOM_OPTION_MAX) corps = titreCourt(corps, NOM_OPTION_MAX);
+  return corps ? corps.charAt(0).toUpperCase() + corps.slice(1) : brut;
+}
+
+/** `nomCourtOption` d'un nom qui peut manquer (« rangé sous aucune option » : rien). */
+export const nomCourtSi = (nom?: string): string | undefined => (nom === undefined ? undefined : nomCourtOption(nom));
+
 export function titreCourt(phrase: string, max = TITRE_COURT_MAX): string {
   const entiere = titreDePhrase(phrase);
   const marque = MARQUE.exec(entiere)?.[0].replace(/\s+$/, ' ') ?? '';

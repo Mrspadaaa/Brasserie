@@ -174,7 +174,7 @@ export const RANGER_CARNET_SCHEMA = S({
       genreCarnet: { type: 'STRING', enum: [...GENRES_SUIVI], nullable: true },
       chemin: { type: 'ARRAY', items: { type: 'STRING' }, nullable: true },
       etatPropose: { type: 'STRING', enum: [...ETATS_SUIVI_IA], nullable: true },
-      tachePropose: { ...S({ texte: str, quand: { type: 'STRING', enum: [...QUAND_TACHE] }, prix: num }, ['quand']), nullable: true },
+      tachePropose: { ...S({ texte: str, quand: { type: 'STRING', enum: [...QUAND_TACHE] }, prix: num, date: str }, ['quand']), nullable: true },
       citation: str,
       articleId: str,
       raisonCarnet: str,
@@ -260,7 +260,7 @@ un souci à suivre ou une question gardent leur chemin d'avant.
 
 Un besoin ou un manque que le message dit (une chose à racheter, à commander, à prévoir ; « il faut… », « besoin de… », « penser à… ») est un
 geste : propose toujours « tachePropose » sur la ligne qui le range (« texte » à l'infinitif, « quand » "un-jour" quand aucune date n'est dite,
-« prix » seulement s'il est écrit) ; une tâche se propose, elle ne s'écrit jamais seule.
+« date » "MM-JJ" quand la phrase dit un jour et un mois, « prix » seulement s'il est écrit) ; une tâche se propose, elle ne s'écrit jamais seule.
 
 Une solution envisagée pour un problème (une « piste », une « option », un produit ou une méthode comparés) tapée dans le carnet d'un problème est
 une "facon" nommée par son objet (« texte » = le nom court de la solution, sans le mot « piste » ni le prix ni le vendeur) ; ce qu'il en dit (montant,
@@ -293,6 +293,9 @@ Suivi d'un problème (champs facultatifs : nuls quand le message ne le dit pas ;
     (fûts, embouteillage) ; le second, s'il y en a un, l'objet.
   • « tachePropose » : un geste à faire, « texte » à l'infinitif, « quand » ("semaine", "mois" ou "un-jour" quand aucune date n'est
     dite), « prix » seulement s'il est écrit. Sans « texte » et avec « option » : la date de cette solution.
+    « date » : quand la phrase dit un JOUR et un mois (« le 6 déc. », « avant le 31 décembre », « la semaine du 14 »), ce jour au format
+    "MM-JJ" (sans année), recopié de la phrase : ce jour prime sur « quand ». Jamais une date calculée ou supposée (« dans 2 semaines »,
+    « bientôt », « en mai » : « date » nul, « quand » dit la période).
 Une étiquette se pose et s'annule d'un toucher ; une tâche, un choix, une date, une résolution ne s'écrivent jamais seuls : tu les proposes.
 Exemple neutre (inventé) : « devis reçu de la menuiserie, 480 CHF » → etiquette "devis", prix 480, citation absente.
 
@@ -345,7 +348,9 @@ function suiviAssaini(r: Record<string, unknown>, out: Record<string, unknown>):
   if (t && typeof t === 'object' && (QUAND_TACHE as readonly string[]).includes(t.quand as string)) {
     const texte = chaine(t.texte, 120);
     const prix = typeof t.prix === 'number' && Number.isFinite(t.prix) && t.prix > 0 ? t.prix : undefined;
-    out.tachePropose = { quand: t.quand, ...(texte ? { texte } : {}), ...(prix !== undefined ? { prix } : {}) };
+    // R110 : le jour que la phrase DIT (« MM-JJ », sans année : le client la choisit), jamais un jour que le modèle aurait calculé ; une forme illisible est ignorée.
+    const date = typeof t.date === 'string' && /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(t.date.trim()) ? t.date.trim() : undefined;
+    out.tachePropose = { quand: t.quand, ...(texte ? { texte } : {}), ...(prix !== undefined ? { prix } : {}), ...(date ? { date } : {}) };
   }
 }
 

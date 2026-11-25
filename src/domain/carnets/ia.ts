@@ -20,6 +20,7 @@ import { estUnMemo } from './memo';
 import type { CarnetDoc, Etiquette, MessageDoc, PropositionSuivi, Rattache } from './modele';
 import { rapprocherChemin } from './arbre';
 import { echeanceDe } from './taches';
+import { echeanceDeMoisJour } from './tacheDatee';
 import { etatDe, etatOption, genreDe } from './suivi';
 import { articleVise, pageSansProduit } from './noteSurArticle';
 
@@ -301,9 +302,11 @@ function suiviDeLigne(r: Record<string, unknown>, ligne: LigneCarnet, ctx: Conte
   if (t && typeof t === 'object' && typeof t.quand === 'string' && QUAND.has(t.quand)) {
     const texte = chaine(t.texte, 120);
     // Sans texte, c'est la date d'une option : il faut l'option et une date.
-    if (texte || (option && t.quand !== 'un-jour')) {
-      const precision = t.quand === 'mois' ? 'mois' : t.quand === 'semaine' ? 'semaine' : undefined;
-      const echeance = precision ? echeanceDe(jourDe(ctx.maintenant ?? new Date()), precision) ?? undefined : undefined;
+    // R110 : le jour que la phrase dit (« MM-JJ » recopié par l'IA) prime sur « quand » ; il doit figurer dans le message (un jour que la phrase n'écrit pas est ignoré).
+    const jourDit = typeof t.date === 'string' && /^\d{2}-\d{2}$/.test(t.date) && new RegExp(`(^|\\D)0?${Number(t.date.slice(3))}(\\D|$)`).test(ctx.texte) ? echeanceDeMoisJour(t.date, ctx.maintenant ?? new Date()) : null;
+    if (texte || (option && (t.quand !== 'un-jour' || jourDit))) {
+      const precision = jourDit ? 'semaine' : t.quand === 'mois' ? 'mois' : t.quand === 'semaine' ? 'semaine' : undefined;
+      const echeance = jourDit ?? (precision ? echeanceDe(jourDe(ctx.maintenant ?? new Date()), precision) ?? undefined : undefined);
       const tache: TachePropose = { ...(texte ? { texte } : {}), ...(echeance && precision ? { echeance, precision } : {}) };
       if (typeof t.prix === 'number' && Number.isFinite(t.prix) && t.prix > 0 && contient(nombresTexte, t.prix)) {
         const centimes = Math.round(t.prix * 100);

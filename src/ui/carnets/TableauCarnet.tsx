@@ -1,4 +1,5 @@
 /** Le tableau du carnet ouvert (h05-3) et la ligne d'un lien à relire, sortis de CarnetOuvert.tsx. */
+import { nomCourtOption, nomCourtSi } from '../../domain/carnets/titreCourt';
 import React, { useLayoutEffect, useRef } from 'react';
 import { ExternalLink, Eye, Link2, TriangleAlert } from 'lucide-react';
 import { cleDeNom, rangDeDecision, trierParDecision } from '../../../functions/src/lienFusion';
@@ -203,7 +204,7 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
             {b.facon && (
               <div className="cn-tab-facon" role="row">
                 <span className="cn-sp" role="rowheader">
-                  <b>{b.facon.nom}</b>
+                  <b>{nomCourtOption(b.facon.nom)}</b>
                   {/* C68-7 : des articles sans option suivent ce bloc : « aucun article encore » les lirait comme rangés sous elle ; ils ont leur propre en-tête */}
                   {prix ? <span className="cn-mono cn-mut cn-tab-etendue">{prix}</span> : sansFacon.lignes.length ? null : <span className="cn-mut">aucun article encore</span>}
                 </span>
@@ -228,7 +229,7 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>
                   {l.rang && !l.ecarte && matiere && !prixKg.get(l.articleId) ? <span className="cn-rang cn-rang-vide" aria-label="sans rang : le prix au kilo n'est pas connu">?</span> : l.rang && !l.ecarte ? <span className={`cn-rang${l.rang === 1 ? ' cn-rang-1' : ''}`}>{l.rang}</span> : <span className="cn-rang cn-rang-vide" aria-label="écarté">–</span>}
-                  <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, b.facon?.nom, titre]} classe="cn-vignette-petite" taille={30} />
+                  <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, nomCourtSi(b.facon?.nom), titre]} classe="cn-vignette-petite" taille={30} />
                   <span className="cn-tab-nom" role="cell">
                     {/* tour 3, f5c n° 9 : le nom entier ; deux articles de même nom se distinguent par leur vendeur (« · Brassage Romandie ») */}
                     <span className="cn-nom-entier" title={nomAuTableau(l.nom) !== l.nom ? l.nom : undefined}>{liesParNbsp(b.lignes.filter(x => nomAuTableau(x.nom) === nomAuTableau(l.nom)).length > 1 ? l.nom : nomAuTableau(l.nom))}</span>

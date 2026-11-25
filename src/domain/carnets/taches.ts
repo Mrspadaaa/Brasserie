@@ -68,6 +68,8 @@ export function tachesDe(c: CarnetDoc): TacheVue[] {
 interface ArgsTache {
   carnetId: string; texte: string; le: string; echeance?: string; precision?: PrecisionTache; coutCentimes?: number; devise?: string; coutEstime?: boolean;
   optionId?: string; planId?: string; messageId?: string; origine?: Origine; id?: string;
+  /** R110 : la date (ou son absence : « Plus tard ») est un choix du brasseur ou celle de sa phrase : la phrase d'origine ne la remplace pas à la lecture. */
+  echeancePosee?: true;
 }
 
 /** « À faire » (avec une date) ou « Plus tard » (sans : « Un jour »). Sans échéance, la précision est ignorée ; un coût absent reste absent (jamais 0). */
@@ -92,7 +94,7 @@ export function ajouterTache(etat: Etat, args: ArgsTache): Resultat {
   const t: Tache = sansIndefinis({
     id: args.id ?? nouvelIdCarnet('TACHE'), texte, echeance, precision: echeance ? precision : undefined, coutCentimes: args.coutCentimes,
     devise: args.coutCentimes !== undefined ? args.devise ?? 'CHF' : undefined, coutEstime: args.coutCentimes !== undefined && args.coutEstime ? (true as const) : undefined,
-    optionId: args.optionId, planId: args.planId, messageId: args.messageId, origine: args.origine ?? 'vous', creeeLe: args.le
+    optionId: args.optionId, planId: args.planId, messageId: args.messageId, origine: args.origine ?? 'vous', creeeLe: args.le, echeancePosee: args.echeancePosee
   });
   c.carnet.taches = [...(c.carnet.taches ?? []), t];
   ajouterEvenement(s, sansIndefinis({ id: nouvelIdCarnet('EVT'), le: args.le, sorte: 'tache' as const, tacheId: t.id, vers: 'ajoutee', optionId: args.optionId, messageId: args.messageId, origine: t.origine }));
@@ -124,7 +126,7 @@ export function poserEcheance(etat: Etat, args: { carnetId: string; tacheId: str
   if (!c || !t) return refus('Tâche introuvable.');
   if (args.echeance === null) {
     if (!t.echeance) return b.resultat('Déjà sans date');
-    delete t.echeance; delete t.precision;
+    delete t.echeance; delete t.precision; t.echeancePosee = true;
     b.ecrire(c);
     return b.resultat('✓ Un jour');
   }
@@ -132,7 +134,7 @@ export function poserEcheance(etat: Etat, args: { carnetId: string; tacheId: str
   const e = echeanceDe(args.echeance, precision);
   if (e === null) return refus('Date illisible.');
   if (t.echeance === e && (t.precision ?? 'semaine') === precision) return b.resultat('Même date');
-  t.echeance = e; t.precision = precision;
+  t.echeance = e; t.precision = precision; t.echeancePosee = true;
   b.ecrire(c);
   return b.resultat('✓ Daté');
 }

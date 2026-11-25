@@ -129,9 +129,16 @@ export function raisonDEcart(f: Facon): { texte: string; le?: string } | null {
   if (etatOption(f) !== 'ecartee') return null;
   const dernier = [...(f.suivi?.historique ?? [])].reverse().find(p => p.etat === 'ecartee');
   const texte = (dernier?.raison ?? f.raison ?? '').trim();
-  if (!texte || ['pas pris', 'non'].includes(texte.toLowerCase()) || texte.split(/[^\p{L}\p{N}]+/u).filter(Boolean).length < 4) return null;
+  if (!texte || ['pas pris', 'non'].includes(texte.toLowerCase())) return null;
+  const mots = texte.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  /* R111 (EXA-10, c79) : « finalement pas utile » dit pourquoi en trois mots ; « non, en fait » n'en dit aucun : trois mots comptent s'ils en portent un de fond (cinq lettres, hors mots de liaison) */
+  const deFond = mots.some(m => m.length >= 5 && !MOTS_DE_LIAISON.has(m.toLowerCase()));
+  if (mots.length < 3 || (mots.length < 4 && !deFond)) return null;
   return { texte, ...(dernier?.le ? { le: dernier.le } : {}) };
 }
+const MOTS_DE_LIAISON = new Set(['finalement', 'vraiment', 'quand', 'même', 'alors', 'plutôt', 'enfin', 'bref']);
+const MOTS_VIDES_OPTION = new Set(['pistes', 'piste', 'plutôt', 'première', 'idée', 'dans', 'pour', 'avec', 'sans', 'sur', 'une', 'des', 'les', 'qui', 'que', 'est', 'sont', 'ou', 'et']);
+const motsDeFond = (t: string): Set<string> => new Set(t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z0-9]+/).filter(m => m.length >= 5 && !MOTS_VIDES_OPTION.has(m)));
 /** La première phrase d'un message (sous-chaîne exacte) : la citation quand l'étiquette ne dit pas laquelle. */
 const premierePhrase = (t: string): string => {
   const s = t.trim();
@@ -157,6 +164,26 @@ export function pourquoiDe(c: CarnetDoc, messages: readonly MessageDoc[]): Citat
       const mot = e.texte && m.carnetMessage.texte.includes(e.texte) ? e.texte : premierePhrase(m.carnetMessage.texte);
       if (!mot || trouvees.some(t => t.texte === mot)) continue;
       trouvees.push({ texte: mot, sorte: e.sorte, messageId: m.id, le: m.carnetMessage.le, rang });
+    }
+  }
+  if (retenue) {
+    /* R111 (EXA-10, c79 : « Autre fournisseur : en stock, 4 CHF de plus le sac. ») : la raison que l'option retenue porte elle-même, écrite par lui, est son pourquoi */
+    const raison = retenue.raison?.trim();
+    if (raison && !['pas pris', 'non'].includes(raison.toLowerCase()) && !trouvees.some(t => t.texte === raison)) {
+      const le = [...(retenue.suivi?.historique ?? [])].reverse().find(p => p.etat === 'retenue')?.le;
+      trouvees.push({ texte: raison, sorte: 'pourquoi', ...(le ? { le } : {}), rang: RANG_POURQUOI.pourquoi! });
+    }
+    /* « Test à l'eau savonneuse : bulles au raccord gaz. » : sans étiquette, une note du fil qui parle de ce que l'option retenue traite (un mot de fond commun, hors le message qui
+       l'a créée et le titre de la liste) et qui précède la décision dit ce qu'il a constaté avant de choisir : elle répond « pourquoi », jamais une question à poser. */
+    if (!trouvees.length && !c.carnet.facons.some(f => f.id !== retenue.id && raisonDEcart(f))) {
+      const fond = motsDeFond(retenue.nom);
+      const decide = [...(retenue.suivi?.historique ?? [])].reverse().find(p => p.etat === 'retenue')?.le;
+      const constat = messages
+        .filter(m => m.id !== retenue.messageId && m.carnetMessage.depuis !== 'liste' && !/^https?:\/\/\S+$/i.test(m.carnetMessage.texte.trim())
+          && (m.carnetMessage.depuis === c.id || m.carnetMessage.effets.some(e => e.carnetId === c.id)) && (!decide || m.carnetMessage.le < decide)
+          && [...motsDeFond(m.carnetMessage.texte)].some(w => fond.has(w)))
+        .sort((a, b) => a.carnetMessage.le.localeCompare(b.carnetMessage.le))[0];
+      if (constat) trouvees.push({ texte: premierePhrase(constat.carnetMessage.texte), sorte: 'pourquoi', messageId: constat.id, le: constat.carnetMessage.le, rang: RANG_POURQUOI.pourquoi! });
     }
   }
   if (retenue) for (const f of c.carnet.facons) {

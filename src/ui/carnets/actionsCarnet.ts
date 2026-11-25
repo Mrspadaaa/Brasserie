@@ -253,7 +253,7 @@ export function actionsCarnet(x: ActionsV) {
         if (quoi === 'non') { geste(retirer(etat), c.id); return; }
         if (quoi === 'plus-tard') {
           /* « Plus tard » : la tâche entre sans échéance (« Un jour »), la carte part ; un seul Annuler */
-          geste(enchainer(etat, [e => ajouterTache(e, { carnetId: pr.carnetId, texte: pr.texte ?? '', le: leMaintenant(), messageId, origine: pr.origine,
+          geste(enchainer(etat, [e => ajouterTache(e, { carnetId: pr.carnetId, texte: pr.texte ?? '', le: leMaintenant(), messageId, origine: pr.origine, echeancePosee: true,
             ...(pr.optionId ? { optionId: pr.optionId } : {}), ...(pr.coutCentimes !== undefined ? { coutCentimes: pr.coutCentimes } : {}), ...(pr.devise ? { devise: pr.devise } : {}) }), retirer], 'Tâche ajoutée, sans date'), c.id);
           return;
         }

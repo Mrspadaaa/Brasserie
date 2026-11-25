@@ -10,6 +10,8 @@ import { Bell, Calculator, Check, Ellipsis, RotateCcw, Sparkles, X } from 'lucid
 import type { EntreeFil, FilCarnet as FilVu } from '../../domain/carnets/fil';
 import type { CarnetDoc, Etiquette, EvenementSuivi, MessageDoc, Note, PropositionSuivi } from '../../domain/carnets/modele';
 import { notePlanningDe } from '../../domain/carnets/taches';
+import { echeanceDeLaPhrase } from '../../domain/carnets/tacheDatee';
+import { quandDite } from './afaireRegles';
 import { LIBELLE_ETAT, etatOption, optionRetenue } from '../../domain/carnets/suivi';
 import { GENRE_LIBELLE } from './EtatIA';
 import { BoutonRelire } from './BoutonRelire';
@@ -56,7 +58,19 @@ function Jeton({ classe, texte, retirer }: { classe: string; texte: string; reti
     : <button type="button" className="cnp-jeton cnp-jeton-bouton" data-j={classe} aria-label={`Jeton « ${texte} », poser par l'IA : toucher pour le retirer`} onClick={() => setArme(true)}>{texte}</button>;
 }
 
-function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { p: PropositionSuivi; index: number; messageId: string; rappels?: RappelsSuivi; titreCarnet?: (id: string) => string | undefined; c: CarnetDoc }) {
+/**
+ * R110 : la date qu'« À faire » écrira, dite sur la carte : celle de la phrase (« le 6 déc. » → « sem. du 30 nov. ») ou, à défaut, celle que l'IA propose.
+ * Sans échéance (« Plus tard ») : rien, jamais une date inventée.
+ */
+function quandDeLaCarte(p: PropositionSuivi, phrase: string, le: string, annee: number): string | null {
+  if (p.sorte !== 'tache') return null;
+  const ref = new Date(le);
+  const d = echeanceDeLaPhrase(p, phrase, Number.isNaN(ref.getTime()) ? new Date() : ref);
+  return d.echeance ? quandDite({ echeance: d.echeance, precision: d.precision ?? 'semaine' }, `${annee}-01-01`) : null;
+}
+
+function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c, phrase, le, annee }: { p: PropositionSuivi; index: number; messageId: string; rappels?: RappelsSuivi; titreCarnet?: (id: string) => string | undefined; c: CarnetDoc; phrase: string; le: string; annee: number }) {
+  const quand = quandDeLaCarte(p, phrase, le, annee);
   const opt = p.optionId ? c.carnet.facons.find(f => f.id === p.optionId)?.nom : undefined;
   const somme = p.coutCentimes !== undefined ? texteMontant({ montantCentimes: p.coutCentimes, devise: p.devise, estime: undefined }) : null;
   const cible = p.sorte === 'deplacer' ? (p.versCarnetId ? titreCarnet?.(p.versCarnetId) : undefined) : undefined;
@@ -79,6 +93,7 @@ function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { 
         {geste && <button type="button" className="cnp-x" aria-label="Non, écarter la proposition" onClick={() => geste(messageId, index, 'non')}><X size={16} aria-hidden /></button>}
       </span>
       <p>{corps}</p>
+      {quand && <p className="cn-mut cnp-quand" data-quand>{quand}</p>}
       {geste && (
         <div className="cnp-carte-gestes">
           {p.sorte === 'verifier'
@@ -196,7 +211,7 @@ export function FilCarnetVue(p: PropsFil) {
     return (
       <React.Fragment key={e.id}>
         {liees.length === 1 && entourer ? entourer(liees[0].id, noeud) : noeud}
-        {props.map(({ pr, i }) => <CartePropositionIA key={`${m.id}:${i}`} p={pr} index={i} messageId={m.id} rappels={rappels} titreCarnet={titreCarnet} c={c} />)}
+        {props.map(({ pr, i }) => <CartePropositionIA key={`${m.id}:${i}`} p={pr} index={i} messageId={m.id} rappels={rappels} titreCarnet={titreCarnet} c={c} phrase={m.carnetMessage.texte} le={m.carnetMessage.le} annee={annee} />)}
       </React.Fragment>
     );
   };

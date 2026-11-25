@@ -5,6 +5,7 @@
  * tuiles (photo, sinon le picto de la catégorie) ; « ira dans Réalisés » (seulement si un plan est lié) et Rouvrir ; le fil, replié sous « Le fil ▸ ».
  * Rien n'est inventé : une date, une durée ou une raison absentes ne se disent pas.
  */
+import { nomCourtOption } from '../../domain/carnets/titreCourt';
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronRight, Folder, RotateCcw, Sparkles } from 'lucide-react';
 import type { CarnetDoc, MessageDoc, Photo } from '../../domain/carnets/modele';
@@ -55,7 +56,7 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
   };
   const resolu = suiviDe(c).resolu;
   const duree = texteDuree(dureeDe(c));
-  const fermeture = texteFermeture(c);
+  const fermeture = texteFermeture(c, mes);
   const fermees = optionsFermees(c, annee);
   const retenue = optionRetenue(c);
   const { tuiles } = resolusDe(carnets, messages, annee);
@@ -103,13 +104,13 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
       <div className="cnp-tampon">
         <div className="cnp-tampon-tete"><span className="cnp-coche" aria-hidden><Check size={22} /></span><span className="cnp-tampon-titre">Résolu{duree ? <> <span className="cnp-tampon-duree">{duree}</span></> : null}</span></div>
         {fermeture && <p className="cnp-fermeture">{fermeture}</p>}
-        {retenue && resolu?.par?.sorte !== 'achat' && <p className="cnp-fermeture" data-retenue>Retenu : {retenue.nom}{infoOption(c, mes, retenue).prix ? ` · ${infoOption(c, mes, retenue).prix}` : ''}</p>}
+        {retenue && resolu?.par?.sorte !== 'achat' && <p className="cnp-fermeture" data-retenue>Retenu : {nomCourtOption(retenue.nom)}{infoOption(c, mes, retenue).prix ? ` · ${infoOption(c, mes, retenue).prix}` : ''}</p>}
         {fermees.length > 0 && (
           <ul className="cnp-fermees" aria-label="Options fermées">
             {fermees.map(o => (
               <li key={o.id}>
-                <VignetteObjet photo={c.carnet.articles.find(a => a.faconId === o.id && a.photo)?.photo} mots={[o.nom]} classe="cnp-opt-vignette" taille={28} />
-                <span className="cn-sp">{o.nom}</span><span className="cnp-jeton" data-j="ecart">{o.texte}</span>
+                <VignetteObjet photo={c.carnet.articles.find(a => a.faconId === o.id && a.photo)?.photo} mots={[nomCourtOption(o.nom)]} classe="cnp-opt-vignette" taille={28} />
+                <span className="cn-sp">{nomCourtOption(o.nom)}</span><span className="cnp-jeton" data-j="ecart">{o.texte}</span>
                 {prixFermee(o) && <span className="cnp-opt-prix">{prixFermee(o)}</span>}
                 {o.raison && <span className="cn-mut cnp-raison">« {o.raison} »</span>}
               </li>

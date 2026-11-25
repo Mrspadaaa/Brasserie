@@ -6,13 +6,14 @@
  * Plage de jours : des jours séparés d'un jour au plus se rangent sous une même pastille (« 21 – 22 nov. ») ; un jour isolé garde la sienne.
  * Écart d'un jour : le fil d'un problème avance par à-coups, deux jours de suite sont un même moment.
  */
+import { nomCourtOption } from '../../domain/carnets/titreCourt';
 import { ecartJours } from '../../domain/calendrier/dates';
 import { pluriel } from '../../domain/carnets/comptes';
 import { DOMAINE_LIBELLE, domaineDe, plier } from '../../domain/carnets/domaines';
 import type { EntreeFil, JourFil, Replie } from '../../domain/carnets/fil';
 import { dispoDe } from '../../domain/carnets/modele';
 import type { CarnetDoc, Etiquette, EtatOption, Facon, MessageDoc, SorteEtiquette } from '../../domain/carnets/modele';
-import { avantApresDe, categorieDe, dureeDe, etatOption, foisEcartee, jourLocal, optionRetenue, pourquoiDe, suiviDe, type Citation } from '../../domain/carnets/suivi';
+import { avantApresDe, categorieDe, dureeDe, etatDe, etatOption, foisEcartee, jourLocal, optionRetenue, pourquoiDe, suiviDe, type Citation } from '../../domain/carnets/suivi';
 import { dateCourte, montant } from './EtatIA';
 import { domaineParMots } from './domaineMots';
 import type { LienV } from './carnetOuvertTypes';
@@ -258,7 +259,7 @@ export function questionPourquoi(c: CarnetDoc, messages: readonly MessageDoc[]):
   if (pourquoiDe(c, messages) !== null) return null;
   const autres = c.carnet.facons.filter(f => f.id !== retenue.id);
   const autre = autres.find(f => etatOption(f) !== 'ecartee') ?? autres[0];
-  const [r, a] = autre ? nomsDistincts(retenue.nom, autre.nom) : [retenue.nom.trim(), ''];
+  const [r, a] = autre ? nomsDistincts(nomCourtOption(retenue.nom), nomCourtOption(autre.nom)) : [nomCourtOption(retenue.nom), ''];
   const titre = autre ? `Pourquoi ${r} plutôt que ${a} ?` : `Pourquoi ${r} ?`;
   return { retenue, ...(autre ? { autre } : {}), titre, amorce: `${titre.replace(/ \?$/, '')} : ` };
 }
@@ -297,13 +298,29 @@ export function texteDuree(n: number | null): string | null {
   return n === 0 ? 'le jour même' : `en ${pluriel(n, 'jour')}`;
 }
 
+const A_VENIR = /^\s*(?:la prochaine fois|à (?:revérifier|surveiller|voir|refaire)|penser|il faudra|ne pas oublier|pour la suite)\b/iu;
+/**
+ * R111 (EXA-7, c79 : « Monté à 19 °C, la fermentation démarre le lendemain. ») : un problème résolu sans « Fermé : … » écrit (le geste Résolu n'a pas demandé de phrase) dit ce que son fil a
+ * écrit en dernier comme fait : le dernier message du carnet qui n'est ni le titre de la liste, ni un lien, ni le message d'une option, ni une consigne pour la suite (« La prochaine fois : … »).
+ * Ses mots, mot pour mot, sous leur nom (« Dernier fait ») : jamais présenté comme un remède écrit par lui. Fil vide : `null`.
+ */
+export function dernierFaitDuFil(c: CarnetDoc, messages: readonly MessageDoc[]): string | null {
+  if (etatDe(c) !== 'resolu') return null;
+  const options = new Set(c.carnet.facons.map(f => f.messageId).filter(Boolean));
+  const dernier = messages
+    .filter(m => (m.carnetMessage.depuis === c.id || m.carnetMessage.effets.some(e => e.carnetId === c.id)) && m.carnetMessage.depuis !== 'liste' && !options.has(m.id)
+      && !/^https?:\/\/\S+$/i.test(m.carnetMessage.texte.trim()) && !A_VENIR.test(m.carnetMessage.texte) && m.carnetMessage.texte.trim().length > 0)
+    .sort((a, b) => a.carnetMessage.le.localeCompare(b.carnetMessage.le)).pop();
+  return dernier ? `Dernier fait : « ${dernier.carnetMessage.texte.trim()} »` : null;
+}
+
 /** « Fermé grâce à l'achat de « Condenseur B ». » ; réparation ou texte : ses mots ; rien de dit : `null`. */
-export function texteFermeture(c: CarnetDoc): string | null {
+export function texteFermeture(c: CarnetDoc, messages: readonly MessageDoc[] = []): string | null {
   const par = suiviDe(c).resolu?.par;
-  if (!par) return null;
+  if (!par) return dernierFaitDuFil(c, messages);
   if (par.sorte === 'achat') {
     const o = (par.optionId ? c.carnet.facons.find(f => f.id === par.optionId) : undefined) ?? optionRetenue(c);
-    return o ? `Fermé grâce à l'achat ${deNom(o.nom)}.` : `Fermé grâce à un achat.`;
+    return o ? `Fermé grâce à l'achat ${deNom(nomCourtOption(o.nom))}.` : `Fermé grâce à un achat.`;
   }
   if (par.sorte === 'reparation') return 'Fermé par la réparation.';
   return par.texte ? `Fermé : ${par.texte}` : null;
@@ -331,14 +348,14 @@ export function articlesPasPris(c: CarnetDoc, retenue: Facon | undefined = optio
 
 function optionsDesFacons(c: CarnetDoc, annee: number | undefined, retenue: Facon | undefined): OptionFermee[] {
   return c.carnet.facons.filter(f => f.id !== retenue?.id).map(f => {
-    if (etatOption(f) !== 'ecartee') return { id: f.id, nom: f.nom, texte: 'pas pris' };
+    if (etatOption(f) !== 'ecartee') return { id: f.id, nom: nomCourtOption(f.nom), texte: 'pas pris' };
     const dernier = [...(f.suivi?.historique ?? [])].reverse().find(p => p.etat === 'ecartee');
     /* la fermeture écarte les pistes restantes avec la raison « pas pris » (suivi.ts, fermerParAchat) : ce n'est pas un « non » de lui */
-    if ((dernier?.raison ?? f.raison ?? '').trim().toLowerCase() === 'pas pris') return { id: f.id, nom: f.nom, texte: 'pas pris' };
+    if ((dernier?.raison ?? f.raison ?? '').trim().toLowerCase() === 'pas pris') return { id: f.id, nom: nomCourtOption(f.nom), texte: 'pas pris' };
     const jour = dernier?.le ? libelleJour(jourLocal(dernier.le), annee) : null;
     const fois = foisEcartee(f);
     const raison = (dernier?.raison ?? f.raison ?? '').trim();
-    return { id: f.id, nom: f.nom, texte: `non${jour ? `, ${jour}` : ''}${fois >= 2 ? ` · ${rangEn(fois)} fois` : ''}`, ...(raison && plier(raison) !== 'non' ? { raison } : {}) };
+    return { id: f.id, nom: nomCourtOption(f.nom), texte: `non${jour ? `, ${jour}` : ''}${fois >= 2 ? ` · ${rangEn(fois)} fois` : ''}`, ...(raison && plier(raison) !== 'non' ? { raison } : {}) };
   });
 }
 
@@ -400,7 +417,7 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
       : tries.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.sorte === 'achat' && e.montantCentimes !== undefined);
     /* la fiche se relit des mois plus tard : le jour dit son année (« 30 nov. 2026 ») */
     const jourPris = resolu ? `${libelleJour(jourLocal(resolu.le))} ${jourLocal(resolu.le).slice(0, 4)}` : null;
-    pris = { nom: minus(retenue.nom), prix: achat ? texteMontant(achat) : null, jour: jourPris };
+    pris = { nom: minus(nomCourtOption(retenue.nom)), prix: achat ? texteMontant(achat) : null, jour: jourPris };
   } else if (resolu?.par?.texte) pris = { nom: resolu.par.texte, prix: null, jour: `${libelleJour(jourLocal(resolu.le))} ${jourLocal(resolu.le).slice(0, 4)}` };
   const n = tries.length + doc.notes.filter(x => !x.messageId || !mes.some(m => m.id === x.messageId)).length;
   const parts = [texteDureeCourte(dureeDe(c)), n ? pluriel(n, 'note') : null, doc.photos.length ? pluriel(doc.photos.length, 'photo') : null].filter((x): x is string => !!x);

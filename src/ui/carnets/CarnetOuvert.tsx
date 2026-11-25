@@ -14,6 +14,7 @@
  * Toucher « Articles » ouvre la feuille des cartes (P12, figé h03-5) : photo, valeur du critère en gros, réglette, « Veiller ».
  * Avant le 2e article : les façons en cartes et l'article en carte. Notes : chaque note porte son genre et son picto (G22).
  */
+import { nomCourtOption } from '../../domain/carnets/titreCourt';
 import { domaineParMots } from './domaineMots';
 import { domaineDe } from '../../domain/carnets/domaines';
 import { PastilleDomaine } from './Domaines';
@@ -113,7 +114,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   /* critique 6, n° 15 : les comptes viennent de `comptesCarnet`, comme la liste et la suppression */
   const n = comptesCarnet(k);
   const enDouble = new Set(p.aides.doublon ? p.doublons ?? [] : []);
-  const question = k.facons.length === 2 ? `${k.facons[0].nom} ou ${k.facons[1].nom} ?` : null;
+  const question = k.facons.length === 2 ? `${nomCourtOption(k.facons[0].nom)} ou ${nomCourtOption(k.facons[1].nom)} ?` : null;
   /* D451 : le carnet vu comme son document (le contrat des vues est ce document tel quel), son genre posé, son état, son fil */
   const doc = c as unknown as CarnetDoc;
   const genrePose = doc.carnet.genre?.valeur;
@@ -272,7 +273,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
       {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note' || etatSuivi === 'decide') && <RangeeJetons resume={coutEnTete(resumeJetons(messages, c.id, optionRetenue(doc)?.id, new Set(doc.carnet.facons.filter(f => etatOption(f) === 'ecartee').map(f => f.id))), etatSuivi === 'decide')} {...(etatSuivi === 'decide' ? { nom: 'Coût de la retenue' } : {})} />}
       {enteteGenre && !problemeResolu && <OptionsProbleme c={doc} onOption={rap?.onOption} messages={messages} />}
-      {achat && <CarteFermerParAchat option={achat.nom} onOui={() => rap?.onFermerParAchat?.(achat.id)} onAnnuler={() => setAchatEcarte(true)} />}
+      {achat && <CarteFermerParAchat option={nomCourtOption(achat.nom)} onOui={() => rap?.onFermerParAchat?.(achat.id)} onAnnuler={() => setAchatEcarte(true)} />}
       {enteteGenre && !problemeResolu && genre === 'probleme' && etatSuivi === 'decide' && <QuestionPourquoi c={doc} messages={messages} onEcrire={rap?.onEcrire} />}
       {problemeResolu && (
         <ResoluProbleme c={doc} carnets={p.carnetsDocs ?? [doc]} messages={messages} rappels={rap} liens={p.liens} annee={annee} onRelecture={p.onRelecture}
@@ -351,7 +352,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
                   const prix = etendue(sesArticles.map(a => a.prixCentimes).filter((x): x is number => typeof x === 'number'));
                   const carte = (
                     <div className={`cn-facon cn-facon-${f.etat}`}>
-                      <b>{f.nom}</b>
+                      <b>{nomCourtOption(f.nom)}</b>
                       {prix ? <span className="cn-mono">{prix}</span> : <span className="cn-mut">aucun article encore</span>}
                       {f.raison && f.etat === 'ouverte' && <span className="cn-mut">{f.raison}</span>}
                       {f.etat === 'retenue' && f.raison && <span className="cn-pastille cn-pastille-plein">{f.raison}</span>}

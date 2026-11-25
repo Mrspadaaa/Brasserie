@@ -1,4 +1,5 @@
 /** La rubrique Articles du carnet ouvert (R03, h05-3, h03-5), sortie de CarnetOuvert.tsx : une fonction de rendu, appelée en place. */
+import { nomCourtSi } from '../../domain/carnets/titreCourt';
 import type React from 'react';
 import { ArrowRightToLine, ChevronDown, ChevronRight, Ellipsis, Tag } from 'lucide-react';
 import type { comptesCarnet } from '../../domain/carnets/comptes';
@@ -111,8 +112,8 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
             </div>
             {gererArticles(v)}
             {articleRange && r && !p.tableau && (
-              <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>
-                <CarteArticle article={articleRange} choisie={choisieDe(k, articleRange.id)} taux={p.taux} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
+              <LigneRangee sorte="article" faconNom={nomCourtSi(faconRange?.nom)} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>
+                <CarteArticle article={articleRange} choisie={choisieDe(k, articleRange.id)} taux={p.taux} critere={critere} faconNom={nomCourtSi(faconRange?.nom)} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
             {p.tableau ? (<>
@@ -128,7 +129,7 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
               {/* tour 3, PCN-108 et 132 (G20, g5:v06-11) : au 2e article, le tableau est à l'écran avec l'article déposé dans ses
                   lignes ; « Article rangé ici · 2e · Annuler » dessous, sans carte complète qui pousserait le tableau sous la flottaison */}
               {articleRange && r && (
-                <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>{null}</LigneRangee>
+                <LigneRangee sorte="article" faconNom={nomCourtSi(faconRange?.nom)} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>{null}</LigneRangee>
               )}
             </>) : (
               <div className="cn-cartes">
@@ -139,13 +140,13 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
                   if (seul) {
                     return (
                       <div className="cn-carte-complete">
-                        <CarteArticle article={seul} choisie={choisieDe(k, seul.id)} taux={p.taux} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
+                        <CarteArticle article={seul} choisie={choisieDe(k, seul.id)} taux={p.taux} critere={critere} faconNom={nomCourtSi(k.facons.find(f => f.id === seul.faconId)?.nom)} carnetTitre={c.title} variante="complete"
                           onOuvrir={() => p.onOuvrirArticle(seul.id)} onVeille={v => p.onVeille?.(seul.id, v)} />
                       </div>
                     );
                   }
                   return reste.map(a => (
-                    <CarteArticle key={a.id} article={a} choisie={choisieDe(k, a.id)} taux={p.taux} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
+                    <CarteArticle key={a.id} article={a} choisie={choisieDe(k, a.id)} taux={p.taux} critere={critere} carnetTitre={c.title} faconNom={nomCourtSi(k.facons.find(f => f.id === a.faconId)?.nom)} onOuvrir={() => p.onOuvrirArticle(a.id)} />
                   ));
                 })()}
               </div>

@@ -4,6 +4,7 @@
  * retenir, écarter avec sa raison) ; sans rappel, la grille se lit seulement. Et la rangée de jetons du diagnostic « trouvé n · pas trouvé n · devis ·
  * ≈ total » (une seule rangée, le total dans la rangée).
  */
+import { nomCourtOption } from '../../domain/carnets/titreCourt';
 import { useState } from 'react';
 import { Check, X } from 'lucide-react';
 import type { CarnetDoc, EtatOption, Facon, MessageDoc } from '../../domain/carnets/modele';
@@ -36,8 +37,8 @@ export function OptionsProbleme({ c, onOption, messages = [] }: { c: CarnetDoc; 
           const contenu = (
             <>
               {/* C69-5 : le picto vient du NOM de l'option ; le titre du problème (« vapeur ») ne le prête pas à un condenseur */}
-              <VignetteObjet photo={photoDe(f)} mots={[f.nom]} classe="cnp-opt-vignette" taille={30} />
-              <span className={`cnp-opt-nom${e === 'ecartee' ? ' cnp-barre' : ''}`}>{f.nom}</span>
+              <VignetteObjet photo={photoDe(f)} mots={[nomCourtOption(f.nom)]} classe="cnp-opt-vignette" taille={30} />
+              <span className={`cnp-opt-nom${e === 'ecartee' ? ' cnp-barre' : ''}`}>{nomCourtOption(f.nom)}</span>
               <span className="cnp-opt-info">
                 <span className="cnp-jeton" data-j={e === 'retenue' ? 'retenu' : e === 'ecartee' ? 'ecart' : e}>{MOT_OPTION[e]}</span>
                 {info.prix && <span className="cnp-opt-prix">{info.prix}</span>}
@@ -49,14 +50,14 @@ export function OptionsProbleme({ c, onOption, messages = [] }: { c: CarnetDoc; 
           return (
             <li key={f.id} data-etat={e} data-ouverte={ouverte === f.id ? '' : undefined}>
               {onOption
-                ? <button type="button" className="cnp-opt" aria-expanded={ouverte === f.id} aria-label={`${f.nom}, ${MOT_OPTION[e]}, changer`} onClick={() => { setRaisonPour(null); setOuverte(o => (o === f.id ? null : f.id)); }}>{contenu}</button>
+                ? <button type="button" className="cnp-opt" aria-expanded={ouverte === f.id} aria-label={`${nomCourtOption(f.nom)}, ${MOT_OPTION[e]}, changer`} onClick={() => { setRaisonPour(null); setOuverte(o => (o === f.id ? null : f.id)); }}>{contenu}</button>
                 : <div className="cnp-opt">{contenu}</div>}
             </li>
           );
         })}
       </ul>
       {onOption && choisie && (
-        <div className="cnp-opt-gestes" role="group" aria-label={`${choisie.nom} : changer l'état`}>
+        <div className="cnp-opt-gestes" role="group" aria-label={`${nomCourtOption(choisie.nom)} : changer l'état`}>
           {raisonPour === choisie.id ? (
             <form className="cnp-raison" onSubmit={ev => { ev.preventDefault(); onOption(choisie.id, 'ecartee', raison.trim() || undefined); fermer(); }}>
               <input className="cnp-raison-champ" value={raison} onChange={ev => setRaison(ev.target.value)} placeholder="Pourquoi pas ? (facultatif)" aria-label="Raison de l'écart" autoFocus enterKeyHint="done" />

@@ -15,6 +15,7 @@ import { plier } from '../../domain/carnets/domaines';
 import type { CarnetDoc, MessageDoc, PrecisionTache, Tache } from '../../domain/carnets/modele';
 import { idPlanDuCarnet, planAuCalendrier, planSuitCarnet } from '../../domain/carnets/operations';
 import { etatDe, genreDe, jourLocal, optionRetenue } from '../../domain/carnets/suivi';
+import { echeanceDite } from '../../domain/carnets/tacheDatee';
 import { coutDe, echeanceDe, finDuMois, type AFaire, type CleGroupe, type TacheVue } from '../../domain/carnets/taches';
 import type { FinancialPlan } from '../../domain/finance/types';
 
@@ -79,6 +80,31 @@ export function quandDite(t: Pick<TacheVue, 'echeance' | 'precision' | 'derivee'
   if (t.derivee && t.debutPlanning) return `dès le ${jourDit(t.debutPlanning, auj)}`;
   if (t.precision === 'mois') return `fin ${moisDit(t.echeance, auj)}`;
   return `sem. du ${jourDit(t.echeance, auj)}`;
+}
+
+/**
+ * R110 (c79, 3e retour après C71-1 et C73-1) : une tâche écrite avec la semaine ou le mois EN COURS (la date que l'IA supposait, ou une donnée d'avant la règle) alors que sa
+ * phrase d'origine dit une date (« le samedi 6 déc. », « avant le 31 déc. », « dans 2 semaines ») se range et se dit par la date de la PHRASE. Seule exception : une date que le
+ * brasseur a posée (« Quand ? », « Plus tard » : `echeancePosee`). Rien n'est réécrit : la liste lit. Les carnets sans tâche à corriger sont rendus tels quels (même objet).
+ */
+export function carnetsAuxDatesDites(carnets: readonly CarnetDoc[], messages: readonly MessageDoc[]): readonly CarnetDoc[] {
+  if (!messages.length) return carnets;
+  const parId = new Map(messages.map(m => [m.id, m] as const));
+  return carnets.map(c => {
+    const taches = c.carnet.taches;
+    if (!taches?.some(t => t.messageId && !t.echeancePosee && !t.faiteLe)) return c;
+    let change = false;
+    const lues = taches.map(t => {
+      const m = t.messageId && !t.echeancePosee && !t.faiteLe ? parId.get(t.messageId) : undefined;
+      if (!m) return t;
+      const ecrite = new Date(m.carnetMessage.le);
+      const dite = echeanceDite(m.carnetMessage.texte, Number.isNaN(ecrite.getTime()) ? new Date() : ecrite);
+      if (!dite || (dite.echeance === t.echeance && dite.precision === (t.precision ?? 'semaine'))) return t;
+      change = true;
+      return { ...t, echeance: dite.echeance, precision: dite.precision };
+    });
+    return change ? { ...c, carnet: { ...c.carnet, taches: lues } } : c;
+  });
 }
 
 /* ---------- coût ---------- */

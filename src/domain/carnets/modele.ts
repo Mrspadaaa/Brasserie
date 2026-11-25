@@ -83,6 +83,8 @@ export type PrecisionTache = 'semaine' | 'mois';
 export interface Tache {
   id: string; texte: string; echeance?: string; precision?: PrecisionTache; coutCentimes?: number; devise?: string; coutEstime?: true; faiteLe?: string;
   optionId?: string; planId?: string; messageId?: string; origine: Origine; creeeLe: string;
+  /** R110 : la date a été choisie par le brasseur (« Quand ? ») : la date de la phrase d'origine ne la remplace jamais. */
+  echeancePosee?: true;
 }
 
 export type SorteEtiquette = 'constat' | 'piste' | 'ecart' | 'retenu' | 'trouve' | 'pas-trouve' | 'contact' | 'devis' | 'cout' | 'achat' | 'cause' | 'veille' | 'pourquoi';
@@ -613,7 +615,7 @@ function lireSuivi(v: unknown): SuiviCarnet | undefined {
   return { ...inconnues(v, ['etat', 'evenements', 'resolu', 'avantApres', 'relu']), ...sansIndefinis({ etat: v.etat as EtatSuivi, evenements, resolu: lireResolu(v.resolu), avantApres: lireAvantApres(v.avantApres), relu: lireRelu(v.relu) }) };
 }
 
-const CLES_TACHE = ['id', 'texte', 'echeance', 'precision', 'coutCentimes', 'devise', 'coutEstime', 'faiteLe', 'optionId', 'planId', 'messageId', 'origine', 'creeeLe'];
+const CLES_TACHE = ['id', 'texte', 'echeance', 'precision', 'coutCentimes', 'devise', 'coutEstime', 'faiteLe', 'optionId', 'planId', 'messageId', 'origine', 'creeeLe', 'echeancePosee'];
 function lireTache(v: unknown): Tache | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.texte) || !texteNonVide(v.creeeLe)) return null;
   const cout = centimesLus(v.coutCentimes);
@@ -622,7 +624,7 @@ function lireTache(v: unknown): Tache | null {
     ...sansIndefinis({
       id: v.id, texte: v.texte, echeance: dateJour(v.echeance), precision: dateJour(v.echeance) ? precisionLue(v.precision) : undefined, coutCentimes: cout, devise: cout !== undefined ? optTexte(v.devise) : undefined,
       coutEstime: cout !== undefined && v.coutEstime === true ? (true as const) : undefined, faiteLe: optTexte(v.faiteLe), optionId: optTexte(v.optionId), planId: optTexte(v.planId), messageId: optTexte(v.messageId),
-      origine: origineLue(v.origine), creeeLe: v.creeeLe
+      origine: origineLue(v.origine), creeeLe: v.creeeLe, echeancePosee: v.echeancePosee === true ? (true as const) : undefined
     })
   };
 }
