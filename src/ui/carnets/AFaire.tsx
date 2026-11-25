@@ -46,7 +46,7 @@ export function AFaire({ carnets, maintenant, plans = [], messages = [], onCoche
   const parId = useMemo(() => new Map(carnets.map(c => [c.id, c])), [carnets]);
   const [cochees, setCochees] = useState<ReadonlySet<string>>(new Set());
   const [quand, setQuand] = useState<TacheVue | null>(null);
-  const appui = useRef<{ minuteur: number | undefined; long: boolean }>({ minuteur: undefined, long: false });
+  const appui = useRef<{ minuteur: number | undefined; long: boolean; x: number; y: number }>({ minuteur: undefined, long: false, x: 0, y: 0 });
 
   /* une case cochée ici disparaît avec la tâche (la liste suit les props) ; si la tâche revient (Annuler), elle revient décochée */
   useEffect(() => {
@@ -79,6 +79,10 @@ export function AFaire({ carnets, maintenant, plans = [], messages = [], onCoche
     appui.current.minuteur = window.setTimeout(() => { appui.current.long = true; setQuand(t); }, APPUI_LONG_MS);
   };
   const finAppui = () => window.clearTimeout(appui.current.minuteur);
+  /* C68-9 (H8 : 1,6 s au toucher, rien) : au doigt, le navigateur envoie `pointercancel` dès qu'il croit à un défilement, ce qui coupait le minuteur avant les 500 ms.
+     Au toucher, l'appui long suit donc les événements tactiles : il part au `touchstart`, ne s'arrête qu'au relevé, à l'annulation tactile ou à un vrai déplacement du
+     doigt (plus de 10 px) ; le pointeur tactile (pointerdown, pointercancel) ne le touche plus. La souris garde les événements pointeur. */
+  const doigtBouge = (e: React.TouchEvent) => { const p = e.touches[0]; if (p && Math.hypot(p.clientX - appui.current.x, p.clientY - appui.current.y) > 10) finAppui(); };
 
   return (
     <div className="cn-page af-vue" data-vue="afaire">
@@ -104,7 +108,8 @@ export function AFaire({ carnets, maintenant, plans = [], messages = [], onCoche
                   </button>
                   <button
                     type="button" className="af-corps"
-                    onPointerDown={() => debutAppui(t)} onPointerUp={finAppui} onPointerLeave={finAppui} onPointerCancel={finAppui}
+                    onTouchStart={e => { appui.current.x = e.touches[0]?.clientX ?? 0; appui.current.y = e.touches[0]?.clientY ?? 0; debutAppui(t); }} onTouchMove={doigtBouge} onTouchEnd={finAppui} onTouchCancel={finAppui}
+                    onPointerDown={e => { if (e.pointerType !== 'touch') debutAppui(t); }} onPointerUp={e => { if (e.pointerType !== 'touch') finAppui(); }} onPointerLeave={e => { if (e.pointerType !== 'touch') finAppui(); }} onPointerCancel={e => { if (e.pointerType !== 'touch') finAppui(); }}
                     onContextMenu={e => { if (onEcheance && !t.derivee) { e.preventDefault(); finAppui(); setQuand(t); } }}
                     onClick={() => { if (appui.current.long) { appui.current.long = false; return; } onOuvrir(t.carnetId, t.id); }}
                   >

@@ -13,6 +13,7 @@ const lireSession = (k: string): string | null => { try { return sessionStorage.
 const ecrireSession = (k: string, v: string | null) => { try { if (v) sessionStorage.setItem(k, v); else sessionStorage.removeItem(k); } catch { /* sans stockage : rien n'est gardé */ } };
 /** L-13 : l'écran d'où l'on vient : la fiche, Comparer, Choisir, Renommer et Supprimer remontent au carnet ; le carnet, à la liste. */
 function vueParente(v: Vue): Vue {
+  if (v.sorte === 'relecture' && v.depuis) return { sorte: 'carnet', id: v.depuis };
   if (v.sorte === 'liste' || v.sorte === 'carnet' || v.sorte === 'relecture') return { sorte: 'liste' };
   return { sorte: 'carnet', id: v.id };
 }

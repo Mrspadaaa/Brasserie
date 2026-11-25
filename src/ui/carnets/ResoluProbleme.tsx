@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Check, ChevronDown, ChevronRight, Folder, RotateCcw, Sparkles } from 'lucide-react';
 import type { CarnetDoc, MessageDoc, Photo } from '../../domain/carnets/modele';
-import { avantApresDe, categorieDe, dureeDe, jourLocal, suiviDe } from '../../domain/carnets/suivi';
+import { avantApresDe, categorieDe, dureeDe, jourLocal, optionRetenue, suiviDe } from '../../domain/carnets/suivi';
 import type { LienV, RappelsSuivi } from './carnetOuvertTypes';
 import { VignetteObjet } from './pictos';
 import { QuestionPourquoi } from './QuestionPourquoi';
@@ -56,6 +56,7 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
   const duree = texteDuree(dureeDe(c));
   const fermeture = texteFermeture(c);
   const fermees = optionsFermees(c, annee);
+  const retenue = optionRetenue(c);
   const { tuiles } = resolusDe(carnets, messages, annee);
   /* C67-5 (maquette v01-resolu) : un problème résolu autrement que par un achat (réparation, geste, texte) est lui-même un réalisé : « ira dans Réalisés ».
      Fermé par un achat, c'est le plan de l'achat qui y va : sans plan lié, rien ne se dit (D451, carnetsProblemeEcran). Un plan déjà réalisé le dit au présent. */
@@ -88,6 +89,7 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
       <div className="cnp-tampon">
         <div className="cnp-tampon-tete"><span className="cnp-coche" aria-hidden><Check size={22} /></span><span className="cnp-tampon-titre">Résolu{duree ? <> <span className="cnp-tampon-duree">{duree}</span></> : null}</span></div>
         {fermeture && <p className="cnp-fermeture">{fermeture}</p>}
+        {retenue && resolu?.par?.sorte !== 'achat' && <p className="cnp-fermeture" data-retenue>Retenu : {retenue.nom}</p>}
         {fermees.length > 0 && (
           <ul className="cnp-fermees" aria-label="Options fermées">
             {fermees.map(o => (

@@ -10,7 +10,7 @@ import { etatDe, etatOption, genreDe, optionRetenue, suiviDe } from '../../domai
 import type { EtatSuivi } from '../../domain/carnets/modele';
 import type { GroupeArbre } from '../../domain/carnets/arbre';
 import type { CarnetV } from './EtatIA';
-import { dateCourte } from './EtatIA';
+import { dateCourte, montant as montantTexte } from './EtatIA';
 import { articlesEnLice, prixDe, quandDe } from './ListeCarnets';
 import { titreAffiche } from './titre';
 
@@ -74,7 +74,14 @@ export function dernierPas(c: CarnetDoc, messages: readonly MessageDoc[], mainte
  * « Dans À venir », « à comparer · ≈41 CHF/kg », « choisi · 540 CHF », « budget 500 CHF », « vers S10 ». Une idée sans prix ni date : rien.
  * « dès » et le prix à droite de l'ancienne liste disparaissent (D451 disparaît n° 3) : la valeur se lit une fois, avec son unité.
  */
-export function valeurUtile(c: CarnetDoc, maintenant: Date): string | null {
+export function valeurUtile(c: CarnetDoc, maintenant: Date, messages: readonly MessageDoc[] = []): string | null {
+  /* C68-4 : un problème RÉSOLU dit ce qui a été retenu et son coût ; jamais « à comparer » ni le prix d'une piste pas prise (le condenseur B, hors stock, jamais choisi) */
+  if (etatDe(c) === 'resolu') {
+    const retenue = optionRetenue(c);
+    const cout = retenue ? messages.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.optionId === retenue.id && (e.sorte === 'cout' || e.sorte === 'devis') && e.montantCentimes !== undefined) : undefined;
+    const m = cout ? montantTexte(cout.montantCentimes) : null;
+    return retenue ? ['retenu', ...(m ? [`${m} ${cout!.devise ?? 'CHF'}`] : [])].join(' · ') : null;
+  }
   const v = vueDe(c);
   const k = c.carnet;
   const prix = prixDe(v);

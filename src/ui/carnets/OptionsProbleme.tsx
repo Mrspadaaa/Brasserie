@@ -30,11 +30,14 @@ export function OptionsProbleme({ c, onOption }: { c: CarnetDoc; onOption?: (fac
       <ul className="cnp-opt-grille">
         {facons.map(f => {
           const e = etatOption(f);
+          /* C68-5 : la raison tapée à l'écart se lit avec l'écart (« pas pris » n'est pas une raison de lui) */
+          const raison = e === 'ecartee' ? ((f.raison ?? [...(f.suivi?.historique ?? [])].reverse().find(h => h.etat === 'ecartee')?.raison) ?? '').trim() : '';
           const contenu = (
             <>
               <VignetteObjet photo={photoDe(f)} mots={[f.nom, c.title]} classe="cnp-opt-vignette" taille={30} />
               <span className={`cnp-opt-nom${e === 'ecartee' ? ' cnp-barre' : ''}`}>{f.nom}</span>
               <span className="cnp-jeton" data-j={e === 'retenue' ? 'retenu' : e === 'ecartee' ? 'ecart' : e}>{MOT_OPTION[e]}</span>
+              {raison && raison.toLowerCase() !== 'pas pris' && <span className="cnp-opt-raison cn-mut">« {raison} »</span>}
             </>
           );
           return (

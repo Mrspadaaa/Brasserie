@@ -9,6 +9,7 @@
  */
 import { dimancheDe, lundiDe } from '../calendrier/dates';
 import { ajouterEvenement, nouvelIdCarnet, sansIndefinis, type CarnetDoc, type Origine, type PrecisionTache, type Tache } from './modele';
+import { prixDe } from './analyseLocale';
 import { Brouillon, refus, type Etat, type Resultat } from './operations';
 import { assurerSuivi, etatDe, jourLocal } from './suivi';
 
@@ -38,7 +39,8 @@ export function notePlanningDe(texte: string): { du: string; au?: string; catego
   return sansIndefinis({ du, au, categorie: m[7].trim() });
 }
 
-export interface TacheVue extends Tache { carnetId: string; carnetTitre: string; /** lue d'une note du Planning : jamais écrite, jamais cochée ici */ derivee?: true }
+export interface TacheVue extends Tache { carnetId: string; carnetTitre: string; /** lue d'une note du Planning : jamais écrite, jamais cochée ici */ derivee?: true;
+  /** C68-9 : le dernier jour du projet du Planning (« au 15.09.2026 ») ; passé, il n'y a plus rien à faire */ finPlanning?: string }
 
 export const idTachePlanning = (noteId: string): string => `planning:${noteId}`;
 
@@ -46,11 +48,14 @@ export const idTachePlanning = (noteId: string): string => `planning:${noteId}`;
 export function tachesDe(c: CarnetDoc): TacheVue[] {
   const siennes: TacheVue[] = (c.carnet.taches ?? []).map(t => ({ ...t, carnetId: c.id, carnetTitre: c.title }));
   const planning: TacheVue[] = [];
+  /* C68-9 : « Budget 200 CHF » dans les notes du projet : son coût, dit « ≈ » (un budget est une limite, pas un prix ferme) ; absent sans budget écrit */
+  const budget = c.carnet.notes.filter(n => /\bbudget\b/i.test(n.texte)).map(n => prixDe(n.texte)).find(x => x && x.centimes > 0);
   for (const n of c.carnet.notes) {
     const p = notePlanningDe(n.texte);
     if (!p) continue;
     planning.push({
-      id: idTachePlanning(n.id), texte: c.title, echeance: lundiDe(p.du), precision: 'semaine', origine: 'locale', creeeLe: c.carnet.creeLe, carnetId: c.id, carnetTitre: c.title, derivee: true
+      id: idTachePlanning(n.id), texte: c.title, echeance: lundiDe(p.du), precision: 'semaine', origine: 'locale', creeeLe: c.carnet.creeLe, carnetId: c.id, carnetTitre: c.title, derivee: true,
+      ...(p.au ? { finPlanning: p.au } : {}), ...(budget ? { coutCentimes: budget.centimes, devise: budget.devise, coutEstime: true } : {})
     });
   }
   return [...siennes, ...planning];
@@ -159,6 +164,8 @@ export function aFaireDe(carnets: readonly CarnetDoc[], maintenant: string | num
     if (etatDe(c) === 'resolu') continue;
     for (const t of tachesDe(c)) {
       if (t.faiteLe) continue;
+      /* C68-9 : un projet du Planning fini avant aujourd'hui n'est pas « Cette semaine » : il n'y a plus rien à faire (une tâche écrite en retard, elle, reste sans reproche) */
+      if (t.derivee && t.finPlanning && t.finPlanning < aujourdhui) continue;
       const cle: CleGroupe = !t.echeance ? 'un-jour' : t.echeance <= dimanche ? 'cette-semaine' : t.echeance <= fin ? 'fin-du-mois' : 'plus-loin';
       groupes.set(cle, [...(groupes.get(cle) ?? []), t]);
     }

@@ -118,7 +118,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     /* Résolus › Relecture (maquettes3/v01 `relecture`) : la fiche, les autres résolus par catégorie ; le champ du bas cherche dans les résolus */
     ecran = (
       <div className="cnl-route">
-        <div className="cnl-route-tete"><button type="button" className="cnl-retour" aria-label="Retour à la liste" onClick={() => setVue({ sorte: 'liste' })}><ChevronLeft size={22} aria-hidden /></button><b>Résolus</b></div>
+        <div className="cnl-route-tete"><button type="button" className="cnl-retour" aria-label={vue.depuis ? 'Retour au problème' : 'Retour à la liste'} onClick={() => setVue(vue.depuis && tous.some(x => x.id === vue.depuis) ? { sorte: 'carnet', id: vue.depuis } : { sorte: 'liste' })}><ChevronLeft size={22} aria-hidden /></button><b>Résolus</b></div>
         {bandeauIci && <div className="cnl-haut">{bandeauIci}</div>}
         <RelectureResolus key={requeteRelecture} carnets={tous} messages={messages} requete={requeteRelecture} onOuvrir={ouvrirCarnet}
           rappels={{ onRelu: (carnetId, reponse) => { geste(repondreRelu(magasin.lire(), { carnetId, reponse, le: maintenant().toISOString() })); } }} />
@@ -222,7 +222,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const manque = iaManquee[c.id];
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
-      <CarnetOuvert carnet={enV(c)} messages={messages} carnetsDocs={tous} rappels={rappelsDe(c)} onRelecture={() => setVue({ sorte: 'relecture' })} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+      <CarnetOuvert carnet={enV(c)} messages={messages} carnetsDocs={tous} rappels={rappelsDe(c)} onRelecture={() => setVue({ sorte: 'relecture', depuis: c.id })} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}

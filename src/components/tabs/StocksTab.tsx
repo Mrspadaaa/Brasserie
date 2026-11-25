@@ -61,6 +61,8 @@ const HopIndexPanel = lazy(() =>
 const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
 import { tracesDesArticles } from '../../domain/consommation/gestes';
+import { resolusRealises } from '../../domain/carnets/realises';
+import { ResolusRealises } from '../../ui/carnets/ResolusRealises';
 
 /**
  * D451 (voie onglets, VERDICT « Ce qui disparaît » n° 1) : dans Matériel seulement, la double rangée (Articles · Recompter · Courses · Fûts · Matériel,
@@ -83,10 +85,13 @@ const readSegments = () => {
   const carnets = StorageService.getCreativeItems().filter(i => i.type === 'carnet' && !(i as { carnet?: { archive?: unknown } }).carnet?.archive).length;
   return {
     avenir: projets.filter(p => ['draft', 'active'].includes(p.status) && !realise(p)).length,
-    realises: projets.filter(p => p.status === 'completed' || realise(p)).length,
+    /* C68-13 : les problèmes résolus (« ira dans Réalisés ») comptent avec les projets menés à terme */
+    realises: projets.filter(p => p.status === 'completed' || realise(p)).length + resolusRealises(StorageService.getCreativeItems()).length,
     carnets
   };
 };
+/** C68-13 : les problèmes résolus, listés en tête de Réalisés. */
+const readResolusRealises = () => resolusRealises(StorageService.getCreativeItems());
 /** d8a : les projets à venir sous le parc (même règle qu'À venir : brouillon ou actif, non réalisé). Carnet source et nombre de façons seulement s'ils existent. */
 const readAvenirParc = (): AVenirLigne[] => {
   const { plans, payments } = FinanceService.snapshot();
@@ -257,6 +262,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const setSegMateriel = (seg: SegMateriel) => { setSegMaterielEtat(seg); StorageService.setUiState('stocks_materiel', seg); };
   const segments = useStorageValue(readSegments);
   const avenirParc = useStorageValue(readAvenirParc);
+  const resolusReal = useStorageValue(readResolusRealises);
   /** Une demande d'ouverture (carnet précis) ou de focus du champ (+ « Nouvelle idée ») pour la vue Carnets. */
   const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number; depuis?: 'a-venir' } | null>(null);
   const [focusChamp, setFocusChamp] = useState<number | null>(null);
@@ -912,6 +918,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {subTab === 'materiel' && (segMateriel === 'avenir' || segMateriel === 'realises') && (
         <div className="min-h-0 flex-1 overflow-y-auto">
+          {segMateriel === 'realises' && <ResolusRealises resolus={resolusReal} onOuvrir={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now() }); }} />}
           <UpgradeWorkspace vue={segMateriel === 'avenir' ? 'future' : 'completed'} onVue={(v) => setSegMateriel(v === 'future' ? 'avenir' : 'realises')}
             createRequest={besoinDemande} onCreateRequestHandled={() => setBesoinDemande(null)}
             onOpenCarnet={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now(), depuis: 'a-venir' }); }} />

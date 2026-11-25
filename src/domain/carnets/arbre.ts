@@ -70,6 +70,21 @@ export function sousDomainesEmployes(carnets: readonly CarnetDoc[], parMots?: Pa
   return Object.fromEntries([...n.entries()].map(([d, l]) => [d, parFrequence(l)]));
 }
 
+/**
+ * C68-10 : les sous-domaines du menu d'un carnet = ceux déjà employés, puis les étapes d'une brasserie que l'IA pose le plus souvent (relevé tour 68 : Brassage,
+ * Fermentation, Conditionnement) : un carnet sans catégorie, dans une base encore jeune, voit « Brasserie › Brassage » au lieu des cinq seuls domaines.
+ */
+const SOUS_DOMAINES_USUELS: Partial<Record<DomaineCarnet, readonly string[]>> = { brasserie: ['Brassage', 'Fermentation', 'Conditionnement'] };
+export function sousDomainesProposes(carnets: readonly CarnetDoc[], parMots?: ParMots): Partial<Record<DomaineCarnet, string[]>> {
+  const employes = sousDomainesEmployes(carnets, parMots);
+  const sortie: Partial<Record<DomaineCarnet, string[]>> = { ...employes };
+  for (const [d, usuels] of Object.entries(SOUS_DOMAINES_USUELS) as [DomaineCarnet, readonly string[]][]) {
+    const deja = employes[d] ?? [];
+    sortie[d] = [...deja, ...usuels.filter(u => !deja.some(x => plie(x) === plie(u)))];
+  }
+  return sortie;
+}
+
 /** Un toucher dans le menu du domaine : le domaine, et (s'il choisit un sous-domaine) sa catégorie, en une seule écriture annulable. Son choix passe avant celui de l'IA. */
 export function poserRangement(etat: Etat, args: { carnetId: string; domaine: DomaineCarnet; chemin?: readonly string[] }): Resultat {
   const r1 = poserDomaine(etat, { carnetId: args.carnetId, domaine: args.domaine });

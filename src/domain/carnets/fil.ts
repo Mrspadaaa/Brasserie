@@ -49,7 +49,9 @@ export function filDe(c: CarnetDoc, messages: readonly MessageDoc[], options: { 
     const planning = notePlanningDe(n.texte);
     entrees.push({ sorte: 'note', id: n.id, le: n.modifieeLe ?? c.carnet.creeLe, dateConnue: !!n.modifieeLe, note: n, ...(planning ? { planning } : {}) });
   }
-  for (const e of suiviDe(c).evenements) entrees.push({ sorte: 'evenement', id: e.id, le: e.le, evenement: e });
+  /* C68-6 : seule la DEMANDE de veille (vers « veille ») est une bulle « veille demandée » ; quitter la veille (écarter, reprendre) est un changement d'option, jamais une seconde demande.
+     L'événement écrit reste tel quel (l'historique ne change pas) ; le fil le lit comme un changement d'option. */
+  for (const e of suiviDe(c).evenements) entrees.push({ sorte: 'evenement', id: e.id, le: e.le, evenement: e.sorte === 'veille' && e.vers !== 'veille' ? { ...e, sorte: 'option' } : e });
   entrees.sort((a, b) => a.le.localeCompare(b.le) || a.id.localeCompare(b.id));
   const parJour: JourFil[] = [];
   for (const e of entrees) {

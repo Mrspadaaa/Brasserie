@@ -31,8 +31,17 @@ export interface RangementV {
 }
 
 /** Les jetons que le repli local pose sous une bulle (montant écrit, « pas trouvé », « contacté ») : sans IA, c'est tout, le message reste tel quel. */
-export function etiquettesDuRepli(texte: string, carnetId: string): Etiquette[] {
-  return etiquettesLocales(texte).map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, origine: 'locale' as const }));
+export function etiquettesDuRepli(texte: string, carnetId: string, optionId?: string): Etiquette[] {
+  return etiquettesLocales(texte).map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, optionId: e.sorte === 'cout' || e.sorte === 'pas-trouve' ? optionId : undefined, origine: 'locale' as const }));
+}
+
+/**
+ * C68-7 : dans un PROBLÈME, « Piste : condenseur A, 690 CHF chez Brouwland » ou « Condenseur B, 540 CHF, plus en stock » (un nom et un prix, sans lien) est une
+ * option du problème, pas un article rangé sous une autre option : le nom court (avant la première virgule, sans « Piste : »), majuscule en tête.
+ */
+export function nomOptionDe(texte: string): string {
+  const court = texte.replace(/^\s*(?:autre\s+)?(?:piste|option|solution)\s*:\s*/i, '').split(',')[0].trim();
+  return court ? court.charAt(0).toUpperCase() + court.slice(1) : texte.trim();
 }
 
 export interface ArgsSuiviIA {
@@ -176,8 +185,12 @@ export function creerRangementCarnets(x: RangementV) {
          posée tout de suite (avant l'IA, qui peut ne jamais répondre), jamais une écriture chez lui */
       const ouvertDoc = depuis ? lireCarnets(etat).find(c => c.id === depuis) : undefined;
       const vise = ouvertDoc && !carnetChoisi.current ? destinationDans(txt, ouvertDoc, lireCarnets(etat)).propose : undefined;
+      /* C68-7 : dans un problème, un nom et un prix sans lien sont des options ; le jeton de montant vise l'option quand il n'y en a qu'une */
+      const doitEtreOption = (l: LigneLocale, cible: string | null) => !!cible && l.sorte === 'article' && !l.url && l.prixCentimes !== undefined
+        && lireCarnets(etat).some(c => c.id === cible && genreDe(c) === 'probleme');
+      const optionsLocales = new Map<LigneLocale, string>(lignes.filter(l => doitEtreOption(l, depuis ? (destEnvoi.current ?? depuis) : null)).map(l => [l, nouvelIdCarnet('FACON')]));
       const avecJetons = (carnetId: string): MessageARanger => {
-        const e = etiquettesDuRepli(txt, carnetId);
+        const e = etiquettesDuRepli(txt, carnetId, optionsLocales.size === 1 ? [...optionsLocales.values()][0] : undefined);
         const cartes: PropositionSuivi[] = vise && depuis && carnetId === depuis ? [{ sorte: 'deplacer', carnetId: depuis, versCarnetId: vise.carnetId, origine: 'locale' }] : [];
         return e.length || cartes.length ? { ...message, ...(e.length ? { etiquettes: e } : {}), ...(cartes.length ? { propositionsSuivi: cartes } : {}) } : message;
       };
@@ -201,7 +214,8 @@ export function creerRangementCarnets(x: RangementV) {
           : { carnetId: ici, sorte: 'note', texte: l0.texte, ...(l0.sorte === 'note' ? { genre: l0.genre } : {}) };
         r = ranger(etat, { message: avecJetons(ici), lignes: [ligne] });
         forcee.current = message.id;
-      } else if (ici) r = ranger(etat, { message: avecJetons(ici), lignes: lignes.map(l => depuisLocale(l, { carnetId: ici })) });
+      } else if (ici) r = ranger(etat, { message: avecJetons(ici), lignes: lignes.map(l => optionsLocales.has(l) && doitEtreOption(l, ici)
+        ? { carnetId: ici, sorte: 'facon' as const, id: optionsLocales.get(l)!, nom: nomOptionDe(l.phrase), origine: 'locale' as const } as LigneARanger : depuisLocale(l, { carnetId: ici })) });
       if (ici) { /* rangé ci-dessus */ } else if (lignes.length <= 1) {
         neuf = nouvelIdCarnet('CARNET');
         const titre = titreNeuf ?? titreDePhrase(txt);
@@ -407,8 +421,10 @@ export function creerRangementCarnets(x: RangementV) {
       /* C67-2 (maquette v01-saisie : « titre court proposé ») : une phrase de plus de 60 caractères n'est pas un titre. Pour un PROBLÈME que ce message vient de
          créer, le titre court que l'IA propose le remplace tout de suite (la phrase reste dans le carnet, `renommer` garde l'ancien titre) ; sinon la règle
          « votre phrase en titre » reste (une idée, une phrase courte). */
-      if (an?.sorte === 'cree' && propose && an.titre.length > TITRE_MAX && propose.titre.length <= TITRE_MAX && lignes.some(l => l.genreCarnet === 'probleme')) {
-        const rn = appliquer(renommer(vu, { carnetId: propose.carnetId, titre: propose.titre, messageId }));
+      if (an?.sorte === 'cree' && propose && (an.titre.length > TITRE_MAX || propose.titre.length < an.titre.length) && propose.titre.length <= TITRE_MAX && lignes.some(l => l.genreCarnet)) {
+        /* C68-1 : le titre court de l'IA vaut pour tout carnet neuf qu'elle genre (problème, achat, idée) ; la marque des données de test (L05) suit */
+        const marque = prefixeDe(txt) && !/^\s*ZZ TEST/i.test(propose.titre) ? prefixeDe(txt) : '';
+        const rn = appliquer(renommer(vu, { carnetId: propose.carnetId, titre: `${marque}${propose.titre}`, messageId }));
         if (rn) { fait.inverse.unshift(...rn.inverse); vu = appliquerEcritures(vu, rn.ecritures); }
       }
       const suiviIA = poserSuiviIA(vu, { messageId, lignes, depuis, le: maintenant().toISOString(), cibleDe: l => vers.get(l) ?? l.carnetId });

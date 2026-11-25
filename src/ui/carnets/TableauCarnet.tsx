@@ -197,11 +197,15 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
           <React.Fragment key={b.facon?.id ?? 'sans'}>
           {i === enLice.length && conclusion}
           <div className={`cn-tab-bloc${b.facon?.etat === 'ecartee' ? ' cn-tab-ecartee' : ''}${sep?.retenue.id === b.facon?.id ? ' cn-tab-retenue' : ''}`} role="rowgroup">
+            {!b.facon && k.facons.length > 0 && (
+              <div className="cn-tab-facon" role="row"><span className="cn-sp" role="rowheader"><b>Sans option</b> <span className="cn-mut">· pas rangés sous une option</span></span></div>
+            )}
             {b.facon && (
               <div className="cn-tab-facon" role="row">
                 <span className="cn-sp" role="rowheader">
                   <b>{b.facon.nom}</b>
-                  {prix ? <span className="cn-mono cn-mut cn-tab-etendue">{prix}</span> : <span className="cn-mut">aucun article encore</span>}
+                  {/* C68-7 : des articles sans option suivent ce bloc : « aucun article encore » les lirait comme rangés sous elle ; ils ont leur propre en-tête */}
+                  {prix ? <span className="cn-mono cn-mut cn-tab-etendue">{prix}</span> : sansFacon.lignes.length ? null : <span className="cn-mut">aucun article encore</span>}
                 </span>
                 {pastille && <span className={`cn-pastille ${pastille.passe ? 'cn-pastille-plein' : 'cn-pastille-neutre'}`}>{pastille.texte}</span>}
               </div>

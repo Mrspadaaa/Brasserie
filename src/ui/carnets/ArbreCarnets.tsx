@@ -94,8 +94,9 @@ function LigneTrouvee({ t }: { t: Trouve }) {
 }
 
 /** `avecEtat` (C67-1) : sous un filtre du coup d'œil, le chiffre de la case compte tous les genres ; la ligne qu'il fait voir porte donc sa jauge et son état, comme un problème. */
-function LigneAutre({ c, maintenant, trouve, onOuvrir, avecEtat }: { c: CarnetDoc; maintenant: Date; trouve?: Trouve | null; onOuvrir: (id: string) => void; avecEtat?: boolean }) {
-  const val = valeurUtile(c, maintenant);
+function LigneAutre({ c, maintenant, messages, trouve, onOuvrir, avecEtat }: { c: CarnetDoc; maintenant: Date; messages?: readonly MessageDoc[]; trouve?: Trouve | null; onOuvrir: (id: string) => void; avecEtat?: boolean }) {
+  /* C68-11 : sous un filtre d'état, la ligne dit aussi son dernier pas quand elle n'a pas de valeur utile ; un achat sans note n'en a pas (rien n'est inventé) */
+  const val = valeurUtile(c, maintenant, messages) ?? (avecEtat && messages ? dernierPas(c, messages, maintenant) : null);
   const e = etatDe(c);
   const k = c.carnet;
   const photo = k.articles.find(a => a.photo)?.photo ?? k.photos[0]?.jpeg;
@@ -113,19 +114,21 @@ function LigneAutre({ c, maintenant, trouve, onOuvrir, avecEtat }: { c: CarnetDo
 }
 
 /** La ligne d'un élément à ranger : sa miniature (photo) ou son picto, son titre, ce qu'on sait ; jamais une catégorie devinée. */
-function LigneARanger({ c, onOuvrir }: { c: CarnetDoc; onOuvrir: (id: string) => void }) {
+function LigneARanger({ c, messages, maintenant, onOuvrir }: { c: CarnetDoc; messages: readonly MessageDoc[]; maintenant: Date; onOuvrir: (id: string) => void }) {
   const k = c.carnet;
   const photo = k.photos[0]?.jpeg;
   const texte = k.notes.map(n => n.texte).join(' ').trim();
   const titre = c.title === 'Photo' ? `Photo du ${dateCourte(k.creeLe) ?? 'jour'}` : titreLigne(c);
   const dit = !texte ? 'sans texte' : texteMince(texte) ? 'rien d’autre écrit : reste ici' : null;
   const e = etatDe(c);
+  /* C68-11 : un carnet encore à ranger qui a des notes dit aussi son dernier pas, comme un problème */
+  const pas = dit ? null : dernierPas(c, messages, maintenant);
   return (
     <button type="button" className="cnl-pb" data-etat={e} data-aranger="" onClick={() => onOuvrir(c.id)}>
       {photo ? <Photo src={photo} className="cnl-miniature" alt="" repli={<Picto c={c} />} /> : <Picto c={c} />}
       <span className="cnl-tx">
         <b className="cnl-t cn-carnet-titre">{liesParNbsp(titre)}</b>
-        <span className="cnl-sub"><Jauge etat={e} /> {dit ? <span className="cnl-pas">{dit}</span> : <b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>}</span>
+        <span className="cnl-sub"><Jauge etat={e} /> {dit ? <span className="cnl-pas">{dit}</span> : <><b className="cnl-etat" data-etat={e}>{LIBELLE_ETAT[e]}</b>{pas && <span className="cnl-pas">· {pas}</span>}</>}</span>
       </span>
     </button>
   );
@@ -166,7 +169,7 @@ export function ListeArbre(p: ListeArbreProps) {
           <div className="cnl-dn"><PictoDomaine d={n.domaine} taille={18} /><span className="cnl-dn-nom">{DOMAINE_LIBELLE[n.domaine]}</span><span className="cn-mono cnl-dn-n">{n.n}</span></div>
           {n.ouverts.map(c => <LigneProbleme key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
           {n.groupes.map(g => {
-            if (g.chemin === null) return g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
+            if (g.chemin === null) return g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
             const cle = `${n.domaine}/${g.chemin}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
             const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
@@ -176,7 +179,7 @@ export function ListeArbre(p: ListeArbreProps) {
                   <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{g.chemin}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
                   {!ouvert && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
-                {ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
+                {ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
               </React.Fragment>
             );
           })}
@@ -185,7 +188,7 @@ export function ListeArbre(p: ListeArbreProps) {
       {arbre.aRanger.length > 0 && (
         <section ref={sectionARanger} className="cnl-domaine cnl-aranger" aria-label="À ranger">
           <div className="cnl-dn cnl-dn-aranger"><HelpCircle size={18} aria-hidden /><span className="cnl-dn-nom">À ranger</span><span className="cn-mono cnl-dn-n">{arbre.aRanger.length}</span></div>
-          {arbre.aRanger.map(c => <LigneARanger key={c.id} c={c} onOuvrir={p.onOuvrir} />)}
+          {arbre.aRanger.map(c => <LigneARanger key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} onOuvrir={p.onOuvrir} />)}
           {arbre.aRanger.filter(c => c.carnet.photos.length > 0 && !laissees.has(c.id)).map(c => {
             const texte = c.carnet.notes.map(n => n.texte).join(' ').trim();
             if (texte && !texteMince(texte)) return null;
@@ -206,7 +209,7 @@ export function ListeArbre(p: ListeArbreProps) {
               <Check size={18} aria-hidden /><span className="cnl-dn-nom">{nom}</span><span className="cn-mono cnl-dn-n">{r.carnets.length}</span>
             </button>
             {deplie
-              ? r.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)
+              ? r.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)
               : <button type="button" className="cnl-sd cnl-sd-resolus" onClick={p.onRelecture}><span className="cnl-sdres cnl-sdres-resolus">{ligneResolus(r.carnets)}</span><ChevronRight size={16} aria-hidden /></button>}
           </section>
         );

@@ -202,6 +202,7 @@ button.cnp-opt { cursor: pointer; }
 .cnp-opt-vignette { width: 30px !important; height: 30px !important; border-radius: 6px !important; flex: none; }
 li[data-etat='retenue'] > .cnp-opt { border-color: var(--p-resolu-bord); background: var(--p-vous-bg); }
 li[data-ouverte] > .cnp-opt { outline: 2px solid var(--c-zone); outline-offset: 1px; }
+.cnp-opt > .cnp-opt-raison { grid-column: 1 / -1; font-size: 12px; line-height: 1.25; overflow-wrap: anywhere; }
 .cnp-barre { text-decoration: line-through; color: var(--c-mut); font-weight: 400; }
 .cnp-opt-gestes { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0 2px; }
 .cnp-raison { display: flex; gap: 6px; width: 100%; align-items: center; }

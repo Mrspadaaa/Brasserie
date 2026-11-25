@@ -58,7 +58,8 @@ export type Vue =
   | { sorte: 'choisir'; id: string; faconId?: string; articleId?: string; quantite?: { kg: number; libelle: string; centimes: number } }
   | { sorte: 'renommer'; id: string }
   /* D451 : Résolus › Relecture (la fiche d'un résolu, avant → après, « Toujours le bon choix ? ») : un écran de la liste, sans carnet ouvert */
-  | { sorte: 'relecture' }
+  /* C68-8 : `depuis` = le problème d'où l'on a touché « Relire » ; ‹ y ramène (sans lui : la liste) */
+  | { sorte: 'relecture'; depuis?: string }
   | { sorte: 'supprimer'; id: string };
 
 /**

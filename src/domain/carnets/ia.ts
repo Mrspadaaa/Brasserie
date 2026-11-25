@@ -609,8 +609,9 @@ export function suiviDesLignes(lignes: readonly LigneCarnet[], o: EntreeSuivi): 
 
   for (const l of lignes) {
     const cid = o.cibleDe(l);
-    if (o.depuis && cid === o.depuis && l.carnetSuggere && l.carnetSuggere !== o.depuis)
-      proposer(sans({ sorte: 'deplacer' as const, carnetId: o.depuis, versCarnetId: l.carnetSuggere, texte: l.citation, origine: l.origine }));
+    /* C68-1 : depuis la liste, la phrase a créé son carnet ; le carnet existant que l'IA désigne se propose sur la carte (« Rattacher à … ? »), jamais une écriture */
+    if (cid && l.carnetSuggere && l.carnetSuggere !== cid && (o.depuis ? cid === o.depuis : o.crees.has(cid)))
+      proposer(sans({ sorte: 'deplacer' as const, carnetId: cid, versCarnetId: l.carnetSuggere, texte: l.citation, origine: l.origine }));
     if (!cid) continue;
     const nouveau = o.crees.has(cid);
     if (nouveau && (l.genreCarnet || l.chemin || l.etatPropose)) {

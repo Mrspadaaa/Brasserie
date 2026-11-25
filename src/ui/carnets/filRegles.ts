@@ -13,6 +13,7 @@ import type { EntreeFil, JourFil, Replie } from '../../domain/carnets/fil';
 import type { CarnetDoc, Etiquette, EtatOption, Facon, MessageDoc, SorteEtiquette } from '../../domain/carnets/modele';
 import { avantApresDe, categorieDe, dureeDe, etatOption, foisEcartee, jourLocal, optionRetenue, pourquoiDe, suiviDe, type Citation } from '../../domain/carnets/suivi';
 import { dateCourte, montant } from './EtatIA';
+import { domaineParMots } from './domaineMots';
 import type { LienV } from './carnetOuvertTypes';
 
 /* ---------- jours, plages, repli ---------- */
@@ -131,19 +132,22 @@ export interface ResumeJetons {
 }
 
 /** Ce que le fil a compté : « cause » est un trouvé ; un montant dans une autre devise n'entre pas dans le total (rien n'est converti en silence). */
-export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, retenueId?: string): ResumeJetons | null {
+export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, retenueId?: string, ecarteesIds: ReadonlySet<string> = new Set()): ResumeJetons | null {
   let trouve = 0, pas = 0;
   const devis: Etiquette[] = [];
   const montants: number[] = [];
   /* les montants par option (clé vide : aucune option visée) : deux options sont deux façons de faire la même chose, jamais deux coûts cumulés */
   const parOption = new Map<string, number[]>();
+  let ecarteeChiffree = false;
   for (const m of messages) {
     for (const e of m.carnetMessage.etiquettes ?? []) {
       if (e.carnetId !== carnetId) continue;
       if (e.sorte === 'trouve' || e.sorte === 'cause') trouve += 1;
       else if (e.sorte === 'pas-trouve') pas += 1;
       else if (e.sorte === 'devis') devis.push(e);
-      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && (e.devise ?? 'CHF') === 'CHF') {
+      /* C68-2 : une option écartée sort du calcul (mais dit que ce problème compare des pistes) */
+      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && e.optionId && ecarteesIds.has(e.optionId)) ecarteeChiffree = true;
+      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && (e.devise ?? 'CHF') === 'CHF' && !(e.optionId && ecarteesIds.has(e.optionId))) {
         montants.push(e.montantCentimes);
         parOption.set(e.optionId ?? '', [...(parOption.get(e.optionId ?? '') ?? []), e.montantCentimes]);
       }
@@ -152,15 +156,18 @@ export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, 
   if (!trouve && !pas && !devis.length && !montants.length) return null;
   const somme = (l: readonly number[]) => l.reduce((s, x) => s + x, 0);
   const optionsChiffrees = [...parOption.keys()].filter(k => k !== '');
+  const sansOption = parOption.get('') ?? [];
   let total: ResumeJetons['total'] = montants.length >= 2 ? { centimes: somme(montants), n: montants.length } : null;
   let fourchette: ResumeJetons['fourchette'] = null;
-  if (optionsChiffrees.length >= 2) {
-    /* l'option retenue dit le coût ; sinon, les pistes ne se cumulent pas : leur fourchette */
+  /* C68-2 (tour 68 : « ≈ 1 430 CHF » = 690 + 540 + 200, encore avec la hotte écartée) : dès qu'une option porte un montant, les montants que le fil
+     compte sont des PISTES, l'une ou l'autre, jamais des coûts cumulés. Chaque montant sans option visée vaut une piste à lui. L'option retenue
+     dit le coût (le sien seul : le prix d'une piste pas prise n'est pas le coût du problème) ; sinon la fourchette, de la moins chère à la plus chère. */
+  if ((optionsChiffrees.length >= 1 || ecarteeChiffree) && montants.length >= 2) {
     const gardee = retenueId ? parOption.get(retenueId) : undefined;
-    if (gardee) total = { centimes: somme([...gardee, ...(parOption.get('') ?? [])]), n: gardee.length + (parOption.get('')?.length ?? 0) };
+    if (gardee) total = { centimes: somme(gardee), n: gardee.length };
     else {
       total = null;
-      const parPiste = optionsChiffrees.map(k => somme(parOption.get(k)!));
+      const parPiste = [...optionsChiffrees.map(k => somme(parOption.get(k)!)), ...sansOption];
       const min = Math.min(...parPiste), max = Math.max(...parPiste);
       fourchette = { min, max, n: parPiste.length };
     }
@@ -253,6 +260,18 @@ export interface OptionFermee { id: string; nom: string; texte: string; raison?:
  */
 export function optionsFermees(c: CarnetDoc, annee?: number): OptionFermee[] {
   const retenue = optionRetenue(c);
+  return [...optionsDesFacons(c, annee, retenue), ...articlesPasPris(c, retenue)];
+}
+
+/** C68-3 : les solutions que le brasseur a seulement écrites (un article « Condenseur A », sans option) et que la retenue n'a pas prises : « pas pris ». Un article d'une option est dit avec elle. */
+export function articlesPasPris(c: CarnetDoc, retenue: Facon | undefined = optionRetenue(c)): OptionFermee[] {
+  const prise = plier(suiviDe(c).resolu?.par?.texte ?? '');
+  return c.carnet.articles
+    .filter(a => a.nom && !a.faconId && plier(a.nom) !== plier(retenue?.nom ?? '') && !(prise && plier(a.nom) === prise))
+    .map(a => ({ id: `art:${a.id}`, nom: a.nom, texte: 'pas pris' }));
+}
+
+function optionsDesFacons(c: CarnetDoc, annee: number | undefined, retenue: Facon | undefined): OptionFermee[] {
   return c.carnet.facons.filter(f => f.id !== retenue?.id).map(f => {
     if (etatOption(f) !== 'ecartee') return { id: f.id, nom: f.nom, texte: 'pas pris' };
     const dernier = [...(f.suivi?.historique ?? [])].reverse().find(p => p.etat === 'ecartee');
@@ -295,7 +314,8 @@ const premiere = (t: string, max = 110): string => {
 
 /** « Brasserie › Brassage › Vapeur » : le domaine, puis le chemin posé ; sans l'un, l'autre ; sans rien : « À ranger ». */
 export function cheminAffiche(c: CarnetDoc): string {
-  const d = domaineDe(c);
+  /* C68-3 : le domaine se lit aussi dans le sens (comme la carte « rangé pour toi ») : « Brasserie », jamais « À ranger » pour un carnet que la carte a dit Brasserie */
+  const d = domaineDe(c, domaineParMots);
   const chemin = categorieDe(c)?.chemin ?? [];
   const parts = [...(d ? [DOMAINE_LIBELLE[d]] : []), ...chemin];
   return parts.length ? parts.join(' › ') : 'À ranger';
@@ -310,7 +330,8 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
   const probleme = constat ? premiere(constat.carnetMessage.texte) : doc.notes[0] ? premiere(doc.notes[0].texte) : doc.phrase && doc.phrase !== c.title ? premiere(doc.phrase) : null;
   const retenue = optionRetenue(c);
   const minus = (n: string) => n.charAt(0).toLowerCase() + n.slice(1);
-  const essaye = doc.facons.filter(f => f.id !== retenue?.id).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : minus(f.nom); });
+  /* C68-8 : « essayé » dit aussi les solutions écrites en articles que la retenue n'a pas prises (« condenseur A »), comme le Résolu */
+  const essaye = [...doc.facons.filter(f => f.id !== retenue?.id).map(f => { const n = foisEcartee(f); return n >= 2 ? `${minus(f.nom)} (non, ${n} fois)` : minus(f.nom); }), ...articlesPasPris(c, retenue).map(a => minus(a.nom))];
   const resolu = suiviDe(c).resolu;
   let pris: FicheResolu['pris'] = null;
   if (retenue) {

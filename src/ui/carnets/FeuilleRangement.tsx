@@ -39,7 +39,11 @@ export interface FeuilleRangementProps {
   autres: readonly { id: string; titre: string }[];
   mode: ModeFeuille;
   onMode: (m: ModeFeuille) => void;
-  /** OK : la feuille se ferme, le rangement reste. */
+  /** C68-1 : le carnet existant que l'IA désigne pour cette phrase (le carnet neuf qu'elle a créé reste le sien jusqu'au « Rattacher »). */
+  cible?: { id: string; titre: string; chemin: string | null };
+  /** Le voile : la feuille se ferme, rien de plus (la tâche reste proposée). */
+  onFermer?: () => void;
+  /** OK : la feuille se ferme, le rangement reste, la tâche proposée est posée. */
   onOK: () => void;
   /** Annuler : défait le rangement (l'inverse du retour) et ferme. */
   onAnnuler: () => void;
@@ -62,11 +66,12 @@ export function FeuilleRangement(p: FeuilleRangementProps) {
   const chemin = cheminDit(c);
   const tache = (cm.propositionsSuivi ?? []).find(x => x.sorte === 'tache' && x.carnetId === c.id && x.texte)?.texte;
   const ia = cm.rangement === 'ia' || cm.rangement === 'simulee';
+  const cible = neuf ? p.cible : undefined;
   const court = titreLigne(c).split('ZZ TEST — ').join('');
   const dom = domaineDe(c, domaineParMots);
   return (
     <div className="cnl-feuille-boite" data-feuille-rangement>
-      <button type="button" className="cnl-voile" aria-label="Fermer : le rangement reste" onClick={p.onOK} />
+      <button type="button" className="cnl-voile" aria-label="Fermer : le rangement reste" onClick={p.onFermer ?? p.onOK} />
       <section className="cnl-feuille cn-page" role="dialog" aria-label="Rangé pour toi">
         <div className="cnl-poignee" aria-hidden />
         <div className="cnl-fil">
@@ -82,17 +87,18 @@ export function FeuilleRangement(p: FeuilleRangementProps) {
             </div>
             <div className="cnl-carte-corps">
               <span className="cnl-picto" aria-hidden><PictoObjet nom={pictoDe(c.title, c.carnet.categorie?.chemin.join(' '), c.carnet.phrase)} taille={22} /></span>
-              <span className="cnl-tx"><b className="cnl-t">{liesParNbsp(titreLigne(c))}</b>{chemin && <span className="cnl-sub"><span className="cnl-pas">{chemin}</span></span>}</span>
+              <span className="cnl-tx"><b className="cnl-t">{liesParNbsp(cible ? titreLigne({ title: cible.titre } as CarnetDoc) : titreLigne(c))}</b>{(cible ? cible.chemin : chemin) && <span className="cnl-sub"><span className="cnl-pas">{cible ? cible.chemin : chemin}</span></span>}</span>
             </div>
             <div className="cnl-jetons">
-              <span className="cnl-jeton">{cm.rattache && !neuf ? <>rattaché : « {cm.rattache.citation} »</> : neuf ? (genre === 'probleme' ? 'nouveau problème' : `nouveau carnet · ${LIBELLE_GENRE[genre]}`) : <>ajouté à ce carnet</>}</span>
-              {genre === 'probleme' && <span className="cnl-jeton cnl-jeton-etat" data-etat={e}>{LIBELLE_ETAT[e]}</span>}
+              <span className="cnl-jeton">{cible ? 'Rattacher à ce carnet ?' : cm.rattache && !neuf ? <>rattaché : « {cm.rattache.citation} »</> : neuf ? (genre === 'probleme' ? 'nouveau problème' : `nouveau carnet · ${LIBELLE_GENRE[genre]}`) : <>ajouté à ce carnet</>}</span>
+              {!cible && genre === 'probleme' && <span className="cnl-jeton cnl-jeton-etat" data-etat={e}>{LIBELLE_ETAT[e]}</span>}
             </div>
             {tache && <p className="cnl-tache"><b>Tâche proposée</b> : {tache}</p>}
           </div>
           {p.mode === 'carte' && (
             <div className="cnl-boutons">
-              <button type="button" className="cnl-btn cnl-btn-ok" onClick={p.onOK}><Check size={18} aria-hidden /> OK</button>
+              {cible && <button type="button" className="cnl-btn cnl-btn-ok" onClick={() => p.onRattacher(cible.id)}><Check size={18} aria-hidden /> Rattacher</button>}
+              <button type="button" className={cible ? 'cnl-btn' : 'cnl-btn cnl-btn-ok'} onClick={p.onOK}>{cible ? 'Garder à part' : <><Check size={18} aria-hidden /> OK</>}</button>
               <button type="button" className="cnl-btn" onClick={() => p.onMode('changer')}>Changer</button>
               <button type="button" className="cnl-btn" onClick={() => p.onMode('rattacher')}>Rattacher à…</button>
             </div>

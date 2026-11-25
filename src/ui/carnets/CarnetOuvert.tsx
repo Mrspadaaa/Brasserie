@@ -17,14 +17,14 @@
 import { domaineParMots } from './domaineMots';
 import { domaineDe } from '../../domain/carnets/domaines';
 import { PastilleDomaine } from './Domaines';
-import { sousDomainesEmployes } from '../../domain/carnets/arbre';
+import { sousDomainesProposes } from '../../domain/carnets/arbre';
 import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { estLienSeul } from '../../domain/carnets/modele';
 import { CalendarCheck, Check, ChevronLeft, ChevronRight, Ellipsis, FileText, GitFork, Pencil, Target } from 'lucide-react';
 import { filDe as filDuCarnet } from '../../domain/carnets/fil';
-import { etatDe, genreDe, jourLocal as jourDeIso, optionRetenue } from '../../domain/carnets/suivi';
+import { etatDe, etatOption, genreDe, jourLocal as jourDeIso, optionRetenue } from '../../domain/carnets/suivi';
 import type { CarnetDoc, GenreCarnet } from '../../domain/carnets/modele';
 import { BarreEtat } from './BarreEtat';
 import { ChipGenre, PastilleCategorie } from './EnTeteGenre';
@@ -196,7 +196,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         <button type="button" className="cn-retour" aria-label="Carnets" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden />{!enteteGenre && ' Carnets'}</button>
         {/* D451 (maquettes2/v01) : un genre posé met le titre dans la barre, avec la pastille de sa catégorie */}
         {enteteGenre ? <h2 className="cn-titre cn-sp">{liesParNbsp(titreAffiche(c.title))}</h2> : <span className="cn-sp" />}
-        {enteteGenre && <PastilleCategorie c={doc} onDomaine={p.onDomaine} onRanger={p.onRanger} sousDomaines={sousDomainesEmployes(p.carnetsDocs ?? [doc], domaineParMots)} />}
+        {enteteGenre && <PastilleCategorie c={doc} onDomaine={p.onDomaine} onRanger={p.onRanger} sousDomaines={sousDomainesProposes(p.carnetsDocs ?? [doc], domaineParMots)} />}
         {/* critique 6, n° 32 : ailleurs, l'état n'a qu'une forme, la pastille (g05-1 « Idée », h05-3 : la ligne d'état la remplace quand elle
             dit « 2 façons à comparer »). Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, l'en-tête de sa maquette g5:v04-4,
             « ●○○○ idée » ; la date est dans l'encadré dessous, pas en pastille. */}
@@ -247,7 +247,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {!enteteGenre && ligneEtat}
       {/* D451 : un problème. Je cherche : les jetons du diagnostic sur une rangée ; les options en deux colonnes ; Décidé : « Fermer grâce à l'achat ? »
           si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
-      {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note') && <RangeeJetons resume={resumeJetons(messages, c.id, optionRetenue(doc)?.id)} />}
+      {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note') && <RangeeJetons resume={resumeJetons(messages, c.id, optionRetenue(doc)?.id, new Set(doc.carnet.facons.filter(f => etatOption(f) === 'ecartee').map(f => f.id)))} />}
       {enteteGenre && !problemeResolu && <OptionsProbleme c={doc} onOption={rap?.onOption} />}
       {achat && <CarteFermerParAchat option={achat.nom} onOui={() => rap?.onFermerParAchat?.(achat.id)} onAnnuler={() => setAchatEcarte(true)} />}
       {enteteGenre && !problemeResolu && genre === 'probleme' && etatSuivi === 'decide' && <QuestionPourquoi c={doc} messages={messages} onEcrire={rap?.onEcrire} />}
