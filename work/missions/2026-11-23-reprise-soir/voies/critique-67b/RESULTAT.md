@@ -1,3 +1,14 @@
+MENAGE OK carnet identique oui
+
+## MÉNAGE (DEMANDE EXECUTANT, exécutant, 25.11)
+- Étape 1 : « ZZ TEST — c67b pellets pour la NEIPA » ouvert (cap/O9-ouvert.png ; titre vérifié sur l'en-tête). Étape 2 : menu ··· › Supprimer le carnet › « Supprimer avec son plan » : suppression en un seul geste, bandeau « Carnet supprimé · ZZ TEST — c67b pellets pour la NEIPA » (cap/S1-dialogue.png). À venir 12 → 11.
+- Étape 3a : « ZZ TEST — c67b les étiquettes… » (sans plan). Dialogue « Supprimer le carnet ZZ TEST — c67b les étiquettes se décollent… ? » vérifié (cap/S2-KO.png, cap/S2-dialogue.txt), puis Supprimer. Il partait avec 1 note.
+- Étape 3b : « Photo du 25 nov. » : une seule ligne dans la liste. Carnet ouvert (cap/P1-ouvert.png) : en-tête « Photo · Idée · 25 nov. », une photo datée 25 nov., « pas encore daté ». Créée par le test (photo1.mjs, 02:15). Dialogue « Supprimer le carnet Photo ? » vérifié (cap/S3-dialogue.txt), puis Supprimer (cap/S3-apres.png : « Carnet supprimé · Photo », Carnets 32).
+- Étape 4 : `etat.mjs apres` → apres.json. Diff avec avant.json : clés identiques (synthèse, caisse, départ, opérations, Mon mois, à dépenser −463, période, puces, liste, carnet chambre froide 837/9373/947, « Houblons »), À venir 11, Carnets 32. Seule clé différente : fsTout (cache Firestore hors ZZ TEST), écart attendu de la suppression : 1 entrée d'audit (LOG-…7768a8c8) et 13 entrées vides (n=2, lecture seule) pour les documents supprimés (carnets et messages créés par le test). Aucun document existant modifié (0 changement, 0 disparition).
+- Liste après ménage (cap/M0-liste.txt) : 0 occurrence « c67b », pas de « Photo du 25 nov. ».
+- Doute : la date de création de la Photo est lue sur l'en-tête et la date du message (25 nov.), pas sur une date de création explicite. Les ZZ TEST « pompe qui chauffe » et autres n'ont pas été touchés.
+- Scripts : menage2-liste.mjs, menage2-ouvrir.mjs, menage2-supp.mjs, menage2-fs.mjs, etat.mjs. Rien commité.
+
 OK — 9 problèmes, 7 bloquants
 
 RESULTAT critique-67b : 9 problèmes (B 7, m 2, D 0) — corrigés rejoués 5/8 (C66 tenus : 1, 2, 3, 6, 8 ; rouverts : 4, 7, 5 en partie) ; C65 : 5 et 6 tenus, 4 rouvert (= C66-7) — carnet identique : NON VÉRIFIÉ (relevé après à faire, DEMANDE EXECUTANT) — BUGS OK
