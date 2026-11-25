@@ -616,3 +616,10 @@
 {"date":"2026-11-25T01:30:00.000Z","tache":"ranger (saisie rapide c67b : pellets pour la NEIPA)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67b","appels":1}
 {"date":"2026-11-25T01:30:00.000Z","tache":"ranger (saisie rapide c67b : mémo sol époxy)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67b","appels":1}
 {"date":"2026-11-25T01:30:00.000Z","tache":"ranger (saisie rapide c67b : étiquettes qui se décollent)","modele":"serveur (aiTask tour 67, BVBC77LE)","cout_chf":0.002,"voie":"critique-67b","appels":1}
+{"date":"2026-11-25T02:08:13.466Z","tache":"ranger","texte":"ZZ TEST — c68 ranger vapeur","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.467Z","tache":"ranger","texte":"ZZ TEST — c68 ranger piste A","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.467Z","tache":"ranger","texte":"ZZ TEST — c68 ranger hotte","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.467Z","tache":"ranger","texte":"ZZ TEST — c68 ranger condenseur B","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.468Z","tache":"ranger","texte":"ZZ TEST — c68 ranger à faire","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.468Z","tache":"ranger","texte":"ZZ TEST — c68 ranger pourquoi","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
+{"date":"2026-11-25T02:08:13.468Z","tache":"ranger","texte":"ZZ TEST — c68 ranger caisses","modele":"serveur (aiTask tour 68, BRxcNYiQ)","cout_chf":0.002,"voie":"critique-68"}
