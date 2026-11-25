@@ -776,7 +776,8 @@ function rendreOutils() {
     outils.appendChild(btnOutil('b-image', 'Photo', choisirPhoto));
     return;
   }
-  outils.appendChild(btnOutil('b-iapen', 'IA', ouvrirMenu, 'iao' + (menu ? ' on' : '')));
+  /* l'outil IA : lit la note et ouvre Organisé, d'un toucher */
+  outils.appendChild(btnOutil('b-iapen', 'Ranger avec l’IA', function () { doc.blur(); titreEl.blur(); garderTexte(); autoRanger(courant()); basculer('org'); }, 'iao'));
   if (dictee) outils.appendChild(btnVoix());
   outils.appendChild(btnOutil('b-image', 'Photo', choisirPhoto));
   outils.appendChild(btnOutil('b-lien', 'Coller le lien', collerLien));
@@ -1234,7 +1235,8 @@ function rendreOrg() {
   if (memo && r.genre) org.appendChild(h('div', { class: 'm4b-k' }, ico('b-ia', 'm4b-r'), 'Genre proposé par l’IA : ' + NOM_GENRE[r.genre] + ', rien à faire'));
   if (!r.pistes.length && !r.options.length && !r.tache && !r.conseil && !r.comparaison) org.appendChild(h('p', { class: 'm4b-vide' }, 'L’IA n’a rien trouvé à ranger dans cette note.'));
 
-  piedOrg.appendChild(bouton('Écrire dans Mes notes', '', function () { basculer('notes'); placerFin(); }, 'b-crayon'));
+  piedOrg.appendChild(bouton('Mes notes', '', function () { basculer('notes'); placerFin(); }, 'b-crayon'));
+  piedOrg.appendChild(bouton('Demander à l’IA', '', feuilleDemander, 'b-question'));
   if (c.orgErreur && !enCours) { piedOrg.appendChild(bouton('Réessayer', 'plein', function () { ranger(); }, 'b-annule')); pleinPied = true; }
   finirPleins(pleinPied);
 }
