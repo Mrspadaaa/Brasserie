@@ -1,0 +1,74 @@
+{
+ "etape": "allonger",
+ "al": [
+  {
+   "ms": "TIMEOUT",
+   "lt": [
+    183,
+    220,
+    241,
+    265,
+    70
+   ],
+   "maxImg": 259,
+   "avant": "ZZ TEST — k73 fêtes, 23 nov., S48",
+   "apres": "ZZ TEST — k73 fêtes, 23 nov., S48",
+   "bulle": [
+    "23 nov. → 4 janv."
+   ],
+   "avis": []
+  },
+  {
+   "ms": "TIMEOUT",
+   "lt": [
+    68,
+    63,
+    760,
+    75,
+    125,
+    104,
+    69,
+    99,
+    74,
+    2364,
+    65,
+    249,
+    102,
+    186,
+    96,
+    677,
+    347,
+    226,
+    227,
+    76
+   ],
+   "maxImg": 2399,
+   "avant": "ZZ TEST — k73 fêtes, 23 nov., S48",
+   "apres": "ZZ TEST — k73 fêtes, 23 nov., S48",
+   "bulle": [],
+   "avis": []
+  }
+ ],
+ "bande": {
+  "fini": [
+   {
+    "debut": 178784,
+    "txt": "Enregistrement…",
+    "top": 777,
+    "h": 16,
+    "fin": 179381,
+    "ms": 597
+   },
+   {
+    "debut": 463583,
+    "txt": "Enregistrement…",
+    "top": 777,
+    "h": 16,
+    "fin": 463917,
+    "ms": 334
+   }
+  ],
+  "encours": null,
+  "maintenant": 540694
+ }
+}

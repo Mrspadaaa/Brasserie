@@ -1,0 +1,86 @@
+{
+ "etape": "gestes",
+ "col": 48.796875,
+ "depl": [
+  {
+   "ms": 262,
+   "lt": [
+    64,
+    330,
+    233
+   ],
+   "maxImg": 320,
+   "avant": "ZZ TEST — k73 travaux, 25 nov., S48",
+   "apres": "ZZ TEST — k73 travaux, 9 déc., S50",
+   "bulle": [
+    "S50 · 9 déc. · lâcher ici"
+   ],
+   "avis": [
+    "ZZ TEST — k73 travaux : 25 nov. → 9 déc.  · Annuler"
+   ]
+  },
+  {
+   "ms": 272,
+   "lt": [
+    283,
+    242
+   ],
+   "maxImg": 289,
+   "avant": "ZZ TEST — k73 travaux, 9 déc., S50",
+   "apres": "ZZ TEST — k73 travaux, 2 déc., S49",
+   "bulle": [
+    "S49 · 2 déc. · lâcher ici"
+   ],
+   "avis": [
+    "ZZ TEST — k73 travaux : 9 déc. → 2 déc.  · Annuler"
+   ]
+  },
+  {
+   "ms": 278,
+   "lt": [
+    50,
+    280,
+    255
+   ],
+   "maxImg": 272,
+   "avant": "ZZ TEST — k73 travaux, 2 déc., S49",
+   "apres": "ZZ TEST — k73 travaux, 9 déc., S50",
+   "bulle": [
+    "S50 · 9 déc. · lâcher ici"
+   ],
+   "avis": [
+    "ZZ TEST — k73 travaux : 2 déc. → 9 déc.  · Annuler"
+   ]
+  }
+ ],
+ "allonger": {
+  "ms": 265,
+  "lt": [
+   293,
+   251
+  ],
+  "maxImg": 289,
+  "avant": "ZZ TEST — k73 travaux, 9 déc., S50",
+  "apres": "ZZ TEST — k73 travaux, 16 déc., S51",
+  "bulle": [
+   "S51 · 16 déc. · lâcher ici"
+  ],
+  "avis": [
+   "ZZ TEST — k73 travaux : 9 déc. → 16 déc.  · Annuler"
+  ]
+ },
+ "bande": {
+  "fini": [
+   {
+    "debut": 178784,
+    "txt": "Enregistrement…",
+    "top": 777,
+    "h": 16,
+    "fin": 179381,
+    "ms": 597
+   }
+  ],
+  "encours": null,
+  "maintenant": 197011
+ }
+}

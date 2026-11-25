@@ -1,0 +1,18 @@
+{
+ "etape": "suppr",
+ "reste": [],
+ "bande": {
+  "fini": [
+   {
+    "debut": 178784,
+    "txt": "Enregistrement…",
+    "top": 777,
+    "h": 16,
+    "fin": 179381,
+    "ms": 597
+   }
+  ],
+  "encours": null,
+  "maintenant": 227874
+ }
+}

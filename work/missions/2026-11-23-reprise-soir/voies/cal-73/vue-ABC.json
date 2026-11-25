@@ -1,0 +1,127 @@
+{
+ "ouvrir": {
+  "froid": [
+   {
+    "ms": 487,
+    "lt": [
+     169,
+     168
+    ],
+    "maxImg": 171,
+    "img": 30
+   },
+   {
+    "ms": 550,
+    "lt": [
+     501
+    ],
+    "maxImg": 504,
+    "img": 16
+   },
+   {
+    "ms": 446,
+    "lt": [
+     405
+    ],
+    "maxImg": 405,
+    "img": 14
+   }
+  ],
+  "chaud": [
+   {
+    "ms": 473,
+    "lt": [
+     455
+    ],
+    "maxImg": 450,
+    "img": 12
+   },
+   {
+    "ms": 595,
+    "lt": [
+     577
+    ],
+    "maxImg": 578,
+    "img": 13
+   },
+   {
+    "ms": 396,
+    "lt": [
+     358
+    ],
+    "maxImg": 354,
+    "img": 15
+   }
+  ]
+ },
+ "fiche": {
+  "^Milk Stout, ": [
+   {
+    "ms": 19,
+    "lt": [],
+    "maxImg": 9,
+    "img": 14
+   },
+   {
+    "ms": 7,
+    "lt": [],
+    "maxImg": 10,
+    "img": 11
+   },
+   {
+    "ms": 7,
+    "lt": [],
+    "maxImg": 9,
+    "img": 12
+   }
+  ],
+  "^De ma poche, ": [
+   {
+    "ms": 11,
+    "lt": [],
+    "maxImg": 9,
+    "img": 12
+   },
+   {
+    "ms": 7,
+    "lt": [],
+    "maxImg": 8,
+    "img": 12
+   },
+   {
+    "ms": 5,
+    "lt": [],
+    "maxImg": 8,
+    "img": 11
+   }
+  ]
+ },
+ "defiler": [
+  {
+   "ms": 6,
+   "lt": [],
+   "maxImg": 40,
+   "img": 77,
+   "apres": "14 déc. 2026 – 24 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) ",
+   "avant": "23 nov. 2026 – 3 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) "
+  },
+  {
+   "ms": 8,
+   "lt": [],
+   "maxImg": 40,
+   "img": 80,
+   "apres": "14 déc. 2026 – 24 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) ",
+   "avant": "23 nov. 2026 – 3 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) "
+  },
+  {
+   "ms": 17,
+   "lt": [
+    64
+   ],
+   "maxImg": 55,
+   "img": 68,
+   "apres": "14 déc. 2026 – 24 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) ",
+   "avant": "23 nov. 2026 – 3 janv. 2027 | 6 sem. | −463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) "
+  }
+ ]
+}
