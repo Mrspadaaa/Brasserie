@@ -159,12 +159,12 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
       onVeille={() => { appliquer(basculerVeille(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, le: maintenant().toISOString() })); }}
       carnet={ouvert.carnet as never} onOffre={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
-      onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} /> : null;
+      onChoisir={quantite => setVue({ sorte: 'choisir', id: ouvert.id, articleId: a.id, ...(quantite ? { quantite } : {}) })} /> : null;
   } else if (vue.sorte === 'comparer') {
     ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length} articles={ouvert.carnet.articles as never}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onRelire={relire} onEscalader={escalader} nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
-      onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
+      onChoisir={articleId => setVue({ sorte: 'choisir', id: ouvert.id, ...(articleId ? { articleId } : {}) })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;
     const nom = (id: string) => { const a = ouvert.carnet.articles.find(x => x.id === id); return a?.nom ?? a?.domaine ?? 'lien'; };
@@ -179,11 +179,15 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       /* critique 6, n° 4 : « Retenir la hotte » : le premier de cette façon (g05-11), sinon le premier du tableau */
       const faconVoulue = vue.faconId;
       const dansFacon = faconVoulue ? rangees.find(l => ouvert.carnet.articles.find(x => x.id === l.articleId)?.faconId === faconVoulue) : undefined;
-      const premier = ouvert.carnet.articles.find(x => x.id === (dansFacon ?? rangees[0])?.articleId) ?? ouvert.carnet.articles[0];
+      /* R54 : l'article de la fiche (ou nommé par Comparer) d'abord, avec la quantité cochée ; sinon le 1er du tableau */
+      const voulu = vue.articleId ? ouvert.carnet.articles.find(x => x.id === vue.articleId) : undefined;
+      const premier = voulu ?? ouvert.carnet.articles.find(x => x.id === (dansFacon ?? rangees[0])?.articleId) ?? ouvert.carnet.articles[0];
+      const quantite = voulu && vue.quantite ? vue.quantite : undefined;
       ecran = premier ? <Choisir etape="choisir" taux={tauxEur} titre={ouvert.title} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
-        autres={rangees.slice(1).map((l, i) => ({ article: ouvert.carnet.articles.find(x => x.id === l.articleId) as unknown as ArticleV, rang: l.rang ?? i + 2 }))}
+        {...(quantite ? { quantite } : {})}
+        autres={rangees.filter(l => l.articleId !== premier.id).map((l, i) => ({ article: ouvert.carnet.articles.find(x => x.id === l.articleId) as unknown as ArticleV, rang: l.rang ?? i + 2 }))}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
-        onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString() })); if (r) { const choisi = r.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined; if (choisi) void envoyerAVenir(choisi.doc); } if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}
+        onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString(), ...(quantite ? { quantite: { kg: quantite.kg, libelle: quantite.libelle }, prixCentimes: quantite.centimes } : {}) })); if (r) { const choisi = r.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined; if (choisi) void envoyerAVenir(choisi.doc); } if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}
         onEcarter={() => setVue({ sorte: 'comparer', id: ouvert.id })} /> : null;
     }
   } else {

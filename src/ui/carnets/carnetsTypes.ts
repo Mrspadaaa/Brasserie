@@ -55,7 +55,7 @@ export type Vue =
   | { sorte: 'article'; id: string; articleId: string }
   | { sorte: 'comparer'; id: string }
   /* critique 6, n° 4 : « Retenir la hotte » ouvre Choisir sur cette façon */
-  | { sorte: 'choisir'; id: string; faconId?: string }
+  | { sorte: 'choisir'; id: string; faconId?: string; articleId?: string; quantite?: { kg: number; libelle: string; centimes: number } }
   | { sorte: 'renommer'; id: string }
   /* D451 : Résolus › Relecture (la fiche d'un résolu, avant → après, « Toujours le bon choix ? ») : un écran de la liste, sans carnet ouvert */
   | { sorte: 'relecture' }

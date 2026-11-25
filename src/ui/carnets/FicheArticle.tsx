@@ -39,6 +39,9 @@ import {
   alphaDe, aromesDe, conditionnementsDe, ligneDuPour, noteImport, recolteDe, textePrixConditionnement, texteChfKg, texteQuantite, type ArticleRegle
 } from './tableauRegles';
 
+/** R54 : la quantité cochée dans « je prends » (`libelle` : « 1 kg »), son poids et son prix en francs (centimes). */
+export interface QuantiteChoisie { kg: number; libelle: string; centimes: number }
+
 export interface FicheArticleProps {
   article: ArticleV;
   /** D447 : le taux EUR→CHF (facture ou posé) ; sans lui, le cours du jour lu avec la page. */
@@ -59,7 +62,8 @@ export interface FicheArticleProps {
   choisi?: boolean;
   onRetour: () => void;
   onVeille: (active: boolean) => void;
-  onChoisir?: () => void;
+  /** R54 : le geste porte la quantité cochée (1 kg) et son prix en francs (62,20), quand la fiche en dit une ; sinon rien (le prix de l'article). */
+  onChoisir?: (quantite?: QuantiteChoisie) => void;
   /** Ouvrir une autre offre de la même machine. */
   onOffre?: (articleId: string) => void;
   /** L-9 : poser ou corriger le prix de l'article (centimes, CHF). */
@@ -231,6 +235,10 @@ export function FicheArticle(p: FicheArticleProps) {
   const detailCoche: string | null = prixCoche && ligneChoisie
     ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
     : null;
+  /* ce que « Choisir » emporte : le conditionnement coché et son prix en francs (le même chiffre que le bloc Offre) */
+  const quantiteChoisie: QuantiteChoisie | undefined = prixCoche && ligneChoisie
+    ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? Math.round(ligneChoisie.chfKg.chf * ligneChoisie.kg) * 100 : 0 }
+    : undefined;
   const aromes = houblon ? aromesDe(regle) : [];
   const recolte = houblon ? recolteDe(regle) : null;
   const puceDoute = libelleDoute(regle.doute);
@@ -432,7 +440,7 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {!p.choisi && p.onChoisir && (
         <>
-          <button type="button" className="cn-action cn-action-vert cn-large" onClick={p.onChoisir}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${texteQuantite(pour)}` : ''}</button>
+          <button type="button" className="cn-action cn-action-vert cn-large" onClick={() => p.onChoisir!(quantiteChoisie && quantiteChoisie.centimes > 0 ? quantiteChoisie : undefined)}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}{ligneChoisie && a.vendeur ? `, ${texteQuantite(pour)}` : ''}</button>
           <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prixCoche ?? prix ? <>, <PrixMono texte={(prixCoche ?? prix)!} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}

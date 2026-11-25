@@ -17,6 +17,7 @@ import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { lienCanonique } from './lien';
 import { quantiteArticle } from './prixUnitaire';
+import { prixCentimesDuChoix } from './prixChoisi';
 import { douteDePage } from './manques';
 import { critereMesurable, jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
@@ -719,7 +720,7 @@ export type PageRelue = Pick<PageLueV, 'statut' | 'nom' | 'conditionnement' | 'p
  * Choisir un article avec son pourquoi (ADR). Un choix déjà posé passe dans `remplaces` et reste lisible (choix revu, D-20). La façon de
  * l'article (ou celle donnée) devient retenue.
  */
-export function choisir(etat: Etat, args: { carnetId: string; articleId: string; faconId?: string; pourquoi: string; ecartes?: { articleId: string; raison: string }[]; aRevoirSi?: string; le: string }): Resultat {
+export function choisir(etat: Etat, args: { carnetId: string; articleId: string; faconId?: string; pourquoi: string; ecartes?: { articleId: string; raison: string }[]; aRevoirSi?: string; le: string; quantite?: { kg: number; libelle: string }; prixCentimes?: number }): Resultat {
   const b = new Brouillon(etat);
   const c = b.carnet(args.carnetId);
   const a = c?.carnet.articles.find(x => x.id === args.articleId);
@@ -730,11 +731,14 @@ export function choisir(etat: Etat, args: { carnetId: string; articleId: string;
   const faconId = args.faconId ?? a.faconId;
   const choix: Choix = sansIndefinis({
     articleId: a.id, faconId, pourquoi: args.pourquoi.trim(), ecartes: (args.ecartes ?? []).filter(e => e.articleId !== a.id && d.articles.some(x => x.id === e.articleId)),
-    aRevoirSi: args.aRevoirSi?.trim() || undefined, le: args.le, remplaces: ancien ? [...anciensRemplaces, { ...(ancienSeul as Choix), remplaces: [] }] : []
+    aRevoirSi: args.aRevoirSi?.trim() || undefined, le: args.le, remplaces: ancien ? [...anciensRemplaces, { ...(ancienSeul as Choix), remplaces: [] }] : [],
+    /* R54 : la quantité cochée et son prix (62,20 pour 1 kg) ; l'un sans l'autre ne dit rien */
+    ...(args.quantite && args.quantite.kg > 0 && args.quantite.libelle && typeof args.prixCentimes === 'number' && args.prixCentimes > 0 ? { quantite: { kg: args.quantite.kg, libelle: args.quantite.libelle }, prixCentimes: Math.round(args.prixCentimes) } : {})
   });
   d.choix = choix;
   /* Q-1 A (D435) : le choix fait le prix ; un prix en francs remplace l'estimé (un seul chiffre). En autre devise : rien d'inventé. */
-  if (typeof a.prixCentimes === 'number' && a.prixCentimes > 0 && (a.devise ?? 'CHF') === 'CHF') c.estimatedCost = a.prixCentimes / 100;
+  const prixDuChoix = prixCentimesDuChoix(d.choix, a);
+  if (prixDuChoix !== undefined) c.estimatedCost = prixDuChoix / 100;
   const f = faconId ? d.facons.find(x => x.id === faconId) : undefined;
   if (f && f.etat !== 'retenue') f.etat = 'retenue';
   /* D451 : un carnet déjà suivi passe à Décidé avec son choix (sinon son état écrit resterait « je cherche » face à un choix posé) ; sans `suivi`, l'état se dérive. */
@@ -787,13 +791,15 @@ export function planDepuisChoix(c: CarnetDoc, args: { le: string }): FinancialPl
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   if (!choix || !a) return null;
-  const connu = a.prixCentimes !== undefined && (a.devise ?? 'CHF') === 'CHF';
+  /* R54 : la quantité cochée sur la fiche (1 kg, 62,20) fait le prix de l'entrée À venir, qui la dit en note */
+  const prix = prixCentimesDuChoix(choix, a);
+  const connu = prix !== undefined;
   return {
-    id: idPlanDuCarnet(c.id), title: c.title, date: dansTroisMois(args.le), amountCents: connu ? a.prixCentimes! : 0, direction: 'out', category: 'materiel', source: 'equipment',
-    status: 'draft', createdAt: args.le, ...(a.vendeur ? { vendor: a.vendeur } : {}),
+    id: idPlanDuCarnet(c.id), title: c.title, date: dansTroisMois(args.le), amountCents: connu ? prix : 0, direction: 'out', category: 'materiel', source: 'equipment',
+    status: 'draft', createdAt: args.le, ...(a.vendeur ? { vendor: a.vendeur } : {}), ...(choix.quantite ? { notes: choix.quantite.libelle } : {}),
     upgrade: {
       version: 1, timing: 'soon', stage: connu ? 'ready' : 'research', budgetKnown: connu, datePrecision: 'month', estimateSource: 'estimate',
-      ...(connu ? { purchaseCents: a.prixCentimes } : {}), ...(choix.pourquoi ? { purpose: choix.pourquoi } : {}),
+      ...(connu ? { purchaseCents: prix } : {}), ...(choix.pourquoi ? { purpose: choix.pourquoi } : {}),
       sourceCarnetId: c.id, sourceCarnetTitre: c.title
     }
   };
@@ -932,11 +938,12 @@ export function planSuitCarnet(plan: FinancialPlan, geste: { date?: string | nul
 export function planSuitChoix(plan: FinancialPlan, c: CarnetDoc): FinancialPlan {
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
-  if (!a || !plan.upgrade || a.prixCentimes === undefined || !(a.prixCentimes > 0) || (a.devise ?? 'CHF') !== 'CHF') return plan;
+  const prix = a ? prixCentimesDuChoix(choix, a) : undefined;
+  if (!a || !plan.upgrade || prix === undefined) return plan;
   const d = upgradeDetails(plan);
-  const parts = { purchaseCents: a.prixCentimes, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
-  const total = upgradeBudget(parts) ?? a.prixCentimes;
-  const aJour = plan.amountCents === total && d.purchaseCents === a.prixCentimes && d.budgetKnown === true;
+  const parts = { purchaseCents: prix, deliveryCents: d.deliveryCents, installationCents: d.installationCents };
+  const total = upgradeBudget(parts) ?? prix;
+  const aJour = plan.amountCents === total && d.purchaseCents === prix && d.budgetKnown === true;
   const etape = d.stage === 'idea' || d.stage === 'research' ? 'ready' as const : d.stage;
   if (aJour && etape === d.stage && (plan.vendor || !a.vendeur)) return plan;
   let p: FinancialPlan = { ...plan, ...(!plan.vendor && a.vendeur ? { vendor: a.vendeur } : {}), upgrade: { ...plan.upgrade, stage: etape } };

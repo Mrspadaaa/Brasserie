@@ -216,7 +216,8 @@ export interface ComparerProps {
   pictos?: Record<string, React.ReactNode>;
   onRetour: () => void;
   onOuvrirArticle?: (articleId: string) => void;
-  onChoisir?: () => void;
+  /** R54 : l'article que le bouton nomme (le 1er du classement au kilo), pour que l'écran Choisir ouvre celui-là. */
+  onChoisir?: (articleId?: string) => void;
   /** C48-1 : relire la page d'un article lu dont le prix est « ? » (geste du brasseur) ; absent : pas de bouton. */
   onRelire?: (articleId: string) => void | Promise<void>;
   /** ESCALADER-SUR-MANQUE : relire avec l'IA forte un article dont un champ manque ou dont les lectures se contredisent ; absent : pas de bouton. */
@@ -678,7 +679,7 @@ export function Comparer(p: ComparerProps) {
             </table>
           )}
           <ARelire articles={aRelire} />
-          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={p.onChoisir}>{libelleBouton}</button>}
+          {p.onChoisir && p.statut !== 'validated' && <button type="button" className="cn-action" onClick={() => p.onChoisir!(premier?.articleId)}>{libelleBouton}</button>}
         </>
       )}
     </article>

@@ -183,6 +183,9 @@ export interface Choix {
   ecartes: { articleId: string; raison: string }[];
   aRevoirSi?: string;
   le: string;
+  /** R54 (C66-4) : un houblon vendu en plusieurs conditionnements : la quantité cochée sur la fiche (1 kg) et son prix en francs (62,20), jamais celui d'un autre sachet. Absent : le prix de l'article. */
+  quantite?: { kg: number; libelle: string };
+  prixCentimes?: number;
   remplaces: Choix[];
 }
 
@@ -476,12 +479,14 @@ function lirePhoto(v: unknown): Photo | null {
   return { ...inconnues(v, CLES_PHOTO), ...sansIndefinis({ id: v.id, jpeg: v.jpeg, messageId: optTexte(v.messageId), lue: v.lue === true ? (true as const) : undefined }) };
 }
 
-const CLES_CHOIX = ['articleId', 'faconId', 'pourquoi', 'ecartes', 'aRevoirSi', 'le', 'remplaces'];
+const CLES_CHOIX = ['articleId', 'faconId', 'pourquoi', 'ecartes', 'aRevoirSi', 'le', 'remplaces', 'quantite', 'prixCentimes'];
 function lireChoix(v: unknown, profondeur = 0): Choix | undefined {
   if (!estObjet(v) || !texteNonVide(v.articleId) || typeof v.pourquoi !== 'string' || !texteNonVide(v.le) || profondeur > 20) return undefined;
   const ecartes = Array.isArray(v.ecartes) ? v.ecartes.filter((e): e is { articleId: string; raison: string } => estObjet(e) && texteNonVide(e.articleId) && typeof e.raison === 'string').map(e => ({ articleId: e.articleId, raison: e.raison })) : [];
   const remplaces = Array.isArray(v.remplaces) ? v.remplaces.map(r => lireChoix(r, profondeur + 1)).filter((r): r is Choix => !!r) : [];
-  return { ...inconnues(v, CLES_CHOIX), ...sansIndefinis({ articleId: v.articleId, faconId: optTexte(v.faconId), pourquoi: v.pourquoi, ecartes, aRevoirSi: optTexte(v.aRevoirSi), le: v.le, remplaces }) };
+  const q = estObjet(v.quantite) && nombreFini(v.quantite.kg) && v.quantite.kg > 0 && texteNonVide(v.quantite.libelle) ? { kg: v.quantite.kg, libelle: v.quantite.libelle } : undefined;
+  const prix = nombreFini(v.prixCentimes) && v.prixCentimes > 0 ? Math.round(v.prixCentimes) : undefined;
+  return { ...inconnues(v, CLES_CHOIX), ...sansIndefinis({ articleId: v.articleId, faconId: optTexte(v.faconId), pourquoi: v.pourquoi, ecartes, aRevoirSi: optTexte(v.aRevoirSi), le: v.le, quantite: q, prixCentimes: prix, remplaces }) };
 }
 
 const liste = <T>(v: unknown, lire: (x: unknown) => T | null): T[] | null => {

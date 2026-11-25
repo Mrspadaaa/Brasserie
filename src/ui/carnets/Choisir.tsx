@@ -45,6 +45,8 @@ export type ChoisirProps = {
   | {
     etape: 'choisir';
     article: ArticleV;
+    /** R54 : la quantité cochée sur la fiche (1 kg) et son prix en francs : ils font le prix annoncé et celui qui part dans À venir. */
+    quantite?: { kg: number; libelle: string; centimes: number };
     sur: number;
     valeurs: ValeurPlaceeV[];
     autres: { article: ArticleV; rang: number; mesure?: string }[];
@@ -249,9 +251,9 @@ export function budgetMaxDuCarnet(c: { criteres?: readonly { texte: string }[]; 
 
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const a = p.article;
-  /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » */
-  const prix = prixChoix(a, p.taux);
-  const detail = detailPrix(a, p.taux);
+  /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » ; R54 : avec une quantité cochée, son prix (1 kg : 62,20 CHF), jamais celui d'un autre sachet */
+  const prix = p.quantite ? prixTexte(p.quantite.centimes, 'CHF') : prixChoix(a, p.taux);
+  const detail = p.quantite ? p.quantite.libelle : detailPrix(a, p.taux);
   /* P16 : places et pourquoi calculés sur le carnet (valeurs et rangs), jamais un champ vide à taper ; l'IA, si elle a dit, prime.
      n° 10 (g05-11) : chaque valeur chiffrée porte sa réglette ; les écartés du tableau sont dits avec leur ✕ et leur raison. */
   const calc = useMemo(() => {
@@ -271,7 +273,9 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.carnet, a.id]);
-  const valeurs: (ValeurPlaceeV & { place?: Place })[] = p.valeurs.length ? p.valeurs : calc.valeurs;
+  /* R54 : avec une quantité cochée (1 kg), la place « Prix » du sachet de l'article dirait 6,70 sous le 62,20 du haut : elle se tait, le classement au kilo se lit dans Comparer */
+  const valeursToutes: (ValeurPlaceeV & { place?: Place })[] = p.valeurs.length ? p.valeurs : calc.valeurs;
+  const valeurs = p.quantite ? valeursToutes.filter(v => v.place?.nom !== 'prix') : valeursToutes;
   const propose = p.pourquoiPropose ?? calc.pourquoi ?? '';
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
