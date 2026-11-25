@@ -543,3 +543,9 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## MESSAGE-RESTE-DANS-SON-CARNET (24.11, constat C64-8)
 - Fait : « Achat prévu fin du mois. », tapé dans le carnet ZZ « trop de vapeur au brassage », a été rangé par l'IA dans SON vrai carnet « Achat brasserie : moulin à malt + bac etc. ».
 - Contrôle : un message tapé dans un carnet ouvert reste dans ce carnet ; l'IA peut PROPOSER un autre carnet, jamais y écrire seule ; échoue sur index-SSQ_J86L.js.
+
+## CARNET-LISTE-COMPACTE (25.11)
+- Ses mots : « Toujours pas super compact... Et quand j'ai un filtre je peux pas replier.... » (capture plaintes/2026-11-25-carnet-liste-compact.jpg, tour 73 index-L94x-z-O.js).
+- Défaut : à 390 × 844, la liste des carnets ne montre que 3 lignes et demie ; coup d'œil en 4 grandes cases (≈ 90 px), rangée Arbre/À faire/cloche, ligne « Filtre : … Tout montrer », en-tête de domaine et de sous-domaine chacun sur sa ligne : la donnée (lignes de carnets) fait moins de la moitié de l'écran. Avec un filtre actif, les en-têtes Brasserie / Brassage ne se replient plus.
+- Contrôle : à 390 × 844, liste ouverte, au moins 70 % de la hauteur utile aux lignes de carnets (CARNET-DONNEE-PREMIER-PLAN) et au moins 7 lignes visibles sans défiler ; avec un filtre actif, toucher un en-tête de domaine ou de sous-domaine le replie et le déplie. Échoue sur index-L94x-z-O.js.
+- Garder ses choix : les 4 états du coup d'œil (je cherche, décidés, notés, résolus) et leurs couleurs, l'arbre domaine › sous-domaine (D451, D452).

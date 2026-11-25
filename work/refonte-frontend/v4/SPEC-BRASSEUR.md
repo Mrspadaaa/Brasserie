@@ -2914,3 +2914,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 (Carnet, libellés) : « Le groupe sans catégorie de la liste s'appelle maintenant « Sans catégorie » au lieu de « Autres ». Les sous-catégories de Brasserie sont fixées : Brassage, Fermentation, Conditionnement. Est-ce que ça te convient ? Yes. »
 - 25.11 (IA) : « Concernant l'ia est-ce que maintenant les montant sont bien lu, le choix de Gemini été bon? Tout est ok avec l'ia ? »
 - 25.11 (IA, rangement) : « Le rangement sur des phrases neuves, il faudrait as utilisé hydrogen ou flash lite a la place de 3.8 ? » ; au banc comparatif à 0,50 CHF : « Yes »
+- 25.11 matin (Carnet, liste, capture plaintes/2026-11-25-carnet-liste-compact.jpg, entourés : en-têtes Brasserie et Brassage) : « Toujours pas super compact... Et quand j'ai un filtre je peux pas replier.... »
