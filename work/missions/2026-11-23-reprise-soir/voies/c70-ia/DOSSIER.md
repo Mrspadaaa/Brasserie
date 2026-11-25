@@ -1,0 +1,10 @@
+# Dossier c70-ia
+
+Constat (4 tours de suite) : une phrase de problème matériel (« trop de vapeur pendant l'ébullition… ») est rangée « idée » sous « Brasserie » seul, avec la phrase en titre. La maquette choisie (work/missions/2026-11-24-carnet-workflow/maquettes3/v01.html, écran saisie rapide) attend : nouveau problème, titre court, Brasserie › Brassage › Vapeur, tâche proposée. Les correctifs locaux passaient sur l'IA simulée et échouaient en ligne : la cause est dans la consigne/le schéma de functions/src/carnetIA.ts et la lecture de la réponse.
+Méthode (L29, L20) :
+1. ## État de l'art au RESULTAT : problème type (classification de texte court par LLM à sortie structurée : genre, chemin hiérarchique, titre) ; méthode standard (schéma JSON strict avec enum des genres, exemples variés, consigne qui définit chaque genre par des critères, pas par des exemples ; post-validation).
+2. Banc réel : scripts/banc-rangement.ts appelle la MÊME fonction de rangement que aiTask (code de functions/src, clé du .env comme scripts/banc-lecture-facture.ts), sur 16 phrases NEUVES variées que tu écris (problèmes matériels, mémos/faits, idées, achats, tâches, papiers ; aucune phrase vapeur, Citra, sol), séparées en 8 de réglage et 8 tenues à part, chacune avec l'attendu (genre, chemin à 2-3 niveaux, titre court ≤ 6 mots). Ses carnets réels ne sont PAS envoyés : liste de carnets fictifs « ZZ ».
+3. Passe AVANT (mesure), réglage sur les 8 de réglage, passe APRÈS sur les 16 ; le score se juge sur les 8 tenues à part. Coût total ≤ 0,08 CHF, chaque appel au journal work/missions/2026-11-23-carnet-en-ligne/ia-journal.jsonl (test spécial, lancé explicitement, journalisé ; jamais dans npm test).
+4. Les réponses APRÈS deviennent tests/fixtures/c70-ia/*.json et tests/unit/c70RangementIA.test.ts les rejoue (lecture : genre, chemin, titre).
+5. Porte : functions compile, `npx tsc --noEmit` (2 erreurs connues), carnets*, c48..c69Regles verts. Commit par CHEMINS. Pas de déploiement.
+Ligne rendue : « IA <score avant>/<8> → <score après>/<8> (tenues à part) <hash> ».
