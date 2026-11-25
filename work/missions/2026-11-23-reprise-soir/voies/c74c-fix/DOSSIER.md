@@ -1,0 +1,8 @@
+# Dossier c74c-fix — fin de c74b (15 rouges)
+
+État : voies/c74b-fix/RESULTAT.md (commit 1d5cb0cfa, c74bRegles 35/50). Reste : R95 rangement proposé d'un fil ancien (options, Résolu, tâche ; analyse LOCALE, aucune écriture avant son geste) ; R96 proposition « Résolu » et import du Planning (budget ≠ critère, Quand = date du Planning partout, À faire compris) ; R97 C73-2 (tuile 620 avec CHF), C73-3, C73-6 (bandeau hors ligne qui reste) ; registre BUGS (R73-n, C73-n, C74B-n corrigés en local).
+Décisions du pilote (25.11, sa plainte récente prime sur les anciens tests, L01/L13) :
+1. Fiche : Alpha SORT de la grille Caractéristiques (α dit une fois, en tête) ; mets à jour les anciens tests qui exigeaient Alpha en grille (c53, c59, c61, carnetsFix28Fiche), avec un commentaire « D-25.11 sa plainte : valeur dite une fois » ; plus de « 10 - 15 » espacé.
+2. Offre : plus de bloc vide ; le corps de l'Offre ne s'étire plus (c58 R34 mis à jour, même commentaire) ; gestes (crayon, Ouvrir) sur la ligne du prix.
+3. « essayé » (Relire) ne cite que ce qui a été essayé ou écarté, jamais une simple piste (C73-3 prime sur C67-10 ; mets à jour C67-10).
+Porte : c74bRegles 50/50 ; carnets*, c48..c74bRegles, noteRegles, c70RangementIA, c68Realises, lot3CarnetOuvert, virgule-transversale, proprietes, stocksMaterielUneRangee verts (toute la liste rejouée À LA FIN) ; `node scripts/controle-liste-compacte.mjs` → LISTE OK (sortie lue) ; tsc (2 connues), functions compile. Commit par CHEMINS (utilise Edit, pas de heredoc node avec barres inverses). Aucune donnée réelle, aucun appel Gemini. N'écris pas dans le Calendrier (cal-75).
