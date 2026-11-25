@@ -63,3 +63,14 @@ correction 1 · M4 : problèmes traités 21/21 (critique 10, persona ux +8, pers
 - correction 1 · M1 : problèmes traités 29/29 (critique 10, ux 10, ia 9), états ajoutés : note (clavier, presse-papiers), attente, cherche (+ cherche-bas), change (feuille case par case), decide, resolu (proposé), relire (mars), hors-ligne (lu par l’app, envoi en file), achat (2e fermenteur 30 L) ; ses lignes jamais réécrites (déplacées, numérotées) ; mesures : 0 chasse fixe, champ 44 px au repos, 0 cible < 24 px ; cap/m1-{avant,apres,annuler}.png = copies de note, cherche, change pour page.html.
 
 correction 1 · M3 : problèmes traités 21/21 (critique 11, persona ux 11, persona ia 9 ; 21 distincts), états ajoutés note, range, annuler (feuille « Changé par l’IA »), options, decide, resolu, relire, achat, hors-ligne ; captures cap/m3-<état>.png à 390 × 844, ouvertes. Anciennes cap/m3-avant.png et m3-apres.png laissées (page.html les cite), à remplacer à l’assemblage.
+
+## Itérations (critique / persona ux / persona ia, note /10)
+
+| Tour | M1 | M2 | M3 | M4 | B |
+|---|---|---|---|---|---|
+| 1 | 5,5 / 5,5 / 4,5 | 6 / 6,5 / 7 | 5,5 / 5,5 / 6 | 6,5 / 7 / 7,5 | nombreux |
+| 2 | 7 / 8 / 8 | 6,5 / 7,5 / 7 | 6 / 6,5 / 6,5 | 7,5 / 8,5 / 7,5 | 4 / 1 / 3 |
+| 3 | 7,5 / 8,5 / 7,5 | 7 / 8 / 8 | 6,5 / 7,5 / 7 | 7,5 / 9 / 8,5 | 3 / 1 / 3 |
+| 4 (final) | 8 / 9 / 8,5 | 7,5 / 8,5 / 8,5 | 7 / 8 / 8 | 8 / 9 / 9 | 0 / 0 / 0 |
+
+Page : https://claude.ai/artifact/NtKN1mG3eqxrCVCj5YVvnL (version 2, 53 états, PAGE OK).
