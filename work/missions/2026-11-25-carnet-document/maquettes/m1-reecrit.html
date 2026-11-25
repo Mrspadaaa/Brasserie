@@ -3,14 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>M1 · Le carnet se range · correction 2 · 25.11</title>
+<title>M1 · Le carnet se range · correction 3 · 25.11</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* M1 (correction 2) : un seul document. L'IA le RANGE : elle déplace ses lignes, mot pour mot, sous des titres fixes
+/* M1 (correction 3) : un seul document. L'IA le RANGE : elle déplace ses lignes, mot pour mot, sous des titres fixes
    (Constat, Pistes, Options, Tâche, Coût, Résultat), et ajoute à l'encre violette ce qu'elle lit. Elle cite ses mots
    entre « », ne réécrit rien, ne pose rien sans un toucher. En-tête fixe : titre, ligne Local, frise, jetons.
-   Tailles : 14, 16, 24 px. Un seul bouton plein par écran. */
-:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--mut:#666;--ink:#111;--ia:#6a4fb0;--ok:#3f6b2e;--bad:#a8291f;--att:#7f5b10;--fin:#1f64a3;--prod:#9a4f1e;
+   Tailles : 14, 16, 24 px. Un seul bouton plein par écran, toujours NOIR (--plein) : le plein est ton geste ;
+   le violet est l'encre de l'IA, jamais un fond de bouton. Toute cible fait 44 px au moins.
+   Fidélité : n1 à n6 sont le carnet réel (tests/fixtures/c79/zz-ecoulement-qui-fuit.json). Tout le reste (n7 à n10,
+   photo, lien, décisions après le 25 nov.) est imaginé : n° en pointillé jaune et bandeau « Maquette » sur l'état. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--mut:#666;--ink:#111;--plein:#222;--ia:#6a4fb0;--ok:#3f6b2e;--bad:#a8291f;--att:#7f5b10;--fin:#1f64a3;--prod:#9a4f1e;--im:#9a7600;--imbg:#fbf1cf;
 --iabg:color-mix(in srgb,var(--ia) 9%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 9%,var(--bg));--attbg:color-mix(in srgb,var(--att) 13%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 11%,var(--bg))}
 *{box-sizing:border-box}
 body{margin:0;background:#d9d6d2;font:16px/1.36 "Source Sans 3",system-ui,sans-serif;color:var(--ink);display:flex;flex-wrap:wrap;gap:40px 24px;padding:40px 24px 24px;font-variant-numeric:tabular-nums}
@@ -18,6 +21,9 @@ button{font:inherit;color:inherit}
 .m1-cadre{position:relative}
 .m1-etiq{position:absolute;top:-24px;left:0;font-size:14px;font-weight:700;color:#444;white-space:nowrap}
 .m1-ecran{width:390px;height:844px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
+/* bandeau de maquette : ce qui n'est pas dans son carnet réel */
+.m1-imag{flex:none;display:flex;align-items:center;gap:6px;min-height:28px;padding:3px 12px;background:var(--imbg);color:#5e4800;font-size:14px;font-weight:600;border-bottom:1px solid #e6d28f;line-height:1.2}
+.m1-im{display:inline-block;border:1.5px dashed var(--im);color:var(--im)!important;border-radius:6px;padding:0 3px;line-height:1.15;font-weight:700;font-style:normal}
 /* barre haute */
 .m1-top{display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--mut);font-size:16px;height:44px;flex:none}
 .m1-top .m1-r{display:flex;align-items:center;gap:2px;height:44px;padding-right:6px}
@@ -26,27 +32,25 @@ button{font:inherit;color:inherit}
 .m1-top .m1-plus{width:44px;height:44px;display:grid;place-items:center}
 .m1-top .m1-cherche{display:inline-flex;align-items:center;gap:4px;color:#333}
 .m1-top .m1-cherche svg{width:18px;height:18px}
+.m1-chg{display:inline-flex;align-items:center;gap:5px;height:44px;padding:0 12px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--ia) 45%,var(--bg));color:var(--ia);font-weight:700;font-size:14px;white-space:nowrap;flex:none}
+.m1-chg svg{width:16px;height:16px}
 /* en-tête fixe */
 .m1-tete{padding:0 16px;flex:none;border-bottom:1px solid var(--s2)}
 .m1-titre{font-size:24px;font-weight:800;line-height:1.1;margin:0 0 4px;letter-spacing:-.01em}
-.m1-meta{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:14px;height:32px;margin-bottom:4px}
+.m1-meta{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:14px;height:28px}
 .m1-meta>svg{width:16px;height:16px;color:var(--prod);flex:none}
-.m1-meta .m1-sp{flex:1}
-.m1-chg{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 10px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--ia) 45%,var(--bg));color:var(--ia);font-weight:700;font-size:14px;white-space:nowrap;flex:none}
-.m1-chg svg{width:14px;height:14px}
-.m1-chg.run{border-style:dashed}
 .m1-genre{display:inline-flex;align-items:center;font-weight:700;border-radius:999px;padding:0 9px;font-size:14px}
 .m1-genre.pb{background:var(--badbg);color:var(--bad)}
 .m1-genre.ach{background:var(--attbg);color:var(--att)}
-/* frise : ses 4 états */
-.m1-frise{display:flex;align-items:center;margin:0 0 10px;height:28px}
+/* frise : ses 4 états ; l'état proposé est une case de 44 px */
+.m1-frise{display:flex;align-items:center;margin:0 0 6px;height:44px}
 .m1-frise i{flex:1;height:3px;background:var(--line);min-width:8px}
 .m1-frise i.f{background:var(--fin)}
 .m1-frise b{font-size:14px;color:var(--mut);font-weight:700;padding:0 3px;white-space:nowrap}
 .m1-frise b.f{color:var(--fin)}
 .m1-frise b.ici{background:var(--fin);color:#fff;border-radius:999px;padding:2px 10px}
 .m1-frise.ok i.f{background:var(--ok)}.m1-frise.ok b.f{color:var(--ok)}.m1-frise.ok b.ici{background:var(--ok)}
-.m1-frise b.prop{border:1.5px dashed var(--ia);color:var(--ia);border-radius:999px;padding:1px 9px;background:var(--bg)}
+.m1-propc{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 10px 0 8px;border:1.5px dashed var(--ia);border-radius:12px;color:var(--ia);font-weight:700;font-size:14px;background:var(--bg);white-space:nowrap;flex:none}
 /* jetons collés sous la frise */
 .m1-jetons{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .m1-j{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
@@ -55,33 +59,35 @@ button{font:inherit;color:inherit}
 .m1-j.q{background:var(--attbg);color:var(--att)}
 .m1-j.dev{background:var(--finbg);color:var(--fin)}
 .m1-j.cout{background:var(--s1);color:#333;border:1px solid var(--line)}
-.m1-j.etat{background:var(--fin);color:#fff}
-.m1-j.loc{background:var(--bg);color:#444;border:1px dashed #999}
+.m1-j.ctr{background:var(--bg);color:var(--fin);border:1.5px solid var(--fin)}
+.m1-j.vue{background:var(--bg);color:#444;border:1px dashed #999;font-weight:600}
 /* corps qui défile */
 .m1-doc{padding:0 16px 14px;flex:1;overflow-y:auto;position:relative;scrollbar-width:none}
 .m1-doc::-webkit-scrollbar{display:none}
 .m1-h{font-size:14px;font-weight:700;color:var(--mut);margin:12px 0 4px;display:flex;align-items:center;gap:6px}
 .m1-h::after{content:"";flex:1;height:1px;background:var(--s2)}
 /* ses lignes : jamais réécrites, numéro de note en marge */
-.m1-n{display:grid;grid-template-columns:20px 1fr auto;gap:0 6px;align-items:baseline;margin:0 0 6px}
-.m1-n>i{font-style:normal;font-size:14px;color:var(--mut);font-weight:700;text-align:right}
+.m1-n{display:grid;grid-template-columns:24px 1fr auto;gap:0 6px;align-items:baseline;margin:0 0 6px}
+.m1-n>i{font-style:normal;font-size:14px;color:var(--mut);font-weight:700;text-align:right;justify-self:end}
 .m1-n>small{font-size:14px;color:var(--mut)}
 .m1-n .m1-iat{white-space:nowrap}
 .m1-sous{grid-column:2/4;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
 .m1-iat{color:var(--ia);font-size:14px;font-weight:600}
 q{quotes:"\00AB\00A0" "\00A0\00BB"}
-.m1-iat q,.m1-opt .c q,.m1-res .c q{color:var(--ink);font-weight:400}
+.m1-iat q,.m1-opt .c q,.m1-res .c q,.m1-planb q{color:var(--ink);font-weight:400}
 .m1-iat .nn,.m1-nn{color:var(--mut);font-weight:700;font-size:14px}
 .m1-ia-pas{color:var(--mut);font-weight:400;font-style:italic}
-.m1-photo{width:52px;height:40px;border-radius:8px;flex:none;display:block;align-self:start}
-.m1-lien{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--fin);border:1.5px solid color-mix(in srgb,var(--fin) 40%,var(--bg));border-radius:999px;padding:0 9px;height:28px;white-space:nowrap}
+.m1-ph{position:relative;display:block;width:56px;height:44px;flex:none;align-self:start;border:1.5px dashed var(--im);border-radius:9px;padding:1px}
+.m1-ph svg{width:100%;height:100%;display:block;border-radius:7px}
+.m1-ph b{position:absolute;right:-6px;bottom:-8px;background:var(--imbg);color:var(--im);font-size:14px;line-height:1;padding:2px 4px;border:1.5px dashed var(--im);border-radius:6px}
+.m1-lien{display:inline-flex;align-items:center;height:44px;vertical-align:middle}
+.m1-lien>span{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--fin);border:1.5px solid color-mix(in srgb,var(--fin) 40%,var(--bg));border-radius:999px;padding:0 9px;height:30px;white-space:nowrap;background:var(--bg)}
 .m1-lien svg{width:14px;height:14px}
-/* boutons */
-.m1-rep{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--ia);color:var(--ia);font-weight:700;font-size:14px;background:var(--bg)}
-.m1-rep.p{background:var(--ia);color:#fff}
+/* boutons : bordé noir par défaut ; plein = noir ; violet seulement pour arrêter l'IA */
+.m1-rep{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 12px;border-radius:10px;border:1.5px solid #444;color:#222;font-weight:700;font-size:14px;background:var(--bg)}
+.m1-rep.p{background:var(--plein);color:#fff;border-color:var(--plein)}
 .m1-rep.n{border-color:var(--line);color:#333}
-.m1-rep.ink{border-color:#444;color:#222}
-.m1-rep.ink.p{background:#222;color:#fff;border-color:#222}
+.m1-rep.ia{border-color:var(--ia);color:var(--ia)}
 /* options */
 .m1-opts{border-radius:12px;background:var(--iabg);padding:2px 10px}
 .m1-opt{display:grid;grid-template-columns:20px 1fr auto;gap:0 6px;align-items:center;padding:7px 0;border-bottom:1px solid color-mix(in srgb,var(--ia) 16%,var(--bg))}
@@ -97,6 +103,12 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 .m1-res{display:grid;grid-template-columns:20px 1fr;gap:0 6px;padding:3px 0;color:#333}
 .m1-res>i{font-style:normal;font-weight:800;color:var(--mut);font-size:16px}
 .m1-res .c{font-size:14px;color:var(--ia)}
+/* plan B : hors de la tâche, une ligne pointillée */
+.m1-planb{border:1.5px dashed #9a9a9a;border-radius:12px;padding:4px 10px 4px 8px;margin:6px 0 4px;font-size:16px;line-height:1.3}
+.m1-planb .k{font-size:14px;font-weight:700;color:var(--ia);display:block;margin:2px 0 1px}
+.m1-planb .r{display:grid;grid-template-columns:20px 1fr;gap:0 6px;align-items:baseline}
+.m1-planb .r>i{font-style:normal;font-size:14px;color:var(--mut);font-weight:700;text-align:right}
+.m1-planb.fini{color:var(--mut)}
 /* tâche */
 .m1-tache{border:2px solid var(--ink);border-radius:12px;padding:8px 10px}
 .m1-tache.prop{border:2px dashed var(--ia);background:var(--bg)}
@@ -105,14 +117,14 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 .m1-tache .t{font-weight:800;font-size:16px;margin:1px 0 2px}
 .m1-tache .a{display:flex;gap:8px;margin-top:8px}
 .m1-tache .a .m1-rep{flex:1}
-.m1-l{display:flex;gap:10px;align-items:center;min-height:36px}
+.m1-l{display:flex;gap:10px;align-items:center;min-height:44px}
 .m1-bx{width:24px;height:24px;border-radius:6px;border:2px solid var(--ia);display:grid;place-items:center;color:#fff;font-weight:800;flex:none;font-size:14px;background:var(--bg)}
 .m1-bx.x{background:var(--ia)}
 .m1-bx.ink{border-color:var(--ink)}
 .m1-bx.ink.x{background:var(--ok);border-color:var(--ok)}
-.m1-quand{margin-left:auto;height:32px;display:inline-flex;align-items:center;padding:0 10px;border-radius:10px;border:1.5px solid var(--line);font-size:14px;font-weight:700;color:#333;white-space:nowrap}
-.m1-si{display:grid;grid-template-columns:20px 1fr;gap:0 6px;margin-top:8px}
-.m1-si>i{font-style:normal;font-size:14px;color:var(--mut);font-weight:700;text-align:right}
+.m1-quand{margin-left:auto;height:44px;display:inline-flex;align-items:center;padding:0 10px;border-radius:10px;border:1.5px solid var(--line);font-size:14px;font-weight:700;color:#333;white-space:nowrap}
+.m1-conseil{display:flex;gap:6px;align-items:flex-start;margin:6px 0 0;color:var(--ia);font-size:14px;font-weight:600;line-height:1.3}
+.m1-conseil svg{width:14px;height:14px;flex:none;margin-top:2px}
 /* proposition de l'IA, carte d'attente, erreur */
 .m1-prop{background:var(--iabg);border:1.5px dashed var(--ia);border-radius:12px;padding:9px 10px;margin:6px 0 4px}
 .m1-prop .k{font-size:14px;font-weight:700;color:var(--ia);display:flex;gap:5px;align-items:center;margin-bottom:2px}
@@ -122,30 +134,27 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 .m1-prop .a{display:flex;gap:8px;margin-top:6px}
 .m1-prop .a .m1-rep{flex:1}
 .m1-run{height:3px;background:linear-gradient(90deg,var(--iabg) 0,var(--ia) 40%,var(--iabg) 70%);margin:0 -16px}
-.m1-attente{display:flex;align-items:center;gap:8px;background:var(--iabg);border-radius:12px;padding:6px 6px 6px 12px;margin:10px 0 6px;color:var(--ia);font-weight:700;font-size:14px}
+.m1-attente{display:flex;align-items:center;gap:8px;background:var(--iabg);border-radius:12px;padding:4px 4px 4px 12px;margin:10px 0 6px;color:var(--ia);font-weight:700;font-size:14px}
 .m1-attente svg{width:16px;height:16px}
 .m1-attente .m1-sp{flex:1}
 .m1-err{border:1.5px solid color-mix(in srgb,var(--bad) 45%,var(--bg));background:var(--badbg);border-radius:12px;padding:8px 10px;margin:10px 0 8px}
 .m1-err .k{font-weight:700;color:var(--bad);font-size:16px}
 .m1-err .w{font-size:14px;color:#333}
-/* lu par l'app */
+/* lu par l'app : seulement ce que etiquettesLocales sait poser (montant, « pas trouvé ») */
 .m1-loc{border:1.5px dashed #999;border-radius:12px;padding:8px 10px;margin:10px 0 10px;background:var(--s1)}
 .m1-loc .k{font-size:14px;font-weight:700;color:#444;display:flex;gap:6px;align-items:center;margin-bottom:6px}
 .m1-loc .k svg{width:16px;height:16px}
 .m1-loc .js{display:flex;flex-wrap:wrap;gap:5px}
-.m1-loc .o{font-size:14px;color:#333;margin-top:6px}
-.m1-loc .t{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:16px}
-.m1-file{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--att);margin:6px 0 0 26px}
-.m1-file svg{width:16px;height:16px}
-.m1-file .m1-rep{height:36px;border-color:var(--att);color:var(--att);margin-left:auto}
+.m1-loc .o{font-size:14px;color:#333;margin-top:6px;line-height:1.3}
+.m1-file{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--att);margin:8px 0 0}
+.m1-file svg{width:16px;height:16px;flex:none}
+.m1-file .m1-rep{border-color:var(--att);color:var(--att);margin-left:auto}
 /* relecture */
 .m1-pq{display:grid;grid-template-columns:24px 1fr;gap:2px 8px;margin:0 0 9px}
 .m1-pq .ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;margin-top:1px}
 .m1-pq .k{font-size:14px;font-weight:700;color:var(--mut)}
 .m1-pq .q{font-size:16px}
-.m1-pq ol{margin:0;padding:0;list-style:none}
-.m1-pq li{display:grid;grid-template-columns:16px 1fr;gap:0 4px;margin:1px 0}
-.m1-pq li>i{font-style:normal;color:var(--ia);font-weight:800;font-size:14px;padding-top:1px}
+.m1-pq .q b{font-weight:800;background:color-mix(in srgb,var(--fin) 14%,var(--bg));border-radius:3px;padding:0 2px}
 .m1-hist{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:14px;color:var(--mut)}
 .m1-hist b{color:#333}
 .m1-ouvrir{display:flex;align-items:center;height:44px;border-radius:12px;background:var(--s1);padding:0 12px;font-weight:700;margin-top:10px}
@@ -160,31 +169,33 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 .m1-champ.plein{color:var(--ink);border-color:var(--ink);height:auto;min-height:44px;white-space:normal;padding:9px 14px;border-radius:20px;line-height:1.3}
 .m1-envoi{height:44px;border-radius:22px;border:1.5px solid var(--ia);background:var(--bg);color:var(--ia);font-weight:800;padding:0 12px;display:flex;align-items:center;gap:5px;flex:none;position:relative}
 .m1-envoi svg{width:18px;height:18px}
-.m1-envoi.p{background:var(--ia);color:#fff}
+.m1-envoi.p{background:var(--plein);border-color:var(--plein);color:#fff}
 .m1-envoi .pas{position:absolute;top:-7px;right:-5px;min-width:22px;height:22px;border-radius:11px;background:var(--att);color:#fff;font-size:14px;line-height:18px;text-align:center;padding:0 5px;border:2px solid var(--bg)}
 .m1-envoi.att{color:var(--att);border-color:var(--att)}
 .m1-envoi.run{border-style:dashed}
 /* hors ligne */
 .m1-off{display:flex;align-items:center;gap:8px;background:#2b2b2b;color:#fff;font-size:14px;font-weight:700;padding:6px 12px;flex:none}
 .m1-off svg{width:16px;height:16px}
-/* feuille « Changé par l'IA » */
+/* feuille « Par l'IA » */
 .m1-voile{position:absolute;inset:0;background:rgba(0,0,0,.42)}
 .m1-feuille{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:18px 18px 0 0;padding:8px 14px 16px}
 .m1-poig{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 8px}
 .m1-feuille h2{font-size:16px;margin:0 0 2px;display:flex;align-items:center;gap:6px}
 .m1-feuille h2 svg{width:18px;height:18px;color:var(--ia)}
-.m1-feuille .sub{font-size:14px;color:var(--mut);margin:0 0 4px}
-.m1-ch{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--s2);min-height:44px}
+.m1-feuille .sub{font-size:14px;color:var(--mut);margin:0 0 2px}
+.m1-feuille .gr{font-size:14px;font-weight:700;color:var(--mut);margin:8px 0 0}
+.m1-ch{display:flex;gap:10px;align-items:center;padding:4px 0;border-bottom:1px solid var(--s2);min-height:44px}
 .m1-ch .c{width:24px;height:24px;border-radius:6px;border:2px solid var(--ia);display:grid;place-items:center;flex:none;font-weight:800;color:#fff;background:var(--ia);font-size:14px}
 .m1-ch.off .c{background:var(--bg);color:transparent}
 .m1-ch.off .t{color:var(--mut)}
+.m1-ch.pr .c{background:var(--bg);color:transparent;border-style:dashed}
 .m1-ch .t{flex:1;line-height:1.25;font-size:16px}
 .m1-ch .t em{font-style:normal;color:var(--mut);font-size:14px;display:block}
 .m1-ch .s{font-size:14px;color:var(--mut);white-space:nowrap;font-weight:700}
 .m1-actions{display:flex;gap:8px;margin-top:10px}
 .m1-actions button{flex:1;height:46px;border-radius:12px;font-weight:800;font-size:16px}
 .m1-actions .a{background:var(--bg);border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;gap:6px}
-.m1-actions .b{background:var(--ink);border:0;color:#fff}
+.m1-actions .b{background:var(--plein);border:0;color:#fff}
 /* achat */
 .m1-offre{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px}
 .m1-offre .img{width:44px;height:44px;border-radius:8px;background:var(--s2);grid-row:1/3;display:grid;place-items:center}
@@ -195,9 +206,9 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 .m1-offre .px small{display:block;font-weight:600}
 /* clavier */
 .m1-kb{background:#d3d6dc;padding:0 4px 8px;flex:none}
-.m1-sugg{display:flex;align-items:center;justify-content:center;gap:8px;height:44px;font-size:14px;color:#333}
+.m1-sugg{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;font-size:14px;color:#333}
 .m1-sugg em{font-style:normal;color:#555}
-.m1-colle{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 10px;border:1.5px solid var(--fin);color:var(--fin);border-radius:999px;font-size:14px;font-weight:700;background:#fff}
+.m1-colle{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 12px;border:1.5px dashed var(--im);color:var(--fin);border-radius:999px;font-size:14px;font-weight:700;background:#fff}
 .m1-colle svg{width:14px;height:14px}
 .m1-kr{display:flex;gap:5px;justify-content:center;margin-top:9px}
 .m1-kr span{height:40px;min-width:32px;flex:0 0 32px;background:#fff;border-radius:6px;display:grid;place-items:center;font-size:16px;box-shadow:0 1px 0 #999}
@@ -225,9 +236,10 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 <symbol id="m1-joint" viewBox="0 0 64 48"><rect width="64" height="48" rx="8" fill="#c4bfb6"/><circle cx="32" cy="24" r="14" fill="none" stroke="#2f2f2f" stroke-width="5"/><circle cx="32" cy="24" r="14" fill="none" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="3 3"/></symbol>
 </svg>
 
-<!-- ===== 1. SAISIE : ses lignes telles qu'il les a tapées. « Ajouter » pose une note sans IA ; Ranger (6 notes) est le geste. ===== -->
+<!-- ===== 1. SAISIE : son carnet réel (n1 à n5, n6 en train d'être tapée). « Ajouter » pose une note sans IA ; Ranger (5 notes). ===== -->
 <div class="m1-cadre"><span class="m1-etiq">1 · Saisie (notes brutes)</span>
 <section class="m1-ecran" id="avant">
+  <div class="m1-imag">Maquette · ton carnet ZZ réel ; seul le lien à coller est imaginé</div>
   <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
@@ -236,19 +248,18 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
   <div class="m1-doc">
     <div style="height:10px"></div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:18</small></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:26</small></div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><small>21:26</small></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><small>21:26</small></div>
     <div class="m1-n"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire.</span><small>21:26</small></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><small>21:26</small></div>
-    <div class="m1-n"><i>6</i><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><small>21:29</small></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne haute">
       <span class="m1-btn"><svg><use href="#m1-photo"/></svg></span>
       <span class="m1-btn"><svg><use href="#m1-micro"/></svg></span>
       <div class="m1-champ plein">Estimation 150 CHF (exemple).</div>
-      <button class="m1-envoi p"><svg><use href="#m1-ia"/></svg>Ranger<span class="pas">6</span></button>
+      <button class="m1-envoi p"><svg><use href="#m1-ia"/></svg>Ranger<span class="pas">5</span></button>
     </div>
   </div>
   <div class="m1-kb">
@@ -263,6 +274,7 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 <!-- ===== 2. ATTENTE : l'IA lit ; ses notes restent lisibles et le champ actif ; Arrêter. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">2 · L’IA range (attente)</span>
 <section class="m1-ecran" id="attente">
+  <div class="m1-imag">Maquette · n° <span class="m1-im">7</span> <span class="m1-im">8</span> imaginés, pas dans ton carnet</div>
   <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
@@ -271,15 +283,15 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
     <div class="m1-run"></div>
   </div>
   <div class="m1-doc">
-    <div class="m1-attente"><svg><use href="#m1-ia"/></svg>L’IA lit tes 8 notes · 3 s<span class="m1-sp"></span><span class="m1-rep">Arrêter</span></div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:18</small></div>
+    <div class="m1-attente"><svg><use href="#m1-ia"/></svg>L’IA lit tes 8 notes · 3 s<span class="m1-sp"></span><span class="m1-rep ia">Arrêter</span></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:26</small></div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><small>21:26</small></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><small>21:26</small></div>
     <div class="m1-n"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire.</span><small>21:26</small></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><small>21:26</small></div>
-    <div class="m1-n"><i>6</i><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><small>21:29</small></div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><small>21:30</small></div>
-    <div class="m1-n"><i>8</i><span><span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch</span></span><small>21:30</small></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><small>21:26</small></div>
+    <div class="m1-n"><i class="m1-im">7</i><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></span><small>21:29</small></div>
+    <div class="m1-n"><i class="m1-im">8</i><span><span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch</span></span></span><small>21:30</small></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne">
@@ -291,35 +303,37 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 3. RANGÉ : ses lignes sous des titres fixes ; jetons collés en tête ; options, ① conseillée ; la tâche suit ①. ===== -->
+<!-- ===== 3. RANGÉ : ses lignes sous des titres fixes ; jetons collés ; « Je cherche ? » en case ; options, ① conseillée ;
+     plan B hors de la tâche. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">3 · Rangé : trouvé, pas trouvé, options</span>
 <section class="m1-ecran" id="apres">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° <span class="m1-im">7</span> <span class="m1-im">8</span> imaginés, pas dans ton carnet</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 changés</span></div>
-    <div class="m1-frise"><b class="ici">Noté</b><i></i><b class="prop">Je cherche ?</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
+    <div class="m1-frise"><b class="ici">Noté</b><i></i><span class="m1-propc"><span class="m1-bx"></span>Je cherche ?</span><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n6</small></span></div>
   </div>
   <div class="m1-doc" data-haut>
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
     <div class="m1-h">Options</div>
     <div class="m1-opts">
       <div class="m1-opt"><i>①</i><div><b>Changer le joint soi-même</b><span class="m1-cons"><svg><use href="#m1-ia"/></svg>conseillé</span><div class="c"><q>joint du siphon trouvé usé</q> <span class="nn">n2</span> · une pièce : quelques francs <span class="m1-ia-pas">(l’IA, pas tes notes)</span></div></div><span class="m1-rep p">Retenir</span></div>
-      <div class="m1-opt"><i>②</i><div><b>Le sanitaire, entreprise X</b><div class="c"><q>Estimation 150 CHF</q> <span class="nn">n7</span> · devis attendu <span class="nn">n5</span></div></div><span class="m1-rep">Retenir</span></div>
+      <div class="m1-opt"><i>②</i><div><b>Le sanitaire, entreprise X</b><div class="c">devis attendu <span class="nn">n5</span> · <q>Estimation 150 CHF</q> <span class="nn">n6</span>, pour lui ?</div></div><span class="m1-rep">Retenir</span></div>
       <div class="m1-opt"><i>③</i><div><b>Ouvrir la dalle</b><div class="c"><q>pas trouvée</q> <span class="nn">n3</span> · ? à vérifier · coût : pas dans tes notes</div></div><span class="m1-rep">Retenir</span></div>
     </div>
+    <div class="m1-planb"><span class="k">Si la flaque reste</span>
+      <div class="r"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch · <span class="m1-im">8</span></span></span></span></div></div>
     <div class="m1-h">Tâche</div>
     <div class="m1-tache prop"><div class="k"><svg><use href="#m1-ia"/></svg>Vient avec ① · posée si tu la retiens</div>
-      <div class="t">Changer le joint du siphon</div>
-      <div class="m1-si"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-iat">→ seulement si la flaque reste</span> <span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch · n8</span></span></div>
-    </div>
+      <div class="t">Changer le joint du siphon</div></div>
     <div class="m1-h">Coût</div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><span class="m1-iat">demandé, pas reçu</span></div>
   </div>
   <div class="m1-saisie">
@@ -335,32 +349,33 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
 <!-- ===== 3b. RANGÉ, défilé : l'en-tête et les jetons restent ; Coût en bas. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">3b · Rangé, défilé (jetons collés)</span>
 <section class="m1-ecran" id="apres-bas">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° <span class="m1-im">7</span> <span class="m1-im">8</span> imaginés, pas dans ton carnet</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 changés</span></div>
-    <div class="m1-frise"><b class="ici">Noté</b><i></i><b class="prop">Je cherche ?</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
+    <div class="m1-frise"><b class="ici">Noté</b><i></i><span class="m1-propc"><span class="m1-bx"></span>Je cherche ?</span><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n6</small></span></div>
   </div>
   <div class="m1-doc" data-bas>
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
     <div class="m1-h">Options</div>
     <div class="m1-opts">
       <div class="m1-opt"><i>①</i><div><b>Changer le joint soi-même</b><span class="m1-cons"><svg><use href="#m1-ia"/></svg>conseillé</span><div class="c"><q>joint du siphon trouvé usé</q> <span class="nn">n2</span> · une pièce : quelques francs <span class="m1-ia-pas">(l’IA, pas tes notes)</span></div></div><span class="m1-rep p">Retenir</span></div>
-      <div class="m1-opt"><i>②</i><div><b>Le sanitaire, entreprise X</b><div class="c"><q>Estimation 150 CHF</q> <span class="nn">n7</span> · devis attendu <span class="nn">n5</span></div></div><span class="m1-rep">Retenir</span></div>
+      <div class="m1-opt"><i>②</i><div><b>Le sanitaire, entreprise X</b><div class="c">devis attendu <span class="nn">n5</span> · <q>Estimation 150 CHF</q> <span class="nn">n6</span>, pour lui ?</div></div><span class="m1-rep">Retenir</span></div>
       <div class="m1-opt"><i>③</i><div><b>Ouvrir la dalle</b><div class="c"><q>pas trouvée</q> <span class="nn">n3</span> · ? à vérifier · coût : pas dans tes notes</div></div><span class="m1-rep">Retenir</span></div>
     </div>
+    <div class="m1-planb"><span class="k">Si la flaque reste</span>
+      <div class="r"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch · <span class="m1-im">8</span></span></span></span></div></div>
     <div class="m1-h">Tâche</div>
     <div class="m1-tache prop"><div class="k"><svg><use href="#m1-ia"/></svg>Vient avec ① · posée si tu la retiens</div>
-      <div class="t">Changer le joint du siphon</div>
-      <div class="m1-si"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-iat">→ seulement si la flaque reste</span> <span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch · n8</span></span></div>
-    </div>
+      <div class="t">Changer le joint du siphon</div></div>
     <div class="m1-h">Coût</div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><span class="m1-iat">demandé, pas reçu</span></div>
   </div>
   <div class="m1-saisie">
@@ -373,9 +388,10 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 4. ERREUR EN LIGNE : l'IA n'a pas pu ranger ; rien n'a changé ; lu par l'app en repli ; Réessayer. ===== -->
+<!-- ===== 4. ERREUR EN LIGNE : l'IA n'a pas pu ranger ; rien n'a changé ; lu par l'app = seulement montant et « pas trouvé » ; Réessayer. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">4 · Erreur en ligne : l’IA n’a pas pu ranger</span>
 <section class="m1-ecran" id="erreur">
+  <div class="m1-imag">Maquette · n° <span class="m1-im">7</span> <span class="m1-im">8</span> imaginés, pas dans ton carnet</div>
   <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
@@ -385,15 +401,16 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   <div class="m1-doc">
     <div class="m1-err"><div class="k">L’IA n’a pas pu ranger · délai dépassé</div><div class="w">Tes 8 notes sont gardées, rien n’a changé.</div></div>
     <div class="m1-loc" style="margin-top:0"><div class="k"><svg><use href="#m1-loupe"/></svg>Lu par l’app</div>
-      <div class="js"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div></div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:18</small></div>
+      <div class="js"><span class="m1-j q">n3 · pas trouvée · ? à vérifier</span><span class="m1-j cout">n6 · 150 CHF</span></div>
+      <div class="o">L’app lit les montants et « pas trouvé ». Options et tâche : l’IA te les proposera.</div></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:26</small></div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><small>21:26</small></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><small>21:26</small></div>
     <div class="m1-n"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire.</span><small>21:26</small></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><small>21:26</small></div>
-    <div class="m1-n"><i>6</i><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><small>21:29</small></div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><small>21:30</small></div>
-    <div class="m1-n"><i>8</i><span><span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch</span></span><small>21:30</small></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><small>21:26</small></div>
+    <div class="m1-n"><i class="m1-im">7</i><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></span><small>21:29</small></div>
+    <div class="m1-n"><i class="m1-im">8</i><span><span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch</span></span></span><small>21:30</small></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne">
@@ -405,59 +422,63 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 5. CHANGÉ PAR L'IA : une case par changement, sa note source, la version d'avant. ===== -->
-<div class="m1-cadre"><span class="m1-etiq">5 · Changé par l’IA (défaire case par case)</span>
+<!-- ===== 5. PAR L'IA : une case par changement (décocher = défaire, rien de faux ne revient) ; la proposition de la frise y figure. ===== -->
+<div class="m1-cadre"><span class="m1-etiq">5 · Par l’IA (défaire case par case)</span>
 <section class="m1-ecran" id="annuler">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° <span class="m1-im">7</span> <span class="m1-im">8</span> imaginés, pas dans ton carnet</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 changés</span></div>
-    <div class="m1-frise"><b class="ici">Noté</b><i></i><b class="prop">Je cherche ?</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
+    <div class="m1-frise"><b class="ici">Noté</b><i></i><span class="m1-propc"><span class="m1-bx"></span>Je cherche ?</span><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
   </div>
   <div class="m1-doc"></div>
   <div class="m1-voile"></div>
   <div class="m1-feuille">
     <div class="m1-poig"></div>
-    <h2><svg><use href="#m1-ia"/></svg>Changé par l’IA à 21:31</h2>
-    <p class="sub">Tes mots ne sont jamais changés. Décoche ce que tu ne veux pas.</p>
+    <h2><svg><use href="#m1-ia"/></svg>Par l’IA, 24 nov. à 21:31 · 7</h2>
+    <p class="sub">Tes mots ne sont jamais changés. Décocher défait ; défaire ne remet jamais une lecture fausse.</p>
+    <div class="gr">Fait</div>
     <div class="m1-ch"><span class="c">✓</span><span class="t">Rangé tes 8 notes sous 5 titres<em>même texte, autre ordre</em></span><span class="s">n1 à n8</span></div>
-    <div class="m1-ch"><span class="c">✓</span><span class="t">Joint : trouvé · dalle : ? à vérifier</span><span class="s">n2, n3</span></div>
-    <div class="m1-ch"><span class="c">✓</span><span class="t">Devis : à acheter → attendu<em>un devis ne s’achète pas</em></span><span class="s">n5</span></div>
-    <div class="m1-ch"><span class="c">✓</span><span class="t">150 CHF marqué « estimé »</span><span class="s">n7</span></div>
-    <div class="m1-ch"><span class="c">✓</span><span class="t">3 options, ① conseillée</span><span class="s">n2 à n7</span></div>
-    <div class="m1-ch off"><span class="c">✓</span><span class="t">Contacter X : seulement si la flaque reste<em>+ lien entreprise-x.ch</em></span><span class="s">n4, n8</span></div>
-    <div class="m1-ch"><span class="c">✓</span><span class="t">Coller le lien sous la note 4</span><span class="s">n8</span></div>
-    <div class="m1-actions"><button class="a"><svg width="18" height="18"><use href="#m1-annule"/></svg>Avant, 21:30</button><button class="b">Garder 6 sur 7</button></div>
+    <div class="m1-ch"><span class="c">✓</span><span class="t">En violet : joint trouvé, dalle ? à vérifier</span><span class="s">n2, n3</span></div>
+    <div class="m1-ch"><span class="c">✓</span><span class="t">En violet : devis pas reçu, 150 CHF estimé<em>défait : tes mots seuls, sans marque</em></span><span class="s">n5, n6</span></div>
+    <div class="m1-ch"><span class="c">✓</span><span class="t">3 options, ① conseillée, sa tâche</span><span class="s">n2 à n6</span></div>
+    <div class="m1-ch off"><span class="c">✓</span><span class="t">Contacter X : si la flaque reste<em>avec le lien</em></span><span class="s">n4, <span class="m1-im">8</span></span></div>
+    <div class="m1-ch"><span class="c">✓</span><span class="t">Photo mise au constat</span><span class="s"><span class="m1-im">7</span></span></div>
+    <div class="gr">Proposé, pas posé</div>
+    <div class="m1-ch pr"><span class="c"></span><span class="t">Passer à « Je cherche »<em>la même case que dans la frise</em></span><span class="s">état</span></div>
+    <div class="m1-actions"><button class="a"><svg width="18" height="18"><use href="#m1-annule"/></svg>Avant, 21:30</button><button class="b">Garder la sélection</button></div>
   </div>
 </section></div>
 
-<!-- ===== 6. DÉCIDER : il a retenu ① ; sa raison est SA note 9 ; la tâche et la date (de sa note) proposées, gardées d'un toucher. ===== -->
+<!-- ===== 6. DÉCIDER : il a retenu ① ; la raison est la note 9 (imaginée) ; la tâche et la date (de cette note) proposées. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">6 · Décider : ① retenue, sa raison, tâche proposée</span>
 <section class="m1-ecran" id="decide">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 changés</span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
     <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="f">Je cherche</b><i class="f"></i><b class="ici">Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n6</small></span></div>
   </div>
   <div class="m1-doc" data-vers="#m1-d-opt">
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
     <div class="m1-h" id="m1-d-opt">Options</div>
     <div class="m1-ret"><i>①</i><div><b>Changer le joint soi-même</b><div class="st">✓ Retenue par toi · 26 nov.</div></div></div>
-    <div class="m1-n"><i>9</i><span>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore. (exemple)</span><small>26 nov.</small><div class="m1-sous"><span class="m1-iat">= ta raison</span></div></div>
+    <div class="m1-n"><i class="m1-im">9</i><span>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore.</span><small>26 nov.</small><div class="m1-sous"><span class="m1-iat">= la raison du choix</span></div></div>
     <div class="m1-iat" style="margin:8px 0 2px">En réserve, si la flaque reste</div>
-    <div class="m1-res"><i>②</i><div>Le sanitaire, entreprise X <span class="c"><q>Estimation 150 CHF</q> n7</span></div></div>
+    <div class="m1-res"><i>②</i><div>Le sanitaire, entreprise X <span class="c">devis attendu n5</span></div></div>
+    <div class="m1-planb"><div class="r"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch · <span class="m1-im">8</span></span></span></span></div></div>
     <div class="m1-res"><i>③</i><div>Ouvrir la dalle <span class="c">pas trouvée · ? à vérifier · n3</span></div></div>
     <div class="m1-h">Tâche</div>
-    <div class="m1-tache prop"><div class="k"><svg><use href="#m1-ia"/></svg>Proposée avec ① · de ta note 9</div>
+    <div class="m1-tache prop"><div class="k"><svg><use href="#m1-ia"/></svg>Proposée avec ① · d’après la note <span class="m1-im">9</span></div>
       <div class="m1-l"><span class="m1-bx x">✓</span><b>Changer le joint du siphon</b></div>
-      <div class="m1-l"><span class="m1-bx x">✓</span><span>Quand : <b>samedi 28 nov.</b> <span class="m1-iat"><q>samedi</q> n9</span></span></div>
+      <div class="m1-l"><span class="m1-bx x">✓</span><span>Quand : <b>samedi 28 nov.</b> <span class="m1-iat"><q>samedi</q> <span class="m1-im">9</span></span></span></div>
       <div class="a"><span class="m1-rep p">Garder la tâche</span><span class="m1-rep n">Non</span></div></div>
   </div>
   <div class="m1-saisie">
@@ -470,34 +491,36 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 7. TÂCHE GARDÉE : le carnet entier, ordre fixe ; photo au constat ; la tâche datée de sa note. ===== -->
+<!-- ===== 7. TÂCHE GARDÉE : le carnet entier, ordre fixe ; plan B dans les options ; un conseil qui ferme la boucle. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">7 · Tâche gardée (le carnet en entier)</span>
 <section class="m1-ecran" id="tache">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>9 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>9 changés</span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
     <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="f">Je cherche</b><i class="f"></i><b class="ici">Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n6</small></span></div>
   </div>
-  <div class="m1-doc" data-haut>
+  <div class="m1-doc" data-vers="#m1-t-opt">
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
-    <div class="m1-h">Options</div>
+    <div class="m1-h" id="m1-t-opt">Options</div>
     <div class="m1-ret"><i>①</i><div><b>Changer le joint soi-même</b><div class="st">✓ Retenue par toi · 26 nov.</div></div></div>
-    <div class="m1-n"><i>9</i><span>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore. (exemple)</span><small>26 nov.</small></div>
+    <div class="m1-n"><i class="m1-im">9</i><span>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore.</span><small>26 nov.</small></div>
     <div class="m1-res"><i>②</i><div>Le sanitaire <span class="c">en réserve, si la flaque reste</span></div></div>
-    <div class="m1-res"><i>③</i><div>Ouvrir la dalle <span class="c">en réserve · ? à vérifier</span></div></div>
+    <div class="m1-planb"><div class="r"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-lien"><span><svg><use href="#m1-lien"/></svg>entreprise-x.ch · <span class="m1-im">8</span></span></span></span></div></div>
+    <div class="m1-res"><i>③</i><div>Ouvrir la dalle <span class="c">en réserve · pas trouvée · ? à vérifier</span></div></div>
     <div class="m1-h">Tâche</div>
     <div class="m1-tache">
       <div class="m1-l"><span class="m1-bx ink"></span><b>Changer le joint du siphon</b><span class="m1-quand">sam. 28 nov.</span></div>
-      <div class="m1-si"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-iat">→ si la flaque reste</span> <span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch · n8</span></span></div>
     </div>
+    <div class="m1-conseil"><svg><use href="#m1-ia"/></svg><span>Au prochain nettoyage, regarde si la flaque revient, et note-le.</span></div>
     <div class="m1-h">Coût</div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
     <div class="m1-n"><i>5</i><span>Devis attendu.</span><span class="m1-iat">demandé, pas reçu</span></div>
   </div>
   <div class="m1-saisie">
@@ -510,19 +533,20 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 8. RÉSOUDRE : sa note 10 dit « sans flaque » ; l'IA propose « résolu ? » ; un toucher accepte. ===== -->
+<!-- ===== 8. RÉSOUDRE : la note 10 dit « sans flaque » ; l'IA propose « résolu ? » dans une carte (un seul geste). ===== -->
 <div class="m1-cadre"><span class="m1-etiq">8 · Résoudre : « résolu ? » proposé</span>
 <section class="m1-ecran" id="resoudre">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>9 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>9 changés</span></div>
-    <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="f">Je cherche</b><i class="f"></i><b class="ici">Décidé</b><i></i><b class="prop">Résolu ?</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
+    <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="f">Je cherche</b><i class="f"></i><b class="ici">Décidé</b><i></i><b>Résolu</b></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n6</small></span></div>
   </div>
   <div class="m1-doc" data-bas>
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
@@ -533,10 +557,10 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
       <div class="m1-l"><span class="m1-bx ink"></span><b>Changer le joint du siphon</b><span class="m1-quand">sam. 28 nov.</span></div>
     </div>
     <div class="m1-h">Coût</div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
     <div class="m1-h">Résultat</div>
-    <div class="m1-n"><i>10</i><span>Joint changé samedi, 3 nettoyages depuis, sans flaque. (exemple)</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-joint"/></svg></div>
-    <div class="m1-prop"><div class="k"><svg><use href="#m1-ia"/></svg>D’après ta note 10</div>
+    <div class="m1-n"><i class="m1-im">10</i><span>Joint changé samedi, 3 nettoyages depuis, sans flaque.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-joint"/></svg></span></div>
+    <div class="m1-prop"><div class="k"><svg><use href="#m1-ia"/></svg>D’après la note <span class="m1-im">10</span></div>
       <div class="q">La flaque n’est pas revenue : résolu ?</div>
       <div class="l"><span class="m1-bx x">✓</span>Cocher « Changer le joint du siphon »</div>
       <div class="l"><span class="m1-bx x">✓</span>Passer le carnet à Résolu, 3 déc.</div>
@@ -553,37 +577,39 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 9. RÉSOLU : accepté ; tâche cochée ; n4 n'a pas servi ; coût réel à noter. ===== -->
+<!-- ===== 9. RÉSOLU : accepté ; tâche cochée, date sourcée ; n4 n'a pas servi ; coût réel à noter (une seule fois). ===== -->
 <div class="m1-cadre"><span class="m1-etiq">9 · Résolu (accepté d’un toucher)</span>
 <section class="m1-ecran" id="resolu">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>12 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>12 changés</span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
     <div class="m1-frise ok"><b class="f">Noté</b><i class="f"></i><b class="f">Je cherche</b><i class="f"></i><b class="f">Décidé</b><i class="f"></i><b class="ici">Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j oui">✓ sans flaque <small>n10</small></span><span class="m1-j cout">coût réel : pas noté</span></div>
+    <div class="m1-jetons"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j oui">✓ sans flaque <span class="m1-im">10</span></span></div>
   </div>
   <div class="m1-doc" data-bas>
     <div class="m1-h">Constat</div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg></div>
+    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><b>7</b></span></div>
     <div class="m1-h">Pistes</div>
     <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><span class="m1-iat">trouvé</span></div>
     <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><span class="m1-iat">? à vérifier</span></div>
     <div class="m1-h">Options</div>
     <div class="m1-ret"><i>①</i><div><b>Changer le joint soi-même</b><div class="st">✓ Retenue par toi · 26 nov.</div></div></div>
     <div class="m1-res"><i>②</i><div>Le sanitaire <span class="c">en réserve, pas eu besoin</span></div></div>
-    <div class="m1-res"><i>③</i><div>Ouvrir la dalle <span class="c">jamais ouverte · ? à vérifier si ça revient</span></div></div>
+    <div class="m1-planb fini"><div class="r"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-iat">→ n’a pas servi</span></span></div></div>
+    <div class="m1-res"><i>③</i><div>Ouvrir la dalle <span class="c">pas trouvée, jamais ouverte · ? à vérifier si ça revient</span></div></div>
     <div class="m1-h">Tâche</div>
     <div class="m1-tache" style="border-color:var(--line)">
-      <div class="m1-l"><span class="m1-bx ink x">✓</span><b>Changer le joint du siphon</b><span class="m1-quand" style="border:0;color:var(--ok)">fait 28 nov.</span></div>
-      <div class="m1-si"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire. <span class="m1-iat">→ n’a pas servi</span></span></div>
+      <div class="m1-l"><span class="m1-bx ink x">✓</span><b>Changer le joint du siphon</b></div>
+      <div class="m1-iat" style="margin:0 0 2px 34px;color:var(--ok)">fait sam. 28 nov. · <q>Joint changé samedi</q> <span class="m1-im">10</span></div>
     </div>
     <div class="m1-h">Coût</div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
+    <div class="m1-n"><i>6</i><span>Estimation 150 CHF (exemple).</span><span class="m1-iat">estimé</span></div>
     <div class="m1-n" style="align-items:center"><i></i><span style="color:var(--mut)">Coût réel : pas noté</span><span class="m1-rep">+ Noter le coût</span></div>
     <div class="m1-h">Résultat</div>
-    <div class="m1-n"><i>10</i><span>Joint changé samedi, 3 nettoyages depuis, sans flaque. (exemple)</span><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-joint"/></svg></div>
-    <div class="m1-sous" style="margin:0 0 0 26px"><span class="m1-iat" style="color:var(--ok)">✓ Résolu par toi le 3 déc.</span></div>
+    <div class="m1-n"><i class="m1-im">10</i><span>Joint changé samedi, 3 nettoyages depuis, sans flaque.</span><span class="m1-ph"><svg viewBox="0 0 64 48"><use href="#m1-joint"/></svg></span></div>
+    <div class="m1-sous" style="margin:0 0 0 30px"><span class="m1-iat" style="color:var(--ok)">✓ Résolu par toi le 3 déc.</span></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne">
@@ -595,31 +621,33 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 10. RELIRE, en mars : trouvé par « siphon » ; ses mots cités ; options nommées ; chemin daté. ===== -->
+<!-- ===== 10. RELIRE, en mars : trouvé par « siphon » ; la raison (n9) séparée de ce qu'il savait alors (ses vrais mots) et de ce qui a marché. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">10 · Relire en mars : pourquoi j’ai pris ça</span>
 <section class="m1-ecran" id="relire">
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
   <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg><span class="m1-cherche"><svg><use href="#m1-loupe"/></svg>« siphon »</span></span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
-    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>12 changés</span></div>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
     <div class="m1-frise"><b>Noté</b><i></i><b>Je cherche</b><i></i><b>Décidé</b><i></i><b class="ici" style="background:var(--ok)">Résolu</b></div>
   </div>
   <div class="m1-doc">
-    <div style="height:10px"></div>
+    <div style="height:6px"></div>
     <div class="m1-pq"><span class="ic" style="background:var(--bad)">!</span><div><div class="k">Le problème</div><div class="q"><q>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</q> <span class="m1-nn">n1</span></div></div></div>
-    <div class="m1-pq"><span class="ic" style="background:var(--fin)">?</span><div><div class="k">Pourquoi ce choix : ① changer le joint soi-même</div>
-      <ol class="q"><li><i>1</i><span><q>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore.</q> <span class="m1-nn">n9</span></span></li>
-      <li><i>2</i><span><q>joint du siphon trouvé usé</q> <span class="m1-nn">n2</span></span></li>
-      <li><i>3</i><span><span class="m1-iat">le sanitaire :</span> <q>Estimation 150 CHF</q> <span class="m1-nn">n7</span></span></li></ol>
-      <div class="m1-iat">tes mots, pas réécrits</div></div></div>
-    <div class="m1-pq"><span class="ic" style="background:var(--ok)">✓</span><div><div class="k">Ce qui a marché · 3 déc.</div><div class="q"><q>Joint changé samedi, 3 nettoyages depuis, sans flaque.</q> <span class="m1-nn">n10</span></div></div></div>
+    <div class="m1-pq"><span class="ic" style="background:var(--fin)">①</span><div><div class="k">Pourquoi ce choix : changer le joint soi-même</div>
+      <div class="q"><q>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore.</q> <span class="m1-im">9</span></div>
+      <div class="m1-iat">la note du choix, citée telle quelle</div></div></div>
+    <div class="m1-pq"><span class="ic" style="background:#555">✎</span><div><div class="k">Ce que tu savais alors · 24 nov. · <span class="m1-iat">tes mots, pas réécrits</span></div>
+      <div class="q"><q>joint du <b>siphon</b> trouvé usé</q> <span class="m1-nn">n2</span></div>
+      <div class="q"><q>fuite sous la dalle, pas trouvée.</q> <span class="m1-nn">n3</span> · <q>Devis attendu.</q> <span class="m1-nn">n5</span></div></div></div>
+    <div class="m1-pq"><span class="ic" style="background:var(--ok)">✓</span><div><div class="k">Ce qui a marché · 3 déc.</div><div class="q"><q>Joint changé samedi, 3 nettoyages depuis, sans flaque.</q> <span class="m1-im">10</span></div></div></div>
     <div class="m1-pq"><span class="ic" style="background:#8a8a8a">–</span><div><div class="k">Pas servi</div>
       <div class="q">② Le sanitaire, entreprise X <span class="m1-iat">en réserve, pas eu besoin</span></div>
-      <div class="q">③ La dalle <span class="m1-iat">cherchée, pas trouvée, jamais ouverte · <span style="white-space:nowrap">? à vérifier si ça revient</span></span> <span class="m1-nn">n3</span></div></div></div>
-    <div class="m1-pq"><span class="ic" style="background:#8a8a8a">–</span><div><div class="k">Coût réel</div><div class="q" style="display:flex;align-items:center;gap:8px"><span style="color:var(--mut)">pas noté</span><span class="m1-rep" style="height:36px">+ Noter</span></div></div></div>
+      <div class="q">③ La dalle <span class="m1-iat">pas trouvée, jamais ouverte · <span style="white-space:nowrap">? à vérifier si ça revient</span></span> <span class="m1-nn">n3</span></div></div></div>
+    <div class="m1-pq"><span class="ic" style="background:#8a8a8a">–</span><div><div class="k">Coût réel</div><div class="q" style="display:flex;align-items:center;gap:8px"><span style="color:var(--mut)">pas noté</span><span class="m1-rep">+ Noter</span></div></div></div>
     <div class="m1-h">Chemin</div>
-    <div class="m1-hist"><span><b>Noté</b> 24 nov.</span><span>→ <b>Je cherche</b> 25 nov.</span><span>→ <b>Décidé</b> 26 nov.</span><span>→ <b>Résolu</b> 3 déc.</span></div>
-    <div class="m1-ouvrir">Mes 10 notes, dans l’ordre où je les ai tapées<span>›</span></div>
+    <div class="m1-hist"><span><b>Noté</b> 24 nov.</span><span>→ <b>Je cherche</b> 25 nov., par toi</span><span>→ <b>Décidé</b> 26 nov.</span><span>→ <b>Résolu</b> 3 déc.</span></div>
+    <div class="m1-ouvrir">Les 10 notes, dans l’ordre tapé<span>›</span></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne">
@@ -631,65 +659,68 @@ q{quotes:"\00AB\00A0" "\00A0\00BB"}
   </div>
 </section></div>
 
-<!-- ===== 11. HORS LIGNE : notes utilisables ; lu par l'app (jetons, options, tâche ?) ; l'envoi de 8 notes en file, annulable. ===== -->
-<div class="m1-cadre"><span class="m1-etiq">11 · Hors ligne : lu par l’app</span>
+<!-- ===== 11. HORS LIGNE (26 nov.) : la dernière vue de l'IA, datée ; la note nouvelle citée ; lu par l'app = rien à marquer ;
+     « l'IA te le proposera » ; 1 envoi à l'IA en file, annulable sans perdre la note. ===== -->
+<div class="m1-cadre"><span class="m1-etiq">11 · Hors ligne : la dernière vue de l’IA</span>
 <section class="m1-ecran" id="hors-ligne">
   <div class="m1-off"><svg><use href="#m1-nuage"/></svg>Hors ligne · tes notes sont gardées sur le téléphone</div>
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · n° en pointillé et tout après le 25 nov. : imaginés</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>7 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">Écoulement qui fuit</h1>
     <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-genre pb">Problème</span> · 24 nov.</div>
-    <div class="m1-frise"><b class="ici">Noté</b><i></i><b>Je cherche</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
+    <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="ici">Je cherche</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
+    <div class="m1-jetons"><span class="m1-j vue">vue de l’IA · 24 nov. 21:31</span><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? à vérifier <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span></div>
   </div>
-  <div class="m1-doc">
-    <div class="m1-loc"><div class="k"><svg><use href="#m1-loupe"/></svg>Lu par l’app · en attendant l’IA</div>
-      <div class="js"><span class="m1-j oui">✓ joint usé <small>n2</small></span><span class="m1-j q">dalle pas trouvée · ? <small>n3</small></span><span class="m1-j dev">devis attendu <small>n5</small></span><span class="m1-j cout">150 CHF estimé <small>n7</small></span></div>
-      <div class="o"><b>Options lues :</b> joint du siphon n2 · sanitaire n4 · dalle ? n3</div>
-      <div class="t"><span style="flex:1"><b>Tâche ?</b> Changer le joint du siphon</span><span class="m1-rep ink p">Garder</span><span class="m1-rep n">Non</span></div></div>
-    <div class="m1-n"><i>1</i><span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</span><small>21:18</small></div>
-    <div class="m1-n"><i>2</i><span>Pistes : joint du siphon trouvé usé</span><small>21:26</small></div>
-    <div class="m1-n"><i>3</i><span>fuite sous la dalle, pas trouvée.</span><small>21:26</small></div>
-    <div class="m1-n"><i>4</i><span>Contacter l’entreprise X (exemple) pour un sanitaire.</span><small>21:26</small></div>
-    <div class="m1-n"><i>5</i><span>Devis attendu.</span><small>21:26</small></div>
-    <div class="m1-n"><i>6</i><svg class="m1-photo" viewBox="0 0 64 48"><use href="#m1-flaque"/></svg><small>21:29</small></div>
-    <div class="m1-n"><i>7</i><span>Estimation 150 CHF (exemple).</span><small>21:30</small></div>
-    <div class="m1-n"><i>8</i><span><span class="m1-lien"><svg><use href="#m1-lien"/></svg>entreprise-x.ch</span></span><small>21:30</small></div>
-    <div class="m1-file"><svg><use href="#m1-horloge"/></svg>8 notes attendent le réseau<span class="m1-rep">Annuler l’envoi</span></div>
+  <div class="m1-doc" data-bas>
+    <div class="m1-h">Options</div>
+    <div class="m1-opts">
+      <div class="m1-opt"><i>①</i><div><b>Changer le joint soi-même</b><span class="m1-cons"><svg><use href="#m1-ia"/></svg>conseillé</span></div><span class="m1-rep">Retenir</span></div>
+      <div class="m1-opt"><i>②</i><div><b>Le sanitaire, entreprise X</b></div><span class="m1-rep">Retenir</span></div>
+      <div class="m1-opt"><i>③</i><div><b>Ouvrir la dalle</b></div><span class="m1-rep">Retenir</span></div>
+    </div>
+    <div class="m1-h">Pas encore lue par l’IA</div>
+    <div class="m1-n"><i class="m1-im">9</i><span>Je tente le joint moi-même samedi, le sanitaire si ça fuit encore.</span><small>26 nov.</small></div>
+    <div class="m1-loc" style="margin-top:4px"><div class="k"><svg><use href="#m1-loupe"/></svg>Lu par l’app : rien à marquer</div>
+      <div class="o">Ni montant ni « pas trouvé » dans cette note. Retenir, tâche, date : l’IA te les proposera au retour du réseau.</div>
+      <div class="m1-file"><svg><use href="#m1-horloge"/></svg>1 envoi à l’IA attend le réseau<span class="m1-rep">Annuler l’envoi</span></div>
+      <div class="o">Annuler l’envoi garde ta note.</div></div>
   </div>
   <div class="m1-saisie">
     <div class="m1-ligne">
       <span class="m1-btn"><svg><use href="#m1-photo"/></svg></span>
       <span class="m1-btn"><svg><use href="#m1-micro"/></svg></span>
       <div class="m1-champ">Note…</div>
-      <button class="m1-envoi att"><svg><use href="#m1-horloge"/></svg>En file<span class="pas">8</span></button>
+      <button class="m1-envoi att"><svg><use href="#m1-horloge"/></svg>En file<span class="pas">1</span></button>
     </div>
   </div>
 </section></div>
 
-<!-- ===== 12. UN ACHAT : ses 4 états ; rangé à la façon d'un achat ; seulement ses critères ; tâche tirée de sa note 5. ===== -->
+<!-- ===== 12. UN ACHAT (imaginé) : ses 4 états ; rangé à la façon d'un achat ; seulement ses critères ; tâche tirée de la note 5. ===== -->
 <div class="m1-cadre"><span class="m1-etiq">12 · Un achat : rangé à sa façon</span>
 <section class="m1-ecran" id="achat">
-  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
+  <div class="m1-imag">Maquette · ce carnet d’achat est imaginé en entier</div>
+  <div class="m1-top"><span class="m1-r"><svg><use href="#m1-retour"/></svg>Carnets</span><span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>5 par l’IA</span><span class="m1-plus"><svg><use href="#m1-plus"/></svg></span></div>
   <div class="m1-tete">
     <h1 class="m1-titre">2e fermenteur 30 L</h1>
-    <div class="m1-meta"><svg><use href="#m1-cuve"/></svg>Matériel · <span class="m1-genre ach">Achat</span> · 2 déc.<span class="m1-sp"></span><span class="m1-chg"><svg><use href="#m1-annule"/></svg>5 changés</span></div>
+    <div class="m1-meta"><svg><use href="#m1-cuve"/></svg>Matériel · <span class="m1-genre ach">Achat</span> · 2 déc.</div>
     <div class="m1-frise"><b class="f">Noté</b><i class="f"></i><b class="ici">Je cherche</b><i></i><b>Décidé</b><i></i><b>Résolu</b></div>
-    <div class="m1-jetons"><span class="m1-j etat">Je cherche · 1 offre</span><span class="m1-j oui">✓ inox <small>n2</small></span><span class="m1-j oui">✓ 349 ≤ 400 CHF <small>n4</small></span><span class="m1-j q">place ? <small>n5</small></span></div>
+    <div class="m1-jetons"><span class="m1-j ctr">1 offre</span><span class="m1-j oui">✓ inox <small>n2</small></span><span class="m1-j oui">✓ 349 ≤ 400 CHF <small>n4</small></span><span class="m1-j q">place ? <small>n5</small></span></div>
   </div>
   <div class="m1-doc">
     <div class="m1-h">Pour quoi</div>
-    <div class="m1-n"><i>1</i><span>Pour doubler les brassins d’été. (exemple)</span></div>
+    <div class="m1-n"><i>1</i><span>Pour doubler les brassins d’été.</span></div>
     <div class="m1-h">Ce que je veux</div>
     <div class="m1-n"><i>2</i><span>Inox, pas de plastique : il se raye.</span><span class="m1-iat">critère</span></div>
     <div class="m1-n"><i>4</i><span>Max 400 CHF.</span><span class="m1-iat">critère</span></div>
     <div class="m1-h">Offre</div>
-    <div class="m1-offre"><span class="img"><svg><use href="#m1-cuve"/></svg></span><b>Fermenteur inox 30 L</b><span class="px">349 CHF<small>lu sur la page</small></span><small>n3 · fournisseur-a.ch (exemple)</small></div>
+    <div class="m1-offre"><span class="img"><svg><use href="#m1-cuve"/></svg></span><b>Fermenteur inox 30 L</b><span class="px">349 CHF<small>lu sur la page</small></span><small>n3 · fournisseur-a.ch</small></div>
     <div class="m1-sous" style="margin:6px 0 0"><span class="m1-iat">✓ inox (n2) · ✓ sous 400 CHF (n4)</span></div>
     <div class="m1-h">À vérifier</div>
     <div class="m1-n"><i>5</i><span>Place à côté du premier ? hauteur ?</span></div>
-    <div class="m1-tache prop" style="margin-top:6px"><div class="k"><svg><use href="#m1-ia"/></svg>Proposée · de ta note 5</div>
+    <div class="m1-tache prop" style="margin-top:6px"><div class="k"><svg><use href="#m1-ia"/></svg>Proposée · d’après la note 5</div>
       <div class="t">Mesurer la place à côté du premier fermenteur</div>
-      <div style="font-size:14px;color:#333">La page donne 62 cm de haut avec couvercle (exemple).</div>
+      <div style="font-size:14px;color:#333">La page donne 62 cm de haut avec couvercle.</div>
       <div class="a"><span class="m1-rep p">Garder la tâche</span><span class="m1-rep n">Non</span></div></div>
   </div>
   <div class="m1-saisie">
