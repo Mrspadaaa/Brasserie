@@ -10,6 +10,7 @@ import { DOMAINES, domaineDe, plier, type DomaineCarnet, type ParMots } from './
 import { lireCarnet, type CarnetDoc, type OrigineVousIA } from './modele';
 import { Brouillon, appliquerEcritures, poserDomaine, refus, type Etat, type Resultat } from './operations';
 import { etatDe, genreDe, jourLocal, suiviDe } from './suivi';
+import { classerParPriorite } from './priorite';
 
 export const NIVEAU_MAX = 30;
 
@@ -156,9 +157,10 @@ export function arbreDe(carnets: readonly CarnetDoc[], parMots?: ParMots, sousPa
     groupes.set(d, g);
   }
   const noeuds: NoeudDomaine[] = DOMAINES.flatMap(domaine => {
-    const o = ouverts.get(domaine) ?? [];
+    /* R91 : sa priorité d'abord (classerParPriorite), puis l'ordre ci-dessus pour les carnets jamais déplacés */
+    const o = classerParPriorite(ouverts.get(domaine) ?? []);
     const g = [...(groupes.get(domaine) ?? new Map<string | null, CarnetDoc[]>()).entries()]
-      .map(([chemin, liste]) => ({ chemin, carnets: liste, ...(chemin !== null && !poses.has(`${domaine}/${chemin}`) ? { deduit: true as const } : {}) }))
+      .map(([chemin, liste]) => ({ chemin, carnets: classerParPriorite(liste), ...(chemin !== null && !poses.has(`${domaine}/${chemin}`) ? { deduit: true as const } : {}) }))
       .sort((x, y) => (x.chemin === null ? 1 : 0) - (y.chemin === null ? 1 : 0) || plie(x.chemin ?? '').localeCompare(plie(y.chemin ?? ''), 'fr'));
     const n = o.length + g.reduce((s, x) => s + x.carnets.length, 0);
     return n ? [{ domaine, ouverts: o, groupes: g, n }] : [];

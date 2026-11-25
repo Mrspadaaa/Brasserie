@@ -229,6 +229,8 @@ export interface DonneesCarnet {
   categorie?: CategoriePosee;
   suivi?: SuiviCarnet;
   taches?: Tache[];
+  /** R91 : sa priorité dans la liste (1 = en tête), posée par « En tête / Monter / Descendre » ; absente tant que le carnet n'a jamais été déplacé (priorite.ts). */
+  priorite?: number;
 }
 
 export type CibleEffet = 'carnet' | 'critere' | 'facon' | 'article' | 'note' | 'photo';
@@ -667,7 +669,7 @@ function lirePropositionSuivi(v: unknown): PropositionSuivi | null {
   };
 }
 
-const CLES_CARNET = ['version', 'creeLe', 'phrase', 'criteres', 'facons', 'articles', 'notes', 'photos', 'choix', 'sortie', 'archive', 'domaine', 'genre', 'categorie', 'suivi', 'taches'];
+const CLES_CARNET = ['version', 'creeLe', 'phrase', 'criteres', 'facons', 'articles', 'notes', 'photos', 'choix', 'sortie', 'archive', 'domaine', 'genre', 'categorie', 'suivi', 'taches', 'priorite'];
 
 /** Le contenu d'une idée, normalisé ; `null` si la forme est inconnue. Les clés inconnues sont gardées (passe-plat, D451). */
 export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
@@ -682,7 +684,8 @@ export function lireDonneesCarnet(v: unknown): DonneesCarnet | null {
     ...inconnues(v, CLES_CARNET),
     ...sansIndefinis({
       version: VERSION_CARNET, creeLe: v.creeLe, phrase: v.phrase, criteres, facons, articles, notes, photos, choix: lireChoix(v.choix), sortie, archive, domaine: lireDomainePose(v.domaine),
-      genre: lireGenre(v.genre), categorie: lireCategorie(v.categorie), suivi: lireSuivi(v.suivi), taches: taches.length ? taches : undefined
+      genre: lireGenre(v.genre), categorie: lireCategorie(v.categorie), suivi: lireSuivi(v.suivi), taches: taches.length ? taches : undefined,
+      priorite: typeof v.priorite === 'number' && Number.isInteger(v.priorite) && v.priorite >= 1 ? v.priorite : undefined
     })
   };
 }

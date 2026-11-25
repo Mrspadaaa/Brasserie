@@ -7,9 +7,10 @@
  * Tous / Local / Brasserie, « dès » et le prix à droite, « votre lien ». L'ancienne liste (`ListeCarnets`) reste joignable par `?carnet=v0`.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Bell, ChevronRight, HelpCircle, Search, Check, Wrench } from 'lucide-react';
+import { Bell, ChevronDown, ChevronRight, ChevronUp, ChevronsUp, Ellipsis, HelpCircle, Search, Check, Wrench } from 'lucide-react';
 import type { CarnetDoc, MessageDoc } from '../../domain/carnets/modele';
 import { arbreDe, coupDOeil } from '../../domain/carnets/arbre';
+import { ordreApresGeste, prioritesPour, type GestePriorite } from '../../domain/carnets/priorite';
 import { etatDe, LIBELLE_ETAT, genreDe } from '../../domain/carnets/suivi';
 import { DOMAINE_LIBELLE } from '../../domain/carnets/domaines';
 import { chercherCarnet, requete, type Trouve } from '../../domain/carnets/recherche';
@@ -56,6 +57,30 @@ export interface ListeArbreProps {
   /** R66 : le carnet « à ranger » tout juste posé (une photo seule) : sa carte est amenée en vue. */
   montrer?: string | null;
   onExemple?: (texte: string) => void;
+  /** R91 : « En tête / Monter / Descendre » d'une ligne (menu ⋯) : les priorités à écrire, et ce qui est fait (« ✓ … · Annuler »). Sans glisser-déposer (sa parole). */
+  onPriorite?: (carnetId: string, priorites: { carnetId: string; priorite: number }[], avis: string) => void;
+}
+
+const AVIS_GESTE: Record<GestePriorite, string> = { tete: '✓ Mis en tête', monter: '✓ Monté d’un rang', descendre: '✓ Descendu d’un rang' };
+
+/**
+ * R91 : une ligne et son menu ⋯ (En tête, Monter, Descendre). Le ⋯ est un bouton À CÔTÉ de la ligne (jamais dedans) ; le menu s'ouvre sous elle, en trois puces.
+ * Au premier rang, En tête et Monter sont grisés ; au dernier, Descendre.
+ */
+function RangMenu({ titre, rang, sur, ouvert, onBascule, onGeste, children }: { titre: string; rang: number; sur: number; ouvert: boolean; onBascule: () => void; onGeste?: (g: GestePriorite) => void; children: React.ReactNode }) {
+  return (
+    <div className="cnl-lg" data-menu={ouvert ? '' : undefined}>
+      {children}
+      {onGeste && <button type="button" className="cnl-plus" aria-label={`Menu ⋯ de la ligne : ${titre}`} aria-haspopup="menu" aria-expanded={ouvert} onClick={onBascule}><Ellipsis size={18} aria-hidden /></button>}
+      {onGeste && ouvert && (
+        <div className="cnl-menu" role="menu" aria-label="Priorité de la ligne">
+          <button type="button" role="menuitem" disabled={rang === 0} onClick={() => onGeste('tete')}><ChevronsUp size={16} aria-hidden />En tête</button>
+          <button type="button" role="menuitem" disabled={rang === 0} onClick={() => onGeste('monter')}><ChevronUp size={16} aria-hidden />Monter</button>
+          <button type="button" role="menuitem" disabled={rang >= sur - 1} onClick={() => onGeste('descendre')}><ChevronDown size={16} aria-hidden />Descendre</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** Brasserie d'abord (maquette), puis Local, Meuble, Outils, Papiers. */
@@ -137,7 +162,16 @@ function LigneARanger({ c, messages, maintenant, onOuvrir }: { c: CarnetDoc; mes
 export function ListeArbre(p: ListeArbreProps) {
   const [q, setQ] = useState('');
   const [rechercheOuverte, setRechercheOuverte] = useState(false);
-  const [ouverts, setOuverts] = useState<ReadonlySet<string>>(() => new Set());
+  /* R89 : ce qu'il a plié ou déplié lui-même (clé de sous-domaine → ouvert ?) l'emporte sur le défaut (déplié sous un filtre ou une recherche, sinon replié) ; les domaines repliés à part */
+  const [voulus, setVoulus] = useState<ReadonlyMap<string, boolean>>(() => new Map());
+  const [domainesPlies, setDomainesPlies] = useState<ReadonlySet<string>>(() => new Set());
+  const [menu, setMenu] = useState<string | null>(null);
+  useEffect(() => {
+    if (!menu) return undefined;
+    const fermer = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
+    document.addEventListener('keydown', fermer);
+    return () => document.removeEventListener('keydown', fermer);
+  }, [menu]);
   const [laissees, setLaissees] = useState<ReadonlySet<string>>(() => new Set());
   /* R66 (C67B-4) : une photo seule vient d'être posée : le groupe « À ranger » (sa ligne, sa carte « Rattacher à … ? ») est amené en vue, au lieu de rester tout en bas de l'arbre */
   const sectionARanger = useRef<HTMLElement>(null);
@@ -156,7 +190,24 @@ export function ListeArbre(p: ListeArbreProps) {
   const arbre = arbreDe(sources, domaineParMots, sousDomaineParMots);
   const coup = coupDOeil(p.tous, annee);
   const veilles = carnetsAvecVeille(vivants);
-  const basculer = (cle: string) => setOuverts(s => { const n = new Set(s); if (n.has(cle)) n.delete(cle); else n.add(cle); return n; });
+  const basculer = (cle: string, etaitOuvert: boolean) => setVoulus(m => new Map(m).set(cle, !etaitOuvert));
+  const basculerDomaine = (d: string) => setDomainesPlies(s => { const n = new Set(s); if (n.has(d)) n.delete(d); else n.add(d); return n; });
+  /** R91 : le geste d'une ligne. Il se lit sur ce qui est VU (`visibles`), s'applique à l'ordre COMPLET du groupe (les carnets cachés par un filtre gardent leur place). */
+  const deplacer = (c: CarnetDoc, visibles: readonly CarnetDoc[], g: GestePriorite) => {
+    setMenu(null);
+    const tout = arbreDe(p.tous, domaineParMots, sousDomaineParMots);
+    const complet = tout.domaines.flatMap(n => [n.ouverts, ...n.groupes.map(x => x.carnets)]).find(l => l.some(x => x.id === c.id));
+    if (!complet) return;
+    const ordre = ordreApresGeste(complet.map(x => x.id), visibles.map(x => x.id), c.id, g);
+    if (!ordre) return;
+    const priorites = prioritesPour(complet, ordre);
+    if (priorites.length) p.onPriorite?.(c.id, priorites, AVIS_GESTE[g]);
+  };
+  /** Une ligne de `visibles` (même groupe), enveloppée de son menu ⋯. */
+  const rang = (c: CarnetDoc, visibles: readonly CarnetDoc[], ligne: React.ReactNode): React.ReactNode => (
+    <RangMenu key={c.id} titre={titreLigne(c)} rang={visibles.indexOf(c)} sur={visibles.length} ouvert={menu === c.id}
+      onBascule={() => setMenu(m => (m === c.id ? null : c.id))} {...(p.onPriorite ? { onGeste: (g: GestePriorite) => deplacer(c, visibles, g) } : {})}>{ligne}</RangMenu>
+  );
 
   if (!p.tous.length && !p.supprime) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={p.anciennes ?? []} />} />;
 
@@ -166,21 +217,26 @@ export function ListeArbre(p: ListeArbreProps) {
     <>
       {[...arbre.domaines].sort((x, y) => ORDRE_DOMAINES.indexOf(x.domaine) - ORDRE_DOMAINES.indexOf(y.domaine)).map(n => (
         <section key={n.domaine} className="cnl-domaine" data-domaine={n.domaine} aria-label={DOMAINE_LIBELLE[n.domaine]}>
-          <div className="cnl-dn"><PictoDomaine d={n.domaine} taille={18} /><span className="cnl-dn-nom">{DOMAINE_LIBELLE[n.domaine]}</span><span className="cn-mono cnl-dn-n">{n.n}</span></div>
-          {n.ouverts.map(c => <LigneProbleme key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
-          {n.groupes.map(g => {
+          {/* R89 : l'en-tête du domaine se replie d'un toucher, avec ou sans filtre : le filtre, la recherche et le compte restent */}
+          <button type="button" className="cnl-dn" aria-expanded={!domainesPlies.has(n.domaine)} onClick={() => basculerDomaine(n.domaine)}>
+            <PictoDomaine d={n.domaine} taille={18} /><span className="cnl-dn-nom">{DOMAINE_LIBELLE[n.domaine]}</span><span className="cn-mono cnl-dn-n">{n.n}</span>
+            <ChevronDown size={16} aria-hidden className="cnl-dn-fl" data-plie={domainesPlies.has(n.domaine) ? '' : undefined} />
+          </button>
+          {!domainesPlies.has(n.domaine) && n.ouverts.map(c => rang(c, n.ouverts, <LigneProbleme c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />))}
+          {!domainesPlies.has(n.domaine) && n.groupes.map(g => {
             /* C69-10 : les carnets sans catégorie (Houblons citra, Chambre froide, Frigo + congel…) se replient eux aussi, sous « Autres » : jamais dépliés à plat sous le domaine */
             /* C71-4 : un groupe sans partie lue dit au moins POURQUOI il est à part (« Sans catégorie »), et nomme ses carnets repliés comme les autres : jamais un « Autres » muet */
             const nom = g.chemin ?? 'Sans catégorie';
             const cle = `${n.domaine}/${g.chemin ?? ' autres'}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
-            const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
-            const lignes = g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
+            /* R89 : … mais ce qu'il a plié (ou déplié) lui-même l'emporte, filtre ou recherche compris */
+            const ouvert = voulus.get(cle) ?? (!!mot || p.filtre !== null);
+            const lignes = g.carnets.map(c => rang(c, g.carnets, <LigneAutre c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />));
             return (
               <React.Fragment key={cle}>
                 {/* C70-4 : un sous-domaine lu dans les mots (aucune catégorie posée) garde ses lignes dans le DOM, cachées, tant qu'il est replié (comme « Autres » avant lui : la recherche et le lecteur d'écran les trouvent) */}
                 {g.deduit && !ouvert && <div hidden>{lignes}</div>}
-                <button type="button" className="cnl-sd" aria-expanded={ouvert} onClick={() => basculer(cle)}>
+                <button type="button" className="cnl-sd" aria-expanded={ouvert} onClick={() => basculer(cle, ouvert)}>
                   <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{nom}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
                   {!ouvert && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
@@ -260,9 +316,9 @@ export function ListeArbre(p: ListeArbreProps) {
               onBlur={() => { if (!q.trim()) setRechercheOuverte(false); }} onKeyDown={e => { if (e.key === 'Escape') { setQ(''); setRechercheOuverte(false); } }} />
           : <button type="button" className="cnl-loupe" aria-label="Chercher un carnet" onClick={() => setRechercheOuverte(true)}><Search size={18} aria-hidden /></button>}
       </div>
+      {/* R90 : la ligne « Filtre : … Tout montrer » est fondue dans la case active du coup d'œil (son × retire le filtre) ; le statut reste dit aux lecteurs d'écran */}
       {p.filtre && p.onglet === 'arbre' && (
-        <p className="cnl-filtre" role="status">Filtre : <b>{p.filtre === 'resolu' ? `résolus ${annee}` : p.filtre === 'cherche' ? 'je cherche' : p.filtre === 'decide' ? 'décidés' : 'notés'}</b>
-          <button type="button" className="cn-lien" onClick={() => p.onFiltre(null)}>Tout montrer</button></p>
+        <p className="cnl-filtre" role="status">Filtre : <b>{p.filtre === 'resolu' ? `résolus ${annee}` : p.filtre === 'cherche' ? 'je cherche' : p.filtre === 'decide' ? 'décidés' : 'notés'}</b></p>
       )}
       <div className="cnl-corps">{p.onglet === 'afaire' ? p.corpsAFaire : p.onglet === 'veille' ? corpsVeille : corpsArbre}</div>
       <AnciennesNotes notes={p.anciennes ?? []} />

@@ -7,6 +7,7 @@ import { refuserPropositionSuivi } from '../../domain/carnets/fil';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
   detacherNoteArticle, poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
 import { poserRangement } from '../../domain/carnets/arbre';
+import { poserPriorites } from '../../domain/carnets/priorite';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, type LigneLocale } from '../../domain/carnets/analyseLocale';
 import { carnetProche } from '../../domain/carnets/rattacher';
@@ -142,7 +143,8 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       aFaire={aFaireDe(tous, auj).total} rangeEnCours={rangeEnCours} anciennes={anciennes} onExemple={t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); }}
       corpsAFaire={<AFaire carnets={tous} maintenant={auj} plans={finances.plans} messages={messages} onCocher={cocherALaListe} onOuvrir={id => ouvrirCarnet(id)} onEcheance={echeanceALaListe} />}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
-      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>} onOuvrir={ouvrirCarnet} onRelecture={() => setVue({ sorte: 'relecture' })} onRattacher={rattacherA} onNouveauProbleme={nouveauProbleme} montrer={vientDEtreCree} />;
+      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>} onOuvrir={ouvrirCarnet} onRelecture={() => setVue({ sorte: 'relecture' })} onRattacher={rattacherA} onNouveauProbleme={nouveauProbleme} montrer={vientDEtreCree}
+      onPriorite={(id, priorites, avis) => { geste(poserPriorites(magasin.lire(), { priorites, avis }), id); }} />;
   } else if (!ouvert || vue.sorte === 'liste') {
     ecran = <ListeCarnets rangeEnCours={rangeEnCours} carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); if (supprime.plan) void ecrirePlanLie(supprime.plan); setSupprime(null); } } : null}
