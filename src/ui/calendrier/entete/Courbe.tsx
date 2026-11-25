@@ -1,3 +1,5 @@
+import { useApresRendu, creerPlanificateur } from '../useApresRendu';
+import { familleCorps, largeurMemo } from '../cacheTexte';
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ajouterJours, francs, francsExacts, francsSignesExacts, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
@@ -235,9 +237,8 @@ function contexte(): CanvasRenderingContext2D | null {
 export function largeurTexte(t: string, gras = false): number {
   const c = contexte();
   if (c) {
-    const famille = getComputedStyle(document.body).fontFamily || 'sans-serif';
-    c.font = `${gras ? 700 : 400} 14px ${famille}`;
-    return Math.ceil(c.measureText(t).width) + 4;
+    const famille = familleCorps();
+    return largeurMemo(`${gras ? 700 : 400}|${famille}`, t, () => { c.font = `${gras ? 700 : 400} 14px ${famille}`; return Math.ceil(c.measureText(t).width) + 4; });
   }
   // Hors navigateur : la chasse moyenne de Source Sans 3 à 14 px, mesurée au banc le 17.11 (« Embouteilleuse −2 800 » : 132 px au canevas).
   return Math.ceil(t.length * (gras ? 7.0 : 6.4)) + 4;
@@ -427,13 +428,18 @@ export function placerNoms(courbeBrute: readonly SoldeSemaine[], g: Geo, max: nu
  */
 export function taireSousPoignees(racine: Element): void {
   const etiquettes = [...racine.querySelectorAll('[data-nom-index], [data-niveau-courbe], [data-mise-de-cote="etiquette"]')];
-  etiquettes.forEach(e => e.removeAttribute('data-sous-poignee'));
   const poignees = [...racine.querySelectorAll('[data-poignee] i')].map(i => i.getBoundingClientRect()).filter(p => p.width > 0 && p.height > 0);
-  if (!poignees.length) return;
-  for (const e of etiquettes) {
+  /* cal-74 : toutes les lectures d'abord, puis seulement les écritures qui changent (retirer puis reposer chaque attribut invalidait le style à chaque passage) */
+  const sous = etiquettes.map(e => {
+    if (!poignees.length) return false;
     const b = e.getBoundingClientRect();
-    if (b.width > 0 && poignees.some(p => Math.min(b.right, p.right) - Math.max(b.left, p.left) > 0 && Math.min(b.bottom, p.bottom) - Math.max(b.top, p.top) > 0)) e.setAttribute('data-sous-poignee', '');
-  }
+    return b.width > 0 && poignees.some(p => Math.min(b.right, p.right) - Math.max(b.left, p.left) > 0 && Math.min(b.bottom, p.bottom) - Math.max(b.top, p.top) > 0);
+  });
+  etiquettes.forEach((e, i) => {
+    const a = e.hasAttribute('data-sous-poignee');
+    if (sous[i] && !a) e.setAttribute('data-sous-poignee', '');
+    else if (!sous[i] && a) e.removeAttribute('data-sous-poignee');
+  });
 }
 
 /**
@@ -656,13 +662,15 @@ export function Courbe({ repere, aujourdhui, debutDonnees = false, courbe, large
     if (typeof reference === 'function') reference(el);
     else if (reference) (reference as React.MutableRefObject<HTMLDivElement | null>).current = el;
   }, [reference]);
-  useLayoutEffect(() => { if (racineCb.current) taireSousPoignees(racineCb.current); });
+  /* cal-74 : lue après la peinture, regroupée et espacée (useApresRendu) ; avant, une mise en page forcée par image pendant un glisser */
+  useApresRendu(() => { if (racineCb.current) taireSousPoignees(racineCb.current); });
   useEffect(() => {
     const el = racineCb.current;
     if (!el || typeof MutationObserver === 'undefined') return undefined;
-    const mo = new MutationObserver(() => taireSousPoignees(el));
+    const plan = creerPlanificateur();
+    const mo = new MutationObserver(() => plan.planifier(() => taireSousPoignees(el)));
     mo.observe(el, { subtree: true, attributes: true, attributeFilter: ['style'] });
-    return () => mo.disconnect();
+    return () => { mo.disconnect(); plan.annuler(); };
   }, []);
   const n = courbe.length;
   const g0 = moisEnHaut

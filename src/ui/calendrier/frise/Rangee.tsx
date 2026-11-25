@@ -1,4 +1,5 @@
 import React from 'react';
+import { creerPlanificateur, type Planificateur } from '../useApresRendu';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS, francsSignesExacts, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, rectVolant, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
@@ -180,7 +181,10 @@ export function seriesEnBarres(choses: readonly ChoseCalendrier[]): ChoseCalendr
  */
 export function distinguerHomonymes(choses: readonly ChoseCalendrier[]): readonly ChoseCalendrier[] {
   const groupes = new Map<string, ChoseCalendrier[]>();
-  for (const c of choses) if (c.brassinLie) groupes.set(c.titre, [...(groupes.get(c.titre) ?? []), c]);
+  /* CALP-6 (cal-74, tour 73, en ligne : « Jhhh · coût à venir » en double à 4 ans, 5 et 7 sept.) : deux BRASSINS de même nom, même rangée, même
+     montant et même état de coût se lisaient en deux lignes identiques ; seuls les achats liés étaient distingués. Ils le sont maintenant aussi. */
+  const cle = (c: ChoseCalendrier): string | null => c.brassinLie ? `lie|${c.titre}` : c.source.genre === 'batch' && !c.sansDate ? `batch|${c.rangee}|${c.titre}|${c.centimes ?? ''}|${c.coutAVenir ? 1 : 0}` : null;
+  for (const c of choses) { const k = cle(c); if (k) groupes.set(k, [...(groupes.get(k) ?? []), c]); }
   const doubles = [...groupes.values()].filter(g => g.length > 1);
   if (!doubles.length) return choses;
   const nouveau = new Map<string, string>();
@@ -837,12 +841,21 @@ const TEXTES_BULLE: ReadonlyArray<[string, number]> = [
   ['.cal-lbl-m', 2],
   ['.cal-lbl-j, .cal-conf, .cal-vide, .cal-duree, .cal-duree-in', 1]
 ];
+const ESPACE_BULLE_MS = 120;
 function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x: number; haut: number; bas: number; largeur: number; choseId: string }) {
   const el = React.useRef<HTMLSpanElement | null>(null);
+  /* cal-74 (K73-3) : le placement complet (une lecture de chaque texte et de chaque barre de la frise, puis tops × gauches × obstacles) coûtait
+     295 ms sur 2 s de barre tenue au bord (×6), une fois PAR IMAGE. Il se refait au plus tous les ESPACE_BULLE_MS ; entre deux, la bulle garde sa
+     hauteur et suit le doigt (son `left` seul), sans aucune lecture de mise en page ; la dernière demande est toujours servie. */
+  const dernier = React.useRef<{ t: number; w: number } | null>(null);
+  const plan = React.useRef<Planificateur | null>(null);
+  const plein = React.useRef<() => void>(() => undefined);
+  React.useEffect(() => () => plan.current?.annuler(), []);
   React.useLayoutEffect(() => {
     const b = el.current;
     const piste = b?.parentElement;
     if (!b || !piste) return;
+    const placerPlein = () => {
     const w = b.offsetWidth || Math.ceil(largeurTexte(texte, 400)) + 18, h = b.offsetHeight || 24;
     const frise = piste.closest('[data-frise]') ?? document;
     const tenue = frise.querySelector<HTMLElement>(`[data-chose="${choseId.replace(/"/g, '')}"]`);
@@ -864,6 +877,18 @@ function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x:
     const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, ...(fr && fr.height > 0 ? { cadre: { top: fr.top, bottom: fr.bottom } } : {}), murs: [...boites(MURS_BULLE), ...(rectVolant() ? [rectVolant() as DOMRect] : [])], obstacles: obstacles.filter(bande) });
     b.style.left = `${place.left}px`;
     b.style.top = `${place.top}px`;
+    dernier.current = { t: performance.now(), w };
+    };
+    plein.current = placerPlein;
+    const d = dernier.current;
+    if (d && b.style.top) {
+      const gaucheMax = Math.max(2, largeur - d.w - 2);
+      b.style.left = `${Math.round(Math.max(2, Math.min(gaucheMax, x - d.w / 2)))}px`;
+      if (!plan.current) plan.current = creerPlanificateur(ESPACE_BULLE_MS);
+      plan.current.planifier(() => plein.current());
+      return;
+    }
+    placerPlein();
   }, [texte, x, haut, bas, largeur, choseId]);
   return <span ref={el} className="cal-ici" data-ici>{texte}</span>;
 }

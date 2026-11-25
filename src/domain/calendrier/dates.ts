@@ -4,8 +4,27 @@
  */
 
 export const JOUR = 86400000;
-export const utc = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
-export const versIso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+/* cal-74 (K73-3) : `utc` et `versIso` sont appelées des dizaines de milliers de fois à l'ouverture (profil : 17 + 12 ms à ×6) ; mémoïsées, bornées */
+const MEMO_MAX = 20000;
+const memoUtc = new Map<string, number>();
+const memoIso = new Map<number, string>();
+export const utc = (iso: string) => {
+  const deja = memoUtc.get(iso);
+  if (deja !== undefined) return deja;
+  const [y, m, d] = iso.split('-').map(Number);
+  const v = Date.UTC(y, m - 1, d);
+  if (memoUtc.size >= MEMO_MAX) memoUtc.clear();
+  memoUtc.set(iso, v);
+  return v;
+};
+export const versIso = (ms: number) => {
+  const deja = memoIso.get(ms);
+  if (deja !== undefined) return deja;
+  const v = new Date(ms).toISOString().slice(0, 10);
+  if (memoIso.size >= MEMO_MAX) memoIso.clear();
+  memoIso.set(ms, v);
+  return v;
+};
 
 /** Le lundi de la semaine qui contient `iso`. */
 export function lundiDe(iso: string): string {

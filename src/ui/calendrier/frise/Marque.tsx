@@ -2,6 +2,7 @@ import React from 'react';
 import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, MoreHorizontal, PartyPopper, PiggyBank, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignesExacts, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
+import { largeurMemo } from '../cacheTexte';
 import { useToucherNom } from './zoneToucher';
 import { posee, poseeADroite } from './posee';
 import type { Colonne } from './Rangee';
@@ -23,8 +24,8 @@ export function largeurTexte(texte: string, poids = 600, taille = 14): number {
     }
   }
   if (!contexte) return texte.length * PX_PAR_LETTRE_14 * (taille / 14);
-  contexte.font = `${poids} ${taille}px ${famille}`;
-  return contexte.measureText(texte).width;
+  const c = contexte, f = `${poids} ${taille}px ${famille}`;
+  return largeurMemo(f, texte, () => { c.font = f; return c.measureText(texte).width; });
 }
 
 /** Le nom court d'un lien : « La Cigogne » pour « lié à La Cigogne » (CRITIQUE-4 n° 15). */

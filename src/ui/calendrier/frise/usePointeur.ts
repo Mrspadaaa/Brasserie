@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
-import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
+import { aBouge, armerSens, BANDE_PX } from '../../geste';
 import type React from 'react';
 import { correctionAuBout, joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
 import type { Colonne } from './Rangee';
 import { correctionPrise, priseDebut, priseDebutAvant, priseFin, priseFinAvant, vueEcran, type VueEcran } from './prisesBord';
-import { COLONNES_MAX_PAR_S, vitesseCalendrier } from './defileBord';
+import { COLONNES_MAX_PAR_S, DT_MAX_S, accelerationTenue, vitesseBordCalendrier, vitesseCalendrier } from './defileBord';
 
 /**
  * Les gestes d'une barre de la frise (MISSION § État de l'art : Pointer Events natifs, `setPointerCapture`, appui long = minuterie
@@ -90,13 +90,13 @@ const ZONE_DEFILE_PX = BANDE_PX;
  * Q4-1 (24.11, « Trop lente sur le calendrier ») : la vitesse du module est multipliée par 2,5 (defileBord.ts) et le plafond passe à 8 colonnes par seconde.
  */
 export { COLONNES_MAX_PAR_S };
-export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number): number {
-  return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * dt);
+export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number, accel = 1): number {
+  return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * accel * dt);
 }
 
 /** Le sens où le doigt tire la fenêtre : `-1` bord gauche (le passé), `1` bord droit (le futur), `0` ailleurs. `arme` : sens du dernier mouvement. */
 export function sensDefilement(x: number, arme: number, cadre: { left: number; right: number }): -1 | 0 | 1 {
-  return vitesseBord(x - cadre.left, cadre.right - cadre.left, arme).sens;
+  return vitesseBordCalendrier(x - cadre.left, cadre.right - cadre.left, arme).sens;
 }
 
 /** Le doigt est-il sur la zone du bord droit de `el` ? Lu sur la boîte de la barre (une boîte vide, jsdom : non). */
@@ -164,6 +164,11 @@ interface Etat {
   acc: number;
   raf: number;
   tPrec: number;
+  /** cal-74 : secondes tenues au bord (la vitesse monte avec elles) */
+  tenu?: number;
+  /** cal-74 : bord gauche de la frise, lu au plus tous les 250 ms */
+  gaucheV?: number;
+  gaucheT?: number;
   /** R10 : l'écouteur d'Échap pendant le glisser. */
   echap: ((e: KeyboardEvent) => void) | null;
   /** L-1 : l'élément qui a reçu l'appui, la frise, et le retrait des écouteurs de la fenêtre (le geste qui a perdu la barre se finit là). */
@@ -246,7 +251,7 @@ export function usePointeur(options: OptionsPointeur) {
 
   const stopDefile = (e: Etat | null) => {
     if (e?.raf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(e.raf);
-    if (e) { e.raf = 0; e.tPrec = 0; e.acc = 0; }
+    if (e) { e.raf = 0; e.tPrec = 0; e.acc = 0; e.tenu = 0; }
     if (e?.echap) { window.removeEventListener('keydown', e.echap, true); e.echap = null; }
     if (e?.ecoute) { e.ecoute(); e.ecoute = null; }
   };
@@ -272,7 +277,11 @@ export function usePointeur(options: OptionsPointeur) {
   const axeDuMoment = (s: Etat): AxeDoigt | null => {
     const o = opts.current;
     if (!s.axe0 || !o.colonnes?.length || !(o.largeurColonne > 0)) return null;
-    return { colonnes: o.colonnes, largeurColonne: o.largeurColonne, gauche: s.frise?.isConnected ? s.frise.getBoundingClientRect().left : s.L };
+    /* cal-74 : le bord gauche de la frise ne bouge pas pendant un geste ; lu au plus une fois par 250 ms (avant : une mise en page forcée par
+       rendu de la barre tenue, 449 ms sur 2 s au bord à ×6) */
+    const t = typeof performance !== 'undefined' ? performance.now() : 0;
+    if (s.frise?.isConnected && (s.gaucheT === undefined || t - s.gaucheT >= 250)) { s.gaucheV = s.frise.getBoundingClientRect().left; s.gaucheT = t; }
+    return { colonnes: o.colonnes, largeurColonne: o.largeurColonne, gauche: s.frise?.isConnected ? (s.gaucheV ?? s.L) : s.L };
   };
   /* le doigt est sur la frise (entre sa gauche et sa droite visibles à l'appui) */
   const surLaFrise = (s: Etat) => Number.isFinite(s.R) && s.xPrec >= s.L && s.xPrec <= s.R;
@@ -402,10 +411,17 @@ export function usePointeur(options: OptionsPointeur) {
    * colonnes que la vitesse en parcourt (0,15 à 1,35 largeur de frise par seconde selon la profondeur), à chaque image, tant que la barre reste
    * dans la fenêtre. Arrêt dès que le doigt sort de la bande ou repart (`arme` change de sens).
    */
+  /* cal-74 : le cadre de la frise ne bouge pas pendant un geste ; lu au plus une fois par 250 ms (avant : `getBoundingClientRect` et `innerWidth`,
+     deux mises en page forcées, à chaque image du défilement) */
+  const cacheCadre = useRef<{ t: number; v: { left: number; right: number } } | null>(null);
   const cadreDe = (el: Element) => {
+    const maintenant = typeof performance !== 'undefined' ? performance.now() : 0;
+    if (cacheCadre.current && maintenant - cacheCadre.current.t < 250) return cacheCadre.current.v;
     const cadre = (el.closest('[data-frise]') ?? (etat.current?.frise?.isConnected ? etat.current.frise : null))?.getBoundingClientRect();
     const vue = typeof window !== 'undefined' ? window.innerWidth : 0;
-    return { left: Math.max(0, cadre?.left ?? 0), right: Math.min(vue || Infinity, cadre && cadre.width > 0 ? cadre.right : Infinity) };
+    const v = { left: Math.max(0, cadre?.left ?? 0), right: Math.min(vue || Infinity, cadre && cadre.width > 0 ? cadre.right : Infinity) };
+    cacheCadre.current = { t: maintenant, v };
+    return v;
   };
   const majDefile = (s: Etat, x: number, el: HTMLElement) => {
     if (!opts.current.defile || s.raf || typeof requestAnimationFrame !== 'function') return;
@@ -414,15 +430,18 @@ export function usePointeur(options: OptionsPointeur) {
       s.raf = 0;
       if (etat.current !== s || (s.mode !== 'glisse' && s.mode !== 'bord')) return;
       const c = cadreDe(el), largeur = c.right - c.left;
-      const { sens, vitesse } = vitesseBord(s.xPrec - c.left, largeur, s.arme);
-      if (!sens || !Number.isFinite(largeur)) { s.tPrec = 0; s.acc = 0; return; }
-      const dt = s.tPrec ? Math.min(0.05, (t - s.tPrec) / 1000) : 0;
+      const { sens, vitesse } = vitesseBordCalendrier(s.xPrec - c.left, largeur, s.arme);
+      if (!sens || !Number.isFinite(largeur)) { s.tPrec = 0; s.acc = 0; s.tenu = 0; return; }
+      const dt = s.tPrec ? Math.min(DT_MAX_S, (t - s.tPrec) / 1000) : 0;
       s.tPrec = t;
+      /* cal-74 : la vitesse monte avec le temps tenu au bord (×1 à ×1,6 en 1,2 s) */
+      s.tenu = (s.tenu ?? 0) + dt;
+      const accel = accelerationTenue(s.tenu);
       const oo = opts.current;
       /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
       /* VISION-tour9 n° 2 : comptée en colonnes de l'APPUI (une fenêtre qui grandit rétrécit ses colonnes : comptée en colonnes du moment, elle
          allait de 6 à 23 semaines en 1,5 s et la bulle ne suivait plus) */
-      s.acc += colonnesParImage(vitesseCalendrier(vitesse), dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)));
+      s.acc += colonnesParImage(vitesseCalendrier(vitesse) * accel, dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)), accel);
       while (s.acc >= 1) {
         s.acc -= 1;
         /* la barre sortirait d'une fenêtre qui GLISSE : elle ne fait alors que grandir (jamais une barre tenue qui disparaît sous le doigt) ;

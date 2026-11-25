@@ -4,7 +4,7 @@ import { lundiDe, numeroSemaine } from '../../../domain/calendrier';
 import { ajouterJours, jourCourt, largeurTexte, placeEtiquette, type Boite } from './Courbe';
 import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, useGlisse, zonesBords } from '../../geste';
 import { rentrer, vueDansRepere, type VueEcran } from '../frise/prisesBord';
-import { plafondFenetre, vitesseCalendrier } from '../frise/defileBord';
+import { accelerationTenue, plafondFenetre, vitesseCalendrier } from '../frise/defileBord';
 import { avalerClicSuivant } from '../usePointeurCourbe';
 
 /**
@@ -127,12 +127,13 @@ export function etiquetteDates(lundis: readonly string[] | undefined, index: num
   return `${jourCourt(a)}${ya !== yb ? ` ${ya}` : ''} – ${jourCourt(b)}${yb !== ref || ya !== yb ? ` ${yb}` : ''}`;
 }
 
-/** L'année ISO d'une semaine (celle de son jeudi) et son numéro : « S52 2026 » ; deux bouts : « S52 2026 – S1 2027 », « S47 – S49 2026 ». */
+/** L'année ISO d'une semaine (celle de son jeudi) et son numéro : « S53 » seul pour une semaine (K73-2) ; deux bouts : « S52 2026 – S1 2027 », « S47 – S49 2026 ». */
 export function etiquetteSemainesAnnees(lundis: readonly string[], index: number, nombre: number): string {
   const a = lundis[index], b = lundis[Math.min(lundis.length - 1, index + Math.max(1, nombre) - 1)];
   if (!a || !b) return '';
   const s = (l: string) => `S${numeroSemaine(l)}`, an = (l: string) => anneeIso(l);
-  if (a === b) return `${s(a)} ${an(a)}`;
+  /* K73-2 (cal-74, 24.11 « S53 2026 ? » : « Non ») : une seule semaine se dit sans année (« S53 ») ; les jours de l'axe disent où l'on est */
+  if (a === b) return s(a);
   return an(a) === an(b) ? `${s(a)} – ${s(b)} ${an(b)}` : `${s(a)} ${an(a)} – ${s(b)} ${an(b)}`;
 }
 
@@ -253,6 +254,8 @@ interface SaisieCadre {
   vue0: VueCourbe; v: VueCourbe;
   /** Écart du doigt au bout tenu (R2) ; défilement R7 du corps (semaines). */
   off: number; pan: number;
+  /** cal-74 : secondes tenues au bord (la vitesse monte avec elles, defileBord) */
+  tenu?: number;
   /** L-13 : la part de semaine que le doigt a parcourue au-delà de la semaine posée (corps) ; le cadre est dessiné là, posé à la semaine au lâcher. */
   glis?: number;
 }
@@ -370,13 +373,14 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
     },
     bord: (sens, vitesseBrute, dt, s) => {
       /* Q4-1 (24.11, « Trop lente sur le calendrier ») : ×2,5 sur la vitesse du module geste, propre au Calendrier */
-      const vitesse = vitesseCalendrier(vitesseBrute);
+      s.tenu = (s.tenu ?? 0) + dt;
+      const vitesse = vitesseCalendrier(vitesseBrute) * accelerationTenue(s.tenu);
       if (s.role === 'defile') return;
       /* K57-1 : au plus 8 colonnes par seconde, comme les barres (plafondFenetre) ; la croissance était un pourcentage de l'échelle par image (exponentielle) */
-      if (s.role === 'corps') { s.pan += sens * Math.min(vitesse * s.v.span * dt, plafondFenetre(s.vue0.span, dt)); return; }
+      if (s.role === 'corps') { s.pan += sens * Math.min(vitesse * s.v.span * dt, plafondFenetre(s.vue0.span, dt, s.tenu)); return; }
       if ((s.role === 'b' && sens > 0) || (s.role === 'a' && sens < 0)) {
         const ancre = s.role === 'b' ? s.a0 : s.b0, xAncre = (ancre - s.v.v0) / s.v.span;
-        const span = Math.min(total * 1.3, s.v.span + Math.min(s.v.span * vitesse * 0.6 * dt, plafondFenetre(s.vue0.span, dt)));
+        const span = Math.min(total * 1.3, s.v.span + Math.min(s.v.span * vitesse * 0.6 * dt, plafondFenetre(s.vue0.span, dt, s.tenu)));
         s.v = { span, v0: ancre - xAncre * span };
       }
     },

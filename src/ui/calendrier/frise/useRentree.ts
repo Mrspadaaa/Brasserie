@@ -1,17 +1,19 @@
-import { useLayoutEffect, type RefObject } from 'react';
+import type { RefObject } from 'react';
+import { useApresRendu } from '../useApresRendu';
 import { rentreeElement, vueEcran, type BoiteEcran } from './prisesBord';
 
 /**
  * POI-1 (24.11, « maintenant tout est au bord, l'actionnable est du coup plus difficile sur mobile. Rentre la zone plus accessible »).
  * Les boutons et pastilles de `selecteur` (dans `racine`) qui tombent contre le bord de l'écran, où Android place le geste retour, reçoivent
  * `--rentre-g` / `--rentre-d` (px) : leur pseudo-élément de toucher s'étend d'autant vers l'intérieur (frise.css, entete.css), jamais sur une autre
- * commande de la ligne, jamais le dessin. Lu après chaque rendu (toutes les lectures, puis toutes les écritures : une seule mise en page) ;
+ * commande de la ligne, jamais le dessin. Lu APRÈS chaque rafale de rendus, hors de la phase de validation (cal-74 : la lecture dans un `useLayoutEffect` forçait une mise en page
+ * par image, 138 à 190 ms à ×6 ; voir useApresRendu) ; toutes les lectures, puis toutes les écritures : une seule mise en page ;
  * sans mise en page (jsdom : boîtes vides) rien n'est posé.
  */
 const COMMANDES = 'button, [role="button"], a[href]';
 
 export function useRentree(racine: RefObject<HTMLElement | null>, selecteur: string): void {
-  useLayoutEffect(() => {
+  useApresRendu(() => {
     const el = racine.current;
     if (!el || typeof window === 'undefined') return;
     const cibles = Array.from(el.querySelectorAll<HTMLElement>(selecteur));

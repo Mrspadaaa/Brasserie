@@ -154,14 +154,15 @@ describe('K57-1 : la fenêtre de l’en-tête tenue au bord grandit à vitesse p
     expect(pose, 'la fenêtre a changé').not.toBeNull();
     const span0 = vueDeFenetre(INDEX, NOMBRE, 390).span;
     // + 4 : le premier déplacement (de la prise au bord) et l'arrondi à la semaine de la pose
-    const plafond = NOMBRE + 8 * Math.max(1, span0 / 6) * 2 + 4;
+    /* cal-74 : la vitesse monte avec le temps tenu (×1 à ×1,6 en 1,2 s) : 2 s tenues valent 2,84 s à la vitesse de départ (1,2 × 1,3 + 0,8 × 1,6) */
+    const plafond = NOMBRE + 8 * Math.max(1, span0 / 6) * 2.84 + 4;
     expect(pose!.nombre, `${pose!.nombre} semaines`).toBeGreaterThan(NOMBRE + 8);
     expect(pose!.nombre, `${pose!.nombre} semaines, plafond ${plafond}`).toBeLessThanOrEqual(plafond);
   });
   it('à 30 px du bord (haut de la bande de défilement), 2 s : bornée de même', () => {
     const { pose } = tenirLaFin(30, 2);
     const span0 = vueDeFenetre(INDEX, NOMBRE, 390).span;
-    expect(pose?.nombre ?? NOMBRE).toBeLessThanOrEqual(NOMBRE + 8 * Math.max(1, span0 / 6) * 2 + 4);
+    expect(pose?.nombre ?? NOMBRE).toBeLessThanOrEqual(NOMBRE + 8 * Math.max(1, span0 / 6) * 2.84 + 4);
   });
   it('tenue 10 s : jamais au-delà de la plage de l’app', () => {
     const { pose } = tenirLaFin(4, 10);
@@ -171,7 +172,7 @@ describe('K57-1 : la fenêtre de l’en-tête tenue au bord grandit à vitesse p
     const a = tenirLaFin(4, 1).pose!.nombre - NOMBRE;
     cleanup(); file = [];
     const b = tenirLaFin(4, 2).pose!.nombre - NOMBRE;
-    expect(b - a, `1 s : +${a}, 2 s : +${b}`).toBeLessThanOrEqual(a * 1.25);
+    expect(b - a, `1 s : +${a}, 2 s : +${b}`).toBeLessThanOrEqual(a * 1.8); /* cal-74 : linéaire par morceaux, la 2e seconde va jusqu'à ×1,6 plus vite (jamais exponentielle : 144 semaines) */
   });
   it('rien ne continue après le lâcher : aucune pose de plus, plus d’image en attente, la vue revient au repos', () => {
     const { apres } = tenirLaFin(4, 1);
@@ -197,7 +198,7 @@ describe('K57-1 : la même vitesse plafonnée partout (cadre, durée, barres)', 
     expect(u.COLONNES_MAX_PAR_S).toBe(d.COLONNES_MAX_PAR_S);
   });
   it('le cadre de l’en-tête (grandir et corps) et la durée de la fiche passent par plafondFenetre', () => {
-    expect(src('src/ui/calendrier/entete/Fenetre.tsx').match(/plafondFenetre\(s\.vue0\.span, dt\)/g)?.length, 'corps et bout tiré').toBe(2);
-    expect(src('src/ui/calendrier/frise/DureeFenetre.tsx').match(/plafondFenetre\(s\.vue0\.span, dt\)/g)?.length).toBe(1);
+    expect(src('src/ui/calendrier/entete/Fenetre.tsx').match(/plafondFenetre\(s\.vue0\.span, dt, s\.tenu\)/g)?.length, 'corps et bout tiré').toBe(2);
+    expect(src('src/ui/calendrier/frise/DureeFenetre.tsx').match(/plafondFenetre\(s\.vue0\.span, dt, s\.tenu\)/g)?.length).toBe(1);
   });
 });

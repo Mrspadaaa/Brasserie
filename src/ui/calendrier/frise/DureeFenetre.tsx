@@ -2,7 +2,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { MARGE_BOUTS_PX, borner, poserPlage, roleSous, useGlisse } from '../../geste';
 import { ajouterJours, etiquetteS, jourAvecAnnee, jourLisible, lundiDe, semaineAvecAn, type Rangee } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
-import { plafondFenetre, vitesseCalendrier } from './defileBord';
+import { accelerationTenue, plafondFenetre, vitesseCalendrier } from './defileBord';
 import './feuille.css';
 
 /**
@@ -70,7 +70,7 @@ const kMax = (u: number, epoque: string, dernier: string) => unitesEntre(epoque,
 /** La vue : la semaine (fractionnaire, comptée depuis `EPOQUE`) au bord gauche et le nombre de semaines sur la largeur. */
 interface Vue { v0: number; span: number }
 type Role = 'a' | 'b' | 'corps';
-interface Saisie { role: Role; a0: number; b0: number; debut0: string; fin0: string | null; vue0: Vue; vue: Vue; off: number; w: number }
+interface Saisie { tenu?: number; role: Role; a0: number; b0: number; debut0: string; fin0: string | null; vue0: Vue; vue: Vue; off: number; w: number }
 
 /** R4 : le début à 56 px du bord gauche ; la fin (le dimanche de sa semaine) à 56 px du bord droit, sauf sous treize semaines. Seule : au milieu. */
 function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number, bord = Infinity): Vue {
@@ -148,9 +148,10 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
     },
     bord: (sens, vitesseBrute, dt, s) => {
       /* Q4-1 (24.11, « Trop lente sur le calendrier ») : ×2,5 sur la vitesse du module geste, propre au Calendrier */
-      const vitesse = vitesseCalendrier(vitesseBrute);
+      s.tenu = (s.tenu ?? 0) + dt;
+      const vitesse = vitesseCalendrier(vitesseBrute) * accelerationTenue(s.tenu);
       /* K57-1 : au plus 8 colonnes par seconde, comme les barres et le cadre de l'en-tête (plafondFenetre) */
-      const pas = Math.min(vitesse * s.vue.span * dt, plafondFenetre(s.vue0.span, dt)), span = Math.min(max * 1.2, s.vue.span + pas);
+      const pas = Math.min(vitesse * s.vue.span * dt, plafondFenetre(s.vue0.span, dt, s.tenu)), span = Math.min(max * 1.2, s.vue.span + pas);
       if (s.role === 'corps') {
         // R7 : le corps avance dans le sens du doigt, l'échelle défile avec lui
         s.off += sens * pas;

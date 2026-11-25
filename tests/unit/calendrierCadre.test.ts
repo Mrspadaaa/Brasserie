@@ -124,7 +124,7 @@ describe('graduations de la bande (D444, point 3)', () => {
     expect(etiquetteSemainesAnnees(l, 0, 2)).toBe('S52 – S53 2026');
     expect(etiquetteSemainesAnnees(l, 1, 2)).toBe('S53 2026 – S1 2027');
     expect(etiquetteSemainesAnnees(semainesDe('2027-12-27', 2).map((s) => s.debut), 0, 2)).toBe('S52 2027 – S1 2028');
-    expect(etiquetteSemainesAnnees(l, 1, 1)).toBe('S53 2026');
+    expect(etiquetteSemainesAnnees(l, 1, 1)).toBe('S53'); // K73-2 : une semaine, sans année
   });
   it('CAL-GRADUATION-ROGNEE : un nom qui ne tient pas dans sa part visible, ou sortirait de la courbe, se tait', () => {
     expect(nomRogne([0, 30, 60, 78], 2, 30, 23)).toBe(true); // 18 px visibles pour « S53 » (23 px)

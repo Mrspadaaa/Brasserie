@@ -18,6 +18,7 @@ import { MOIS_LONGS } from '../../../components/periode/periode';
 import { axeDeLEchelle, echelleDeVue, fenetreDePeriode as fenetreDe, lundi as lundiIso } from '../../../domain/calendrier/temps';
 import type { Colonne } from '../frise/Rangee';
 import { useRentree } from '../frise/useRentree';
+import { creerPlanificateur } from '../useApresRendu';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
@@ -264,6 +265,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   });
   /** La frise mesurée : son bord gauche moins celui de la courbe (`decalage`) et moins celui de l'en-tête (`decEnt`) ; la boîte de l'en-tête. */
   const [frise, setFrise] = useState<{ decalage: number; largeur: number; decEnt: number; largEnt: number; hautEnt: number } | null>(null);
+  const dejaMesuree = useRef(false);
+  const planMesure = useRef(creerPlanificateur(500));
+  useEffect(() => () => planMesure.current.annuler(), []);
   useLayoutEffect(() => {
     if (!alignee && !zoomee) return undefined;
     const lireFrise = () => (racine.current?.closest('[data-calendrier]') ?? document).querySelector<HTMLElement>('[data-frise]');
@@ -277,7 +281,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       const egal = (p: NonNullable<typeof suivant>, q: NonNullable<typeof suivant>) => p.decalage === q.decalage && p.largeur === q.largeur && p.decEnt === q.decEnt && p.largEnt === q.largEnt && p.hautEnt === q.hautEnt;
       setFrise(p => ((p && suivant && egal(p, suivant)) || (!p && !suivant) ? p : suivant));
     };
-    mesurer();
+    /* cal-74 : la première mesure est immédiate ; ensuite, à chaque image d'un geste (`props.colonnes` change), elle se fait après la peinture,
+       regroupée et espacée (useApresRendu) : 569 ms de mises en page forcées sur 2 s de barre tenue au bord (×6) */
+    if (dejaMesuree.current) planMesure.current.planifier(mesurer); else { mesurer(); dejaMesuree.current = true; }
     window.addEventListener('resize', mesurer);
     const f = lireFrise();
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(mesurer) : null;
@@ -518,8 +524,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const sansDate = modele.sansDate?.length ?? 0;
   const premiereSemaine = visibles[0]?.debut ?? fenetre.du;
   const plage = plageDe(premiereSemaine, ajouterJours(premiereSemaine, nombre * 7 - 1));
-  const libelle = total ? libellePeriode(periode, { du: semainesTot[index]?.debut ?? fenetre.du, semaines: nombre }, semainesTot[0].debut, total, annee) : libelleDuree(nombre, annee);
-  const pastille = libellePastille(libelle, nombre, annee);
+  /* K73-1 (cal-74, tour 73 : « Il me dit 6 semaines alors que j'en tire 5 ») : pendant qu'on tire une poignée du cadre, le bouton de durée dit la
+     fenêtre SOUS LE DOIGT (`tiree`), comme la bulle du cadre ; au lâcher, `tiree` s'efface et la fenêtre posée prend le relais (la même). */
+  const nombreDit = !annee && tiree ? tiree.nombre : nombre;
+  const indexDit = !annee && tiree ? tiree.index : index;
+  const libelle = total ? libellePeriode(periode, { du: semainesTot[indexDit]?.debut ?? fenetre.du, semaines: nombreDit }, semainesTot[0].debut, total, annee) : libelleDuree(nombreDit, annee);
+  const pastille = libellePastille(libelle, nombreDit, annee);
   const cause = causeCaisseInconnue(modele.causeSoldeInconnu);
   // La rangée d'un mouvement (sa couleur) et les noms mis de côté viennent des choses du modèle.
   const rangeeDe = useMemo(() => {
