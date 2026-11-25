@@ -172,8 +172,9 @@ describe('carte « À ranger » : proposition (option B, jamais une description 
     expect(p).toMatchObject({ sorte: 'rattacher', carnetId: IDS_SUIVI.fusible, titre: carnet(IDS_SUIVI.fusible).title, raison: 'dernier touché : aujourd’hui' });
     expect(Object.keys(p).sort()).toEqual(['carnetId', 'le', 'raison', 'sorte', 'titre']);
   });
-  it('ce qui est proposé est toujours un problème ouvert : jamais le carnet de la photo, un résolu, un autre genre', () => {
-    expect(propositionARanger(el, [carnet(IDS_SUIVI.photo), carnet(IDS_SUIVI.pompe), carnet(IDS_SUIVI.fete), carnet(IDS_SUIVI.assurance)], messages, MAINTENANT_SUIVI)).toEqual({ sorte: 'aucune' });
+  // C67B-4 / R66 (25.11) : un carnet ouvert (je cherche, décidé) de tout genre peut recevoir la photo ; jamais le carnet de la photo ni un résolu.
+  it('ce qui est proposé est toujours un carnet ouvert : jamais le carnet de la photo, ni un résolu', () => {
+    expect(propositionARanger(el, [carnet(IDS_SUIVI.photo), carnet(IDS_SUIVI.pompe)], messages, MAINTENANT_SUIVI)).toEqual({ sorte: 'aucune' });
     expect(propositionARanger(el, [], messages, MAINTENANT_SUIVI)).toEqual({ sorte: 'aucune' });
   });
   it('le plus récent l\'emporte, sa date se dit avec le recul : « il y a 6 jours »', () => {
