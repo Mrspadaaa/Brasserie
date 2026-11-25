@@ -2944,3 +2944,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 (classement passe 3) : Épreuve : 4 cas jamais utilisés pour dessiner : 3 v01, v03
 - 25.11 (classement passe 3) : 
 - 25.11 (classement passe 3) : Beaucoup ne répond que à un problèmematique ou pas du tout...
+- 25.11 après-midi : « Peut être arrêté le massacre et trouvé des vrai solution aux vrais problèmes »
