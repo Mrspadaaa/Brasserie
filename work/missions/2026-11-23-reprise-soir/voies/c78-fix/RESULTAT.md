@@ -1,4 +1,4 @@
-FIX 41/41 tsc OK (2 erreurs connues, aucune neuve) — hash : voir `git log -1 -- src/ui/carnets/tableauRegles.ts`
+FIX 41/41 tsc OK d9f7e0735 (porte : c74bRegles R93 rouge, voir DÉCISION)
 
 # RESULTAT c78-fix
 
