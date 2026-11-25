@@ -80,7 +80,7 @@ export function valeurUtile(c: CarnetDoc, maintenant: Date, messages: readonly M
     const retenue = optionRetenue(c);
     const cout = retenue ? messages.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.optionId === retenue.id && (e.sorte === 'cout' || e.sorte === 'devis') && e.montantCentimes !== undefined) : undefined;
     const m = cout ? montantTexte(cout.montantCentimes) : null;
-    return retenue ? ['retenu', ...(m ? [`${m} ${cout!.devise ?? 'CHF'}`] : [])].join(' · ') : null;
+    return retenue ? [`retenu : ${retenue.nom}`, ...(m ? [`${m} ${cout!.devise ?? 'CHF'}`] : [])].join(' · ') : null;
   }
   const v = vueDe(c);
   const k = c.carnet;

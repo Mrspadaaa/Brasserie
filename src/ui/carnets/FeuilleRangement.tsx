@@ -41,6 +41,10 @@ export interface FeuilleRangementProps {
   onMode: (m: ModeFeuille) => void;
   /** C68-1 : le carnet existant que l'IA désigne pour cette phrase (le carnet neuf qu'elle a créé reste le sien jusqu'au « Rattacher »). */
   cible?: { id: string; titre: string; chemin: string | null };
+  /** C69-1 : aucun carnet neuf n'existe : la phrase attend son geste (Rattacher · Garder à part) ; `carnet` est le carnet existant que l'IA désigne. */
+  enAttente?: boolean;
+  /** « Garder à part » : crée le carnet (titre court) ; sans lui, le bouton ferme seulement (le carnet existe déjà). */
+  onGarder?: () => void;
   /** Le voile : la feuille se ferme, rien de plus (la tâche reste proposée). */
   onFermer?: () => void;
   /** OK : la feuille se ferme, le rangement reste, la tâche proposée est posée. */
@@ -57,7 +61,7 @@ export interface FeuilleRangementProps {
 export function FeuilleRangement(p: FeuilleRangementProps) {
   const { message: m, carnet: c } = p;
   const cm = m.carnetMessage;
-  const neuf = cm.effets.some(e => e.cible === 'carnet' && e.carnetId === c.id);
+  const neuf = !!p.enAttente || cm.effets.some(e => e.cible === 'carnet' && e.carnetId === c.id);
   const photoId = cm.effets.find(e => e.cible === 'photo' && e.carnetId === c.id)?.id;
   const photo = (photoId ? c.carnet.photos.find(x => x.id === photoId) : undefined)?.jpeg;
   const texte = cm.texte.trim() && cm.texte.trim() !== 'photo' ? cm.texte.trim() : '';
@@ -98,8 +102,8 @@ export function FeuilleRangement(p: FeuilleRangementProps) {
           {p.mode === 'carte' && (
             <div className="cnl-boutons">
               {cible && <button type="button" className="cnl-btn cnl-btn-ok" onClick={() => p.onRattacher(cible.id)}><Check size={18} aria-hidden /> Rattacher</button>}
-              <button type="button" className={cible ? 'cnl-btn' : 'cnl-btn cnl-btn-ok'} onClick={p.onOK}>{cible ? 'Garder à part' : <><Check size={18} aria-hidden /> OK</>}</button>
-              <button type="button" className="cnl-btn" onClick={() => p.onMode('changer')}>Changer</button>
+              <button type="button" className={cible ? 'cnl-btn' : 'cnl-btn cnl-btn-ok'} onClick={cible ? (p.onGarder ?? p.onOK) : p.onOK}>{cible ? 'Garder à part' : <><Check size={18} aria-hidden /> OK</>}</button>
+              {!p.enAttente && <button type="button" className="cnl-btn" onClick={() => p.onMode('changer')}>Changer</button>}
               <button type="button" className="cnl-btn" onClick={() => p.onMode('rattacher')}>Rattacher à…</button>
             </div>
           )}

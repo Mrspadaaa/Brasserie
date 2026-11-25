@@ -169,17 +169,21 @@ export function ListeArbre(p: ListeArbreProps) {
           <div className="cnl-dn"><PictoDomaine d={n.domaine} taille={18} /><span className="cnl-dn-nom">{DOMAINE_LIBELLE[n.domaine]}</span><span className="cn-mono cnl-dn-n">{n.n}</span></div>
           {n.ouverts.map(c => <LigneProbleme key={c.id} c={c} messages={p.messages} maintenant={p.maintenant} enCours={p.rangeEnCours === c.id} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} />)}
           {n.groupes.map(g => {
-            if (g.chemin === null) return g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />);
-            const cle = `${n.domaine}/${g.chemin}`;
+            /* C69-10 : les carnets sans catégorie (Houblons citra, Chambre froide, Frigo + congel…) se replient eux aussi, sous « Autres » : jamais dépliés à plat sous le domaine */
+            const nom = g.chemin ?? 'Autres';
+            const cle = `${n.domaine}/${g.chemin ?? ' autres'}`;
             /* une recherche déplie : ce qu'elle a trouvé se lit sans toucher */
             const ouvert = ouverts.has(cle) || !!mot || p.filtre !== null;
             return (
               <React.Fragment key={cle}>
                 <button type="button" className="cnl-sd" aria-expanded={ouvert} onClick={() => basculer(cle)}>
-                  <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{g.chemin}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
-                  {!ouvert && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
+                  <span aria-hidden className="cnl-fleche">{ouvert ? '▾' : '▸'}</span><b>{nom}</b><span className="cn-mono cnl-sd-n">{g.carnets.length}</span>
+                  {!ouvert && g.chemin !== null && <span className="cnl-sdres">{resumeReplie(g, p.maintenant)}</span>}
                 </button>
-                {ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
+                {g.chemin === null
+                  /* « Autres » reste dans le DOM, caché tant qu'il est replié (jamais à plat sous le domaine) */
+                  ? <div hidden={!ouvert}>{g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}</div>
+                  : ouvert && g.carnets.map(c => <LigneAutre key={c.id} c={c} maintenant={p.maintenant} messages={p.messages} trouve={trouves.get(c.id)} onOuvrir={p.onOuvrir} avecEtat={p.filtre !== null} />)}
               </React.Fragment>
             );
           })}

@@ -139,7 +139,7 @@ describe('opérations : chaque intention a son inverse (A2)', () => {
     expect(carnet(b, ID_VENTILATION).carnet.notes.at(-1)).toMatchObject({ id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, messageId: 'ZZ-MSG-V1' });
   });
 
-  it('modifier une note (modifieeLe), un critère ; supprimer une note : le message reste', () => {
+  it('modifier une note (modifieeLe), un critère ; supprimer une note : sa bulle part (C69-2)', () => {
     const a = allerRetour(F, modifierNote(F, { carnetId: ID_VENTILATION, noteId: 'ZZ-V-N1', texte: 'avis du ferblantier lundi', le: LE }));
     expect(carnet(a, ID_VENTILATION).carnet.notes[0]).toMatchObject({ texte: 'avis du ferblantier lundi', modifieeLe: LE });
     expect(modifierNote(F, { carnetId: ID_VENTILATION, noteId: 'ZZ-V-N1', texte: ' ', le: LE }).ok).toBe(false);
@@ -148,7 +148,8 @@ describe('opérations : chaque intention a son inverse (A2)', () => {
     const b = allerRetour(F, s);
     expect(ok(s).avis).toBe('Note supprimée');
     expect(carnet(b, ID_VENTILATION).carnet.notes.find(n => n.id === 'ZZ-V-N1')).toBeUndefined();
-    expect(b.find(i => i.id === 'ZZ-MSG-V2')).toBeDefined();
+    /* C69-2 : Supprimer une note emporte sa bulle (le message rangé n'a plus d'effet : il est retiré) ; l'inverse le rend */
+    expect(b.find(i => i.id === 'ZZ-MSG-V2')).toBeUndefined();
     allerRetour(F, supprimerLigne(F, { carnetId: ID_VENTILATION, cible: 'facon', id: 'ZZ-V-F2' }));
   });
 

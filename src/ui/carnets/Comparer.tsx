@@ -84,7 +84,11 @@ export function colonnesComparer(t: Tableau): ColonneVue[] {
 function nombre(v?: ValeurV): number | null {
   if (!v) return null;
   if (typeof v.valeur === 'boolean') return v.valeur ? 1 : 0;
-  return nombreDe(v.valeur);
+  const n = nombreDe(v.valeur);
+  if (n !== null || typeof v.valeur !== 'string') return n;
+  /* C69-11 : une PLAGE (« 10 % - 15 % », « 10-15 ») se compare par son milieu : l'alpha d'un vendeur qui donne une fourchette est coché ou non comme les autres */
+  const plage = /^\s*(\d+(?:[.,]\d+)?)\s*[%a-zA-Z°]*\s*(?:-|–|à)\s*(\d+(?:[.,]\d+)?)\s*[%a-zA-Z°]*\s*$/.exec(v.valeur);
+  return plage ? (Number(plage[1].replace(',', '.')) + Number(plage[2].replace(',', '.'))) / 2 : null;
 }
 /** Texte d'une cellule ; `null` si inconnue (cellule vide, jamais 0). */
 export function texteCellule(l: LigneT, c: ColonneVue): string | null {
@@ -500,7 +504,7 @@ export function Comparer(p: ComparerProps) {
     ? [...lignesLues.slice(0, iPrix + 1), { cle: '__vendu', nom: 'vendu par', sens: 'texte' as Sens, critere: false } as ColonneVue, ...lignesLues.slice(iPrix + 1)]
     : lignesLues;
   const texteDe = (l: LigneT, c: ColonneVue): string | null => (c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : texteCellule(l, c));
-  const sansValeurLue = t ? cols.filter(c => !lignesLues.includes(c) && !(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom)))) : [];
+  const sansValeurLue = t ? cols.filter(c => c.cle !== '__vendeur' && !lignesLues.includes(c) && !(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom)))) : [];
   /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
   const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
   const colEntete = lignesVues.find(c => c.critere) ?? lignesVues.find(c => /volume/i.test(c.nom));

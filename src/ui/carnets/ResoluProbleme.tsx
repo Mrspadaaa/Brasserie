@@ -12,7 +12,8 @@ import { avantApresDe, categorieDe, dureeDe, jourLocal, optionRetenue, suiviDe }
 import type { LienV, RappelsSuivi } from './carnetOuvertTypes';
 import { VignetteObjet } from './pictos';
 import { QuestionPourquoi } from './QuestionPourquoi';
-import { cheminAffiche, deNom, destinationPlan, libelleJour, optionsFermees, resolusDe, texteDuree, texteFermeture } from './filRegles';
+import { cheminAffiche, deNom, destinationPlan, infoOption, libelleJour, optionsFermees, resolusDe, texteDuree, texteFermeture } from './filRegles';
+import { montant } from './EtatIA';
 
 export interface PropsResolu {
   c: CarnetDoc;
@@ -58,6 +59,12 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
   const fermees = optionsFermees(c, annee);
   const retenue = optionRetenue(c);
   const { tuiles } = resolusDe(carnets, messages, annee);
+  /* C69-5 : une option pas prise garde son prix (l'article lié, ou le coût écrit pour elle) */
+  const prixFermee = (o: { id: string }): string | null => {
+    if (o.id.startsWith('art:')) { const a = c.carnet.articles.find(x => x.id === o.id.slice(4)); const m = a ? montant(a.prixCentimes) : null; return m === null ? null : `${m} ${a?.devise ?? 'CHF'}`; }
+    const f = c.carnet.facons.find(x => x.id === o.id);
+    return f ? infoOption(c, mes, f).prix : null;
+  };
   /* C67-5 (maquette v01-resolu) : un problème résolu autrement que par un achat (réparation, geste, texte) est lui-même un réalisé : « ira dans Réalisés ».
      Fermé par un achat, c'est le plan de l'achat qui y va : sans plan lié, rien ne se dit (D451, carnetsProblemeEcran). Un plan déjà réalisé le dit au présent. */
   const plan = destinationPlan(liens) ?? (resolu?.par?.sorte === 'achat' ? null : 'ira');
@@ -89,13 +96,14 @@ export function ResoluProbleme({ c, carnets, messages, rappels, liens, annee, on
       <div className="cnp-tampon">
         <div className="cnp-tampon-tete"><span className="cnp-coche" aria-hidden><Check size={22} /></span><span className="cnp-tampon-titre">Résolu{duree ? <> <span className="cnp-tampon-duree">{duree}</span></> : null}</span></div>
         {fermeture && <p className="cnp-fermeture">{fermeture}</p>}
-        {retenue && resolu?.par?.sorte !== 'achat' && <p className="cnp-fermeture" data-retenue>Retenu : {retenue.nom}</p>}
+        {retenue && resolu?.par?.sorte !== 'achat' && <p className="cnp-fermeture" data-retenue>Retenu : {retenue.nom}{infoOption(c, mes, retenue).prix ? ` · ${infoOption(c, mes, retenue).prix}` : ''}</p>}
         {fermees.length > 0 && (
           <ul className="cnp-fermees" aria-label="Options fermées">
             {fermees.map(o => (
               <li key={o.id}>
-                <VignetteObjet photo={c.carnet.articles.find(a => a.faconId === o.id && a.photo)?.photo} mots={[o.nom, c.title]} classe="cnp-opt-vignette" taille={28} />
+                <VignetteObjet photo={c.carnet.articles.find(a => a.faconId === o.id && a.photo)?.photo} mots={[o.nom]} classe="cnp-opt-vignette" taille={28} />
                 <span className="cn-sp">{o.nom}</span><span className="cnp-jeton" data-j="ecart">{o.texte}</span>
+                {prixFermee(o) && <span className="cnp-opt-prix">{prixFermee(o)}</span>}
                 {o.raison && <span className="cn-mut cnp-raison">« {o.raison} »</span>}
               </li>
             ))}

@@ -49,7 +49,9 @@ export function tachesDe(c: CarnetDoc): TacheVue[] {
   const siennes: TacheVue[] = (c.carnet.taches ?? []).map(t => ({ ...t, carnetId: c.id, carnetTitre: c.title }));
   const planning: TacheVue[] = [];
   /* C68-9 : « Budget 200 CHF » dans les notes du projet : son coût, dit « ≈ » (un budget est une limite, pas un prix ferme) ; absent sans budget écrit */
-  const budget = c.carnet.notes.filter(n => /\bbudget\b/i.test(n.texte)).map(n => prixDe(n.texte)).find(x => x && x.centimes > 0);
+  /* C69-8 : le budget s'écrit aussi en critère (« Budget 400 CHF », Ce qui compte), comme la liste des carnets le lit */
+  const budget = [...c.carnet.notes.filter(n => /\bbudget\b/i.test(n.texte)).map(n => n.texte), ...c.carnet.criteres.filter(k => /^\s*budget\b/i.test(k.texte)).map(k => k.texte)]
+    .map(t => prixDe(t)).find(x => x && x.centimes > 0);
   for (const n of c.carnet.notes) {
     const p = notePlanningDe(n.texte);
     if (!p) continue;

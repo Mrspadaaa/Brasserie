@@ -281,6 +281,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   /* R54 : avec une quantité cochée (1 kg), la place « Prix » du sachet de l'article dirait 6,70 sous le 62,20 du haut : elle se tait, le classement au kilo se lit dans Comparer */
   const valeursToutes: (ValeurPlaceeV & { place?: Place })[] = p.valeurs.length ? p.valeurs : calc.valeurs;
   const valeurs = p.quantite ? valeursToutes.filter(v => v.place?.nom !== 'prix') : valeursToutes;
+  /* C69-13 : une valeur dit sa place (« 1er sur 2 ») ou n'en dit rien ; la colonne n'existe que si au moins une la dit */
+  const aUnePlace = valeurs.some(v => ((v.place ? placeTexte(v.place) : v.rang ? rangTexte(v.rang) : '') ?? '').trim() !== '');
   const propose = p.pourquoiPropose ?? calc.pourquoi ?? '';
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
@@ -313,8 +315,9 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         </div>
         {/* g05-9 : « Ses autres valeurs · place parmi les n » ; g05-11 : sous chaque valeur chiffrée, sa réglette (« 1er sur 4 ») */}
         {valeurs.length > 0 && (
-          <table className="cn-place">
-            <thead><tr><th scope="col" colSpan={2}>Ses autres valeurs</th><th scope="col" className="cn-mut">place parmi les {p.sur}</th></tr></thead>
+          <table className="cn-place" data-sans-place={aUnePlace ? undefined : ''}>
+            {/* C69-13 : la colonne « place parmi les n » n'existe que si une valeur dit sa place ; sinon, ni son en-tête ni une cellule creuse */}
+            <thead><tr><th scope="col" colSpan={aUnePlace ? 2 : 1}>Ses autres valeurs</th>{aUnePlace && <th scope="col" className="cn-mut">place parmi les {p.sur}</th>}</tr></thead>
             <tbody>
               {valeurs.map(v => {
                 const pl = v.place;
@@ -322,8 +325,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={chiffree ? 'cn-place-avec-reglette' : undefined}><th scope="row">{v.nom}</th><td className={`cn-mono${v.texte.length > 14 ? ' cn-place-long' : ''}`}>{v.texte}</td><td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td></tr>
-                    {chiffree && <tr className="cn-place-reglette"><td colSpan={3}><Reglette place={pl!} sansTete /></td></tr>}
+                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={`cn-mono${v.texte.length > 14 ? ' cn-place-long' : ''}`}>{v.texte}</td>{aUnePlace && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
+                    {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete /></td></tr>}
                   </React.Fragment>
                 );
               })}

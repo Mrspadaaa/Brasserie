@@ -33,8 +33,18 @@ export interface PropsFil {
   fait?: boolean;
 }
 
-const jetonsDe = (m: MessageDoc, carnetId: string): { e: Etiquette; i: number }[] =>
-  (m.carnetMessage.etiquettes ?? []).map((e, i) => ({ e, i })).filter(x => x.e.carnetId === carnetId);
+/** C69-4 : un jeton par valeur : deux étiquettes de même sorte et de même montant (l'analyse locale, avec son option, et l'IA, sans) n'en font qu'un ; celle qui vise l'option est gardée. */
+const jetonsDe = (m: MessageDoc, carnetId: string): { e: Etiquette; i: number }[] => {
+  const tous = (m.carnetMessage.etiquettes ?? []).map((e, i) => ({ e, i })).filter(x => x.e.carnetId === carnetId);
+  const cle = (e: Etiquette) => (e.montantCentimes !== undefined ? `${e.sorte}|${e.montantCentimes}|${e.devise ?? 'CHF'}` : null);
+  return tous.filter(x => {
+    const k = cle(x.e);
+    if (!k) return true;
+    const jumeaux = tous.filter(y => cle(y.e) === k);
+    const garde = jumeaux.find(y => y.e.optionId) ?? jumeaux[0];
+    return garde === x;
+  });
+};
 
 /** Un jeton. Posé par l'IA, il s'annule d'un toucher : le toucher dit « Retirer » (un second toucher), rien ne se retire d'un effleurement. */
 function Jeton({ classe, texte, retirer }: { classe: string; texte: string; retirer?: () => void }) {

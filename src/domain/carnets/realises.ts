@@ -10,7 +10,8 @@ import { etatDe, optionRetenue, suiviDe } from './suivi';
 export interface ResoluRealise { id: string; titre: string; le: string | null; retenue: string | null }
 
 export function resolusRealises(items: readonly CreativeItem[]): ResoluRealise[] {
-  return lireCarnets(items)
+  /* C69-7 : les anciens résolus sont des carnets ARCHIVÉS (état « résolu » déduit) : « Réalisés » compte les mêmes que « résolus 2026 » */
+  return lireCarnets(items, { archives: true })
     .filter(c => etatDe(c) === 'resolu')
     .filter(c => { const par = suiviDe(c).resolu?.par; return !(par?.sorte === 'achat' && par.planId); })
     .map(c => ({ id: c.id, titre: c.title, le: suiviDe(c).resolu?.le ?? null, retenue: optionRetenue(c)?.nom ?? null }))

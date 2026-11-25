@@ -10,6 +10,7 @@ import { ecartJours } from '../../domain/calendrier/dates';
 import { pluriel } from '../../domain/carnets/comptes';
 import { DOMAINE_LIBELLE, domaineDe, plier } from '../../domain/carnets/domaines';
 import type { EntreeFil, JourFil, Replie } from '../../domain/carnets/fil';
+import { dispoDe } from '../../domain/carnets/modele';
 import type { CarnetDoc, Etiquette, EtatOption, Facon, MessageDoc, SorteEtiquette } from '../../domain/carnets/modele';
 import { avantApresDe, categorieDe, dureeDe, etatOption, foisEcartee, jourLocal, optionRetenue, pourquoiDe, suiviDe, type Citation } from '../../domain/carnets/suivi';
 import { dateCourte, montant } from './EtatIA';
@@ -129,6 +130,8 @@ export interface ResumeJetons {
   total: { centimes: number; n: number } | null;
   /** C67-4 : des montants de plusieurs options ALTERNATIVES (l'une OU l'autre) ne s'additionnent pas : la fourchette des options, du plus bas au plus haut ; `null` sinon. */
   fourchette?: { min: number; max: number; n: number } | null;
+  /** C69-3 : le coût de l'option RETENUE (le sien seul) ; il reste en tête après « Retenir », et au résolu. */
+  retenu?: { centimes: number } | null;
 }
 
 /** Ce que le fil a compté : « cause » est un trouvé ; un montant dans une autre devise n'entre pas dans le total (rien n'est converti en silence). */
@@ -155,6 +158,8 @@ export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, 
   }
   if (!trouve && !pas && !devis.length && !montants.length) return null;
   const somme = (l: readonly number[]) => l.reduce((s, x) => s + x, 0);
+  const retenuMontants = retenueId ? parOption.get(retenueId) : undefined;
+  const retenu = retenuMontants?.length ? { centimes: somme(retenuMontants) } : null;
   const optionsChiffrees = [...parOption.keys()].filter(k => k !== '');
   const sansOption = parOption.get('') ?? [];
   let total: ResumeJetons['total'] = montants.length >= 2 ? { centimes: somme(montants), n: montants.length } : null;
@@ -176,8 +181,22 @@ export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, 
   return {
     trouve, pasTrouve: pas,
     devis: devis.length ? { n: devis.length, ...(unSeul ? { centimes: devis[0].montantCentimes } : {}) } : null,
-    total, fourchette
+    total, fourchette, retenu
   };
+}
+
+/**
+ * C69-5 : ce que dit la tuile d'une option : son prix (le coût écrit pour elle dans le fil, sinon le prix de son article lié) et sa disponibilité quand elle
+ * est mauvaise (« plus en stock » ; « en stock » ne se redit pas). L'inconnu ne s'écrit pas (jamais 0).
+ */
+export function infoOption(c: CarnetDoc, messages: readonly MessageDoc[], f: Facon): { prix: string | null; dispo: string | null } {
+  const ecrit = [...messages].reverse().flatMap(m => [...(m.carnetMessage.etiquettes ?? [])].reverse())
+    .find(e => e.carnetId === c.id && e.optionId === f.id && (e.sorte === 'cout' || e.sorte === 'devis') && e.montantCentimes !== undefined);
+  const art = c.carnet.articles.find(a => a.faconId === f.id && a.prixCentimes !== undefined) ?? c.carnet.articles.find(a => a.faconId === f.id);
+  const m = ecrit ? montant(ecrit.montantCentimes) : art ? montant(art.prixCentimes) : null;
+  const devise = ecrit ? ecrit.devise ?? 'CHF' : art?.devise ?? 'CHF';
+  const d = art ? dispoDe(art)?.trim() : undefined;
+  return { prix: m === null ? null : `${m} ${devise}`, dispo: d && !/^en stock$/i.test(d) ? d : null };
 }
 
 /* ---------- options : noms courts, états, raisons ---------- */

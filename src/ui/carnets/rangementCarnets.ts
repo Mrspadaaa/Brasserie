@@ -5,6 +5,9 @@ import type { EcritureCarnet } from '../../domain/carnets/operations';
 import { appliquerEcritures, Brouillon, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, renommer, type Destination, type Etat as EtatDocs, type LigneARanger, type MessageARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, etiquettesLocales, normaliser, quantitesDe, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
+import { tacheDatee } from '../../domain/carnets/tacheDatee';
+import { titreCourt } from '../../domain/carnets/titreCourt';
+import { ajouterTache } from '../../domain/carnets/taches';
 import { pourIASuivi, suiviDesLignes, type LigneCarnet } from '../../domain/carnets/ia';
 import { plier } from '../../domain/carnets/domaines';
 import { poserCategorie } from '../../domain/carnets/arbre';
@@ -238,6 +241,12 @@ export function creerRangementCarnets(x: RangementV) {
       /* P18 (G11) : « Garder à part » touché pendant la frappe : le message le retient, la fusion ne sera pas proposée ni faite */
       /* BL-2 (GH-4) : l'état juste après l'écriture ; le magasin Firestore ne la montre qu'à son instantané suivant */
       let vu = appliquerEcritures(etat, fait.ecritures);
+      /* C69-9 : sans IA (éteinte, hors ligne), « … avant le 12 décembre » écrite dans un carnet est une tâche datée de « À faire » : l'IA, quand elle répond, la propose (OK · Non) */
+      const echeance = !iaPrevue && ici && !force ? tacheDatee(txt, maintenant()) : null;
+      if (echeance && ici) {
+        const t = appliquer(ajouterTache(vu, { carnetId: ici, texte: echeance.texte, le, echeance: echeance.echeance, precision: 'semaine', origine: 'locale', messageId: message.id }));
+        if (t) { fait.inverse.unshift(...t.inverse); vu = appliquerEcritures(vu, t.ecritures); }
+      }
       if (gardeAPartRef.current) {
         gardeAPartRef.current = false;
         const g = appliquer(garderAPart(vu, { messageId: message.id }));
@@ -284,6 +293,7 @@ export function creerRangementCarnets(x: RangementV) {
       lignes = prixEcrits(lignes, analyserTexte(txt));
       let aRanger: LigneARanger[];
       let propose: { carnetId: string; titre: string } | undefined;
+      let suggere: { carnetId: string; citation: string } | undefined;
       /*
        * Test en ligne 2 (18.11) : quand l'IA a répondu, son rangement fait foi : le carnet (connu, ou neuf qu'elle nomme), la sorte et le
        * critère. L'annonce locale n'a été qu'un aperçu en attendant ; elle ne sert plus que quand l'IA ne dit pas où (aucun carnet rendu).
@@ -307,6 +317,14 @@ export function creerRangementCarnets(x: RangementV) {
            pendant l'attente, resté vide, disparaît. */
         const domIA = lignes.find(l => l.domaine && !connu(l.carnetId))?.domaine;
         const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre, ...(domIA ? { domaine: domIA } : {}) } };
+        /* C69-1 (B) : l'IA désigne UN carnet existant pour cette phrase (aucune autre ligne ne reste ici) : le carnet « idée » que l'annonce avait posé
+           disparaît (vide, il est retiré), rien n'est écrit chez le voisin : la carte propose « Rattacher » (un geste), jamais les deux à la fois. */
+        const reste = lignes.filter(l => l.sorte !== 'idee');
+        const sugId = reste[0]?.carnetSuggere;
+        if (sugId && connu(sugId) && reste.every(l => l.carnetSuggere === sugId && !l.carnetId && l.sorte !== 'article' && !l.url)) {
+          suggere = { carnetId: sugId, citation: reste[0].citation?.trim() || txt };
+          aRanger = [];
+        } else {
         const ailleurs = (l: LigneCarnet) => l.sorte !== 'idee' && connu(l.carnetId) && l.carnetId !== an.carnetId;
         const ici = lignes.filter(l => !ailleurs(l));
         for (const l of ici) noter(l, dest);
@@ -325,6 +343,7 @@ export function creerRangementCarnets(x: RangementV) {
           ...lignes.filter(ailleurs).map(l => depuisIA(l, noter(l, { carnetId: l.carnetId! })))];
         const titreIA = lignes.find(l => l.sorte === 'idee')?.titre ?? lignes.find(l => l.carnetNeuf)?.carnetNeuf ?? lignes.find(l => l.titrePropose)?.titrePropose;
         if (aRanger.some(l => l.sorte === 'idee') && titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };
+        }
       } else if (an?.sorte === 'vrac') {
         /* Test en ligne 2 (bloquants 1 et 2) : chaque ligne va où l'IA la range (un carnet connu, ou le carnet neuf qu'elle nomme, une idée
            comprise : « Pompe » n'est plus annoncée puis perdue), avec la sorte qu'elle lui donne. Sans carnet rendu : la ligne annoncée. */
@@ -391,12 +410,19 @@ export function creerRangementCarnets(x: RangementV) {
         const p2 = lignes.find(l => l.titrePropose && l.carnetId);
         if (p2) propose = { carnetId: p2.carnetId!, titre: p2.titrePropose! };
       }
-      const r = remplacerRangement(etat, { messageId, rangement: mode2, lignes: aRanger, ...(propose ? { titrePropose: propose } : {}) });
+      const r = remplacerRangement(etat, { messageId, rangement: mode2, lignes: aRanger, ...(propose ? { titrePropose: propose } : {}), ...(suggere ? { aRattacher: suggere } : {}) });
       const fait = appliquer(r);
       const enAttente = attente.current?.messageId === messageId ? attente.current : null;
       const local = enAttente?.retour ?? null;
       attente.current = null;
       if (!fait) { if (local && !enAttente?.montre) setRetour(local); return; }
+      /* C69-1 : le carnet de l'annonce est parti avec rien d'écrit nulle part : la carte « Rattacher à … ? » se pose (la feuille de la liste), le « Carnet créé » local s'efface */
+      if (suggere && !lireMessages(appliquerEcritures(etat, fait.ecritures)).find(m => m.id === messageId)?.carnetMessage.effets.length) {
+        if (retourRef.current?.messageId === messageId) setRetour(null);
+        setEnTete(undefined); setVientDEtreCree(null);
+        if (!depuis) setVue({ sorte: 'carnet', id: suggere.carnetId });
+        return;
+      }
       /* P18 (G11) : la note qui répète une note connue y est fusionnée (« elles seront fusionnées »), sauf « Garder à part » */
       /* n° 10 : une phrase déjà gardée à part ne se fusionne pas en douce à son retour (la proposition n'est plus montrée, cf. `cadre`) */
       /* BL-2 (GH-4, BL-4) : l'état juste après l'écriture de l'IA ; relu dans le magasin Firestore, c'était encore l'écriture locale
@@ -425,6 +451,10 @@ export function creerRangementCarnets(x: RangementV) {
         /* C68-1 : le titre court de l'IA vaut pour tout carnet neuf qu'elle genre (problème, achat, idée) ; la marque des données de test (L05) suit */
         const marque = prefixeDe(txt) && !/^\s*ZZ TEST/i.test(propose.titre) ? prefixeDe(txt) : '';
         const rn = appliquer(renommer(vu, { carnetId: propose.carnetId, titre: `${marque}${propose.titre}`, messageId }));
+        if (rn) { fait.inverse.unshift(...rn.inverse); vu = appliquerEcritures(vu, rn.ecritures); }
+      } else if (an?.sorte === 'cree' && an.titre.length > TITRE_MAX && lignes.some(l => l.genreCarnet) && titreCourt(an.titre) !== an.titre && lireCarnets(vu).some(c => c.id === an.carnetId)) {
+        /* C69-1 (toute phrase) : l'IA genre le carnet neuf mais ne propose pas de titre court : la phrase de plus de 60 caractères n'est jamais le titre (sa première proposition, la phrase reste dans le carnet) */
+        const rn = appliquer(renommer(vu, { carnetId: an.carnetId, titre: titreCourt(an.titre), messageId }));
         if (rn) { fait.inverse.unshift(...rn.inverse); vu = appliquerEcritures(vu, rn.ecritures); }
       }
       const suiviIA = poserSuiviIA(vu, { messageId, lignes, depuis, le: maintenant().toISOString(), cibleDe: l => vers.get(l) ?? l.carnetId });

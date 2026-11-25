@@ -36,7 +36,8 @@ import { ecranCarnet } from './ecransCarnet';
 import { deplacerLesLignesDuMessage, type FiltreOeil, type OngletListe } from './listeRegles';
 import { FeuilleRangement, cheminDit, type ModeFeuille } from './FeuilleRangement';
 import { accepterPropositionSuivi } from '../../domain/carnets/fil';
-import { poserDomaine } from '../../domain/carnets/operations';
+import { garderMessageAPart, poserDomaine, rattacherMessage } from '../../domain/carnets/operations';
+import { titreCourt } from '../../domain/carnets/titreCourt';
 import { poserGenre } from '../../domain/carnets/suivi';
 import { reduirePhoto } from './photo';
 import { propositionARanger } from './afaireRegles';
@@ -422,25 +423,32 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (!feuilleRang || vue.sorte !== 'liste') return null;
     const m = messages.find(x => x.id === feuilleRang.messageId);
     const effets = m?.carnetMessage.effets ?? [];
-    const cid = (effets.find(e => e.cible === 'carnet') ?? effets.find(e => !e.carnetSupprime))?.carnetId;
+    /* C69-1 : sans carnet neuf (l'IA désigne un carnet existant), la carte nomme ce carnet ; rien n'est écrit avant le geste */
+    const enAttente = !effets.length && !!m?.carnetMessage.aRattacher;
+    const cid = enAttente ? m!.carnetMessage.aRattacher!.carnetId : (effets.find(e => e.cible === 'carnet') ?? effets.find(e => !e.carnetSupprime))?.carnetId;
     const c = cid ? tous.find(x => x.id === cid) : undefined;
     if (!m || !c) return null;
-    const neuf = effets.some(e => e.cible === 'carnet' && e.carnetId === c.id);
+    const neuf = enAttente || effets.some(e => e.cible === 'carnet' && e.carnetId === c.id);
     const fermer = () => setFeuilleRang(null);
     /* C68-1 : le carnet existant que l'IA désigne (proposition « Rattacher à … ? » du carnet que la phrase vient de créer) */
     const propDeplace = neuf ? (m.carnetMessage.propositionsSuivi ?? []).find(x => x.sorte === 'deplacer' && x.carnetId === c.id && x.versCarnetId) : undefined;
-    const vise = propDeplace?.versCarnetId ? tous.find(x => x.id === propDeplace.versCarnetId) : undefined;
+    const vise = enAttente ? c : propDeplace?.versCarnetId ? tous.find(x => x.id === propDeplace.versCarnetId) : undefined;
     const cible = vise ? { id: vise.id, titre: vise.title, chemin: cheminDit(vise) } : undefined;
     /* C68-12 : « OK » pose ce que la carte propose (la tâche), il n'attend pas dans le carnet */
     const poserLaTache = () => {
       const i = (m.carnetMessage.propositionsSuivi ?? []).findIndex(x => x.sorte === 'tache' && x.carnetId === c.id && x.texte);
       if (i >= 0) appliquer(accepterPropositionSuivi(magasin.lire(), { messageId: m.id, index: i, le: maintenant().toISOString() }));
     };
-    return <FeuilleRangement message={m} carnet={c} autres={autresPour(c.id, m.carnetMessage.texte)} mode={feuilleRang.mode} onMode={mo => setFeuilleRang({ messageId: m.id, mode: mo })} {...(cible ? { cible } : {})}
+    return <FeuilleRangement message={m} carnet={c} autres={autresPour(c.id, m.carnetMessage.texte)} mode={feuilleRang.mode} onMode={mo => setFeuilleRang({ messageId: m.id, mode: mo })} {...(cible ? { cible } : {})} enAttente={enAttente}
+      onGarder={enAttente ? () => { geste(garderMessageAPart(magasin.lire(), { messageId: m.id, id: nouvelIdCarnet('CARNET'), titre: titreCourt(m.carnetMessage.texte) })); fermer(); } : undefined}
       onOK={() => { poserLaTache(); fermer(); }} onFermer={fermer}
-      onAnnuler={() => { const r = retourRef.current; if (r && (!r.messageId || r.messageId === m.id)) annuler(r.inverse); setRetour(null); fermer(); }}
+      onAnnuler={() => {
+        /* en attente, rien n'a été écrit que le message lui-même : Annuler le retire (l'inverse le remet) */
+        if (enAttente) { appliquer({ ok: true, ecritures: [{ op: 'remove', id: m.id }], inverse: [{ op: 'put', doc: m as unknown as CreativeItem }], avis: 'Phrase retirée' }); setRetour(null); fermer(); return; }
+        const r = retourRef.current; if (r && (!r.messageId || r.messageId === m.id)) annuler(r.inverse); setRetour(null); fermer(); }}
       onRattacher={versId => {
-        if (neuf) rattacherA(c.id, versId);
+        if (enAttente) geste(rattacherMessage(magasin.lire(), { messageId: m.id, versId }));
+        else if (neuf) rattacherA(c.id, versId);
         else geste(deplacerLesLignesDuMessage(magasin.lire(), { messageId: m.id, depuis: c.id, vers: versId }));
         fermer();
       }}

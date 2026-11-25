@@ -199,6 +199,10 @@ button.cnp-opt { cursor: pointer; }
 .cnp-opt > :nth-child(1) { grid-area: v; }
 .cnp-opt-nom { grid-area: n; font-weight: 600; overflow-wrap: anywhere; line-height: 1.2; }
 .cnp-opt > .cnp-jeton { grid-area: j; justify-self: start; }
+/* C69-5 : l'état, le prix et la disponibilité de l'option sur une rangée sous son nom */
+.cnp-opt > .cnp-opt-info { grid-area: j; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; min-width: 0; }
+.cnp-opt-prix { font-family: var(--c-mono); font-weight: 600; font-size: 12px; white-space: nowrap; }
+.cnp-opt-dispo { font-size: 12px; line-height: 1.2; }
 .cnp-opt-vignette { width: 30px !important; height: 30px !important; border-radius: 6px !important; flex: none; }
 li[data-etat='retenue'] > .cnp-opt { border-color: var(--p-resolu-bord); background: var(--p-vous-bg); }
 li[data-ouverte] > .cnp-opt { outline: 2px solid var(--c-zone); outline-offset: 1px; }

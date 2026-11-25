@@ -366,7 +366,7 @@ function retirerElement(c: CarnetDoc, cible: CibleEffet, id: string): boolean {
  * Étape 6 du déroulé : les effets locaux d'un message sont remplacés par ceux de l'IA, en une seule écriture annulable. Un carnet que ce
  * message avait créé et qui ne garde rien d'autre est retiré ; s'il garde autre chose, il reste.
  */
-export function remplacerRangement(etat: Etat, args: { messageId: string; lignes: readonly LigneARanger[]; rangement: Rangement; titrePropose?: { carnetId: string; titre: string } }): Resultat {
+export function remplacerRangement(etat: Etat, args: { messageId: string; lignes: readonly LigneARanger[]; rangement: Rangement; titrePropose?: { carnetId: string; titre: string }; aRattacher?: Rattache }): Resultat {
   const m = lireMessage(etat.find(d => d.id === args.messageId));
   if (!m) return refus('Message introuvable.');
   const b = new Brouillon(etat);
@@ -392,10 +392,31 @@ export function remplacerRangement(etat: Etat, args: { messageId: string; lignes
   if (typeof r === 'string') return refus(r);
   b.ecrire({ ...m, carnetMessage: sansIndefinis({
     ...m.carnetMessage, rangement: args.rangement, effets: r.effets, titrePropose: args.titrePropose ? { ...args.titrePropose } : m.carnetMessage.titrePropose,
-    propositions: r.propositions.length ? r.propositions : undefined
+    propositions: r.propositions.length ? r.propositions : undefined,
+    aRattacher: args.aRattacher ? { ...args.aRattacher } : undefined
   }) });
   const nb = args.lignes.filter(l => l.sorte !== 'idee' && !(l.sorte === 'critere' && l.propose)).length;
   return b.resultat(avisRangement(Math.max(nb, 1), r.carnets.size, r.crees));
+}
+
+/**
+ * C69-1 : le geste « Rattacher » de la carte d'une phrase que l'IA voulait ranger dans un carnet existant (`aRattacher`) : la phrase y devient
+ * une note, rattachée à son message ; la proposition s'efface. Une seule écriture annulable (l'inverse remet le message tel qu'il était).
+ */
+export function rattacherMessage(etat: Etat, args: { messageId: string; versId: string }): Resultat {
+  const m = lireMessage(etat.find(d => d.id === args.messageId));
+  if (!m) return refus('Message introuvable.');
+  if (!lireCarnet(etat.find(d => d.id === args.versId))) return refus('Ce carnet n’existe plus.');
+  const r = remplacerRangement(etat, { messageId: m.id, rangement: m.carnetMessage.rangement, lignes: [{ carnetId: args.versId, sorte: 'note', texte: m.carnetMessage.texte, genre: 'note' }] });
+  if (!r.ok) return r;
+  return { ...r, avis: `Rattaché à ${lireCarnet(etat.find(d => d.id === args.versId))?.title ?? 'ce carnet'}` };
+}
+
+/** C69-1 : « Garder à part » : un carnet neuf, au titre COURT (jamais la phrase entière), ouvert par ce message ; la phrase reste sa `phrase`. */
+export function garderMessageAPart(etat: Etat, args: { messageId: string; id: string; titre: string }): Resultat {
+  const m = lireMessage(etat.find(d => d.id === args.messageId));
+  if (!m) return refus('Message introuvable.');
+  return remplacerRangement(etat, { messageId: m.id, rangement: m.carnetMessage.rangement, lignes: [{ carnetNeuf: { id: args.id, titre: args.titre }, sorte: 'idee' }] });
 }
 
 /**
@@ -530,13 +551,25 @@ export function modifierLigne(etat: Etat, args: { carnetId: string; cible: 'crit
 export const modifierNote = (etat: Etat, args: { carnetId: string; noteId: string; texte: string; le: string }): Resultat =>
   modifierLigne(etat, { carnetId: args.carnetId, cible: 'note', id: args.noteId, texte: args.texte, le: args.le });
 
-/** Supprimer une ligne du carnet (R22) ; Annuler dans la page (G32). Le message qui l'a rangée reste. */
+/**
+ * Supprimer une ligne du carnet (R22) ; Annuler dans la page (G32).
+ * C69-2 : une NOTE rangée par un message (mémo, phrase tapée) emporte sa bulle : l'effet du message vers la note part ; un message qui ne garde alors
+ * aucun effet est retiré du document (« Note supprimée » dit vrai, même rechargée, Firestore compris). L'inverse rend note et message.
+ */
 export function supprimerLigne(etat: Etat, args: { carnetId: string; cible: CibleLigne; id: string }): Resultat {
   const b = new Brouillon(etat);
   const c = b.carnet(args.carnetId);
   if (!c || !retirerElement(c, args.cible, args.id)) return refus('Élément introuvable.');
   if (args.cible === 'facon') for (const a of c.carnet.articles) if (a.faconId === args.id) delete a.faconId;
   poser(b, c);
+  if (args.cible === 'note') {
+    for (const m of b.messages()) {
+      const cm = m.carnetMessage;
+      if (!cm.effets.some(e => e.carnetId === args.carnetId && e.cible === 'note' && e.id === args.id)) continue;
+      const effets = cm.effets.filter(e => !(e.carnetId === args.carnetId && e.cible === 'note' && e.id === args.id));
+      if (effets.length) b.ecrire({ ...m, carnetMessage: sansIndefinis({ ...cm, effets }) }); else b.retirer(m.id);
+    }
+  }
   return b.resultat(args.cible === 'note' ? 'Note supprimée' : 'Supprimé');
 }
 
@@ -796,7 +829,8 @@ export function libelleAchat(c: Pick<CarnetDoc, 'title' | 'carnet'>): string {
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   const nom = a?.nom?.trim();
   if (!choix || !a || !nom) return c.title;
-  return [nom, a.vendeur?.trim(), choix.quantite?.libelle?.trim()].filter(Boolean).join(' · ');
+  /* C69-12 : une page lue sans nom de vendeur le dit par son adresse (« motlerhops.fr ») ; le vendeur n'est jamais omis */
+  return [nom, a.vendeur?.trim() || a.domaine?.trim(), choix.quantite?.libelle?.trim()].filter(Boolean).join(' · ');
 }
 
 /**

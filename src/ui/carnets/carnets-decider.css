@@ -121,6 +121,11 @@
 /* R65 (C67B-3) : une valeur de texte longue (« agrumes, pamplemousse, fruits tropicaux ») se replie ; en nowrap elle élargissait le tableau au-delà des 390 px (curseur hors cadre, valeurs coupées, défilement horizontal) */
 .cn-place td.cn-place-long { white-space: normal; overflow-wrap: anywhere; width: auto; min-width: 0; text-align: right; }
 .cn-place { table-layout: auto; max-width: 100%; }
+/* C69-13 : une valeur longue (arômes) passe SOUS son libellé, sur toute la largeur (jamais une colonne étroite à côté, un mot par ligne) */
+.cn-place tr.cn-place-ligne-longue { display: block; padding: 8px 0; border-top: 1px solid var(--c-line); }
+.cn-place tr.cn-place-ligne-longue > th, .cn-place tr.cn-place-ligne-longue > td { display: block; border-top: 0; padding: 0; width: auto; text-align: left; white-space: normal; }
+.cn-place tr.cn-place-ligne-longue > th { font-weight: 600; }
+.cn-place tr.cn-place-ligne-longue > td.cn-place-long { padding-top: 2px; }
 /* g01-8 : les têtes de colonne partent du haut (vignette, rang, nom), sans vide quand une pastille allonge une colonne. */
 .cn-comparer .cn-tableau-comparer thead th { vertical-align: top; }
 .cn-pourquoi-champ textarea { min-height: 72px; }

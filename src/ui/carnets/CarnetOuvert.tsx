@@ -57,6 +57,11 @@ export { colonnesCarnet, enteteCourt } from './TableauCarnet';
 
 /* ---------- le carnet ---------- */
 
+/** C69-3 : « Décidé » : la rangée ne garde que le coût de la retenue (200 CHF), plus de piste ni de somme ; avant, elle dit tout le diagnostic. */
+function coutEnTete<T extends { trouve: number; pasTrouve: number; devis: unknown; total: unknown; fourchette?: unknown; retenu?: unknown } | null>(r: T, decide: boolean): T {
+  return decide && r ? { ...r, trouve: 0, pasTrouve: 0, devis: null, total: null, fourchette: null } : r;
+}
+
 /** f13 tour 2 (n° 5) : la bande de l'en-tête du carnet tout juste créé (g5:v04-4) ; inactive, ses enfants seuls. */
 function Bande({ active, children }: { active: boolean; children: React.ReactNode }) {
   return active ? <div className="cn-bande">{children}</div> : <>{children}</>;
@@ -247,8 +252,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {!enteteGenre && ligneEtat}
       {/* D451 : un problème. Je cherche : les jetons du diagnostic sur une rangée ; les options en deux colonnes ; Décidé : « Fermer grâce à l'achat ? »
           si l'achat est dit, la question honnête si ses notes ne disent pas pourquoi ; Résolu : l'écran du résolu (avant / après, tampon, tuiles). */}
-      {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note') && <RangeeJetons resume={resumeJetons(messages, c.id, optionRetenue(doc)?.id, new Set(doc.carnet.facons.filter(f => etatOption(f) === 'ecartee').map(f => f.id)))} />}
-      {enteteGenre && !problemeResolu && <OptionsProbleme c={doc} onOption={rap?.onOption} />}
+      {enteteGenre && !problemeResolu && genre === 'probleme' && (etatSuivi === 'cherche' || etatSuivi === 'note' || etatSuivi === 'decide') && <RangeeJetons resume={coutEnTete(resumeJetons(messages, c.id, optionRetenue(doc)?.id, new Set(doc.carnet.facons.filter(f => etatOption(f) === 'ecartee').map(f => f.id))), etatSuivi === 'decide')} {...(etatSuivi === 'decide' ? { nom: 'Coût de la retenue' } : {})} />}
+      {enteteGenre && !problemeResolu && <OptionsProbleme c={doc} onOption={rap?.onOption} messages={messages} />}
       {achat && <CarteFermerParAchat option={achat.nom} onOui={() => rap?.onFermerParAchat?.(achat.id)} onAnnuler={() => setAchatEcarte(true)} />}
       {enteteGenre && !problemeResolu && genre === 'probleme' && etatSuivi === 'decide' && <QuestionPourquoi c={doc} messages={messages} onEcrire={rap?.onEcrire} />}
       {problemeResolu && (

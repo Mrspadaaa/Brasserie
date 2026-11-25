@@ -257,6 +257,11 @@ export interface DonneesMessage {
   etiquettes?: Etiquette[];
   /** D451 : « rattaché : « … » » de la carte « rangé pour toi ». */
   rattache?: Rattache;
+  /**
+   * C69-1 : une phrase tapée sur la liste dont l'IA désigne un carnet EXISTANT : rien n'est écrit (ni carnet neuf, ni note chez lui) tant que le brasseur n'a pas
+   * touché la carte (« Rattacher » · « Garder à part »). Le message garde seulement ce carnet et la citation de la ligne.
+   */
+  aRattacher?: Rattache;
 }
 
 export type StatutCarnet = 'idea' | 'research' | 'validated';
@@ -659,7 +664,7 @@ const RANGEMENTS: readonly Rangement[] = ['ia', 'locale', 'simulee', 'brut'];
 const CLES_EFFET = ['carnetId', 'cible', 'id', 'carnetSupprime', 'fusion', 'existant'];
 const CLES_TITRE_PROPOSE = ['carnetId', 'titre', 'applique'];
 const CLES_PROPOSITION = ['carnetId', 'texte', 'caracteristique', 'origine'];
-const CLES_MESSAGE = ['texte', 'le', 'depuis', 'rangement', 'effets', 'titrePropose', 'gardeAPart', 'propositions', 'propositionsSuivi', 'etiquettes', 'rattache'];
+const CLES_MESSAGE = ['texte', 'le', 'depuis', 'rangement', 'effets', 'titrePropose', 'gardeAPart', 'propositions', 'propositionsSuivi', 'etiquettes', 'rattache', 'aRattacher'];
 
 /** Un message du fil, normalisé ; `null` si ce n'en est pas un. Un `titrePropose` mal formé est ignoré (R46). */
 export function lireMessage(item: CreativeItem | null | undefined): MessageDoc | null {
@@ -689,7 +694,7 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
     ...sansIndefinis({
       texte: m.texte, le: m.le, depuis: m.depuis, rangement: RANGEMENTS.includes(m.rangement as Rangement) ? (m.rangement as Rangement) : 'brut', effets, titrePropose,
       gardeAPart: m.gardeAPart === true ? (true as const) : undefined, propositions: propositions.length ? propositions : undefined,
-      propositionsSuivi: propositionsSuivi.length ? propositionsSuivi : undefined, etiquettes: etiquettes.length ? etiquettes : undefined, rattache: lireRattache(m.rattache)
+      propositionsSuivi: propositionsSuivi.length ? propositionsSuivi : undefined, etiquettes: etiquettes.length ? etiquettes : undefined, rattache: lireRattache(m.rattache), aRattacher: lireRattache(m.aRattacher)
     })
   };
   return { ...item, type: 'carnet-message', carnetMessage };

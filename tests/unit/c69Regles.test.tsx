@@ -164,6 +164,8 @@ describe('R77 (C69-1, B) : la phrase « vapeur » — l\'IA désigne un carnet e
     expect(notesAvantGeste).toBe(s.notesAvant('CARNET-ZZ-7'));
   });
   it('« Rattacher » (le geste) : la phrase va dans « trop de vapeur au brassage », et aucun carnet neuf ne reste', async () => {
+    /* c69-fix : l'écran du beforeAll est démonté par le cleanup d'afterEach après le premier test ; le geste se joue sur un écran remonté */
+    const s = await taperLaPhrase(R1);
     fireEvent.click(boutonTexte(/^Rattacher$/, s.feuille ?? document)!);
     await attendre(250);
     expect(s.neufs().map(c => c.title), 'aucun carnet à titre-phrase après le geste').toEqual([]);
