@@ -1,6 +1,6 @@
 OK partiel — bord au bord ×4 112→8 ms, ×6 124→8 ; relâcher ×6 353→158 ms (cible 150 frôlée)
 
-Ligne : CAL images ×4 112→8 ms, ×6 124→8 ; relâcher 158 (×6, avant 353 ; ×4 avant 270) <hash au commit>
+Ligne : CAL images ×4 112→8 ms, ×6 124→8 ; relâcher 158 (×6, avant 353 ; ×4 avant 270) d61825680 (tests.log est ignoré par Git : reste dans le dossier, hors commit)
 
 ## Mesures (scripts/mesure-calendrier.mjs, build minifié de la fixture, 390×844 tactile, mon onglet du Chrome 9222)
 | mesure (médiane des essais) | avant ×4 | après ×4 | avant ×6 | après ×6 |
