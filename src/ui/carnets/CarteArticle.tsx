@@ -93,6 +93,15 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
   });
 }
 
+/**
+ * C72-4 : la carte de l'article CHOISI dit la quantité choisie (« 1 kg ») : la quantité du sachet lu sur la page (« Poids net 50 g ») n'y revient pas, deux quantités
+ * sur une carte ne se lisent pas. Seules les valeurs qui disent un contenu (poids net, contenance, conditionnement, quantité) tombent ; les autres restent.
+ */
+const QUANTITE_DU_SACHET = /^(?:poids(?:\s+net)?|contenance|contenu|conditionnement|quantit[eé]|format|volume\s+net)\b/i;
+function sansSachet(valeurs: Record<string, ValeurV>, choisie: boolean): Record<string, ValeurV> {
+  return choisie ? Object.fromEntries(Object.entries(valeurs).filter(([nom]) => !QUANTITE_DU_SACHET.test(nom.trim()))) : valeurs;
+}
+
 /** T30-8 : combien de caractéristiques la carte rangée montre au plus (la fiche montre le reste). */
 export const VALEURS_VUES_MAX = 3;
 
@@ -177,7 +186,7 @@ export function CarteArticle(p: CarteArticleProps) {
     /* sans `luSurPage` ni `verdict` du geste, ils se lisent sur l'article (critique 5, n° 6 : la carte ne maigrit jamais) */
     const verdict = p.verdict ?? verdictDe(a, p.critere) ?? undefined;
     const sujet = sujetDuVerdict(verdict);
-    const valeurs = valeursLues(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, sujet);
+    const valeurs = valeursLues(sansSachet(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, !!p.choisie), sujet);
     const lu = luEnBref((p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet), a.valeurs);
     const vues = valeurs.slice(0, VALEURS_VUES_MAX), reste = valeurs.length - vues.length;
     const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
@@ -231,7 +240,7 @@ export function CarteArticle(p: CarteArticleProps) {
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
         {(() => {
           /* C53-2 : la carte d'un houblon dit la tête de la fiche (alpha, récolte, huiles totales), puis « +N » : jamais les dix valeurs ni une huile mineure */
-          const lues = valeursLuesOrdonnees(a as never) as Record<string, ValeurV>;
+          const lues = sansSachet(valeursLuesOrdonnees(a as never) as Record<string, ValeurV>, !!p.choisie);
           const autres = valeursLues(lues, carac?.nom);
           const houblon = Object.keys(lues).some(k => /^alpha\b/i.test(k));
           const vues = houblon ? autres.slice(0, VALEURS_VUES_MAX) : autres, reste = autres.length - vues.length;

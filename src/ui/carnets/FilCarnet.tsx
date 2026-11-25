@@ -10,7 +10,7 @@ import { Bell, Calculator, Check, Ellipsis, RotateCcw, Sparkles, X } from 'lucid
 import type { EntreeFil, FilCarnet as FilVu } from '../../domain/carnets/fil';
 import type { CarnetDoc, Etiquette, EvenementSuivi, MessageDoc, Note, PropositionSuivi } from '../../domain/carnets/modele';
 import { notePlanningDe } from '../../domain/carnets/taches';
-import { LIBELLE_ETAT, optionRetenue } from '../../domain/carnets/suivi';
+import { LIBELLE_ETAT, etatOption, optionRetenue } from '../../domain/carnets/suivi';
 import { GENRE_LIBELLE } from './EtatIA';
 import { heureDe, jetonDe, libelleJour, libellePlage, libelleRepli, plagesDe, rangsEcart, texteMontant } from './filRegles';
 import type { RappelsSuivi } from './carnetOuvertTypes';
@@ -90,6 +90,10 @@ function CartePropositionIA({ p, index, messageId, rappels, titreCarnet, c }: { 
 function LigneEvenement({ e, c, rappels }: { e: EvenementSuivi; c: CarnetDoc; rappels?: RappelsSuivi }) {
   const opt = e.optionId ? c.carnet.facons.find(f => f.id === e.optionId)?.nom : undefined;
   if (e.sorte === 'veille') {
+    /* C72-2 : une option écartée n'est plus guettée : sa carte dit la veille arrêtée, jamais « pas encore relevée » */
+    const faconDeVeille = e.optionId ? c.carnet.facons.find(f => f.id === e.optionId) : undefined;
+    if (faconDeVeille && etatOption(faconDeVeille) === 'ecartee')
+      return <div className="cnp-b cnp-b-ia" data-evenement="veille" data-arretee><span className="cnp-ia-tete"><Bell size={16} aria-hidden /> veille arrêtée{opt ? ` · ${opt}` : ''}</span><p className="cn-mut">option écartée</p></div>;
     return <div className="cnp-b cnp-b-ia" data-evenement="veille"><span className="cnp-ia-tete"><Bell size={16} aria-hidden /> veille demandée{opt ? ` · ${opt}` : ''}</span><p className="cn-mut">pas encore relevée</p></div>;
   }
   if (e.sorte === 'tache') {

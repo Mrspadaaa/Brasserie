@@ -36,7 +36,10 @@ export interface RangementV {
 
 /** Les jetons que le repli local pose sous une bulle (montant écrit, « pas trouvé », « contacté ») : sans IA, c'est tout, le message reste tel quel. */
 export function etiquettesDuRepli(texte: string, carnetId: string, optionId?: string): Etiquette[] {
-  return etiquettesLocales(texte).map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, optionId: e.sorte === 'cout' || e.sorte === 'pas-trouve' ? optionId : undefined, origine: 'locale' as const }));
+  const locales = etiquettesLocales(texte);
+  /* C72-1 : une option n'a qu'UN prix : une phrase qui dit plusieurs montants (« 450 CHF, ou … 180 CHF ») ne les pose sur aucune option (le fil les lit comme des pistes) */
+  const montants = locales.filter(e => e.sorte === 'cout' || e.sorte === 'devis').length;
+  return locales.map(e => sansIndefinis({ carnetId, sorte: e.sorte, montantCentimes: e.montantCentimes, devise: e.devise, estime: e.estime, optionId: (e.sorte === 'cout' && montants <= 1) || e.sorte === 'pas-trouve' ? optionId : undefined, origine: 'locale' as const }));
 }
 
 /**

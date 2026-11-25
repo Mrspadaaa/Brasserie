@@ -134,28 +134,65 @@ export interface ResumeJetons {
   retenu?: { centimes: number } | null;
 }
 
+/** Un coût écrit dans le fil (devis ou coût, avec son montant) ; `optionId` vide : aucune option visée. */
+export interface MontantFil { centimes: number; devise: string; optionId: string; sorte: 'devis' | 'cout'; etiquette: Etiquette }
+
+/**
+ * C72-1 (R87, 3e retour : C67-4, C68-2) : LA lecture des coûts du fil, la seule ; l'en-tête, les tuiles d'option, la ligne de la liste et le Résolu la lisent toutes.
+ *  - un même montant d'un même message, lu par le repli local ET par l'IA, est un seul fait : l'IA l'emporte (et garde l'option que le repli avait visée si elle n'en vise aucune) ;
+ *  - des montants sans option, dans un message qui nomme autant de pistes sans prix (jetons « piste » avec option), se lisent dans l'ordre des pistes ;
+ *    cet appariement ne se fait que si les comptes tombent juste, jamais au hasard.
+ * `pistes` : le nombre de pistes que le fil nomme (options distinctes des jetons « piste », plus ceux qui n'en visent aucune).
+ */
+export function montantsDuFil(messages: readonly MessageDoc[], carnetId: string): { montants: MontantFil[]; pistes: number } {
+  const montants: MontantFil[] = [];
+  const pistesVues = new Set<string>();
+  let pistesSansOption = 0;
+  for (const m of messages) {
+    const ets = (m.carnetMessage.etiquettes ?? []).filter(e => e.carnetId === carnetId);
+    for (const e of ets) if (e.sorte === 'piste') { if (e.optionId) pistesVues.add(e.optionId); else pistesSansOption += 1; }
+    const chiffres = ets.filter(e => (e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined);
+    const cle = (e: Etiquette) => `${e.sorte}|${e.montantCentimes}|${e.devise ?? 'CHF'}`;
+    const delIA = new Set(chiffres.filter(e => e.origine !== 'locale').map(cle));
+    const optionDuRepli = (e: Etiquette) => chiffres.find(x => x.origine === 'locale' && cle(x) === cle(e) && x.optionId)?.optionId;
+    const retenus = chiffres.filter(e => !(e.origine === 'locale' && delIA.has(cle(e))))
+      .map((e): Etiquette => (e.optionId || e.origine === 'locale' ? e : { ...e, ...(optionDuRepli(e) ? { optionId: optionDuRepli(e)! } : {}) }));
+    const pistesSansPrix = ets.filter(e => e.sorte === 'piste' && e.optionId && !retenus.some(r => r.optionId === e.optionId)).map(e => e.optionId!);
+    const flottants = retenus.filter(e => !e.optionId);
+    const apparies = new Map<Etiquette, string>();
+    if (flottants.length >= 1 && flottants.length === pistesSansPrix.length) flottants.forEach((e, i) => apparies.set(e, pistesSansPrix[i]));
+    for (const e of retenus) montants.push({ centimes: e.montantCentimes!, devise: e.devise ?? 'CHF', optionId: e.optionId ?? apparies.get(e) ?? '', sorte: e.sorte as 'devis' | 'cout', etiquette: e });
+  }
+  return { montants, pistes: pistesVues.size + pistesSansOption };
+}
+
+/** Le dernier coût écrit pour UNE option (tuile, ligne du Résolu) : la même lecture que l'en-tête. `null` : aucun (l'inconnu n'est jamais 0). */
+export function coutDeOption(messages: readonly MessageDoc[], carnetId: string, optionId: string): MontantFil | null {
+  const l = montantsDuFil(messages, carnetId).montants.filter(x => x.optionId === optionId);
+  return l.length ? l[l.length - 1] : null;
+}
+
 /** Ce que le fil a compté : « cause » est un trouvé ; un montant dans une autre devise n'entre pas dans le total (rien n'est converti en silence). */
 export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, retenueId?: string, ecarteesIds: ReadonlySet<string> = new Set()): ResumeJetons | null {
   let trouve = 0, pas = 0;
   const devis: Etiquette[] = [];
-  const montants: number[] = [];
-  /* les montants par option (clé vide : aucune option visée) : deux options sont deux façons de faire la même chose, jamais deux coûts cumulés */
-  const parOption = new Map<string, number[]>();
-  let ecarteeChiffree = false;
   for (const m of messages) {
     for (const e of m.carnetMessage.etiquettes ?? []) {
       if (e.carnetId !== carnetId) continue;
       if (e.sorte === 'trouve' || e.sorte === 'cause') trouve += 1;
       else if (e.sorte === 'pas-trouve') pas += 1;
       else if (e.sorte === 'devis') devis.push(e);
-      /* C68-2 : une option écartée sort du calcul (mais dit que ce problème compare des pistes) */
-      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && e.optionId && ecarteesIds.has(e.optionId)) ecarteeChiffree = true;
-      if ((e.sorte === 'devis' || e.sorte === 'cout') && e.montantCentimes !== undefined && (e.devise ?? 'CHF') === 'CHF' && !(e.optionId && ecarteesIds.has(e.optionId))) {
-        montants.push(e.montantCentimes);
-        parOption.set(e.optionId ?? '', [...(parOption.get(e.optionId ?? '') ?? []), e.montantCentimes]);
-      }
     }
   }
+  const lus = montantsDuFil(messages, carnetId);
+  const ecartee = (x: MontantFil) => !!x.optionId && ecarteesIds.has(x.optionId);
+  /* C68-2 : une option écartée sort du calcul AUSSITÔT (mais dit que ce problème compare des pistes) */
+  const ecarteeChiffree = lus.montants.some(ecartee);
+  const gardes = lus.montants.filter(x => x.devise === 'CHF' && !ecartee(x));
+  const montants = gardes.map(x => x.centimes);
+  /* les montants par option (clé vide : aucune option visée) : deux options sont deux façons de faire la même chose, jamais deux coûts cumulés */
+  const parOption = new Map<string, number[]>();
+  for (const x of gardes) parOption.set(x.optionId, [...(parOption.get(x.optionId) ?? []), x.centimes]);
   if (!trouve && !pas && !devis.length && !montants.length) return null;
   const somme = (l: readonly number[]) => l.reduce((s, x) => s + x, 0);
   const retenuMontants = retenueId ? parOption.get(retenueId) : undefined;
@@ -164,10 +201,12 @@ export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, 
   const sansOption = parOption.get('') ?? [];
   let total: ResumeJetons['total'] = montants.length >= 2 ? { centimes: somme(montants), n: montants.length } : null;
   let fourchette: ResumeJetons['fourchette'] = null;
-  /* C68-2 (tour 68 : « ≈ 1 430 CHF » = 690 + 540 + 200, encore avec la hotte écartée) : dès qu'une option porte un montant, les montants que le fil
-     compte sont des PISTES, l'une ou l'autre, jamais des coûts cumulés. Chaque montant sans option visée vaut une piste à lui. L'option retenue
-     dit le coût (le sien seul : le prix d'une piste pas prise n'est pas le coût du problème) ; sinon la fourchette, de la moins chère à la plus chère. */
-  if ((optionsChiffrees.length >= 1 || ecarteeChiffree) && montants.length >= 2) {
+  /* C68-2 (tour 68 : « ≈ 1 430 CHF » = 690 + 540 + 200, encore avec la hotte écartée) : dès qu'une option porte un montant, ou que le fil nomme au moins deux pistes
+     (C72-1 : « deux pistes, … 450 CHF, ou … 180 CHF »), les montants que le fil compte sont des PISTES, l'une ou l'autre, jamais des coûts cumulés. Chaque montant
+     sans option visée vaut une piste à lui. L'option retenue dit le coût (le sien seul : le prix d'une piste pas prise n'est pas le coût du problème) ;
+     sinon la fourchette, de la moins chère à la plus chère ; une seule piste chiffrée dit son prix seul (n = 1). */
+  const compare = optionsChiffrees.length >= 1 || ecarteeChiffree || lus.pistes >= 2;
+  if (compare && montants.length >= 1) {
     const gardee = retenueId ? parOption.get(retenueId) : undefined;
     if (gardee) total = { centimes: somme(gardee), n: gardee.length };
     else {
@@ -190,11 +229,11 @@ export function resumeJetons(messages: readonly MessageDoc[], carnetId: string, 
  * est mauvaise (« plus en stock » ; « en stock » ne se redit pas). L'inconnu ne s'écrit pas (jamais 0).
  */
 export function infoOption(c: CarnetDoc, messages: readonly MessageDoc[], f: Facon): { prix: string | null; dispo: string | null } {
-  const ecrit = [...messages].reverse().flatMap(m => [...(m.carnetMessage.etiquettes ?? [])].reverse())
-    .find(e => e.carnetId === c.id && e.optionId === f.id && (e.sorte === 'cout' || e.sorte === 'devis') && e.montantCentimes !== undefined);
+  /* C72-1 : la même lecture des coûts que l'en-tête (`montantsDuFil`) */
+  const ecrit = coutDeOption(messages, c.id, f.id);
   const art = c.carnet.articles.find(a => a.faconId === f.id && a.prixCentimes !== undefined) ?? c.carnet.articles.find(a => a.faconId === f.id);
-  const m = ecrit ? montant(ecrit.montantCentimes) : art ? montant(art.prixCentimes) : null;
-  const devise = ecrit ? ecrit.devise ?? 'CHF' : art?.devise ?? 'CHF';
+  const m = ecrit ? montant(ecrit.centimes) : art ? montant(art.prixCentimes) : null;
+  const devise = ecrit ? ecrit.devise : art?.devise ?? 'CHF';
   const d = art ? dispoDe(art)?.trim() : undefined;
   return { prix: m === null ? null : `${m} ${devise}`, dispo: d && !/^en stock$/i.test(d) ? d : null };
 }
@@ -354,8 +393,10 @@ export function ficheResolu(c: CarnetDoc, messages: readonly MessageDoc[]): Fich
   const resolu = suiviDe(c).resolu;
   let pris: FicheResolu['pris'] = null;
   if (retenue) {
-    const achat = tries.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.optionId === retenue.id && e.sorte === 'cout' && e.montantCentimes !== undefined)
-      ?? tries.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.sorte === 'achat' && e.montantCentimes !== undefined);
+    /* C72-1 : le coût de la retenue vient de la même lecture que l'en-tête ; à défaut, l'achat écrit */
+    const cout = coutDeOption(tries, c.id, retenue.id);
+    const achat = cout ? cout.etiquette
+      : tries.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.sorte === 'achat' && e.montantCentimes !== undefined);
     /* la fiche se relit des mois plus tard : le jour dit son année (« 30 nov. 2026 ») */
     const jourPris = resolu ? `${libelleJour(jourLocal(resolu.le))} ${jourLocal(resolu.le).slice(0, 4)}` : null;
     pris = { nom: minus(retenue.nom), prix: achat ? texteMontant(achat) : null, jour: jourPris };

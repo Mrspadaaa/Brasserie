@@ -176,7 +176,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   /* tout juste créé, le bandeau cite déjà sa phrase (g5:v04-4 ; n° 39 : jamais deux fois). Critique 6, n° 30 (R25) : la phrase citée
      dit ce qu'elle est, « votre phrase : « … » », jamais des guillemets seuls qui flottent ; n° 14 : pas une seconde fois si la ligne
      rangée la cite déjà. */
-  const phraseCitee = k.phrase && !duPlanning && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
+  /* C72-6 (maquette v01-vapeur : la bulle suffit) : la phrase est déjà la première bulle du fil, une ligne « votre phrase : « … » » la redirait juste dessous */
+  const dejaEnBulle = !!k.phrase && messages.some(m => normaliser(m.carnetMessage.texte) === normaliser(k.phrase));
+  const phraseCitee = k.phrase && !duPlanning && !p.vientDEtreCree && !dejaEnBulle && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
     ? <p className="cn-cite" data-en-titre>votre phrase en titre</p>
     /* D451 disparaît n° 5 : « votre lien : « https://… » » ne se dit plus ; la barre de lecture du lien montre déjà le lien. Une phrase reste citée (R25). */
     : estLienSeul(k.phrase) ? null : <p className="cn-cite">votre phrase : « {k.phrase} »</p>) : null; /* f5d n° 11 */

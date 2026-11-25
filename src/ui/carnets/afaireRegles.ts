@@ -34,7 +34,12 @@ export const LIBELLE_GROUPE: Record<CleGroupe, string> = {
 };
 export const libelleGroupe = (cle: CleGroupe): string => LIBELLE_GROUPE[cle];
 
-const trierTaches = (l: TacheVue[]): TacheVue[] => [...l].sort((a, b) => (a.echeance ?? '9999').localeCompare(b.echeance ?? '9999') || a.creeeLe.localeCompare(b.creeeLe) || a.id.localeCompare(b.id));
+/** C72-3 : la date qui range une tâche est celle que sa ligne DIT (`quandDite`) : un projet du Planning déjà commencé se range à sa FIN (« jusqu'au 31 déc. »), pas à son début. */
+const dateDite = (t: TacheVue, maintenant?: Maintenant): string => {
+  if (maintenant !== undefined && t.derivee && t.finPlanning && t.echeance && t.echeance <= dimancheDe(aujourdhuiDe(maintenant))) return t.finPlanning;
+  return t.echeance ?? '9999';
+};
+const trierTaches = (l: TacheVue[], maintenant?: Maintenant): TacheVue[] => [...l].sort((a, b) => dateDite(a, maintenant).localeCompare(dateDite(b, maintenant)) || a.creeeLe.localeCompare(b.creeeLe) || a.id.localeCompare(b.id));
 
 /**
  * C70-6 (règle n° 1) puis C71-1 (B, R84) : l'écran n'a que les trois groupes de SA maquette (Cette semaine · Fin du mois · Un jour), rangés par la DATE RÉELLE.
@@ -56,7 +61,7 @@ export function groupesDeLaMaquette(liste: AFaire, maintenant?: Maintenant): AFa
   });
   if (!deplacees.length) return liste;
   const unJour = garde.find(g => g.cle === 'un-jour');
-  const taches = trierTaches([...deplacees, ...(unJour?.taches ?? [])]);
+  const taches = trierTaches([...deplacees, ...(unJour?.taches ?? [])], maintenant);
   const fusion = { cle: 'un-jour' as CleGroupe, taches, cout: coutDe(taches) };
   return { ...liste, groupes: [...garde.filter(g => g.cle !== 'un-jour'), fusion] };
 }

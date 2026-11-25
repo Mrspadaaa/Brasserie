@@ -524,10 +524,11 @@ export function analyserTexte(texte: string): LigneLocale[] {
 
 /* ---------- D451 : le repli local des étiquettes (sans IA : hors ligne, panne, éteint) ---------- */
 
-export interface EtiquetteLocale { sorte: 'cout' | 'devis' | 'pas-trouve' | 'contact'; montantCentimes?: number; devise?: 'CHF' | 'EUR'; estime?: true }
+export interface EtiquetteLocale { sorte: 'cout' | 'devis' | 'pas-trouve' | 'contact' | 'piste'; montantCentimes?: number; devise?: 'CHF' | 'EUR'; estime?: true }
 const MOT_DEVIS = /\b(?:devis|offre)\b/;
 const MOT_PAS_TROUVE = /\bpas\s+(?:encore\s+)?trouve(?:e|s|es)?\b/;
 const MOT_CONTACTE = /\bcontacte(?:e|s|es)?\b/;
+const MOT_OU = /\bou\b/;
 const ETIQUETTES_LOCALES_MAX = 4;
 
 /**
@@ -547,7 +548,11 @@ export function etiquettesLocales(texte: string): EtiquetteLocale[] {
   }
   if (MOT_PAS_TROUVE.test(n)) sortie.push({ sorte: 'pas-trouve' });
   if (MOT_CONTACTE.test(n)) sortie.push({ sorte: 'contact' });
-  return sortie.slice(0, ETIQUETTES_LOCALES_MAX);
+  const gardees = sortie.slice(0, ETIQUETTES_LOCALES_MAX);
+  /* C72-1 : « 450 CHF, ou … 180 CHF » : le « ou » sépare des PISTES, l'une ou l'autre ; chaque montant d'une alternative se dit piste (jamais additionné) */
+  const montants = gardees.filter(e => e.sorte === 'cout' || e.sorte === 'devis');
+  const alternatives = montants.length >= 2 && n.split(MOT_OU).filter(morceau => prixTousDe(morceau).length > 0).length >= 2;
+  return alternatives ? [...montants.map((): EtiquetteLocale => ({ sorte: 'piste' })), ...gardees] : gardees;
 }
 
 /** Les nombres écrits dans un texte (pour vérifier qu'aucun nombre n'est inventé). Milliers recollés. */

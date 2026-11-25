@@ -64,7 +64,8 @@ export function avecArticle(nom: string, sens?: Caracteristique['sens']): string
   const mot = normaliser(n).split(' ')[0] ?? '';
   if (!mot) return n;
   const minuscule = n.charAt(0).toLowerCase() + n.slice(1);
-  if (/^[aeiouyh]/.test(mot)) return `l'${minuscule}`;
+  /* C72-5 : « les acides alpha », « les arômes » : un premier mot en -es (pluriel ; « excès » s'écrit -ès) ne s'élide pas */
+  if (/^[aeiouyh]/.test(mot)) return mot.length > 3 && /es$/.test(minuscule.split(' ')[0]) ? `les ${minuscule}` : `l'${minuscule}`;
   if (mot.length > 3 && /s$/.test(mot) && !/[adiou]s$/.test(mot)) return `les ${minuscule}`;
   const feminin = FEMININS.test(mot) && !MASCULINS_EN_EUR.test(mot);
   return `${feminin ? 'la' : 'le'} ${minuscule}`;

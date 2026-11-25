@@ -13,6 +13,7 @@ import type { CarnetV } from './EtatIA';
 import { dateCourte, montant as montantTexte } from './EtatIA';
 import { articlesEnLice, prixDe, quandDe } from './ListeCarnets';
 import { titreAffiche } from './titre';
+import { coutDeOption } from './filRegles';
 
 export const ETATS_LISTE: readonly EtatSuivi[] = ['note', 'cherche', 'decide', 'resolu'];
 /** La jauge à 4 pastilles : Noté 1, Je cherche 2, Décidé 3, Résolu 4 (maquette : `i <= n`). */
@@ -78,9 +79,9 @@ export function valeurUtile(c: CarnetDoc, maintenant: Date, messages: readonly M
   /* C68-4 : un problème RÉSOLU dit ce qui a été retenu et son coût ; jamais « à comparer » ni le prix d'une piste pas prise (le condenseur B, hors stock, jamais choisi) */
   if (etatDe(c) === 'resolu') {
     const retenue = optionRetenue(c);
-    const cout = retenue ? messages.flatMap(m => m.carnetMessage.etiquettes ?? []).find(e => e.carnetId === c.id && e.optionId === retenue.id && (e.sorte === 'cout' || e.sorte === 'devis') && e.montantCentimes !== undefined) : undefined;
-    const m = cout ? montantTexte(cout.montantCentimes) : null;
-    return retenue ? [`retenu : ${retenue.nom}`, ...(m ? [`${m} ${cout!.devise ?? 'CHF'}`] : [])].join(' · ') : null;
+    const cout = retenue ? coutDeOption(messages, c.id, retenue.id) : null;
+    const m = cout ? montantTexte(cout.centimes) : null;
+    return retenue ? [`retenu : ${retenue.nom}`, ...(m ? [`${m} ${cout!.devise}`] : [])].join(' · ') : null;
   }
   const v = vueDe(c);
   const k = c.carnet;

@@ -85,7 +85,7 @@ export function RangeeJetons({ resume, nom = 'Où en est le diagnostic' }: { res
       {resume.pasTrouve > 0 && <span className="cnp-jeton" data-j="pas"><X size={14} aria-hidden /> pas trouvé {resume.pasTrouve}</span>}
       {resume.devis && <span className="cnp-jeton" data-j="devis">{resume.devis.centimes !== undefined ? `devis ${montant(resume.devis.centimes)}` : resume.devis.n > 1 ? `${resume.devis.n} devis` : 'devis'}</span>}
       <span className="cn-sp" />
-      {!resume.retenu && resume.fourchette && <b className="cnp-total" data-fourchette title={`${resume.fourchette.n} options, l'une ou l'autre : jamais additionnées`}>{resume.fourchette.min === resume.fourchette.max ? `≈ ${montant(resume.fourchette.min)} CHF` : `${montant(resume.fourchette.min)} à ${montant(resume.fourchette.max)} CHF`}</b>}
+      {!resume.retenu && resume.fourchette && <b className="cnp-total" data-fourchette title={resume.fourchette.n === 1 ? 'Le prix de la seule piste chiffrée' : `${resume.fourchette.n} options, l'une ou l'autre : jamais additionnées`}>{resume.fourchette.min === resume.fourchette.max ? `${resume.fourchette.n === 1 ? '' : '≈ '}${montant(resume.fourchette.min)} CHF` : `${montant(resume.fourchette.min)} à ${montant(resume.fourchette.max)} CHF`}</b>}
       {resume.retenu && <b className="cnp-total" data-retenu title="Coût de l'option retenue">{montant(resume.retenu.centimes)} CHF</b>}
       {!resume.retenu && resume.total && <b className="cnp-total" title={`Somme de ${resume.total.n} montants écrits, en francs`}>≈ {montant(resume.total.centimes)} CHF</b>}
     </div>
