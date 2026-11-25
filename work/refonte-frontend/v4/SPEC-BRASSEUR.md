@@ -2951,3 +2951,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 (page « Carnet, pas un chat ») : « Fait passer les critiques et fait au moins 3 itération »
 - 25.11 : « Critique et persona »
 - 25.11 soir (page « Carnet, pas un chat », après 3 itérations ; il recolle son classement passe 3 du 24.11) : « Aucune ne semble vraiment mieux que celle présentée... Il y a pas eu d'interation sur mes notes ?? »
+- 25.11 soir (choix sur la page « Carnet, pas un chat », capture d'une app de notes du téléphone : titre, date, lignes « Note », barre d'outils IA, voix, image, dessin, case, texte au-dessus du clavier) : « M4 · Deux vues » puis « Mais vraiment en mode  note de ce type. C'est un exemple pas une direction à reproduire ! »
+- 25.11 soir (réponse à « une passe 4 bâtie sur tes notes ») : « Je pense qu'il y avait bes bonne chose quand même améliorer ces mini maquettes aussi, on tente plusieurs voie »
+- 25.11 soir (après la proposition d'un prototype jouable) : « On continue les mini maquettes, on prend les meilleures et on lance les deux voies en maquettes jouable. » puis « Est-ce que à la place de Gemini, clé IA. Tu peux faire cette intermédiaire. Tu verras aussi les problèmes du coup. »
+- 25.11 soir (capture de M4 b Organisé, « Je cherche ? » entouré) : « C'est automatique ? Et ce qui est de comparaison d'articles ? C'était vraiment bien... »

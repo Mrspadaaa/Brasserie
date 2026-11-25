@@ -181,6 +181,15 @@ body.edite .hors-edition{display:none}
 .m4b-vide{color:var(--mut);margin:6px 8px 12px;line-height:1.4}
 .m4b-actions{display:flex;gap:8px;margin-top:10px}
 .m4b-actions .m4b-btn{flex:1}
+.m4b-cmp{display:grid;background:var(--card);border-radius:14px;padding:4px 10px;margin-bottom:10px;font-size:14px;line-height:1.25}
+.m4b-cmp > *{padding:8px 4px;border-bottom:1px solid var(--s2);min-width:0;overflow-wrap:anywhere}
+.m4b-cmp .hd{font-weight:800;font-size:16px;text-align:left;min-height:44px}
+.m4b-cmp .hd small{display:block;font-size:14px;font-weight:700;color:var(--ok)}
+.m4b-cmp .cr{color:var(--mut)}
+.m4b-cmp .v{font-weight:600}
+.m4b-cmp .v small{color:var(--ia);font-weight:700}
+.m4b-cmp .v.win{background:var(--okbg);color:var(--ok);border-radius:8px}
+.m4b-cmp .v.inc{color:var(--mut);font-weight:400}
 /* pied d'Organisé : pas de champ, on écrit dans Mes notes */
 .m4b-pied{flex:none;border-top:1px solid var(--bord);padding:8px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;background:var(--barre)}
 .m4b-pied .m4b-btn{flex:1}
@@ -879,6 +888,7 @@ function consigne(c, lignes) {
     ' "tache":{"titre":string,"quand":string?,"ligne":number?,"citation":string?}|null,',
     ' "conseil":string?, "resolu":{"question":string}?,',
     ' "lectures":[{"ligne":number,"mot":string,"type":"montant"|"pas_trouve"|"contacte"|"piste"|"devis"|"date"}],',
+    ' "comparaison":{"criteres":[string],"articles":[{"nom":string,"ligne":number?,"citation":string?,"valeurs":[{"texte":string,"source":"notes"|"ia"}]}],"gagnant":[number|null],"compromis":string?}|null,',
     ' "genre":"probleme"|"achat"|"memo"|"idee"}',
     'Règles :',
     '1. Ne réécris jamais son texte. Tes titres sont courts (6 mots au plus), tutoiement.',
@@ -889,6 +899,12 @@ function consigne(c, lignes) {
     '6. "resolu" seulement si ses notes disent que c’est réglé ; "conseille": true sur une option au plus.',
     '7. Ne repropose pas ce qu’il a refusé.',
     '8. Français. "conseil" : deux phrases au plus.',
+    '9. Dès que ses notes parlent de 2 articles, offres ou fournisseurs ou plus (prix, liens, quantités, frais d’envoi…), remplis "comparaison" ; sinon null.',
+    '   "criteres" : ce qui compte pour choisir (prix, prix au kg ou au litre, frais d’envoi, quantité, délai…), d’abord ceux de ses notes, 6 au plus.',
+    '   "valeurs" : une par critère, dans l’ordre des critères ; "?" quand ni ses notes ni un calcul simple ne le disent. Un prix ramené au kg est un calcul : "source":"ia".',
+    '   Tu ne peux pas ouvrir les liens : ce qui n’est que derrière un lien vaut "?".',
+    '   "gagnant" : pour chaque critère, l’indice (0, 1…) de l’article qui gagne, ou null si on ne sait pas ou égalité.',
+    '   "compromis" : une phrase, ce qu’on gagne et ce qu’on perd avec le meilleur choix.',
     '',
     'Carnet : ' + titreDe(c),
     'État actuel : ' + c.etat + (c.etatPar ? ' (posé par lui le ' + jour(c.etatPar.le) + ')' : ''),
@@ -1008,6 +1024,25 @@ function valider(brut, lignes) {
     if (!l) return null; var v = verifier('lecture', l.ligne, l.mot);
     return v ? { ligne: v.ligne, mot: v.citation, type: NOM_LECTURE.hasOwnProperty(l.type) ? l.type : 'piste' } : null;
   }).filter(Boolean);
+  rep.comparaison = null;
+  var cp = brut.comparaison;
+  if (cp && typeof cp === 'object' && Array.isArray(cp.criteres) && Array.isArray(cp.articles)) {
+    var crit = cp.criteres.map(str).filter(Boolean).slice(0, 6);
+    var arts = cp.articles.slice(0, 4).map(function (a) {
+      if (!a || !str(a.nom)) return null;
+      var va = a.citation ? verifier('article « ' + a.nom + ' »', a.ligne, a.citation) : null;
+      var vals = crit.map(function (_, k) {
+        var x = Array.isArray(a.valeurs) ? a.valeurs[k] : null;
+        var tx = x && typeof x === 'object' ? str(x.texte) : str(x);
+        return { texte: tx || '?', source: x && x.source === 'notes' ? 'notes' : 'ia' };
+      });
+      return { nom: str(a.nom), ligne: va ? va.ligne : null, citation: va ? va.citation : null, valeurs: vals };
+    }).filter(Boolean);
+    if (crit.length && arts.length >= 2) {
+      var gag = crit.map(function (_, k) { var g = Array.isArray(cp.gagnant) ? cp.gagnant[k] : null; return Number.isInteger(g) && g >= 0 && g < arts.length && arts[g].valeurs[k].texte !== '?' ? g : null; });
+      rep.comparaison = { criteres: crit, articles: arts, gagnant: gag, compromis: str(cp.compromis) };
+    } else if (cp.articles.length) erreurs.push('comparaison incomplète (retirée)');
+  }
   return { rep: rep, erreurs: erreurs, fausses: fausses };
 }
 
@@ -1106,6 +1141,27 @@ function rendreOrg() {
     });
     org.appendChild(pg);
   }
+  /* comparaison d'articles : qui gagne quoi */
+  if (r.comparaison) {
+    var cmp = r.comparaison, n = cmp.articles.length;
+    var tb = h('div', { class: 'm4b-cmp', style: 'grid-template-columns:minmax(76px,.8fr) repeat(' + n + ',1fr)' });
+    tb.appendChild(h('span', { class: 'hd' }));
+    cmp.articles.forEach(function (a) {
+      var nb = cmp.gagnant.filter(function (g, k) { return g === cmp.articles.indexOf(a); }).length;
+      tb.appendChild(h('button', { type: 'button', class: 'hd nom', onclick: a.ligne ? function () { allerLigne(a.ligne, a.citation, a.nom); } : null },
+        a.nom, a.ligne ? ico('b-r', 'm4b-r') : null, h('small', null, nb ? nb + (nb > 1 ? ' gagnés' : ' gagné') : '')));
+    });
+    cmp.criteres.forEach(function (cr, k) {
+      tb.appendChild(h('span', { class: 'cr' }, cr));
+      cmp.articles.forEach(function (a, j) {
+        var v = a.valeurs[k], win = cmp.gagnant[k] === j;
+        tb.appendChild(h('span', { class: 'v' + (win ? ' win' : '') + (v.texte === '?' ? ' inc' : '') }, win ? '✓ ' : '', v.texte, v.source === 'ia' && v.texte !== '?' ? h('small', null, ' IA') : null));
+      });
+    });
+    org.appendChild(h('div', { class: 'm4b-k' }, 'Comparer · ' + n + ' articles'));
+    org.appendChild(tb);
+    if (cmp.compromis) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, cmp.compromis, h('small', null, 'l’IA, pas tes notes'))));
+  }
   /* conseil */
   if (r.conseil && o.garde.options !== false) org.appendChild(h('div', { class: 'm4b-conseil' }, ico('b-ia'), h('span', null, r.conseil, h('small', null, 'l’IA, pas tes notes'))));
   /* options */
@@ -1160,7 +1216,7 @@ function rendreOrg() {
     }
   }
   if (memo && r.genre) org.appendChild(h('div', { class: 'm4b-k' }, ico('b-ia', 'm4b-r'), 'Genre proposé par l’IA : ' + NOM_GENRE[r.genre] + ', rien à faire'));
-  if (!r.pistes.length && !r.options.length && !r.tache && !r.conseil) org.appendChild(h('p', { class: 'm4b-vide' }, 'L’IA n’a rien trouvé à ranger dans cette note.'));
+  if (!r.pistes.length && !r.options.length && !r.tache && !r.conseil && !r.comparaison) org.appendChild(h('p', { class: 'm4b-vide' }, 'L’IA n’a rien trouvé à ranger dans cette note.'));
 
   piedOrg.appendChild(bouton('Écrire dans Mes notes', '', function () { basculer('notes'); placerFin(); }, 'b-crayon'));
   if (c.orgErreur && !enCours) { piedOrg.appendChild(bouton('Réessayer', 'plein', function () { ranger(); }, 'b-annule')); pleinPied = true; }
