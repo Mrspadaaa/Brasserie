@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-25T16:25:26.188Z
+pause: 2026-11-25T16:25:41.873Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -45,7 +45,7 @@ pause: 2026-11-25T16:25:26.188Z
 - [x] (porté, D451) (D451 mode nuit : porter si le critique juge qu une base + greffes répond à tous les besoins, sinon écrire le manque ; après tour 65) Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement — VERDICT : base v01 p3 + greffes v01 p2, v05 p3, v03 p3 (D451/VERDICT.md) ; plan en cours work/missions/2026-11-24-port-d451
 - [x] (porté, D451) (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
-- [ ] (D456, son classement passe 3 : aucun 1) Passe 4 du Carnet : skill maquettes, mode greffe de ses 2 (Liste v01, Saisie v03/v04, Écoulement v02/v03), chaque écran répond à tout le parcours ; page de choix publiée
+- [ ] (D456, son classement passe 3 : aucun 1) Passe 4 du Carnet : skill maquettes, mode greffe de ses 2 (Liste v01, Saisie v03/v04, Écoulement v02/v03), chaque écran répond à tout le parcours ; workflow maquettes wf_ba6a67c6-e31 en cours (dossier work/missions/2026-11-25-carnet-passe4) ; page de choix à publier
 - [ ] URGENT Carnet sur SES carnets (plaintes 25.11 ; historique des tours 73→80 : voies reel-73..reel-80, c74..c79) : c80-fix en cours (mise en page mesurée, bande vide, chiffres espacés) ∥ c81-tests e951cdc91 (38/65) → c81-fix après c80-fix → tour 81 → reel-81 ; ZZ CO2 : option retenue fausse à corriger par geste ; cal-77 restes : CALP-6, CALP-13, ouvrir 251–510 ms, relâcher 196–277 ms
 - [ ] D455 : glisser-déposer dans la liste (priorité, et catégorie en déposant dans un autre sous-domaine), appui long au toucher, Annuler ; bibliothèque standard (@dnd-kit) ; tests puis correctif après c81 (mêmes fichiers)
 - [ ] (D454 : A, 25.11) Refaire les carnets ZZ au nouveau format (Reclasser en ligne, sinon gestes, sinon recréer) : voie exemples-a faite (16 ZZ au nouveau format, 11 défauts EXA dont 5 B)
