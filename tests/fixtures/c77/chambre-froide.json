@@ -1,0 +1,150 @@
+{
+ "_releve": {
+  "source": "FORME de tests/fixtures/c75/houblons-citra.json ; valeurs relevées dans work/missions/2026-11-23-reprise-soir/voies/reel-77/RESULTAT.md (captures C02-carnet, C02-f1-choisir, C02-comparer) ; construit par la voie c77-tests, jamais lu en ligne",
+  "simule": true
+ },
+ "carnet": {
+  "carnet": {
+   "phrase": "Chambre froide",
+   "photos": [],
+   "facons": [],
+   "version": 1,
+   "notes": [],
+   "creeLe": "2026-11-24T15:44:42.506Z",
+   "criteres": [],
+   "articles": [
+    {
+     "url": "https://www.gastro-held.ch/cellule-1800",
+     "dispo": "en stock",
+     "id": "ART-c77-02",
+     "devise": "CHF",
+     "lecture": "lue",
+     "photos": [],
+     "domaine": "gastro-held.ch",
+     "valeurs": {
+      "Volume": {
+       "valeur": "4,06 m³",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Température": {
+       "valeur": "0 à 8 °C",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Puissance": {
+       "valeur": "550 Watt",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Raccordement": {
+       "valeur": "1N~/PE",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Tension": {
+       "valeur": "230 V",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      }
+     },
+     "messageId": "MSG-c77-11",
+     "nom": "Cellule froide 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus",
+     "prixCentimes": 269774,
+     "vendeur": "Gastro Held"
+    },
+    {
+     "url": "https://www.frigo-pro.ch/chambre-1640",
+     "dispo": "en stock",
+     "id": "ART-c77-03",
+     "devise": "CHF",
+     "lecture": "lue",
+     "photos": [],
+     "domaine": "frigo-pro.ch",
+     "valeurs": {
+      "Volume": {
+       "valeur": "2,6 m³",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Température": {
+       "valeur": "0 à 8 °C",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Puissance": {
+       "valeur": "480 Watt",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Raccordement": {
+       "valeur": "1N~/PE",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      },
+      "Tension": {
+       "valeur": "230 V",
+       "origine": "page",
+       "luLe": "2026-11-24T15:44:47.077Z"
+      }
+     },
+     "messageId": "MSG-c77-12",
+     "nom": "Chambre froide 1640 x 1340 mm - 2,6 m³",
+     "prixCentimes": 298800,
+     "vendeur": "Frigo Pro"
+    }
+   ]
+  },
+  "status": "research",
+  "id": "CARNET-c77-03",
+  "type": "carnet",
+  "title": "Chambre froide"
+ },
+ "messages": [
+  {
+   "type": "carnet-message",
+   "id": "MSG-c77-11",
+   "status": "done",
+   "carnetMessage": {
+    "texte": "https://www.gastro-held.ch/cellule-1800",
+    "le": "2026-11-24T15:44:42.506Z",
+    "depuis": "liste",
+    "rangement": "ia",
+    "effets": [
+     {
+      "carnetId": "CARNET-c77-03",
+      "cible": "carnet",
+      "id": "CARNET-c77-03"
+     },
+     {
+      "cible": "article",
+      "id": "ART-c77-02",
+      "carnetId": "CARNET-c77-03"
+     }
+    ]
+   },
+   "title": "https://www.gastro-held.ch/cellule-1800"
+  },
+  {
+   "type": "carnet-message",
+   "carnetMessage": {
+    "le": "2026-11-24T15:45:48.454Z",
+    "rangement": "ia",
+    "texte": "https://www.frigo-pro.ch/chambre-1640",
+    "effets": [
+     {
+      "cible": "article",
+      "id": "ART-c77-03",
+      "carnetId": "CARNET-c77-03"
+     }
+    ],
+    "depuis": "CARNET-c77-03"
+   },
+   "id": "MSG-c77-12",
+   "title": "https://www.frigo-pro.ch/chambre-1640",
+   "status": "done"
+  }
+ ],
+ "articles": [],
+ "plan": null
+}
