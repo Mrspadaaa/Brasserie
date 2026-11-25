@@ -37,7 +37,16 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 .v3-s{position:relative;min-height:70px;margin-bottom:14px}
 .v3-st{position:absolute;left:-56px;top:0;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:#000;border:3px solid var(--line)}
 .v3-s.ok .v3-st{border-color:var(--ok);background:var(--okbg)}
-.v3-s.ici .v3-st{border-color:var(--att);background:var(--attbg);box-shadow:0 0 0 6px color-mix(in srgb,var(--att) 25%,transparent)}
+.v3-s.ici .v3-st{border-color:var(--att);background:var(--attbg);border-width:4px}
+.v3-s.fin .v3-st{border-color:var(--bad)}
+.v3-p.c1{min-height:0;justify-content:flex-start;gap:6px}
+.v3-p.v3-sans{padding-left:10px}.v3-p.v3-sans:before{display:none}.v3-sans .v3-st{display:none}
+.v3-c.li{height:52px;font-size:18px}
+.v3-c.tache{justify-content:flex-start;gap:10px}
+.v3-duel .v.u{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--ia) 55%,transparent) 0 3px,transparent 3px 8px)}
+.v3-duel .h{flex-direction:column;justify-content:flex-end;text-align:center;line-height:1.1;font-size:14px;gap:3px;padding:2px}
+.v3-duel .v{justify-content:center;font-size:15px;white-space:nowrap;padding:0 4px}
+.v3-c{max-width:100%;text-align:left;height:auto!important;min-height:58px;padding-top:6px;padding-bottom:6px;line-height:1.15}.v3-c .mono{white-space:nowrap}.v3-c.tache{height:auto!important;min-height:76px;font-size:22px!important}.v3-c{flex-wrap:wrap;row-gap:4px}.v3-c b{min-width:0}
 .v3-s.vide .v3-st{opacity:.6}
 .v3-chips{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
 .v3-c{display:flex;align-items:center;gap:8px;height:58px;padding:0 16px 0 12px;border-radius:18px;background:var(--card);font-weight:800;font-size:21px;border:2px solid transparent}
@@ -45,7 +54,7 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 .v3-c.ok{background:var(--okbg);color:var(--ok)} .v3-c.non{color:var(--mut)} .v3-c.non b{text-decoration:line-through}
 .v3-c.att{background:var(--attbg);color:var(--att)} .v3-c.opt{background:var(--finbg)} .v3-c.ia{color:var(--ia);background:var(--iabg)}
 .v3-c.tache{border-color:var(--ink);height:76px;font-size:25px;flex-basis:100%;padding:0 18px}
-.v3-c .q{width:22px;height:22px;border:2.5px solid currentColor;border-radius:6px}
+.v3-c .q{width:28px;height:28px;border:3px solid currentColor;border-radius:8px;flex:none}
 .v3-c .st{font-size:18px;color:var(--mut)}
 .v3-c.plus{border:2px dashed var(--line);color:var(--mut);background:none;padding:0 14px}
 .v3-bub{flex-basis:100%;background:#232327;border-radius:4px 16px 16px 16px;padding:10px 12px;font-size:17px;line-height:1.4;animation:c-up .18s ease-out;display:flex;gap:10px;align-items:flex-start}
@@ -63,40 +72,61 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 
 <header class="v3-top"><button class="v3-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v3-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button><button class="v3-ib" aria-label="Mes notes">📝</button></header>
 <main class="v3-p" id="p"></main>
-<div class="v3-bas"><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="v3-aide">💡 Aide</button></div>
-<script src="reponses/reponses.js"></script><script src="reponses/adapt.js"></script>
+<div class="v3-bas"><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="v3-aide" data-aide3>💡 Aide</button></div>
+<script src="reponses/reponses.js"></script><script src="reponses/adapt.js"></script><script src="reponses/enrichi.js"></script>
 <script>
 const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
 
-const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const CAS=(P.has('gen')||!(Q in DATA))&&window.GEN&&GEN(Q)?'gen':(Q==='citra'?'citra':'ecoulement');const D=CAS==='gen'?GEN(Q):DATA[CAS];
+const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const CAS=(P.has('gen')||!(Q in DATA))&&window.GEN&&GEN(Q)?'gen':(Q==='citra'?'citra':'ecoulement');const D=CAS==='gen'?ENRICHIR(GEN(Q),Q):DATA[CAS];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
 function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
 function fermer(){document.querySelectorAll('.c-voile,.c-sheet').forEach(e=>e.remove());}
 function feuille(html){fermer();const v=document.createElement('div');v.className='c-voile';v.onclick=fermer;const s=document.createElement('div');s.className='c-sheet';s.setAttribute('role','dialog');s.innerHTML=html;document.body.append(v,s);return s;}
 function ligneHTML(n,cit,ic,opt){return '<div class="c-quote"><span class="c-ln mono">'+n+'</span><p>'+(ic?ic+' ':'')+marque(n,cit)+'</p></div><div class="c-row">'+(opt?'<button class="c-star" data-retenir>☆ Retenir</button>':'')+'<button class="c-ret">📝 Mes notes ↩</button></div>';}
-function versLigne(it,opt){if(!it.ligne){feuille('<div class="c-quote"><span class="c-ln">✦</span><p>'+esc(it.ic+' '+it.mot)+'</p></div><div class="c-row">'+(opt?'<button class="c-star">☆ Retenir</button>':'')+'<button class="c-ret">✕</button></div>');return;}feuille(ligneHTML(it.ligne,it.cit,it.ic,opt));}
+function versLigne(it,opt){if(!it.ligne){feuille('<div class="c-quote"><span class="c-ln" style="color:var(--ia)">✦</span><p><b style="color:var(--ia)">Proposé par l’IA</b>, pas dans tes notes : '+esc(it.ic+' '+it.mot)+'</p></div><div class="c-row"><button class="c-ret" style="border:1.5px dashed var(--ia);color:var(--ia)" data-refus="'+(it.k||'')+'">✕ Retirer</button><button class="c-star">＋ Garder</button></div>');return;}feuille(ligneHTML(it.ligne,it.cit,it.ic,opt));}
 function meta(btn){const o=document.querySelector('.c-meta');if(o){o.remove();return;}const m=document.createElement('div');m.className='c-meta';m.textContent=D.meta;const r=btn.getBoundingClientRect();m.style.top=(r.bottom+6+scrollY)+'px';m.style.right='10px';document.body.append(m);}
 
 
 document.querySelector('[data-titre]').textContent=D.titre;
-const p=document.getElementById('p');
+const p=document.getElementById('p');if(CAS==='gen')p.classList.add('c1');
 const chip=(k,cls,inner)=>'<button class="v3-c '+cls+'" data-k="'+k+'">'+inner+'</button>';
-if(CAS==='gen'){/* rendu générique (CAS-12) */
+if(CAS==='gen'){/* rendu générique, correction 1 : un chemin seulement s'il est propre au genre (problème, achat, échéance) ; sinon pas de rail */
+ if(P.has('detail'))D.regle=null;
  let h='';const S=(cls,st,chips,attr)=>'<section class="v3-s '+cls+'"'+(attr||'')+'><span class="v3-st">'+st+'</span><div class="v3-chips">'+chips.join('')+'</div></section>';
- const pz=D.pistes.map(q=>chip(q.k,q.ok==='trouve'?'ok':q.ok==='non'?'non':'att','<span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b>'+(q.ok==='trouve'?'<span>✓</span>':q.ok==='non'?'<span>✗</span>':''))).concat(D.chiffres.map(x=>chip(x.k,'','<span class="e">'+x.ic+'</span><b class="mono">'+esc(x.mot)+'</b>')));
- const now=[];if(D.tache)now.push(chip('tache','tache','<span class="q"></span><span class="e">'+D.tache.ic+'</span><b>'+esc(D.tache.mot)+'</b>'));if(D.ech)now.push(chip('ech','att','<span class="e">⏳</span><b>'+esc(D.ech.mot)+'</b>'));D.liste.forEach(l=>now.push(chip(l.k,'tache','<span class="q"></span><b>'+esc(l.mot)+'</b>')));
- const op=D.options.map(o=>chip(o.k,o.ia?'ia ia-d':'opt','<span class="e">'+o.ic+'</span><b class="mono">'+esc(o.cout)+'</b>'+(o.conseil?'<span style="color:var(--ia)">★</span>':'')));
- if(D.comp){const A=D.comp.arts;const top=A.reduce((m,a)=>a.gagne>m.gagne?a:m,A[0]);
-  h+='<section class="v3-s ici" data-utile><span class="v3-st">⚖️</span><div class="v3-duel"><span></span>'+A.map(a=>'<button class="h" data-art="'+a.k+'">'+esc(a.nom)+(a===top&&a.gagne?' 👑':'')+'</button>').join('')+D.comp.crit.map((c,j)=>'<span class="k">'+c.ic+'</span>'+A.map((a,i)=>'<span class="v '+(c.g===i?'w':'x')+' mono">'+esc(a.vals[j])+'</span>').join('')).join('')+'</div></section>';
-  if(pz.length)h+=S('','🔎',pz);
-  h+=S('','✋',A.map(a=>'<button class="v3-c opt" data-art="'+a.k+'">☆ '+esc(a.nom)+'</button>').concat(now));
+ const pz=D.pistes.map(q=>chip(q.k,q.ok==='trouve'?'ok':q.ok==='non'?'non':'att','<span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b>'+(q.ok==='trouve'?'<span>✓</span>':q.ok==='non'?'<span>✗</span>':'<span>?</span>')));
+ const ch=D.paire?[chip(D.paire.a.k,'','<span class="e">'+D.paire.a.ic+'</span><b class="mono">'+esc(D.paire.a.mot)+' <span style="color:var(--bad)">↘</span> '+esc(D.paire.b.mot)+'</b>')]:D.chiffres.map(x=>chip(x.k,'','<span class="e">'+x.ic+'</span><b class="mono">'+esc(x.mot)+'</b>'));
+ const op=D.options.map(o=>chip(o.k,o.ia?'ia ia-d':'opt','<span class="e">'+o.ic+'</span><b>'+esc(o.mot)+'</b>'+(o.inconnu?(o.hach?HACH:''):'<b class="mono" style="font-size:17px">'+esc(o.cout)+'</b>')+(o.conseil?TAG_CONSEIL:'')+(o.ia?TAG_IA+'<span class="c1-x" role="button" data-refus="'+o.k+'" aria-label="Refuser">✕</span>':'')));
+ const li=D.liste.map(l=>chip(l.k,'li','<span class="q"></span><b>'+(l.corr?l.ic+' ':'')+esc(l.mot)+'</b>'));
+ const tch=(cd)=>D.tache?chip('tache','tache','<span class="q"></span><b style="flex:1">'+esc(D.tache.mot)+'</b>'+(cd?COMPTE_HTML(D.date):'')):'';
+ const rail=D.regle?'regle':D.comp?'achat':D.genre==='probleme'?'pb':D.date?'date':null;
+ if(!rail)p.classList.add('v3-sans');
+ if(rail==='regle'){const n=D.options.length+D.pistes.length+D.liste.length+D.chiffres.length;
+  h+=S('ok','✅',[chip('regle','ok tache','<b style="flex:1">'+esc(D.regle.mot)+'</b>')],' data-utile');
+  if(D.ech&&D.ech.date)h+=S('ok','🗓️',[chip('ech','','<b>'+esc(D.ech.quoi||'')+'</b>'+COMPTE_HTML(D.ech.date))]);
+  if(n)h+='<button class="v3-c plus" style="margin-left:0" onclick="location.search+=\'&detail=1\'">▸ Détail <span class="mono">'+n+'</span></button>';
+ }else if(rail==='achat'){const A=D.comp.arts,C=D.comp;
+  let t='<div class="v3-duel" style="grid-template-columns:30px repeat('+A.length+',minmax(0,1fr))"><span></span>'+A.map(a=>'<button class="h" data-art="'+a.k+'">'+(a.ic||'')+' '+esc(a.nom)+(a.conseil?TAG_CONSEIL:'')+'</button>').join('');
+  C.crit.forEach((c,j)=>{const un=(c.nom.match(/\/\S+/)||[''])[0];t+='<span class="k">'+c.ic+(un?'<small style="display:block;font-size:12px;color:var(--mut)" class="mono">'+esc(un)+'</small>':'')+'</span>'+A.map((a,i)=>a.vals[j]==='?'?'<span class="v u" aria-label="inconnu"></span>':j===C.iq&&a.manque?'<span class="v a mono" style="color:var(--bad)">⚠ '+a.total.q+'/'+C.besoin+'</span>':'<span class="v '+(c.g===i&&!a.manque?'w':'x')+' mono">'+esc((un?a.vals[j].replace(un,''):a.vals[j]).replace(/^(\d+)\s*min$/,'≥$1').replace(/^par\s+/,''))+'</span>').join('');});
+  if(C.besoin)t+='<span class="k">🧾</span>'+A.map((a,i)=>'<span class="v '+(a.manque?'a':C.totalG===i?'w':'x')+' mono" style="'+(a.manque?'color:var(--bad)':'')+'">'+(a.total.livInconnue?'≥':'')+a.total.chf+(C.totalG===i?' 👑':'')+'</span>').join('');
+  h+='<section class="v3-s ici" data-utile><span class="v3-st">⚖️</span>'+t+'</div>'+(D.date?'<div style="margin-top:8px">'+COMPTE_HTML(D.date)+'</div>':'')+'</section>';
+  h+=S('','✋',A.map(a=>'<button class="v3-c opt" data-art="'+a.k+'">☆ '+esc(a.nom)+'</button>').concat(pz));
   h+=S('vide','📦',op.concat(['<button class="v3-c plus" aria-label="Ajouter">+</button>']));
+ }else if(rail==='pb'){
+  h+=S(D.pistes.some(q=>q.ok==='trouve')?'ok':'','🔎',pz.concat(ch,['<button class="v3-c plus" aria-label="Ajouter une piste">+</button>']),' data-utile');
+  if(D.tache)h+=S('ici',D.tache.ic,[tch(true)].concat(li));
+  h+=S('vide','🛠️',op.concat(['<button class="v3-c plus" aria-label="Ajouter une option">+</button>']));
+ }else if(rail==='date'){const e=D.ech||D.tache;
+  h+=S('ici',D.tache?D.tache.ic:D.ic,[tch(false)],' data-utile');
+  const mid=pz.concat(op,li,ch);if(mid.length)h+=S('','📋',mid);
+  h+=S('fin','🗓️',[chip(D.ech?'ech':'tache','att',(D.ech&&D.ech.quoi&&D.ech.quoi!==(D.tache&&D.tache.mot)?'<b>'+esc(D.ech.quoi)+'</b>':'')+COMPTE_HTML(D.date))]);
  }else{
-  if(pz.length)h+=S(D.pistes.some(q=>q.ok==='trouve')?'ok':'','🔎',pz.concat(['<button class="v3-c plus" aria-label="Ajouter une piste">+</button>']),now.length?'':' data-utile');
-  if(now.length)h+=S('ici','📞',now,' data-utile');
-  h+=S('vide','🛠️',op.concat(['<button class="v3-c plus" aria-label="Ajouter une option">+</button>']),pz.length||now.length?'':' data-utile');
+  if(D.tache)h+=S('ici','',[tch(true)],' data-utile');
+  if(pz.length)h+=S('','',pz.concat(['<button class="v3-c plus" aria-label="Ajouter une piste">+</button>']));
+  if(op.length)h+=S('','',op.concat(['<button class="v3-c plus" aria-label="Ajouter une option">+</button>']));
+  if(li.length)h+=S('','',li);if(ch.length)h+=S('','',ch);
  }
+ if(IA_ABSENTE){p.classList.add('v3-sans');h=SANS_IA(D);}
  p.innerHTML=h;
 }else if(CAS==='ecoulement'){const I=D.it;
  p.innerHTML=
@@ -116,9 +146,12 @@ if(CAS==='gen'){/* rendu générique (CAS-12) */
  '<section class="v3-s"><span class="v3-st">✋</span><div class="v3-chips">'+chip('prix','ia ia-d','<span class="e">✓</span><b>Prix/g</b>'+fl('ch'))+'<button class="v3-c opt" data-art="A">☆ '+fl('fr')+'</button><button class="v3-c opt" data-art="B">☆ '+fl('ch')+'</button></div></section>'+
  '<section class="v3-s vide"><span class="v3-st">📦</span><div class="v3-chips"><button class="v3-c plus" aria-label="Ajouter">+</button></div></section>';
 }
+{const b=document.querySelector('[data-aide3]');if(IA_ABSENTE&&CAS==='gen'){b.textContent='💡 Aide ⟳';b.style.borderColor='var(--line)';b.style.color='var(--mut)';b.disabled=true;}
+ b.onclick=()=>{if(!D.aide||!D.aide.length)return;document.querySelectorAll('.v3-bub').forEach(x=>x.remove());const a=D.aide[0];const bub=document.createElement('div');bub.className='v3-bub';bub.style.margin='0 0 8px';bub.innerHTML='<span class="c-ln" style="color:var(--ia)">✦</span><p><b style="color:var(--ia)">IA 1/'+D.aide.length+'</b> '+a.ic+' '+esc(a.mot)+'</p><button class="c-ret" style="height:36px;padding:0 10px" data-refus="'+(a.k||'')+'">✕</button><button class="c-star" style="height:36px">＋</button>';p.prepend(bub);};}
 p.onclick=e=>{const b=e.target.closest('[data-k],[data-art]');if(!b)return;document.querySelectorAll('.v3-bub').forEach(x=>x.remove());
  const it=b.dataset.k?D.it[b.dataset.k]:D[b.dataset.art];const bub=document.createElement('div');bub.className='v3-bub';
- bub.innerHTML=it.ligne?'<span class="c-ln mono">'+it.ligne+'</span><p>'+marque(it.ligne,it.cit)+'</p><button class="c-ret" style="height:36px;padding:0 10px" aria-label="Ouvrir dans Mes notes">📝↩</button>':'<span class="c-ln">✦</span><p style="color:var(--ia)">'+esc(D.conseil)+'</p>';
+ if(!it.ligne&&b.dataset.k&&D.it[b.dataset.k]&&CAS==='gen'){bub.innerHTML='<span class="c-ln" style="color:var(--ia)">✦</span><p><b style="color:var(--ia)">Proposé par l’IA</b>, pas dans tes notes : '+esc(it.ic+' '+it.mot)+'</p><button class="c-ret" style="height:36px;padding:0 10px;border:1.5px dashed var(--ia);color:var(--ia)" data-refus="'+b.dataset.k+'">✕</button><button class="c-star" style="height:36px">＋</button>';(b.closest('.v3-chips')||b.closest('.v3-s')).append(bub);return;}
+  bub.innerHTML=it.ligne?'<span class="c-ln mono">'+it.ligne+'</span><p>'+marque(it.ligne,it.cit)+'</p><button class="c-ret" style="height:36px;padding:0 10px" aria-label="Ouvrir dans Mes notes">📝↩</button>':'<span class="c-ln">✦</span><p style="color:var(--ia)">'+esc(D.conseil)+'</p>';
  const host=b.closest('.v3-chips')||b.closest('.v3-s');host.append(bub);};
 
 </script>

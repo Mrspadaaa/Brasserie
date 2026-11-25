@@ -1,3 +1,80 @@
+OK — correction 1 : v1, v2, v3, v6 corrigées, v7 recette faite, 12 cas ≤ 30 mots
+
+## Correction 1 (nuit du 25.11)
+
+### Écartées (une ligne chacune)
+- **v4 feu tricolore** : écartée. Ses lampes sont fixes, donc la couleur ment dans 7 à 9 cas sur 12. Les trois juges lui donnent moins de 5. On garde sa jauge hachurée pour l'inconnu, qui passe dans v2 et v7.
+- **v5 kanban** : écartée. Ses 3 colonnes de 115 px laissent deux tiers de l'écran vides et rangent des faits dans « Fait ». Les trois juges lui donnent moins de 5. On garde les mots « à vérifier / à faire / fait » et la barre de duel.
+- v4.html et v5.html ne sont pas touchés. Leurs captures cap12 restent celles du tour 1.
+
+### Fichiers écrits
+- `visuel/v7.html` est la recette. Base v6, avec :
+  - le héros toujours tâche du brasseur, ou « ✓ Réglé » ;
+  - le compte à rebours J-n avec ses mots, et l'anneau ✓n ?n ✗n (v1) ;
+  - 2 chiffres clés au plus, sur une ligne, et la paire 1,2 ↘ 0,4 bar (v2) ;
+  - la table « qui gagne quoi » à N colonnes, avec une ligne 🧾 de coût total pour le besoin et ⚠ 400/600 (v3 et C5) ;
+  - l'inconnu hachuré violet (v2 et v4) ;
+  - la ligne qui s'ouvre sur place (v3), et Aide une proposition à la fois au-dessus de la barre, héros visible ;
+  - les marques ✦ IA et ✦ conseillé, avec ✕ au repos ;
+  - l'état IA absente (`&ia=0`).
+- `visuel/reponses/enrichi.js` (ajout ; adapt.js et les JSON ne sont pas touchés) complète le modèle commun :
+  - réglé, date et jours restants, avec le 25 nov. 2026 comme aujourd'hui des maquettes ;
+  - coût inconnu, anneau, coût total et manque, doublons de chiffres retirés, paire de même unité, propositions de l'IA ;
+  - lecture locale : règles de `analyseLocale.ts`, simplifiées ;
+  - la ligne « prix pro » du bar, qui manquait à la réponse écrite à la main (C6) ;
+  - les communs des variantes : tags, hachuré, compte à rebours, refus avec « Annuler », IA absente.
+- `visuel/v1.html`, `v2.html`, `v3.html` et `v6.html` : branche générique réécrite, problèmes B et m des juges (détail dans CORRECTION-1-FAIT.md).
+- Captures : `visuel/cap12/` (60 captures, 5 variantes × 12 cas, écrasées), `cap12/mesures.json`, et `visuel/cap/` :
+  - v7, gestes : `v7-{ecoulement,bouteilles,chaudiere}-{repos,ligne,aide,refus,sansia}.png` et `v7-ecoulement-ia-ligne.png` ;
+  - v1, v2, v3 et v6, preuve des communs : `<v>-ecoulement-sansia.png` et `<v>-ecoulement-refus.png`.
+- Scripts, hors livrable, dans le scratchpad : `cap-c1.cjs` (captures et mesures), `extra.cjs`, `grille.cjs` (planches), `patch.cjs`.
+
+### Sortie décisive : mots au premier écran et px de la première info utile (script, titre exclu, placeholder compté)
+
+| cas | v1 | v2 | v3 | v6 | v7 |
+|---|---|---|---|---|---|
+| ecoulement | 22 · 118 px | 18 · 50 px | 21 · 54 px | 25 · 48 px | 29 · 46 px |
+| citra | 11 · 99 px | 12 · 50 px | 12 · 54 px | 11 · 48 px | 11 · 46 px |
+| co2 | 20 · 118 px | 19 · 50 px | 18 · 54 px | 22 · 48 px | 30 · 46 px |
+| pilsner | 11 · 52 px | 13 · 50 px | 13 · 54 px | 15 · 48 px | 15 · 46 px |
+| fete | 15 · 118 px | 22 · 50 px | 20 · 54 px | 22 · 48 px | 28 · 46 px |
+| assurance | 13 · 118 px | 20 · 50 px | 17 · 54 px | 20 · 48 px | 21 · 46 px |
+| cave | 11 · 118 px | 18 · 50 px | 18 · 54 px | 20 · 48 px | 23 · 46 px |
+| chaudiere | 25 · 83 px | 25 · 50 px | 20 · 54 px | 27 · 48 px | 30 · 46 px |
+| sureau | 10 · 118 px | 12 · 50 px | 10 · 54 px | 12 · 48 px | 18 · 46 px |
+| bouteilles | 23 · 97 px | 22 · 50 px | 30 · 54 px | 23 · 48 px | 30 · 46 px |
+| bar | 19 · 118 px | 20 · 50 px | 18 · 54 px | 20 · 48 px | 26 · 46 px |
+| levure | 11 · 118 px | 15 · 50 px | 11 · 54 px | 13 · 48 px | 20 · 46 px |
+
+- Maxima au repos : v1 25 mots et 118 px ; v2 25 mots et 50 px ; v3 30 mots et 54 px ; v6 27 mots et 48 px ; v7 30 mots et 46 px. Les 60 cas tiennent dans ≤ 30 mots et ≤ 120 px.
+- Contrôles sur les 60 cas : 0 débordement horizontal, 0 chevauchement de cibles, 0 texte coupé, 0 erreur de page. Le comptage est celui de `cap12/mesures.json` : un jeton par mot, « 0.42/bt » compte pour 2.
+- v7 et bouteilles sont à 30 mots pile. La règle tient, sans marge.
+- Mots après un geste v7 :
+  - écoulement : ligne 37, aide 42, refus 28, IA absente 27, ligne IA 41 ;
+  - bouteilles : ligne 41, aide 38, refus 33, IA absente 21 ;
+  - chaudière : ligne 38, aide 42, refus 32, IA absente 24.
+- Ouvrir une ligne ou l'Aide ajoute sa phrase (ses mots, ou la proposition) et dépasse 30 mots. La règle porte sur le premier écran au repos ; c'est un point ouvert, voir la décision ci-dessous.
+
+### Captures (toutes ouvertes, en planches côte à côte et une à une pour les gestes v7)
+`work/missions/2026-11-25-carnet-document/visuel/cap12/{v1,v2,v3,v6,v7}-<cas>.png` ; `visuel/cap/v7-*.png` ; `visuel/cap/{v1,v2,v3,v6}-ecoulement-{sansia,refus}.png`.
+
+### Défauts vus et laissés
+- **v1, refus** : retirer le nœud de l'IA laisse son trait pointillé jusqu'à ce que la page soit redessinée (`cap/v1-ecoulement-refus.png`).
+- **v1, réglé** : le pilsner met la carte « Réglé » en haut ; la carte du cœur est vide.
+- **v6 et v1, assurance** : la rangée « Renouveler l'assurance J-36 » répète le compte à rebours du héros.
+
+### Prédiction
+« Là je vois quoi faire et pour quand ; le pilsner est réglé, et les bouteilles c'est B, parce que l'occasion n'en a que 400. »
+v7 et v6 devraient passer 7, v3 sort peut-être de la frise, et v1 reste belle mais secondaire.
+
+DÉCISION À PRENDRE : la règle de 30 mots s'applique-t-elle aussi après un geste (ligne ouverte, Aide) ? Aujourd'hui, elle tient au repos ; après un geste, la v7 monte de 28 à 42 mots (la ligne citée est ses mots).
+CONNAISSANCE : sous Git Bash, un heredoc passé à node peut perdre des barres obliques inverses dans les expressions rationnelles (`\s`, `\/`) ; écrire les scripts avec l'outil d'écriture, pas par heredoc.
+LEÇON PROPOSÉE : un état du modèle commun (réglé, date, titre d'option) se corrige d'abord dans l'adaptateur partagé (ici enrichi.js), puis chaque variante le lit ; c'est la proposition du juge critique, confirmée : C1 à C7 réglés une fois pour 5 variantes.
+
+---
+
+## Tour 0 (archive)
+
 OK — 6 genres d'Organisé visuel, 2 cas réels, 10 à 17 mots au premier écran
 
 ## Fichiers écrits
