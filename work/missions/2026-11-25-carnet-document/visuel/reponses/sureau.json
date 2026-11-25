@@ -1,0 +1,73 @@
+{
+ "cas": "sureau",
+ "src": "cas-fictifs.json#1",
+ "carnetTitre": "ZZ TEST — Idée bière au sureau",
+ "etat": "note",
+ "lignes": [
+  "Sureau en fleur fin mai, cueillir au bord de la forêt",
+  "Base blonde légère 4.5%",
+  "Infuser les fleurs en fin d'ébullition ou à froid ?",
+  "Goûter celle de la brasserie voisine"
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🌼",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Brassage"
+  },
+  "priorite": "basse",
+  "resume": "Goûter la voisine",
+  "etatPropose": "note",
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "♨️",
+    "titre": "Fin d’ébullition",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "en fin d'ébullition",
+    "conseille": false
+   },
+   {
+    "emoji": "❄️",
+    "titre": "À froid",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "à froid",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "🍺",
+   "titre": "Goûter la voisine",
+   "ligne": 4,
+   "citation": "Goûter celle de la brasserie voisine"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🍺",
+    "valeur": "4.5%",
+    "label": "Base blonde",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "conseil": "🧪 Essaie les deux infusions sur un petit lot.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "fin mai",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "idee"
+ }
+}

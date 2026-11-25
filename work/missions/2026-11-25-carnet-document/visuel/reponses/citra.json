@@ -1,0 +1,104 @@
+{
+ "cas": "citra",
+ "src": "c75/houblons-citra.json",
+ "carnetTitre": "ZZ TEST — Houblons citra",
+ "etat": "note",
+ "lignes": [
+  "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+  "https://www.brauundrauchshop.ch/citra-136-2",
+  "Ça semble dur à obtenir sur le site français"
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🌿",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Matières premières"
+  },
+  "priorite": "normale",
+  "resume": "Ouvrir les liens",
+  "etatPropose": "cherche",
+  "pistes": [
+   {
+    "emoji": "🇫🇷",
+    "texte": "Site français",
+    "statut": "a_verifier",
+    "ligne": 3,
+    "citation": "dur à obtenir sur le site français"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🛒",
+    "titre": "MotlerHops",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 1,
+    "citation": "motlerhops.fr",
+    "conseille": false
+   },
+   {
+    "emoji": "🛒",
+    "titre": "Brau und Rauchshop",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "brauundrauchshop.ch",
+    "conseille": false
+   }
+  ],
+  "tache": null,
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [],
+  "retenir": [],
+  "conseil": "🔗 Ouvre les deux liens pour lire les prix.",
+  "resolu": null,
+  "lectures": [],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix",
+    "📦 Dispo"
+   ],
+   "articles": [
+    {
+     "nom": "MotlerHops",
+     "ligne": 1,
+     "citation": "motlerhops.fr",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    },
+    {
+     "nom": "Brau und Rauchshop",
+     "ligne": 2,
+     "citation": "brauundrauchshop.ch",
+     "valeurs": [
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    }
+   ],
+   "gagnant": [
+    null,
+    null
+   ],
+   "compromis": "Prix et stock derrière les liens."
+  },
+  "genre": "achat"
+ }
+}

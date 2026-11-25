@@ -1,0 +1,75 @@
+{
+ "cas": "levure",
+ "src": "cas-fictifs.json#4",
+ "carnetTitre": "ZZ TEST — Levure récoltée à tester",
+ "etat": "note",
+ "lignes": [
+  "Levure récoltée du fermenteur 2 (US-05), 3e génération",
+  "Gardée au frigo depuis 12 jours",
+  "Faire un starter avant d'ensemencer",
+  "Odeur ok, pas de mousse bizarre"
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🧫",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Fermentation"
+  },
+  "priorite": "normale",
+  "resume": "Faire un starter",
+  "etatPropose": "note",
+  "pistes": [
+   {
+    "emoji": "👃",
+    "texte": "Odeur",
+    "statut": "trouve",
+    "ligne": 4,
+    "citation": "Odeur ok"
+   },
+   {
+    "emoji": "🫧",
+    "texte": "Mousse",
+    "statut": "trouve",
+    "ligne": 4,
+    "citation": "pas de mousse bizarre"
+   }
+  ],
+  "options": [],
+  "tache": {
+   "emoji": "🧪",
+   "titre": "Faire un starter",
+   "ligne": 3,
+   "citation": "Faire un starter"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🔁",
+    "valeur": "3e génération",
+    "label": "Génération",
+    "ligne": 1
+   },
+   {
+    "emoji": "❄️",
+    "valeur": "12 jours",
+    "label": "Au frigo",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "conseil": "⏳ Si le starter ne part pas, ne l’ensemence pas.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "12 jours",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "memo"
+ }
+}

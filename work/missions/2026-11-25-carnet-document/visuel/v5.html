@@ -65,10 +65,11 @@ body:has(.v5-duel) .v5-col{min-height:calc(100vh - 232px)}
 <div id="duel"></div>
 <main class="v5-b" id="b"></main>
 <div class="v5-bas"><button aria-label="Mes notes">📝</button><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="a">💡 Aide</button></div>
+<script src="reponses/reponses.js"></script><script src="reponses/adapt.js"></script>
 <script>
 const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
 
-const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const CAS=(P.has('gen')||!(Q in DATA))&&window.GEN&&GEN(Q)?'gen':(Q==='citra'?'citra':'ecoulement');const D=CAS==='gen'?GEN(Q):DATA[CAS];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
 function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
@@ -83,7 +84,20 @@ document.querySelector('[data-titre]').textContent=D.titre;
 const b=document.getElementById('b');
 const V=(k,cls,e,m,bd,g)=>'<button class="v5-v '+cls+'" data-k="'+k+'"'+(g?' data-geste':'')+'><div class="in"><div class="fr"><span class="e">'+e+'</span><span class="m">'+m+'</span>'+(bd?'<span class="bd">'+bd+'</span>':'')+'</div><div class="bk"></div></div></button>';
 const col=(cls,ic,lab,inner,plus)=>'<section class="v5-col '+cls+'"><div class="v5-h"><span class="i">'+ic+'</span>'+lab+'</div>'+inner+(plus?'<button class="v5-plus" aria-label="Ajouter">+</button>':'')+'</section>';
-if(CAS==='ecoulement'){
+if(CAS==='gen'){/* rendu générique (CAS-12) */
+ const VER=[],FAI=[],FAIT=[];
+ if(D.comp){const A=D.comp.arts;const tot=A.reduce((s,a)=>s+a.gagne,0);const top=A.reduce((m,a)=>a.gagne>m.gagne?a:m,A[0]);const cl=['var(--fin)','var(--ok)','var(--att)'];
+  document.getElementById('duel').innerHTML='<div class="v5-duel" data-utile><span>'+esc(A[0].nom)+' 👑'+A[0].gagne+'</span><span class="bar">'+A.map((a,i)=>'<i style="flex:'+(tot?a.gagne||0.0001:1)+';background:'+(tot?cl[i%3]:'var(--line)')+'"></i>').join('')+'</span>'+A.slice(1).map(a=>'<span>👑'+a.gagne+' '+esc(a.nom)+'</span>').join('')+'</div>';
+  D.comp.crit.forEach((cr,j)=>{if(cr.g!=null)FAIT.push(V(A[cr.g].k,'ok',cr.ic,'<span class="mono">'+esc(A[cr.g].vals[j])+'</span>','✓'));else{D.it['u'+j]={ic:cr.ic,mot:cr.nom+' ?'};VER.push(V('u'+j,'ia ia-d',cr.ic,esc(cr.nom),''));}});
+  A.forEach(a=>FAI.push(V(a.k,'opt w','☆',esc(a.nom),a===top&&a.gagne?'👑':'')));}
+ D.pistes.forEach(q=>{if(q.ok==='verif')VER.push(V(q.k,'',q.ic,esc(q.mot),'?'));else FAIT.push(V(q.k,q.ok==='trouve'?'ok':'non',q.ic,esc(q.mot),q.ok==='trouve'?'✓':'✗'));});
+ if(D.tache)FAI.push(V('tache','tache',D.tache.ic,esc(D.tache.mot),' '));
+ if(D.ech)FAI.push(V('ech','','⏳',esc(D.ech.mot),''));
+ D.options.forEach(o=>FAI.push(V(o.k,o.ia?'ia ia-d':'opt',o.ic,'<span class="mono">'+esc(o.cout)+'</span>',o.conseil?'★':'')));
+ D.liste.forEach(l=>FAI.push(V(l.k,'tache','',esc(l.mot),' ')));
+ b.innerHTML=col('v','?','À vérifier',VER.join(''),1)+col('f','☐','À faire',FAI.join(''),1)+col('d','✓','Fait',FAIT.join(''),0);
+ if(!D.comp)b.querySelector('.v5-col.d').setAttribute('data-utile','');
+}else if(CAS==='ecoulement'){
  b.innerHTML=col('v','?','À vérifier',V('devis','','⏳','Devis','')+V('cause','ia ia-d','🔧','Seule cause ?',''),1)+
   col('f','☐','À faire',V('tache','tache','📞','Contacter X',' ')+V('optX','opt','👷','<span class="mono">150 CHF</span>','★')+V('optJ','ia ia-d','🔧','<span class="mono">? CHF</span>',''),1)+
   col('d','✓','Fait',V('joint','ok','🔧','Joint','✓')+V('dalle','non','🧱','Dalle','✗',1),0);

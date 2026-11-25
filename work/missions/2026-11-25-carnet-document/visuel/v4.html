@@ -67,10 +67,11 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 <header class="v4-top"><button class="v4-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v4-ib" aria-label="Mes notes">📝</button><button class="v4-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button></header>
 <main class="v4-w" id="w"></main>
 <div class="v4-bas"><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="v4-aide" aria-label="Aide" data-geste>💡</button></div>
+<script src="reponses/reponses.js"></script><script src="reponses/adapt.js"></script>
 <script>
 const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
 
-const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const CAS=(P.has('gen')||!(Q in DATA))&&window.GEN&&GEN(Q)?'gen':(Q==='citra'?'citra':'ecoulement');const D=CAS==='gen'?GEN(Q):DATA[CAS];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
 function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
@@ -84,7 +85,27 @@ function meta(btn){const o=document.querySelector('.c-meta');if(o){o.remove();re
 document.querySelector('[data-titre]').textContent=D.titre;
 const w=document.getElementById('w');
 const c=(k,cls,inner)=>'<button class="v4-c '+cls+'" data-k="'+k+'">'+inner+'</button>';
-if(CAS==='ecoulement'){
+if(CAS==='gen'){/* rendu générique (CAS-12) */
+ let h='';const num=s=>{const m=String(s).replace(/\s/g,'').match(/(\d+(?:[.,]\d+)?)/);return m?parseFloat(m[1].replace(',','.')):null;};
+ const Gr=[],Or=[],Rr=[];
+ if(D.comp){const A=D.comp.arts;
+  h+='<div style="display:flex;gap:6px;align-items:center;font-size:14px;color:var(--mut);margin:0 4px 8px">'+D.etapes.map((e,i)=>'<span style="'+(i===D.etape?'color:#000;background:var(--fin);font-weight:800;padding:2px 8px;border-radius:999px':'')+'">'+e[0]+(i===D.etape?' '+e[1]:'')+'</span>').join('<span>›</span>')+'</div>';
+  D.comp.crit.forEach((cr,j)=>{if(cr.g!=null){const a=A[cr.g];Gr.push('<button class="v4-c g" data-art="'+a.k+'"><span class="e">'+cr.ic+'</span><b class="mono">'+esc(a.vals[j])+'</b><span>'+esc(a.nom)+'</span></button>');}else{D.it['u'+j]={ic:cr.ic,mot:cr.nom+' ?'};Rr.push(c('u'+j,'r ia-d','<span class="e">'+cr.ic+'</span><b>'+esc(cr.nom)+' ?</b>'));}});}
+ D.pistes.forEach(q=>{const t='<span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b>';if(q.ok==='trouve')Gr.push(c(q.k,'g',t));else if(q.ok==='non')Gr.push(c(q.k,'non',t));else Rr.push(c(q.k,'r',t));});
+ D.chiffres.forEach(x=>Gr.push(c(x.k,'g','<span class="e">'+x.ic+'</span><b class="mono">'+esc(x.mot)+'</b>')));
+ if(D.tache)Or.push(c('tache','o','<span class="q"></span><span class="e">'+D.tache.ic+'</span><b>'+esc(D.tache.mot)+'</b>'));
+ if(D.ech)Or.push(c('ech','o','<span class="e">⏳</span><b>'+esc(D.ech.mot)+'</b>'));
+ D.liste.forEach(l=>Or.push(c(l.k,'o','<span class="q"></span><b>'+esc(l.mot)+'</b>')));
+ const row=a=>a.length?'<div class="v4-row">'+a.join('')+'</div>':'';
+ h+='<section class="v4-feu" data-utile><div class="v4-box"><span class="v4-lamp v4-g">✓</span><span class="v4-lamp v4-o">⏳</span><span class="v4-lamp v4-r">?</span></div>'+row(Gr)+row(Or)+row(Rr)+'</section>';
+ const pts=D.comp?D.comp.arts.map(a=>({k:a.k,art:1,ic:a.ic||esc(a.nom.charAt(0)),v:num(a.vals[0]),u:a.vals[0]})):D.options.map(o=>({k:o.k,ic:o.ic,v:o.cout==='?'?null:num(o.cout),u:o.cout,ia:o.ia,conseil:o.conseil}));
+ if(pts.length){const kn=pts.filter(x=>x.v!=null),mx=kn.length?Math.max(...kn.map(x=>x.v)):0,top=mx?+(mx*1.33).toPrecision(2):0,nu=pts.length-kn.length,z=nu?34:0;let ui=0;
+  const chf=pts.some(x=>/CHF/.test(x.u));
+  h+='<section class="v4-cout"><div class="v4-ax"><div class="rule"></div>'+(nu?'<div class="unk" style="left:0;width:'+z+'%"></div>':'')+pts.map(x=>{const left=x.v==null?z*(++ui)/(nu+1):Math.min(94,Math.max(z+6,z+(100-z)*x.v/top));
+   return '<button class="v4-mk'+(x.ia||x.v==null?' ia':'')+'" '+(x.art?'data-art':'data-k')+'="'+x.k+'" style="left:'+left.toFixed(1)+'%"><span class="p">'+x.ic+' <span class="mono">'+(x.v==null?'?':x.v)+'</span>'+(x.conseil?' <span style="color:var(--ia)">★</span>':'')+'</span></button>';}).join('')+'</div>'+
+   '<div class="v4-tk mono"><span>0</span><span>💰'+(chf?' CHF':'')+'</span><span>'+(top||'?')+'</span></div></section>';}
+ w.innerHTML=h;
+}else if(CAS==='ecoulement'){
  w.innerHTML='<section class="v4-feu" data-utile><div class="v4-box"><span class="v4-lamp v4-g">✓</span><span class="v4-lamp v4-o">⏳</span><span class="v4-lamp v4-r">?</span></div>'+
  '<div class="v4-row">'+c('joint','g','<span class="e">🔧</span><b>Joint</b>')+c('dalle','non','<span class="e">🧱</span><b>Dalle</b>')+'</div>'+
  '<div class="v4-row">'+c('tache','o','<span class="q"></span><span class="e">📞</span><b>Contacter X</b>')+c('devis','o','<span class="e">⏳</span><b>Devis</b>')+'</div>'+

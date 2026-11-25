@@ -1,0 +1,63 @@
+{
+ "cas": "cave",
+ "src": "c79/zz-ranger-la-cave.json",
+ "carnetTitre": "ZZ TEST — ranger la cave",
+ "etat": "note",
+ "lignes": [
+  "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux.",
+  "Prévu le samedi 6 déc. au matin.",
+  "Ranger la cave le samedi 6 déc. au matin."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "📦",
+  "categorie": {
+   "nom": "Local",
+   "sous": "Rangement"
+  },
+  "priorite": "haute",
+  "resume": "Samedi 6 déc.",
+  "etatPropose": "note",
+  "pistes": [],
+  "options": [],
+  "tache": {
+   "emoji": "🧹",
+   "titre": "Ranger la cave",
+   "quand": "samedi 6 déc. au matin",
+   "ligne": 2,
+   "citation": "Prévu le samedi 6 déc. au matin"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [],
+  "liste": [
+   {
+    "texte": "Trier les cartons",
+    "ligne": 1,
+    "citation": "trier les cartons vides"
+   },
+   {
+    "texte": "Monter une étagère",
+    "ligne": 1,
+    "citation": "monter une étagère"
+   },
+   {
+    "texte": "Jeter les seaux",
+    "ligne": 1,
+    "citation": "jeter les vieux seaux"
+   }
+  ],
+  "retenir": [],
+  "conseil": null,
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "samedi 6 déc.",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "memo"
+ }
+}

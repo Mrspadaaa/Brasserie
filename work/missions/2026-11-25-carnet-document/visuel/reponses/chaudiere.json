@@ -1,0 +1,103 @@
+{
+ "cas": "chaudiere",
+ "src": "cas-fictifs.json#0",
+ "carnetTitre": "ZZ TEST — Chaudière en panne jour de brassage",
+ "etat": "note",
+ "lignes": [
+  "Chaudière s'arrête toute seule, voyant rouge",
+  "Brassage IPA prévu demain 7h",
+  "Reset marche 10 min puis recoupe",
+  "Technicien ? numéro sur l'autocollant",
+  "Plan B : décaler au jeudi ?"
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🔥",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Brassage"
+  },
+  "priorite": "haute",
+  "resume": "Appeler le technicien",
+  "etatPropose": "cherche",
+  "pistes": [
+   {
+    "emoji": "🔴",
+    "texte": "Voyant rouge",
+    "statut": "a_verifier",
+    "ligne": 1,
+    "citation": "voyant rouge"
+   },
+   {
+    "emoji": "🔁",
+    "texte": "Reset 10 min",
+    "statut": "a_verifier",
+    "ligne": 3,
+    "citation": "Reset marche 10 min puis recoupe"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🧑‍🔧",
+    "titre": "Technicien",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 4,
+    "citation": "Technicien ?",
+    "conseille": true
+   },
+   {
+    "emoji": "📅",
+    "titre": "Décaler au jeudi",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 5,
+    "citation": "décaler au jeudi",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "📞",
+   "titre": "Appeler le technicien",
+   "ligne": 4,
+   "citation": "numéro sur l'autocollant"
+  },
+  "echeance": {
+   "quand": "demain 7h",
+   "quoi": "Brassage IPA",
+   "ligne": 2
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "⏱️",
+    "valeur": "10 min",
+    "label": "Avant coupure",
+    "ligne": 3
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "conseil": "📸 Note le code du voyant avant d’appeler.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "demain 7h",
+    "type": "date"
+   },
+   {
+    "ligne": 4,
+    "mot": "Technicien",
+    "type": "contacte"
+   },
+   {
+    "ligne": 5,
+    "mot": "jeudi",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "probleme"
+ }
+}

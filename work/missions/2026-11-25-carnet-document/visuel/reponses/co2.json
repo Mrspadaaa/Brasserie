@@ -1,0 +1,110 @@
+{
+ "cas": "co2",
+ "src": "c79/zz-co2-qui-baisse-vite.json",
+ "carnetTitre": "ZZ TEST — CO2 qui baisse vite dans un fût",
+ "etat": "decide",
+ "lignes": [
+  "Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22.",
+  "Pistes : joint du couvercle, raccord gaz ou régulateur.",
+  "Test à l’eau savonneuse : bulles au raccord gaz.",
+  "Raccord gaz changé, à revérifier dans une semaine."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🫧",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Conditionnement"
+  },
+  "priorite": "haute",
+  "resume": "Revérifier le raccord",
+  "etatPropose": "decide",
+  "pistes": [
+   {
+    "emoji": "🔗",
+    "texte": "Raccord gaz",
+    "statut": "trouve",
+    "ligne": 3,
+    "citation": "bulles au raccord gaz"
+   },
+   {
+    "emoji": "⭕",
+    "texte": "Joint du couvercle",
+    "statut": "a_verifier",
+    "ligne": 2,
+    "citation": "joint du couvercle"
+   },
+   {
+    "emoji": "🎛️",
+    "texte": "Régulateur",
+    "statut": "a_verifier",
+    "ligne": 2,
+    "citation": "régulateur"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🔧",
+    "titre": "Raccord changé",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 4,
+    "citation": "Raccord gaz changé",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "🔁",
+   "titre": "Revérifier le raccord",
+   "quand": "dans une semaine",
+   "ligne": 4,
+   "citation": "à revérifier dans une semaine"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "📈",
+    "valeur": "1,2 bar",
+    "label": "Le 15",
+    "ligne": 1
+   },
+   {
+    "emoji": "📉",
+    "valeur": "0,4 bar",
+    "label": "Le 22",
+    "ligne": 1
+   }
+  ],
+  "liste": [],
+  "retenir": [
+   {
+    "emoji": "🧼",
+    "texte": "Bulles au raccord gaz",
+    "ligne": 3,
+    "citation": "bulles au raccord gaz"
+   }
+  ],
+  "conseil": "🧼 Refais le test savonneux sur le raccord neuf.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "le 15 nov.",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "bulles au raccord gaz",
+    "type": "piste"
+   },
+   {
+    "ligne": 4,
+    "mot": "dans une semaine",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "probleme"
+ }
+}

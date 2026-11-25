@@ -1,0 +1,187 @@
+{
+ "cas": "bouteilles",
+ "src": "cas-fictifs.json#2",
+ "carnetTitre": "ZZ TEST — 600 bouteilles 33 cl",
+ "etat": "note",
+ "lignes": [
+  "Verallia : 0.42/bt, palette de 1200 min",
+  "Fournisseur B : 0.55/bt par 600, livraison 80 CHF",
+  "Occasion sur annonce : 0.20/bt, à laver, 400 seulement",
+  "Besoin avant le 15 du mois"
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🍾",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Conditionnement"
+  },
+  "priorite": "normale",
+  "resume": "Choisir une offre",
+  "etatPropose": "cherche",
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "🏭",
+    "titre": "Verallia",
+    "cout": "0.42/bt",
+    "source": "notes",
+    "ligne": 1,
+    "citation": "0.42/bt",
+    "conseille": false
+   },
+   {
+    "emoji": "🚚",
+    "titre": "Fournisseur B",
+    "cout": "0.55/bt",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "0.55/bt par 600",
+    "conseille": true
+   },
+   {
+    "emoji": "♻️",
+    "titre": "Occasion",
+    "cout": "0.20/bt",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "0.20/bt",
+    "conseille": false
+   }
+  ],
+  "tache": null,
+  "echeance": {
+   "quand": "avant le 15 du mois",
+   "quoi": "Avoir les bouteilles",
+   "ligne": 4
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🍾",
+    "valeur": "1200",
+    "label": "Minimum Verallia",
+    "ligne": 1
+   },
+   {
+    "emoji": "🚚",
+    "valeur": "80 CHF",
+    "label": "Livraison B",
+    "ligne": 2
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "conseil": "⚖️ Seul B livre 600 pile.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "0.42/bt",
+    "type": "montant"
+   },
+   {
+    "ligne": 2,
+    "mot": "80 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "0.20/bt",
+    "type": "montant"
+   },
+   {
+    "ligne": 4,
+    "mot": "avant le 15 du mois",
+    "type": "date"
+   }
+  ],
+  "comparaison": {
+   "criteres": [
+    "💰 Prix/bt",
+    "📦 Quantité",
+    "🚚 Livraison",
+    "🧽 État"
+   ],
+   "articles": [
+    {
+     "nom": "Verallia",
+     "ligne": 1,
+     "citation": "Verallia",
+     "valeurs": [
+      {
+       "texte": "0.42/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "1200 min",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    },
+    {
+     "nom": "Fournisseur B",
+     "ligne": 2,
+     "citation": "Fournisseur B",
+     "valeurs": [
+      {
+       "texte": "0.55/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "par 600",
+       "source": "notes"
+      },
+      {
+       "texte": "80 CHF",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      }
+     ]
+    },
+    {
+     "nom": "Occasion",
+     "ligne": 3,
+     "citation": "Occasion sur annonce",
+     "valeurs": [
+      {
+       "texte": "0.20/bt",
+       "source": "notes"
+      },
+      {
+       "texte": "400 seulement",
+       "source": "notes"
+      },
+      {
+       "texte": "?",
+       "source": "notes"
+      },
+      {
+       "texte": "à laver",
+       "source": "notes"
+      }
+     ]
+    }
+   ],
+   "gagnant": [
+    2,
+    1,
+    null,
+    null
+   ],
+   "compromis": "B : 600 pile, mais le plus cher."
+  },
+  "genre": "achat"
+ }
+}

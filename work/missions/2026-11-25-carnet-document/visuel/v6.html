@@ -64,10 +64,11 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 <header class="v6-top"><button class="v6-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v6-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button></header>
 <main id="m"></main>
 <div class="v6-bas"><button class="n" aria-label="Mes notes">📝</button><input placeholder="Ajouter…" aria-label="Ajouter une ligne"><button class="a" data-geste>💡 Aide</button></div>
+<script src="reponses/reponses.js"></script><script src="reponses/adapt.js"></script>
 <script>
 const DATA={"ecoulement":{"titre":"ZZ TEST — Écoulement qui fuit","genre":"probleme","ic":"💧","meta":"mar. 24 nov. 21:26 · problème · rangé à 20:35 par l’IA","lignes":["L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.","Pistes : joint du siphon trouvé usé","fuite sous la dalle, pas trouvée.","Contacter l’entreprise X (exemple) pour un sanitaire.","Devis attendu.","Estimation 150 CHF (exemple).test"],"it":{"flaque":{"ic":"💧","mot":"Flaque","ligne":1,"cit":"flaque après chaque nettoyage"},"joint":{"ic":"🔧","mot":"Joint","ok":"trouve","ligne":2,"cit":"joint du siphon trouvé usé"},"dalle":{"ic":"🧱","mot":"Dalle","ok":"non","ligne":3,"cit":"pas trouvée"},"devis":{"ic":"⏳","mot":"Devis","ligne":5,"cit":"Devis attendu"},"optX":{"ic":"👷","mot":"Devis X","cout":"150","ligne":6,"cit":"Estimation 150 CHF","conseil":true},"optJ":{"ic":"🔧","mot":"Joint neuf","cout":"?","ia":true},"tache":{"ic":"📞","mot":"Contacter X","ligne":4,"cit":"Contacter l’entreprise X"},"cause":{"ic":"✓","mot":"Seule cause ?","ia":true}},"conseil":"Le joint du siphon usé explique bien la flaque après nettoyage. Demande à l’entreprise X de confirmer que le joint est la seule cause avant de valider le devis.","aide":[{"t":"check","ic":"✓","mot":"Joint seule cause ?"},{"t":"tache","ic":"☐","mot":"Acheter un joint"},{"t":"sugg","ic":"💡","mot":"Photo du siphon"}]},"citra":{"titre":"ZZ TEST — Houblons citra","genre":"achat","ic":"🛒","meta":"mar. 24 nov. 16:44 · achat · rangé à 19:29 par l’IA","lignes":["https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us","https://www.brauundrauchshop.ch/citra-136-2","Semble difficile à obtenir sur le site français"],"A":{"fl":"fr","nom":"MotlerHops","prix":"3,72 €","chf":"3,42","alpha":"10–15","stock":"en stock","ligne":1,"cit":"motlerhops.fr","gagne":1},"B":{"fl":"ch","nom":"Brau","prix":"dès 0,10","chf":"?","alpha":"13,6","stock":"?","aromes":"citron vert, mangue, fruits tropicaux","ligne":2,"cit":"brauundrauchshop.ch","gagne":2},"it":{"stock":{"ic":"📦","mot":"Stock","ligne":3,"cit":"difficile à obtenir"},"prix":{"ic":"💰","mot":"Prix/g ?","ia":true}},"conseil":"Brau donne un α précis (13,6 %) et vend en CHF ; son prix « dès 0,10 CHF » ne dit pas pour quelle quantité, donc les prix ne se comparent pas encore.","aide":[{"t":"check","ic":"✓","mot":"Frais d’envoi ?"},{"t":"tache","ic":"☐","mot":"Écrire à Brau"},{"t":"sugg","ic":"💡","mot":"Autre vendeur suisse"}],"etapes":[["⚖️","comparé"],["✋","choisi"],["📦","commandé"]],"etape":0}};
 
-const P=new URLSearchParams(location.search);const CAS=P.get('cas')==='citra'?'citra':'ecoulement';const D=DATA[CAS];
+const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const CAS=(P.has('gen')||!(Q in DATA))&&window.GEN&&GEN(Q)?'gen':(Q==='citra'?'citra':'ecoulement');const D=CAS==='gen'?GEN(Q):DATA[CAS];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fl=f=>'<i class="fl fl-'+f+'" role="img" aria-label="'+(f==='ch'?'Suisse':'France')+'"></i>';
 function marque(n,cit){const t=D.lignes[n-1];const i=cit?t.indexOf(cit):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(cit)+'</mark>'+esc(t.slice(i+cit.length));}
@@ -82,7 +83,31 @@ document.querySelector('[data-titre]').textContent=D.titre;
 const m=document.getElementById('m');
 const pa=(k,cls,inner)=>'<button class="v6-p '+cls+'" data-k="'+k+'">'+inner+'</button>';
 let heroHTML,past;
-if(CAS==='ecoulement'){
+if(CAS==='gen'){/* rendu générique (CAS-12) */
+ let hk;const verif=D.pistes.find(q=>q.ok==='verif');const u=D.comp?D.comp.crit.findIndex(cr=>cr.g==null):-1;
+ const prog=D.comp?' <span style="margin-left:auto;color:var(--mut);font-weight:700">⚖️ › ✋ › 📦</span>':'';
+ if(D.tache)hk={kick:'☐ Maintenant',big:D.tache.ic,act:esc(D.tache.mot),k:'tache',n:D.tache.ligne};
+ else if(u>=0){const cr=D.comp.crit[u];hk={kick:'✓ Maintenant',big:cr.ic,act:esc(cr.nom)+' ?',k:D.comp.arts[0].k,n:D.comp.arts[0].ligne,ia:1};}
+ else if(verif)hk={kick:'✓ Maintenant',big:verif.ic,act:esc(verif.mot)+' ?',k:verif.k,n:verif.ligne};
+ else if(D.options.length){const o=D.options.find(o=>o.conseil)||D.options[0];hk={kick:'☐ Maintenant',big:o.ic,act:esc(o.mot),k:o.k,n:o.ligne};}
+ else hk={kick:'✦ Maintenant',big:D.ic,act:esc(D.resume),k:null,n:null,ia:1};
+ heroHTML='<section class="v6-hero" data-utile'+(hk.ia?' style="background:radial-gradient(120% 90% at 20% 0%,color-mix(in srgb,var(--ia) 30%,#1c1c1f),#16161a)"':'')+'><div class="kick"'+(hk.ia?' style="color:var(--ia)"':'')+'>'+hk.kick+prog+'</div><div class="big">'+hk.big+'</div><div class="act">'+hk.act+'</div><div class="row"><button class="v6-done" aria-label="Fait">✓</button><button class="v6-later" aria-label="Plus tard">⏭</button>'+(hk.n?'<button class="v6-src" data-k="'+hk.k+'">📝 <span class="mono">'+hk.n+'</span> ↩</button>':'')+'</div></section>';
+ const gr=(ic,arr,plus)=>arr.length||plus?'<div class="v6-gr"><span class="v6-gi">'+ic+'</span>'+arr.join('')+(plus?'<button class="v6-p plus" aria-label="Ajouter">+</button>':'')+'</div>':'';
+ const pz=D.pistes.filter(q=>q.k!==hk.k).map(q=>q.ok==='trouve'?pa(q.k,'ok','<span class="e">'+q.ic+'</span>'+esc(q.mot)+' ✓'):q.ok==='non'?pa(q.k,'non','<span class="e">'+q.ic+'</span><s>'+esc(q.mot)+'</s>'):pa(q.k,'att','<span class="e">'+q.ic+'</span>'+esc(q.mot)+' ?'));
+ const op=D.options.filter(o=>o.k!==hk.k).map(o=>pa(o.k,o.ia?'ia ia-d':'fin','<span class="e">'+o.ic+'</span><span class="mono">'+esc(o.cout)+'</span>'+(o.conseil?'<span style="color:var(--ia)">★</span>':'')));
+ past='';
+ if(D.comp){const A=D.comp.arts;
+  past+=gr('👑',D.comp.crit.map((cr,j)=>cr.g!=null?pa(A[cr.g].k,'ok',cr.ic+' '+esc(A[cr.g].nom)+' <span class="mono">'+esc(A[cr.g].vals[j])+'</span>'):'').filter(Boolean));
+  past+=gr(D.comp.crit[0].ic,A.map(a=>pa(a.k,a.vals[0]==='?'?'ia ia-d':'fin',esc(a.nom)+' <span class="mono">'+esc(a.vals[0])+'</span>')));
+  past+=gr('⚠️',D.comp.crit.map((cr,j)=>cr.g==null&&j!==u&&j>0?(D.it['u'+j]={ic:cr.ic,mot:cr.nom+' ?'},pa('u'+j,'att','<span class="e">'+cr.ic+'</span>'+esc(cr.nom)+' ?')):'').filter(Boolean).concat(pz),1);
+  if(op.length)past+=gr('💰',op);
+ }else{
+  past+=gr('🔎',pz,D.pistes.length>0);past+=gr('💰',op,D.options.length>0);
+  if(D.ech)past+=gr('⏳',[pa('ech','att','<span class="e">⏳</span>'+esc(D.ech.mot))]);
+  past+=gr('☐',D.liste.map(l=>pa(l.k,'','☐ '+esc(l.mot))));
+  past+=gr('🔢',D.chiffres.map(x=>pa(x.k,'','<span class="e">'+x.ic+'</span><span class="mono">'+esc(x.mot)+'</span>')));
+ }
+}else if(CAS==='ecoulement'){
  heroHTML='<section class="v6-hero" data-utile><div class="kick">☐ Maintenant</div><div class="big">📞</div><div class="act">Contacter X</div><div class="row"><button class="v6-done" aria-label="Fait">✓</button><button class="v6-later" aria-label="Plus tard">⏭</button><button class="v6-src" data-k="tache">📝 <span class="mono">4</span> ↩</button></div></section>';
  past='<div class="v6-gr"><span class="v6-gi">🔎</span>'+pa('joint','ok','<span class="e">🔧</span>Joint ✓')+pa('dalle','non','<span class="e">🧱</span><s>Dalle</s>')+pa('cause','ia ia-d','<span class="e">✓</span>Seule cause ?')+'<button class="v6-p plus" aria-label="Ajouter une piste">+</button></div>'+
  '<div class="v6-gr"><span class="v6-gi">💰</span>'+pa('optX','fin','<span class="e">👷</span><span class="mono">150 CHF</span><span style="color:var(--ia)">★</span>')+pa('optJ','ia ia-d','<span class="e">🔧</span><span class="mono">? CHF</span>')+'<button class="v6-p plus" aria-label="Ajouter une option">+</button></div>'+

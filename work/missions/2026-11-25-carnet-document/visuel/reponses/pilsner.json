@@ -1,0 +1,106 @@
+{
+ "cas": "pilsner",
+ "src": "c79/zz-malt-pilsner-en-rupture.json",
+ "carnetTitre": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+ "etat": "resolu",
+ "lignes": [
+  "Pilsner 25 kg en rupture jusqu’à mi-décembre.",
+  "Brassin du 3 déc. à décaler ou à faire avec un autre malt.",
+  "Autre fournisseur : en stock, 4 CHF de plus le sac.",
+  "Commandé 2 sacs chez l’autre, brassin maintenu."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🌾",
+  "categorie": {
+   "nom": "Brasserie",
+   "sous": "Matières premières"
+  },
+  "priorite": "basse",
+  "resume": "Commandé chez l’autre",
+  "etatPropose": "resolu",
+  "pistes": [],
+  "options": [
+   {
+    "emoji": "🏪",
+    "titre": "Autre fournisseur",
+    "cout": "+4 CHF/sac",
+    "source": "notes",
+    "ligne": 3,
+    "citation": "4 CHF de plus le sac",
+    "conseille": false
+   },
+   {
+    "emoji": "📅",
+    "titre": "Décaler le brassin",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "à décaler",
+    "conseille": false
+   },
+   {
+    "emoji": "🔄",
+    "titre": "Autre malt",
+    "cout": "?",
+    "source": "notes",
+    "ligne": 2,
+    "citation": "avec un autre malt",
+    "conseille": false
+   }
+  ],
+  "tache": null,
+  "echeance": {
+   "quand": "3 déc.",
+   "quoi": "Brassin",
+   "ligne": 2
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "🧺",
+    "valeur": "2 sacs",
+    "label": "Commandé",
+    "ligne": 4
+   },
+   {
+    "emoji": "💰",
+    "valeur": "4 CHF",
+    "label": "En plus",
+    "ligne": 3
+   }
+  ],
+  "liste": [],
+  "retenir": [
+   {
+    "emoji": "🏪",
+    "texte": "Autre fournisseur en stock",
+    "ligne": 3,
+    "citation": "Autre fournisseur : en stock"
+   }
+  ],
+  "conseil": null,
+  "resolu": {
+   "question": "Commandé 2 sacs, brassin maintenu"
+  },
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "jusqu’à mi-décembre",
+    "type": "date"
+   },
+   {
+    "ligne": 2,
+    "mot": "3 déc.",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "4 CHF",
+    "type": "montant"
+   }
+  ],
+  "comparaison": null,
+  "genre": "probleme"
+ }
+}

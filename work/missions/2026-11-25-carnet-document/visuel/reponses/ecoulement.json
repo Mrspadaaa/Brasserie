@@ -1,0 +1,107 @@
+{
+ "cas": "ecoulement",
+ "src": "c79/zz-ecoulement-qui-fuit.json",
+ "carnetTitre": "ZZ TEST — écoulement qui fuit",
+ "etat": "cherche",
+ "lignes": [
+  "L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.",
+  "Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.",
+  "Contacter l’entreprise X (exemple) pour un sanitaire.",
+  "Devis attendu.",
+  "Estimation 150 CHF (exemple)."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "💧",
+  "categorie": {
+   "nom": "Local",
+   "sous": "Eau"
+  },
+  "priorite": "normale",
+  "resume": "Devis attendu",
+  "etatPropose": "cherche",
+  "pistes": [
+   {
+    "emoji": "🔩",
+    "texte": "Joint du siphon",
+    "statut": "trouve",
+    "ligne": 2,
+    "citation": "joint du siphon trouvé usé"
+   },
+   {
+    "emoji": "🧱",
+    "texte": "Sous la dalle",
+    "statut": "pas_trouve",
+    "ligne": 2,
+    "citation": "fuite sous la dalle, pas trouvée"
+   }
+  ],
+  "options": [
+   {
+    "emoji": "🧰",
+    "titre": "Sanitaire entreprise X",
+    "cout": "150 CHF",
+    "source": "notes",
+    "ligne": 5,
+    "citation": "Estimation 150 CHF",
+    "conseille": true
+   },
+   {
+    "emoji": "🔧",
+    "titre": "Changer le joint",
+    "cout": "?",
+    "source": "ia",
+    "conseille": false
+   }
+  ],
+  "tache": {
+   "emoji": "📞",
+   "titre": "Contacter entreprise X",
+   "ligne": 3,
+   "citation": "Contacter l’entreprise X"
+  },
+  "echeance": null,
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "💰",
+    "valeur": "150 CHF",
+    "label": "Estimation",
+    "ligne": 5
+   }
+  ],
+  "liste": [],
+  "retenir": [],
+  "conseil": "🔍 Demande si le joint suffit avant le devis.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 2,
+    "mot": "trouvé usé",
+    "type": "piste"
+   },
+   {
+    "ligne": 2,
+    "mot": "pas trouvée",
+    "type": "pas_trouve"
+   },
+   {
+    "ligne": 3,
+    "mot": "Contacter",
+    "type": "contacte"
+   },
+   {
+    "ligne": 4,
+    "mot": "Devis attendu",
+    "type": "devis"
+   },
+   {
+    "ligne": 5,
+    "mot": "150 CHF",
+    "type": "montant"
+   }
+  ],
+  "comparaison": null,
+  "genre": "probleme"
+ }
+}

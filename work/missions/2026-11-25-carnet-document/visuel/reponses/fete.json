@@ -1,0 +1,95 @@
+{
+ "cas": "fete",
+ "src": "c79/zz-fete-de-la-biere.json",
+ "carnetTitre": "ZZ TEST — fête de la bière en juin",
+ "etat": "note",
+ "lignes": [
+  "Idées : 3 bières à la pression, dont une blanche pour l’été.",
+  "Liste : tireuse, 2 tonnelles, gobelets consignés, 10 fûts.",
+  "Budget 1 500 CHF, stand à réserver avant mars."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🎪",
+  "categorie": {
+   "nom": "Événements"
+  },
+  "priorite": "normale",
+  "resume": "Réserver le stand",
+  "etatPropose": "note",
+  "pistes": [],
+  "options": [],
+  "tache": {
+   "emoji": "🎟️",
+   "titre": "Réserver le stand",
+   "quand": "avant mars",
+   "ligne": 3,
+   "citation": "stand à réserver avant mars"
+  },
+  "echeance": {
+   "quand": "avant mars",
+   "quoi": "Réserver le stand",
+   "ligne": 3
+  },
+  "periode": null,
+  "chiffres": [
+   {
+    "emoji": "💰",
+    "valeur": "1 500 CHF",
+    "label": "Budget",
+    "ligne": 3
+   },
+   {
+    "emoji": "🍺",
+    "valeur": "3 bières",
+    "label": "Pression",
+    "ligne": 1
+   },
+   {
+    "emoji": "🛢️",
+    "valeur": "10 fûts",
+    "label": "Fûts",
+    "ligne": 2
+   }
+  ],
+  "liste": [
+   {
+    "texte": "Tireuse",
+    "ligne": 2,
+    "citation": "tireuse"
+   },
+   {
+    "texte": "2 tonnelles",
+    "ligne": 2,
+    "citation": "2 tonnelles"
+   },
+   {
+    "texte": "Gobelets consignés",
+    "ligne": 2,
+    "citation": "gobelets consignés"
+   },
+   {
+    "texte": "10 fûts",
+    "ligne": 2,
+    "citation": "10 fûts"
+   }
+  ],
+  "retenir": [],
+  "conseil": "🍋 Choisis la blanche tôt pour la brasser à temps.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 3,
+    "mot": "1 500 CHF",
+    "type": "montant"
+   },
+   {
+    "ligne": 3,
+    "mot": "avant mars",
+    "type": "date"
+   }
+  ],
+  "comparaison": null,
+  "genre": "planning"
+ }
+}

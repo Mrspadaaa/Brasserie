@@ -1,0 +1,71 @@
+{
+ "cas": "assurance",
+ "src": "c79/zz-assurance-a-renouveler.json",
+ "carnetTitre": "ZZ TEST — assurance à renouveler",
+ "etat": "note",
+ "lignes": [
+  "Échéance le 31 déc.",
+  "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.",
+  "Demander une offre à un 2e assureur.",
+  "Renouveler l’assurance avant le 31 déc."
+ ],
+ "ecritPar": "concepteur (Opus), à la main, au format de la consigne de jouable/m4b.html ; aucun appel IA",
+ "reponse": {
+  "emoji": "🛡️",
+  "categorie": {
+   "nom": "Administratif"
+  },
+  "priorite": "normale",
+  "resume": "Offre 2e assureur",
+  "etatPropose": "note",
+  "pistes": [],
+  "options": [],
+  "tache": {
+   "emoji": "✉️",
+   "titre": "Demander une offre",
+   "ligne": 3,
+   "citation": "Demander une offre à un 2e assureur"
+  },
+  "echeance": {
+   "quand": "31 déc.",
+   "quoi": "Renouveler l’assurance",
+   "ligne": 1
+  },
+  "periode": null,
+  "chiffres": [],
+  "liste": [
+   {
+    "texte": "Police actuelle",
+    "ligne": 2,
+    "citation": "police actuelle"
+   },
+   {
+    "texte": "Inventaire matériel",
+    "ligne": 2,
+    "citation": "inventaire du matériel"
+   },
+   {
+    "texte": "Chiffre d’affaires 2026",
+    "ligne": 2,
+    "citation": "chiffre d’affaires 2026"
+   }
+  ],
+  "retenir": [],
+  "conseil": "📎 Réunis les pièces avant de demander l’offre.",
+  "resolu": null,
+  "lectures": [
+   {
+    "ligne": 1,
+    "mot": "31 déc.",
+    "type": "date"
+   },
+   {
+    "ligne": 3,
+    "mot": "Demander une offre",
+    "type": "contacte"
+   }
+  ],
+  "comparaison": null,
+  "genre": "memo"
+ }
+}
