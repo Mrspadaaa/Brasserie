@@ -231,7 +231,12 @@ export function quantitesDe(texte: string): Quantite[] {
 
 /* ---------- genre et sorte ---------- */
 
-const PAS_VERBES = new Set(['pour', 'entre', 'notre', 'votre', 'autre', 'contre', 'leur', 'premier', 'dernier', 'hier', 'fer', 'mer', 'cher', 'super', 'hiver', 'quatre', 'litre', 'metre', 'filtre', 'centre', 'cidre', 'sucre', 'ordre', 'titre', 'chiffre', 'nombre', 'cadre', 'poudre', 'vitre', 'lettre', 'plutot', 'desir', 'plaisir', 'loisir', 'avenir', 'soir', 'noir', 'espoir', 'tiroir', 'miroir', 'couloir', 'reservoir', 'arrosoir', 'entonnoir', 'comptoir', 'pressoir', 'laminoir', 'evier', 'panier', 'papier', 'acier', 'atelier', 'calendrier', 'fournisseur', 'boucher', 'boulanger', 'rocher', 'plancher', 'escalier', 'dossier', 'fichier', 'cahier', 'clavier', 'collier', 'levier', 'quartier', 'chantier', 'sentier', 'mobilier', 'premiere', 'derniere', 'bière', 'biere', 'verre']);
+const PAS_VERBES = new Set(['pour', 'entre', 'notre', 'votre', 'autre', 'contre', 'leur', 'premier', 'dernier', 'hier', 'fer', 'mer', 'cher', 'super', 'hiver', 'quatre', 'litre', 'metre', 'filtre', 'centre', 'cidre', 'sucre', 'ordre', 'titre', 'chiffre', 'nombre', 'cadre', 'poudre', 'vitre', 'lettre', 'plutot', 'desir', 'plaisir', 'loisir', 'avenir', 'soir', 'noir', 'espoir', 'tiroir', 'miroir', 'couloir', 'reservoir', 'arrosoir', 'entonnoir', 'comptoir', 'pressoir', 'laminoir', 'evier', 'panier', 'papier', 'acier', 'atelier', 'calendrier', 'fournisseur', 'boucher', 'boulanger', 'rocher', 'plancher', 'escalier', 'dossier', 'fichier', 'cahier', 'clavier', 'collier', 'levier', 'quartier', 'chantier', 'sentier', 'mobilier', 'premiere', 'derniere', 'bière', 'biere', 'verre',
+  /* noms du métier et anglicismes en -er/-ir/-re (25.11) : pilsner, lager, starter… ne sont pas des gestes */
+  'pilsner', 'lager', 'porter', 'starter', 'boiler', 'chiller', 'cooler', 'heater', 'mixer', 'timer', 'water', 'bitter', 'amber', 'cluster',
+  'laser', 'cancer', 'scanner', 'printer', 'router', 'manager', 'cutter', 'souvenir', 'elixir', 'saphir', 'cellier', 'cuvier', 'fermier',
+  'ouvrier', 'meunier', 'tablier', 'palier', 'verrier', 'foudre', 'cendre', 'gendre', 'maitre', 'hetre', 'cire', 'sire', 'satire', 'empire',
+  'vampire', 'histoire']);
 
 /** Un nombre de pièces (« 2 pièces », « 3 pcs », « x2 », « 2x ») ou un diamètre (« Ø 150 ») : la ligne désigne une chose à acheter. */
 const PIECES = /\b\d+\s?(?:pieces?|pcs|pce|x|sachets?|paquets?|boites?|sacs?|bidons?)\b|\bx\s?\d+\b/;
@@ -289,6 +294,38 @@ export function objetDe(ligne: string): string {
   return o ? majuscule(o) : majuscule(t.slice(0, 40));
 }
 
+/*
+ * Un infinitif, pour de bon (25.11). Problème d'école : reconnaître un verbe à l'infinitif en français sans lexique. Méthode
+ * standard : la terminaison se teste sur le mot ACCENTUÉ (« -ère » et « -é » ne sont pas des infinitifs ; sans accent, « chaudière »
+ * et « rencontré » finissaient en -re et -er), puis une courte liste de noms du métier. Les -er et -ir sont acceptés ; les -re ne
+ * le sont que par familles de verbes (-dre, -ttre, -aître, -ire, -uire, faire, suivre, vivre, rompre, vaincre, clure, boire, croire),
+ * ce qui écarte levure, mesure, facture, salaire, histoire… Les noms en -er/-ir/-re de la liste PAS_VERBES restent à la main.
+ */
+const INFINITIF_EN_RE = /(?:dre|ettre|attre|aître|oître|être|[^aeiouyéèêàâîôûù]ire|uire|(?:^|re|de|par|satis|contre)faire|suivre|vivre|rompre|vaincre|clure|boire|croire)$/u;
+
+/** Le mot est-il un infinitif ? Minuscules et accents conservés. */
+export function estInfinitif(mot: string): boolean {
+  const m = mot.toLocaleLowerCase('fr-CH').normalize('NFC');
+  if (m.length <= 3 || !/^\p{L}+$/u.test(m)) return false;
+  if (PAS_VERBES.has(normaliser(m))) return false;
+  if (/(?:er|ir)$/.test(m)) return true;
+  return INFINITIF_EN_RE.test(m) && !/^(?:cire|sire|satire|empire|vampire|histoire)$/.test(m);
+}
+
+/** Le premier mot d'une ligne (lettres seules, accents gardés), après puces et ponctuation. */
+const premierMot = (ligne: string): string => /\p{L}+/u.exec(sansPrefixeBanc(ligne))?.[0] ?? '';
+
+/** Le mot qui suit le premier : « Chaudière s'arrête », « Pomper ne démarre plus » : ce premier mot est le sujet, pas un verbe. */
+const SUJET_SUIVI_DE = /^\s*(?:s['’]|se\s|ne\s|n['’]|qui\s|est\s|sont\s|ont\s|était\s|etait\s|devient\s|reste\s)/iu;
+
+/** La ligne commence-t-elle par un infinitif (un geste à faire) et non par un nom, un participe ou un sujet suivi de son verbe ? */
+function infinitifEnTete(ligne: string): boolean {
+  const brut = sansPrefixeBanc(ligne);
+  const m = /\p{L}+/u.exec(brut);
+  if (!m || !estInfinitif(m[0])) return false;
+  return !SUJET_SUIVI_DE.test(brut.slice(m.index + m[0].length));
+}
+
 /**
  * Le genre d'une ligne, par mots-clés : question, achat dit (acheter, prix, lien), conseil, à faire (verbe en tête), achat devinée (pièces,
  * diamètre), sinon note. Le préfixe des données de test « ZZ TEST — » est ignoré (P11, P22).
@@ -301,8 +338,7 @@ export function genreLocal(ligne: string, indices: { prix?: boolean; url?: boole
   if (/\?\s*$/.test(brut.trim()) || /^(est ce|faut il|combien|pourquoi|quel|quelle|comment)\b/.test(n)) return 'question';
   if (indices.prix || indices.url || /\b(acheter|achat|achats|commander|commande|racheter|devis|prix|budget)\b/.test(n)) return 'a-acheter';
   if (/^(penser a|pense a|conseil|astuce|attention|eviter|ne pas)\b/.test(n) || /\bconseil\b/.test(n)) return 'conseil';
-  const premier = n.split(' ')[0] ?? '';
-  if (premier.length > 3 && /(er|ir|re)$/.test(premier) && !PAS_VERBES.has(premier)) return 'a-faire';
+  if (infinitifEnTete(brut)) return 'a-faire';
   if (PIECES.test(n) || DIAMETRE.test(brut)) return 'a-acheter';
   return 'note';
 }
@@ -322,8 +358,7 @@ export function mettreEnForme(ligne: string): string {
   const sans = sansPrefixeBanc(ligne).trim();
   const m = ANNONCE_GESTE.exec(sans);
   const reste = m ? sans.slice(m[0].length) : sans;
-  const verbe = normaliser(reste).split(' ')[0] ?? '';
-  const t = m && verbe.length > 3 && /(er|ir|re)$/.test(verbe) && !PAS_VERBES.has(verbe) ? reste : sans;
+  const t = m && premierMot(reste) && estInfinitif(premierMot(reste)) ? reste : sans;
   return t === ligne.trim() ? t : majuscule(t);
 }
 
