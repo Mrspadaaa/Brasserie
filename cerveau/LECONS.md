@@ -67,9 +67,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe faible. 02.11 : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ». 22.11 : test en ligne « jugé par mesures », reçu : « Je l'ai expressément demandé ».
-- Cause : captures non ouvertes, rapport sans vision reçu.
-- Faire : effet ×3. Capture ouverte avant OK ; rapport de test sans capture ouverte : refusé. Avant déploiement : chaque genre, chaque état, téléphone surtout (390 en défilant), 1280 peu, côte à côte avec sa maquette, « combien et quels problèmes ? », critique puis pilote (D342). 390×660, 844×340. ([[maquettes-16-11]])
+- Erreur : 02.11 : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ». 25.11, tour 80 : mineurs revus sans fin, banc aux cadres vides : « ça a pas été vu ???? ».
+- Cause : captures non ouvertes ; mineur reporté ; mesure hors de l'app.
+- Faire : effet ×3. Mineur revu 2 fois = bloquant ; mise en page mesurée en ligne. Capture ouverte avant OK ; rapport de test sans capture ouverte : refusé. Avant déploiement : chaque genre et état, 390 en défilant, 1280 peu, côte à côte avec sa maquette, « combien et quels problèmes ? » (D342). ([[maquettes-16-11]])
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
