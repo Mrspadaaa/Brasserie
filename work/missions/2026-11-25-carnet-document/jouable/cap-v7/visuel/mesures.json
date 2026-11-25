@@ -1,0 +1,105 @@
+{
+ "res": {
+  "v7-assurance": {
+   "n": 20,
+   "mots": "Demander une offre Renouveler l’assurance J-36 31 déc. plus tard Police actuelle Inventaire matériel Chiffre d’affaires 2026 Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-bar": {
+   "n": 23,
+   "mots": "Rappeler le gérant J-5 lundi plus tard 2 fûts par mois Demande 20 L fût Assez de fûts Prix pro Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-bouteilles": {
+   "n": 27,
+   "mots": "Fournisseur B J-20 15 déc. Prendre Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 2 Ajouter…",
+   "debord": false
+  },
+  "v7-cave": {
+   "n": 20,
+   "mots": "Ranger la cave J-11 samedi 6 déc. plus tard Trier les cartons Monter une étagère Jeter les seaux Aide Ajouter…",
+   "debord": false
+  },
+  "v7-chaudiere": {
+   "n": 27,
+   "mots": "Appeler le technicien Brassage IPA J-1 demain 7h plus tard 10 min Avant coupure Voyant rouge Reset 10 min Technicien conseillé Décaler au jeudi Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-citra": {
+   "n": 14,
+   "mots": "Ouvrir les liens plus tard MotlerHops Brau und Rauchshop Site français Aide 2 Ajouter…",
+   "debord": false
+  },
+  "v7-co2": {
+   "n": 27,
+   "mots": "Revérifier le raccord J-7 2 déc. plus tard 1,2 bar 15.11 0,4 bar 22.11 1 /3 Raccord gaz Joint du couvercle Régulateur Raccord changé Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-ecoulement": {
+   "n": 28,
+   "mots": "Contacter entreprise X plus tard 1 /2 Joint du siphon Sous la dalle Sanitaire entreprise X 150 CHF conseillé Changer le joint IA prix inconnu Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-fete": {
+   "n": 25,
+   "mots": "Réserver le stand J-96 avant mars plus tard 1 500 CHF Budget 3 bières Pression Tireuse 2 tonnelles Gobelets consignés 10 fûts Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-levure": {
+   "n": 18,
+   "mots": "Faire un starter plus tard 3e génération 12 jours Au frigo 2 /2 Odeur Mousse Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-pilsner": {
+   "n": 15,
+   "mots": "Réglé Commandé 2 sacs, brassin maintenu Brassin J-8 3 déc. Rouvrir Détail 3 Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sureau": {
+   "n": 15,
+   "mots": "Goûter la voisine plus tard 4.5% Base blonde Fin d’ébullition À froid Aide 1 Ajouter…",
+   "debord": false
+  },
+  "v7-bouteilles-prendre": {
+   "n": 32,
+   "mots": "choisi Commander chez Fournisseur B J-20 15 déc. plus tard Rouvrir Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 2 Ajouter…",
+   "debord": false
+  },
+  "v7-bouteilles-commande": {
+   "n": 29,
+   "mots": "commandé Fournisseur B J-20 15 déc. Pas encore Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 2 Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-assurance": {
+   "n": 48,
+   "mots": "IA absente Réessayer À faire lu par l’app Renouveler l’assurance avant le 31 déc. J-36 31 déc. plus tard 4 1 Échéance le 31 déc. 31 déc. J-36 2 Pièces police actuelle, inventaire du matériel, chiffre d’affaires 2026. 3 Demander une offre à un 2e assureur. Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-bouteilles": {
+   "n": 47,
+   "mots": "IA absente Réessayer Daté lu par l’app Besoin avant le 15 du mois J-20 15 du mois 4 1 Verallia 0.42/bt, palette de 1200 min 2 Fournisseur B 0.55/bt par 600, livraison 80 CHF 80 CHF 3 Occasion sur annonce 0.20/bt, à laver, 400 seulement Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-cave": {
+   "n": 53,
+   "mots": "IA absente Réessayer À faire lu par l’app Ranger la cave le samedi 6 déc. au matin. J-11 samedi 6 déc. dimanche plus tard 3 1 À faire trier les cartons vides, monter une étagère, jeter les vieux seaux. 2 Prévu le samedi 6 déc. au matin. samedi 6 déc. J-11 Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-chaudiere": {
+   "n": 48,
+   "mots": "IA absente Réessayer À faire lu par l’app Chaudière s'arrête toute seule, voyant rouge plus tard 1 2 Brassage IPA prévu demain 7h demain 7h J-1 3 Reset marche 10 min puis recoupe 4 Technicien numéro sur l'autocollant 5 Plan B décaler au jeudi jeudi J-1 Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-citra": {
+   "n": 21,
+   "mots": "IA absente Réessayer 1 motlerhops.fr /collections/tous-nos-houblons/products/citra-us 2 brauundrauchshop.ch /citra-136-2 3 Ça semble dur à obtenir sur le site français Aide Ajouter…",
+   "debord": false
+  },
+  "v7-sansia-co2": {
+   "n": 60,
+   "mots": "IA absente Réessayer Daté lu par l’app Raccord gaz changé, à revérifier dans une semaine. J-7 2 déc. 4 1 Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22. 1,2 bar 0,4 bar 15 nov. J-355 2 Pistes joint du couvercle, raccord gaz ou régulateur. 3 Test à l’eau savonneuse bulles au raccord gaz. Aide Ajouter…",
+   "debord": false
+  }
+ },
+ "err": []
+}

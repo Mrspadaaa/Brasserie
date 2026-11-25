@@ -153,6 +153,23 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 .v7-rond{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:20px}
 .v7-aide{height:46px;border-radius:23px;padding:0 16px;font-weight:800;display:flex;gap:6px;align-items:center;background:var(--ia);color:#000}
 .v7-aide[disabled]{background:var(--s2);color:var(--mut)}
+/* retouches du port (nuit du 25.11) */
+.v7-act.m{font-size:22px} .v7-cr{font-size:.8em}
+.v7-steps i{font-style:normal;opacity:.7}
+.v7-cmp{position:relative} .v7-cmp.choix .eteint{opacity:.38}
+.v7-cadre{position:absolute;border:2.5px solid var(--ok);border-radius:14px;pointer-events:none}
+.v7-hb{display:flex;flex-direction:column;gap:4px;background:#1c1c1f;border-radius:18px;padding:8px 10px;margin:0 0 6px}
+.v7-hbk{display:flex;align-items:baseline;gap:6px;font-size:15px} .v7-hbk small{color:var(--mut);font-size:12px}
+.v7-hr{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px;text-align:left}
+.v7-hr .nm{font-weight:800;font-size:15px;line-height:1.1} .v7-hr .br{height:16px;border-radius:8px;background:#141417;overflow:hidden}
+.v7-hr .br i{display:block;height:100%;border-radius:8px;background:color-mix(in srgb,var(--mut) 55%,#1c1c1f);position:relative}
+.v7-hr .br i.w{background:var(--ok)} .v7-hr .br i.m{background:var(--bad)} .v7-hr .br u{position:absolute;right:0;top:0;bottom:0;width:12px;background:var(--hach),#141417}
+.v7-hr .vl{font-weight:800;font-size:15px;white-space:nowrap;min-width:64px;text-align:right} .v7-hr .vl.w{color:var(--ok)} .v7-hr .vl.m{color:var(--bad)}
+.v7-hr.eteint{opacity:.38} .v7-hr.sel{box-shadow:inset 0 0 0 2.5px var(--ok);border-radius:10px}
+.v7-f .v small{font-size:.6em;color:var(--mut)}
+.c2-act,.c2-o{-webkit-line-clamp:unset!important;line-clamp:unset!important;display:block!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important} .c2-act{font-size:20px!important;line-height:1.2!important}
+.c2-chip b{margin-left:4px} .v7-cmp .jb:not(.w):not(.m){background:color-mix(in srgb,var(--mut) 55%,#1c1c1f)} .v7-p.fait{background:#1c1c1f!important;color:var(--mut)!important} .v7-p.fait .s{color:var(--ok)}
+.c2-cd i.x{color:var(--bad);margin:2px 0 0} .c2-o b{font-weight:800} .c2-o small{color:var(--mut)}
 </style></head>
 <body>
 <header class="v7-top"><button class="v7-ib" aria-label="Retour">←</button><h1 data-titre></h1><button class="v7-ib" aria-label="Détails" onclick="meta(this)">ⓘ</button></header>
@@ -163,6 +180,13 @@ mark{background:color-mix(in srgb,var(--ia) 38%,transparent);color:var(--ink);bo
 (function(){
 const P=new URLSearchParams(location.search);const Q=P.get('cas')||'ecoulement';const IA=P.get('ia')!=='0';
 const D=ENRICHIR(GEN(Q),Q);
+/* retouches du port (nuit du 25.11), sans toucher reponses/*.js */
+const vu=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+D.chiffres.forEach(c=>{if(/^fûts?$/i.test(c.label))c.label='/ fût';else if(c.label&&vu(c.mot).indexOf(vu(c.label))>=0)c.label='';});
+/* « Le 15 » devient « 15.11 » (le mois de sa ligne) : deux mots de moins */
+D.chiffres.forEach(c=>{const m=String(c.label).match(/^le (\d{1,2})$/i);if(!m)return;const t=D.lignes.join(' ').toLowerCase(),k=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'].findIndex(x=>new RegExp('(^|\\D)'+m[1]+'\\s+'+x).test(t));c.label=m[1]+'.'+(k<0?11:k+1);});
+if(D.comp&&D.comp.vide&&!D.tache)D.tache={ic:'🔗',mot:'Ouvrir les liens',ligne:null};
+let commande=false;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const m=document.getElementById('m');
 const retires=new Set(),gardes=new Set();let aideI=0,ouvert=false,choisi=null;
@@ -185,10 +209,13 @@ function heros(){
       '<div class="v7-body"><span class="v7-big">'+D.ic+'</span><span class="v7-act" style="font-size:24px">'+esc(r.mot)+'</span>'+cd(D.date,D.dateObjet)+'</div>'+
       '<div class="v7-do"><button class="v7-rouvrir">↺ Rouvrir</button>'+(r.ligne?'<button class="v7-src" data-k="regle" aria-label="Ligne '+r.ligne+' de mes notes">📝 ↩</button>':'')+'</div></section>';}
   if(D.comp&&!D.tache&&!D.comp.vide){const C=D.comp;
-    if(choisi){const a=D[choisi];return '<section class="v7-hero ok" data-utile data-booster="choisir"><div class="v7-kick"><span class="v7-kind">✓ Choisi</span></div><div class="v7-body"><span class="v7-big">'+(a.ic||'⚖️')+'</span><span class="v7-act" style="font-size:24px">'+esc(a.nom)+'</span>'+cd(D.date)+'</div><div class="v7-do"><button class="v7-rouvrir" data-rouvre>↺ Rouvrir</button></div></section>';}
+    if(choisi){const a=D[choisi];const st='<span class="v7-steps" aria-label="achat : comparé, choisi, '+(commande?'commandé':'à commander')+'"><i>⚖️</i>›'+(commande?'<i>✋</i>›<b>📦 commandé</b>':'<b>✋ choisi</b>›<i>📦</i>')+'</span>';
+      if(commande)return '<section class="v7-hero ok" data-utile data-booster="achat"><div class="v7-kick">'+st+'</div><div class="v7-body"><span class="v7-big">📦</span><span class="v7-act" style="font-size:24px">'+esc(a.nom)+'</span>'+cd(D.date)+'</div><div class="v7-do"><button class="v7-rouvrir" data-decommande>↺ Pas encore</button></div></section>';
+      const ac='Commander chez '+a.nom;
+      return '<section class="v7-hero'+tint+'" data-utile data-booster="achat"><div class="v7-kick">'+st+'</div><div class="v7-body"><span class="v7-big">📦</span><span class="v7-act'+(ac.length>20?' m':'')+'">'+esc(ac)+'</span>'+cd(D.date)+'</div><div class="v7-do"><button class="v7-fait" data-commande aria-label="Commandé">✓</button><button class="v7-tard" aria-label="Plus tard">⏭<small>plus tard</small></button><button class="v7-rouvrir" data-rouvre>↺ Rouvrir</button></div></section>';}
     const g=C.totalG!=null?C.arts[C.totalG]:null;
-    return '<section class="v7-hero fin" data-utile data-booster="choisir"><div class="v7-body"><span class="v7-big">⚖️</span><span class="v7-act">Choisir l’offre</span>'+cd(D.date)+'</div>'+
-      (g?'<div class="v7-do"><button class="v7-prendre" data-prendre="'+g.k+'">✓ Prendre <b>'+esc(g.nom)+'</b></button></div>':'')+'</section>';}
+    return '<section class="v7-hero fin" data-utile data-booster="choisir"><div class="v7-body"><span class="v7-big">⚖️</span>'+(g?'<span class="v7-act'+(g.nom.length>8?' m':'')+'">'+esc(g.nom)+' <span class="v7-cr" aria-label="moins cher au total">👑</span></span>':'<span class="v7-act">Choisir l’offre</span>')+cd(D.date)+'</div>'+
+      (g?'<div class="v7-do"><button class="v7-prendre" data-prendre="'+g.k+'" aria-label="Prendre '+esc(g.nom)+'">✓ Prendre</button></div>':'')+'</section>';}
   const t=D.tache||{ic:D.ic,mot:D.resume,ligne:null};
   return '<section class="v7-hero'+tint+'" data-utile data-booster="heros"><div class="v7-body"><span class="v7-big">'+t.ic+'</span><span class="v7-act">'+esc(t.mot)+'</span>'+cd(D.date,D.dateObjet)+'</div>'+
     '<div class="v7-do"><button class="v7-fait" aria-label="Fait">✓</button><button class="v7-tard" aria-label="Plus tard">⏭<small>plus tard</small></button>'+(t.ligne?'<button class="v7-src" data-k="tache" aria-label="Ligne '+t.ligne+' de mes notes">📝 ↩</button>':'')+'</div></section>';}
@@ -197,41 +224,73 @@ function heros(){
 function figures(){
   if(D.paire){const p=D.paire;return '<div class="v7-fig"><button class="v7-pair" data-k="'+p.a.k+'"><span class="e" style="font-size:22px">'+D.ic+'</span><span><span class="v mono">'+esc(p.a.mot)+'</span><span class="l">'+esc(p.a.label)+'</span></span><span class="fl">'+(p.baisse?'↘':'↗')+'</span><span><span class="v mono" style="color:'+(p.baisse?'var(--bad)':'var(--ok)')+'">'+esc(p.b.mot)+'</span><span class="l">'+esc(p.b.label)+'</span></span></button></div>';}
   const F=D.chiffres.slice(0,2);if(!F.length)return '';const lg=Math.max(...F.map(c=>c.mot.length));
-  return '<div class="v7-fig">'+F.map(c=>{const fs=lg>9?18:26;return '<button class="v7-f" data-k="'+c.k+'"><span class="e">'+c.ic+'</span><span style="min-width:0"><span class="v mono" style="font-size:'+fs+'px">'+esc(c.mot)+'</span><span class="l">'+esc(c.label)+'</span></span></button>';}).join('')+'</div>';}
+  return '<div class="v7-fig">'+F.map(c=>{const fs=lg>9?18:26;return '<button class="v7-f" data-k="'+c.k+'"><span class="e">'+c.ic+'</span><span style="min-width:0"><span class="v mono" style="font-size:'+fs+'px">'+esc(c.mot)+(/^\//.test(c.label)?'<small> '+esc(c.label)+'</small>':'')+'</span>'+(c.label&&!/^\//.test(c.label)?'<span class="l">'+esc(c.label)+'</span>':'')+'</span></button>';}).join('')+'</div>';}
 
 /* --- qui gagne quoi : la jauge du coût total en tête (v2), puis les critères chiffrés ; un critère en mots va sous le nom --- */
 function comparaison(){const C=D.comp,A=C.arts,tot=!!C.besoin;const cols='34px repeat('+A.length+',minmax(0,1fr))';
   const liv=j=>tot&&/livraison/i.test(C.crit[j].nom);
-  const mots=j=>A.every(a=>a.vals[j]==='?'||!/\d/.test(a.vals[j]));
-  const J=C.crit.map((c,j)=>j);const rangs=J.filter(j=>!liv(j)&&!mots(j)&&!(tot&&j===C.iq)),sous=J.filter(j=>!liv(j)&&mots(j));
-  let hach=false;
-  let h='<div class="v7-cmp" style="grid-template-columns:'+cols+'" data-booster="comparer"><span></span>';
+  const mots=j=>A.every(a=>a.vals[j]==='?'||!/^[≥~+]?\d[\d\s.,']*\s?\S{0,6}$/.test(a.vals[j]));
+  const J=C.crit.map((c,j)=>j);const rangs=J.filter(j=>!liv(j)&&!mots(j)&&!(tot&&j===C.iq)),sous=J.filter(j=>!liv(j)&&mots(j)&&!(tot&&j===C.iq));
+  let hach=false;const ch=choisi?A.findIndex(a=>a.k===choisi):-1,col=i=>ch<0?'':i===ch?' sel':' eteint',horiz=tot&&A.length>=4;
+  let h='';
+  if(horiz){const mx=Math.max(...A.map(a=>a.total.chf));
+    h+='<div class="v7-hb" data-booster="jauge"><div class="v7-hbk">🧾 <b>total</b> <small class="mono">CHF · '+C.besoin+'</small></div>'+A.map((a,i)=>{const t=a.total,cl=t.manque?'m':C.totalG===i?'w':'';if(t.livInconnue)hach=true;
+      return '<button class="v7-hr'+col(i)+'" data-art="'+a.k+'"><span class="nm">'+(a.ic?a.ic+' ':'')+esc(a.nom)+'</span><span class="br"><i class="'+cl+'" style="width:'+Math.max(6,Math.round(t.chf/mx*100))+'%">'+(t.livInconnue?'<u></u>':'')+'</i></span><span class="vl mono '+cl+'">'+(t.livInconnue?'≥':'')+t.chf+(t.manque?' ⚠':'')+(C.totalG===i?' 👑':'')+'</span></button>';}).join('')+'</div>';}
+  h+='<div class="v7-cmp'+(ch>=0?' choix':'')+'" style="grid-template-columns:'+cols+'" data-booster="comparer"><span></span>';
   const qch=a=>{if(!tot||C.iq<0)return '';const v=a.vals[C.iq];if(a.manque)return '<span class="hc m">'+C.crit[C.iq].ic+' ⚠ <span class="mono">'+a.total.q+'</span></span>';const n=(String(v).match(/^(\d+)\s*min/)||[])[1];return n?'<span class="hc">'+C.crit[C.iq].ic+' <span class="mono">≥'+n+'</span></span>':'';};
-  h+=A.map(a=>'<div class="hd" role="button" tabindex="0" data-art="'+a.k+'">'+(a.ic?'<span class="e">'+a.ic+'</span>':'')+'<span>'+esc(a.nom)+'</span>'+(a.conseil?TAG_CONSEIL_X(a.k):'')+qch(a)+
+  h+=A.map((a,i)=>'<div class="hd'+col(i)+'" role="button" tabindex="0" data-art="'+a.k+'">'+(a.ic?'<span class="e">'+a.ic+'</span>':'')+'<span>'+esc(a.nom)+'</span>'+(a.conseil&&C.totalG==null?TAG_CONSEIL_X(a.k):'')+qch(a)+
     sous.filter(j=>a.vals[j]!=='?').map(j=>'<span class="hc">'+C.crit[j].ic+' '+esc(a.vals[j])+'</span>').join('')+'</div>').join('');
-  if(tot){const mx=Math.max(...A.map(a=>a.total.chf));
-    h+='<span class="k" title="coût pour '+C.besoin+'">🧾<small>CHF</small></span>'+A.map((a,i)=>{const t=a.total,cl=t.manque?'m':C.totalG===i?'w':'';if(t.livInconnue)hach=true;
-      return '<span class="jg" data-booster="jauge"><span class="jv mono '+cl+'">'+(t.livInconnue?'≥':'')+t.chf+(C.totalG===i?' 👑':'')+(t.manque?' ⚠':'')+'</span><span class="jb '+cl+'" style="height:'+(Math.max(8,Math.round(t.chf/mx*52))+(t.livInconnue?12:0))+'px">'+(t.livInconnue?'<span class="jh"></span>':'')+'</span></span>';}).join('');}
+  if(tot&&!horiz){const mx=Math.max(...A.map(a=>a.total.chf));
+    h+='<span class="k" title="coût total pour '+C.besoin+'">🧾<small>total</small><small>CHF</small></span>'+A.map((a,i)=>{const t=a.total,cl=t.manque?'m':C.totalG===i?'w':'';if(t.livInconnue)hach=true;
+      return '<span class="jg'+col(i)+'" data-booster="jauge"><span class="jv mono '+cl+'">'+(t.livInconnue?'≥':'')+t.chf+(C.totalG===i?' 👑':'')+(t.manque?' ⚠':'')+'</span><span class="jb '+cl+'" style="height:'+(Math.max(8,Math.round(t.chf/mx*52))+(t.livInconnue?12:0))+'px">'+(t.livInconnue?'<span class="jh"></span>':'')+'</span></span>';}).join('');}
   rangs.forEach(j=>{const c=C.crit[j];const unit=(c.nom.match(/\/\S+/)||[''])[0];
     h+='<span class="k" title="'+esc(c.nom)+'">'+c.ic+(unit?'<small>'+esc(unit)+'</small>':'')+'</span>';
-    h+=A.map((a,i)=>{let v=a.vals[j];if(v==='?'){hach=true;return '<span class="v u" aria-label="inconnu"></span>';}
+    h+=A.map((a,i)=>{let v=a.vals[j];if(v==='?'){hach=true;return '<span class="v u'+col(i)+'" aria-label="inconnu"></span>';}
       if(unit)v=v.replace(unit,'');
-      if(j===C.iq){if(a.manque)return '<span class="v m mono">⚠ '+esc(String(a.total.q))+'<small>/'+C.besoin+'</small></span>';v=v.replace(/^(\d+)\s*min$/,'≥$1').replace(/^par\s+/,'');}
-      return '<span class="v'+(c.g===i?' w':'')+' mono">'+esc(v)+'</span>';}).join('');});
+      if(j===C.iq){if(a.manque)return '<span class="v m mono'+col(i)+'">⚠ '+esc(String(a.total.q))+'<small>/'+C.besoin+'</small></span>';v=v.replace(/^(\d+)\s*min$/,'≥$1').replace(/^par\s+/,'');}
+      return '<span class="v'+(!tot&&c.g===i?' w':'')+' mono'+col(i)+'">'+esc(v)+'</span>';}).join('');});
   if(hach)h+='<span class="leg">'+HACH_LEG1+'</span>';
   return h+'</div>';}
 
+const AUJ0=new Date(2026,10,25,12),MOIS=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'],JS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+function dateSes(t){const l=t.toLowerCase();let m,d=null,approx=false,w=null;
+  const RX=[/(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+\d{1,2}(?:er)?\s+(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)[a-zéû]*\.?/i,/\d{1,2}(?:er)?\s+(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)[a-zéû]*\.?/i,/demain(?:\s+\d{1,2}h\d{0,2})?/i,/(?:avant le|le)\s+\d{1,2}\s+du mois/i,/dans (?:une|un|deux|trois|\d+) (?:semaines?|jours?)/i,/(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)/i];
+  for(const r of RX){if((m=t.match(r))){w=m[0];break;}}if(!w)return null;const x=w.toLowerCase();
+  if((m=x.match(/(\d{1,2})(?:er)?\s+(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)/))){d=new Date(2026,MOIS.indexOf(m[2]),+m[1],12);if(d<AUJ0)d.setFullYear(2027);}
+  else if(/demain/.test(x))d=new Date(+AUJ0+864e5);
+  else if((m=x.match(/(\d{1,2})\s+du mois/))){d=new Date(2026,10,+m[1],12);if(d<AUJ0)d=new Date(2026,11,+m[1],12);}
+  else if((m=x.match(/dans (une|un|deux|trois|\d+) (semaines?|jours?)/))){const n={une:1,un:1,deux:2,trois:3}[m[1]]||+m[1];d=new Date(+AUJ0+n*(/sem/.test(m[2])?7:1)*864e5);approx=true;}
+  else{const k=JS.indexOf(x);d=new Date(+AUJ0+(((k-AUJ0.getDay()+7)%7)||7)*864e5);}
+  const j=Math.round((d-AUJ0)/864e5),js=JS.findIndex(n=>new RegExp('(^|[^a-zà-ÿ])'+n+'([^a-zà-ÿ]|$)').test(l));
+  const dit=/\d|demain|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche/.test(x)&&!approx;
+  return {j,compte:'J-'+j,niv:j<=2?'urg':j<=7?'proche':'loin',txt:dit?w.replace(/^(le|avant le)\s+/i,''):'≈ '+d.getDate()+' '+MC0[d.getMonth()],warn:js>=0&&/\d{1,2}\s+[a-zéû]/i.test(w)&&d.getDay()!==js?JS[d.getDay()]:null};}
+const MC0=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const GIC0={'a-acheter':'🛒','a-faire':'☐','question':'❓','conseil':'💡','note':'📝'};
+window.SANS_IA=function(D){const L=D.localR.map(l=>Object.assign({},l,{plein:D.lignes[l.n-1]||l.forme,dt:dateSes(D.lignes[l.n-1]||l.forme)}));
+  const af=L.filter(l=>l.genre==='a-faire'),dat=x=>x.filter(l=>l.dt).sort((a,b)=>a.dt.j-b.dt.j)[0];
+  const h=dat(af)||af[0]||dat(L)||null,af1=h&&h.genre==='a-faire';
+  const cdh=d=>'<span class="c2-cd '+d.niv+'"><b class="mono">'+esc(d.compte)+'</b><small>'+esc(d.txt)+'</small>'+(d.warn?'<i class="x">⚠ '+esc(d.warn)+'</i>':'')+'</span>';
+  let s='<section class="c2-off"'+(h?'':' data-utile')+'><span style="font-size:20px;color:var(--mut)">✦</span><b>IA absente</b><button class="c1-btn" data-reessai>⟳ Réessayer</button></section>';
+  if(h)s+='<section class="c2-hero" data-utile data-booster="heros-local"><div class="c2-k"><span>'+(af1?'☐ À faire':'📅 Daté')+'</span><small>lu par l’app</small></div>'+
+    '<div class="c2-b"><span class="c2-act">'+esc(h.plein)+'</span>'+(h.dt?cdh(h.dt):'')+'</div>'+
+    '<div class="c2-do">'+(af1?'<button class="c2-fait" aria-label="Fait">✓</button><button class="c2-tard" aria-label="Plus tard">⏭<small>plus tard</small></button>':'')+'<button class="c2-src" data-n="'+h.n+'">📝 <span class="mono">'+h.n+'</span> ↩</button></div></section>';
+  s+='<section class="c2-lc">'+L.filter(l=>l!==h).map(l=>{const seul=l.url.length&&/^\S+$/.test(l.plein.trim());
+    const tx=seul?'<b>'+esc(l.url[0])+'</b><small>'+esc(l.plein.replace(/^https?:\/\//,'').replace(/^www\./,'').slice(l.url[0].length))+'</small>':esc(l.plein);
+    const chips=seul?'':l.prix.concat(l.qte).map(p=>'<span class="c2-chip mono">'+esc(p)+'</span>').join('')+l.url.map(u=>'<span class="c2-chip">🔗 '+esc(u)+'</span>').join('')+(l.dt?'<span class="c2-chip">📅 '+esc(l.dt.txt)+' <b class="mono">'+esc(l.dt.compte)+'</b></span>':'');
+    return '<button class="c2-li" data-n="'+l.n+'"><span class="c2-ln mono">'+l.n+'</span><span class="c2-g">'+GIC0[l.genre]+'</span><span class="c2-o">'+tx+'</span>'+(chips?'<span class="c2-chips">'+chips+'</span>':'')+'</button>';}).join('')+'</section>';
+  return s;};
 function ligneDe(k){if(D.it[k])return D.it[k];if(D[k])return D[k];return null;}
 function rendre(){
   if(!IA){m.innerHTML=SANS_IA(D);const b=document.querySelector('[data-aide]');b.disabled=true;b.textContent='💡 Aide ⟳';return;}
   let h=heros()+figures()+'<section class="v7-rows">';
   if(D.regle&&!ouvert){const n=D.options.length+D.faits.length+D.pistes.length+D.liste.length+D.chiffres.length;m.innerHTML=h+(n?'<button class="v7-pli" data-ouvre>▸ Détail <span class="mono">'+n+'</span></button>':'')+'</section>';majAide();return;}
   const row=(gi,inner,nom)=>'<div class="v7-row" data-row="'+nom+'"><span class="v7-gi" aria-hidden="true">'+gi+'</span>'+inner+'</div>';
-  if(D.comp){if(D.comp.vide)h+=row('🛒','<div class="v7-wrap">'+D.comp.arts.map(a=>'<button class="v7-p" data-art="'+a.k+'"><span class="e">'+(a.ic||'🛒')+'</span><b>'+esc(a.nom)+'</b><span class="e" style="font-size:16px">🔗</span></button>').join('')+'</div>','offres');
+  if(D.comp){if(D.comp.vide)h+=row('🛒','<div class="v7-wrap">'+D.comp.arts.map(a=>'<button class="v7-p" data-art="'+a.k+'">'+(a.ic&&a.ic!=='🛒'?'<span class="e">'+a.ic+'</span>':'')+'<b>'+esc(a.nom)+'</b><span class="e" style="font-size:16px">🔗</span></button>').join('')+'</div>','offres');
     else h+='<div class="v7-row" style="display:block" data-row="cmp">'+comparaison()+'</div>';}
-  if(D.pistes.length||D.faits.length){const tr=D.trouve?'<span class="v7-tr" data-booster="trouve">'+anneau({ok:D.trouve.ok,q:D.pistes.filter(p=>p.ok==='verif').length,non:D.pistes.filter(p=>p.ok==='non').length})+'<span class="mono"><b>'+D.trouve.ok+'</b>/'+D.trouve.n+'</span>trouvé</span>':'';
+  if(D.pistes.length){const tr=D.trouve?'<span class="v7-tr" data-booster="trouve">'+anneau({ok:D.trouve.ok,q:D.pistes.filter(p=>p.ok==='verif').length,non:D.pistes.filter(p=>p.ok==='non').length})+'<span class="mono"><b>'+D.trouve.ok+'</b>/'+D.trouve.n+'</span></span>':'';
     h+=row('🔎','<div class="v7-wrap">'+tr+D.pistes.map(q=>q.ok==='trouve'?'<button class="v7-p ok" data-k="'+q.k+'"><span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b><span class="s">✓</span></button>':q.ok==='non'?'<button class="v7-p non" data-k="'+q.k+'"><span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b><span class="s">✗</span></button>':'<button class="v7-p att" data-k="'+q.k+'"><span class="e">'+q.ic+'</span><b>'+esc(q.mot)+'</b><span class="s">?</span></button>').join('')+
-      D.faits.map(f=>'<button class="v7-p fait" data-k="'+f.k+'"><span class="e">'+f.ic+'</span><b>'+esc(f.mot)+'</b><span class="s">✓</span></button>').join('')+(D.pistes.length?'<button class="v7-plus" aria-label="Ajouter une piste">+</button>':'')+'</div>','pistes');}
+      '<button class="v7-plus" aria-label="Ajouter une piste">+</button></div>','pistes');}
+  if(D.faits.length)h+=row('✅','<div class="v7-wrap">'+D.faits.map(f=>'<button class="v7-p fait" data-k="'+f.k+'"><span class="e">'+f.ic+'</span><b>'+esc(f.mot)+'</b><span class="s">✓</span></button>').join('')+'</div>','faits');
   const O=D.options.filter(o=>!retires.has(o.k));
   if(O.length){const deux=O.every(o=>o.inconnu&&!o.hach&&!o.ia&&!o.conseil)&&O.length%2===0;const hv=O.some(o=>o.hach);
     h+=row(D.genre==='idee'?'🧪':'🛠️','<div class="v7-opts'+(deux?' deux':'')+'">'+O.map(o=>{const ia=o.ia&&!gardes.has(o.k);const at=(o.inconnu?(o.hach?'<span class="h" aria-label="prix inconnu"></span>':''):'<span class="c mono">'+esc(o.cout)+'</span>')+(o.conseil?TAG_CONSEIL_X(o.k):'')+(ia?'<span class="v7-tag">✦ IA</span>':'');
@@ -239,7 +298,9 @@ function rendre(){
   if(D.liste.length)h+=row('📋','<div class="v7-ls">'+D.liste.map(l=>'<button class="v7-l" data-k="'+l.k+'"><span class="q"></span>'+(l.corr?'<span>'+l.ic+'</span>':'')+'<span>'+esc(l.mot)+'</span></button>').join('')+'</div>','liste');
   if(D.chiffres.length>2&&!D.paire)h+=row('＋','<div class="v7-wrap">'+D.chiffres.slice(2).map(c=>'<button class="v7-p" data-k="'+c.k+'"><span class="e">'+c.ic+'</span><span class="mono">'+esc(c.mot)+'</span></button>').join('')+'</div>','chiffres');
   if(D.echRow)h+=row('⏳','<div class="v7-wrap"><button class="v7-p" data-k="ech"><span class="e">'+(D.ech.quoi?'🗓️':'⏳')+'</span><b>'+esc(D.ech.quoi||D.ech.mot)+'</b>&nbsp;<span class="mono">'+esc(D.ech.date.compte)+'</span></button></div>','ech');
-  m.innerHTML=h+'</section>';majAide();}
+  m.innerHTML=h+'</section>';majAide();
+  const sel=m.querySelectorAll('.v7-cmp .sel');if(sel.length){const cm=m.querySelector('.v7-cmp'),a=sel[0].getBoundingClientRect(),z=sel[sel.length-1].getBoundingClientRect(),b=cm.getBoundingClientRect();
+    const f=document.createElement('span');f.className='v7-cadre';f.style.cssText='left:'+(a.left-b.left-3)+'px;top:'+(a.top-b.top-3)+'px;width:'+(a.width+6)+'px;height:'+(z.bottom-a.top+6)+'px';cm.appendChild(f);}}
 function majAide(){const vis=D.aide.filter(a=>!retires.has(a.k));const b=document.querySelector('[data-aide]');b.disabled=false;b.innerHTML='💡 Aide'+(vis.length?' <span class="mono" style="opacity:.75">'+vis.length+'</span>':'');}
 
 /* la ligne s'ouvre sous l'élément touché, une pointe vers lui */
@@ -254,7 +315,9 @@ function bulle(el,it,opts){document.querySelectorAll('.v7-bub').forEach(x=>x.rem
 m.addEventListener('click',e=>{
   if(e.target.closest('[data-ouvre]')){ouvert=true;rendre();return;}
   const pr=e.target.closest('[data-prendre]');if(pr){choisi=pr.dataset.prendre;rendre();return;}
-  if(e.target.closest('[data-rouvre]')){choisi=null;rendre();return;}
+  if(e.target.closest('[data-rouvre]')){choisi=null;commande=false;rendre();return;}
+  if(e.target.closest('[data-commande]')){commande=true;rendre();return;}
+  if(e.target.closest('[data-decommande]')){commande=false;rendre();return;}
   const rf=e.target.closest('[data-refus]');if(rf){e.stopPropagation();refuser(rf.dataset.refus);return;}
   const gd=e.target.closest('[data-garde]');if(gd){gardes.add(gd.dataset.garde);rendre();return;}
   const ln=e.target.closest('[data-n]');if(ln){const n=+ln.dataset.n;bulle(ln,{ligne:n,cit:''});return;}

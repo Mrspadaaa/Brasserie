@@ -1,5 +1,7 @@
 # Reprise : port de la v7 dans m4b-v7.html (25.11 nuit)
 
+**Terminé (reprise du 25.11, tard)** : les 6 correctifs, 4 défauts de plus vus sur les captures, bouteilles 29 mots onglets compris, toutes les captures ouvertes, CAS-V7.md, visuel/v7.html retouché (captures cap-v7/visuel/), commit local. Rien ne reste de la liste ci-dessous.
+
 Le contrat est `visuel/PORT-V7.md`. L'agent s'est arrêté à 353 k de contexte.
 
 ## Fait (vérifié, captures ouvertes jusqu'à g12)

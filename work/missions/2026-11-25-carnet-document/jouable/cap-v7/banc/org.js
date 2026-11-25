@@ -133,6 +133,7 @@ var tagIA = '<span class="v7-tag">✦ IA</span>';
 function tagConseil(k) { return '<span class="v7-cons"><span class="v7-tag">✦ conseillé</span><button class="v7-cx" data-act="sansconseil" aria-label="Retirer la marque conseillé de l’IA">✕</button></span>'; }
 function srcBtn(it) { return it && (it.ligne || it.ligneTxt) ? '<button class="v7-src" data-k="' + it.k + '" aria-label="Sa ligne dans Mes notes">📝 ↩</button>' : ''; }
 
+function lg(t) { return String(t).length > 20 ? ' m' : ''; }
 function heros(D) {
   var o = D.o, c = D.c;
   if (D.regle) { var g = D.regle;
@@ -148,11 +149,15 @@ function heros(D) {
       var steps = '<span class="v7-steps" aria-label="achat : comparé, choisi, ' + (o.commande ? 'commandé' : 'à commander') + '"><i>⚖️</i>›' + (o.commande ? '<i>✋</i>›<b>📦 commandé</b>' : '<b>✋ choisi</b>›<i>📦</i>') + '</span>';
       if (o.commande) return '<section class="v7-hero ok" data-utile data-booster="achat"><div class="v7-kick">' + steps + '</div><div class="v7-body"><span class="v7-big">📦</span><span class="v7-act s">' + esc(a.nom) + '</span>' + cdHtml(D.date) + '</div>' +
         '<div class="v7-do"><button class="v7-rouvrir" data-act="decommander">↺ Pas encore</button>' + srcBtn(a) + '</div></section>';
-      return '<section class="v7-hero' + (D.date ? ' h-' + D.date.niv : ' h-loin') + '" data-utile data-booster="achat"><div class="v7-kick">' + steps + '</div><div class="v7-body"><span class="v7-big">📦</span><span class="v7-act">Commander chez ' + esc(a.nom) + '</span>' + cdHtml(D.date) + '</div>' +
+      return '<section class="v7-hero' + (D.date ? ' h-' + D.date.niv : ' h-loin') + '" data-utile data-booster="achat"><div class="v7-kick">' + steps + '</div><div class="v7-body"><span class="v7-big">📦</span><span class="v7-act' + lg('Commander chez ' + a.nom) + '">Commander chez ' + esc(a.nom) + '</span>' + cdHtml(D.date) + '</div>' +
         '<div class="v7-do"><button class="v7-fait" data-act="commander" aria-label="Commandé">✓</button><button class="v7-tard" data-act="tard" aria-label="Plus tard">⏭<small>plus tard</small></button><button class="v7-rouvrir" data-act="rouvrir-choix">↺ Rouvrir</button></div></section>'; }
     var gw = C.totalG != null ? C.arts[C.totalG] : null;
-    return '<section class="v7-hero fin" data-utile data-booster="choisir"><div class="v7-body"><span class="v7-big">⚖️</span><span class="v7-act">Choisir l’offre</span>' + cdHtml(D.date) + '</div>' +
-      (gw ? '<div class="v7-do"><button class="v7-prendre" data-act="prendre" data-i="' + gw.i + '">✓ Prendre <b>' + esc(gw.nom) + '</b></button></div>' : '') + '</section>'; }
+    return '<section class="v7-hero fin" data-utile data-booster="choisir" aria-label="Choisir l’offre"><div class="v7-body"><span class="v7-big">⚖️</span>' +
+      (gw ? '<span class="v7-act' + (gw.nom.length > 8 ? ' m' : '') + '">' + esc(gw.nom) + ' <span class="v7-cr" aria-label="moins cher au total">👑</span></span>' : '<span class="v7-act">Choisir l’offre</span>') + cdHtml(D.date) + '</div>' +
+      (gw ? '<div class="v7-do"><button class="v7-prendre" data-act="prendre" data-i="' + gw.i + '" aria-label="Prendre ' + esc(gw.nom) + '">✓ Prendre</button></div>' : '') + '</section>'; }
+  if (!D.tache && D.r.resolu && c.etat !== 'resolu' && o.garde.resolu === false) { var q = D.r.resolu;
+    return '<section class="v7-hero h-loin" data-utile data-booster="rouvert"><div class="v7-kick"><span class="v7-kind">↺ Rouvert</span></div><div class="v7-body"><span class="v7-big">' + D.ic + '</span><span class="v7-act s' + lg(q.question) + '">' + esc(q.question) + '</span></div>' +
+      '<div class="v7-do"><button class="v7-oui" data-act="reregle">✓ Réglé</button>' + srcBtn({ k: 'rv', ligne: q.ligne }) + '</div></section>'; }
   var t = D.tache || { k: null, ic: D.ic, mot: D.r.resume || 'Rien n’attend', ligne: null };
   var tint = ' h-' + ((D.date && D.date.niv) || 'loin');
   if (D.tache && o.tacheFaite) return '<section class="v7-hero ok" data-utile data-booster="heros"><div class="v7-kick"><span class="v7-kind">✓ Fait</span></div><div class="v7-body"><span class="v7-big">' + t.ic + '</span><span class="v7-act s barre">' + esc(t.mot) + '</span></div>' +
@@ -175,9 +180,9 @@ function figures(D) {
 function comparaisonHtml(D) {
   var C = D.comp, A = C.arts, tot = C.besoin != null, o = D.o, ch = o.choisi != null ? o.choisi : -1;
   var liv = function (j) { return tot && /livraison/i.test(C.crit[j].nom); };
-  var mots = function (j) { return A.every(function (a) { return a.vals[j] === '?' || !/\d/.test(a.vals[j]); }); };
+  var mots = function (j) { return A.every(function (a) { return a.vals[j] === '?' || !/^[≥~+]?\d[\d\s.,']*\s?\S{0,6}$/.test(a.vals[j]); }); };
   var J = C.crit.map(function (x, j) { return j; });
-  var rangs = J.filter(function (j) { return !liv(j) && !mots(j) && !(tot && j === C.iq); }), sous = J.filter(function (j) { return !liv(j) && mots(j); });
+  var rangs = J.filter(function (j) { return !liv(j) && !mots(j) && !(tot && j === C.iq); }), sous = J.filter(function (j) { return !liv(j) && mots(j) && !(tot && j === C.iq); });
   var hach = false, n = A.length, horiz = tot && n >= 4;
   var col = function (i) { return ch < 0 ? '' : i === ch ? ' sel' : ' eteint'; };
   var qch = function (a) { if (!tot || C.iq < 0) return ''; var v = a.vals[C.iq]; if (a.manque) return '<span class="hc m">' + C.crit[C.iq].ic + ' ⚠ <span class="mono">' + a.total.q + '</span></span>';
@@ -191,7 +196,7 @@ function comparaisonHtml(D) {
         '<span class="vl mono ' + cl + '">' + (t ? (t.livInconnue ? '≥' : '') + t.chf + (t.manque ? ' ⚠' : '') : '?') + (C.totalG === a.i ? ' 👑' : '') + '</span></button>'; }).join('') + '</div>';
   }
   h += '<div class="v7-cmp' + (ch >= 0 ? ' choix' : '') + '" style="grid-template-columns:44px repeat(' + n + ',minmax(0,1fr))" data-booster="comparer"><span></span>';
-  h += A.map(function (a) { return '<div class="hd' + col(a.i) + '" role="button" tabindex="0" data-k="' + a.k + '">' + (a.ic ? '<span class="e">' + a.ic + '</span>' : '') + '<span>' + esc(a.nom) + '</span>' + (a.conseil ? tagConseil(a.k) : '') + qch(a) +
+  h += A.map(function (a) { return '<div class="hd' + col(a.i) + '" role="button" tabindex="0" data-k="' + a.k + '">' + (a.ic ? '<span class="e">' + a.ic + '</span>' : '') + '<span>' + esc(a.nom) + '</span>' + (a.conseil && C.totalG == null ? tagConseil(a.k) : '') + qch(a) +
     sous.filter(function (j) { return a.vals[j] !== '?'; }).map(function (j) { return '<span class="hc">' + C.crit[j].ic + ' ' + esc(a.vals[j]) + '</span>'; }).join('') + '</div>'; }).join('');
   if (tot && !horiz) {
     var mx2 = Math.max.apply(null, A.filter(function (a) { return a.total; }).map(function (a) { return a.total.chf; }));
@@ -209,7 +214,7 @@ function comparaisonHtml(D) {
       /* un seul vert : avec un coût total, seul 👑 est vert ; sans coût total, le gagnant de chaque critère */
       var w = !tot && cr.g === a.i;
       return '<span class="v' + (w ? ' w' : '') + ' mono' + col(a.i) + '">' + esc(v) + '</span>'; }).join(''); });
-  if (hach) h += '<span class="leg"><span class="sw"></span>inconnu</span>';
+  if (hach) h += '<span class="leg" aria-label="hachuré : inconnu"><span class="sw"></span>?</span>';
   return h + '</div>';
 }
 
@@ -221,7 +226,7 @@ function rangees(D) {
   if (D.pistes.length) { var nT = D.pistes.filter(function (p) { return p.ok === 'trouve'; }).length;
     var tr = nT ? '<span class="v7-tr" data-booster="trouve" aria-label="' + nT + ' trouvé sur ' + D.pistes.length + '">' + anneau({ ok: nT, q: D.pistes.filter(function (p) { return p.ok === 'verif'; }).length, non: D.pistes.filter(function (p) { return p.ok === 'non'; }).length }) + '<b class="mono">' + nT + '/' + D.pistes.length + '</b></span>' : '';
     h += row('🔎', '<div class="v7-wrap">' + tr + D.pistes.map(function (q) { var cl = q.ok === 'trouve' ? 'ok' : q.ok === 'non' ? 'non' : 'att', s = q.ok === 'trouve' ? '✓' : q.ok === 'non' ? '✗' : '?';
-      return '<button class="v7-p ' + cl + (q.ia ? ' ia' : '') + '" data-k="' + q.k + '"><span class="e">' + q.ic + '</span><b>' + esc(q.mot) + '</b><span class="s">' + s + '</span>' + (q.ia ? tagIA : '') + '</button>'; }).join('') +
+      return '<button class="v7-p ' + cl + (q.ia ? ' ia' : '') + '" data-k="' + q.k + '"><span class="e">' + q.ic + '</span><b>' + esc(String(q.mot).replace(/\s*\?\s*$/, '')) + '</b><span class="s">' + s + '</span>' + (q.ia ? tagIA : '') + '</button>'; }).join('') +
       '<button class="v7-plus" data-act="plus-piste" aria-label="Ajouter une piste">+</button></div>', 'pistes'); }
   if (D.faits.length) h += row('✅', '<div class="v7-wrap">' + D.faits.map(function (f) { return '<button class="v7-p fait" data-k="' + f.k + '"><span class="e">' + f.ic + '</span><b>' + esc(f.mot) + '</b><span class="s">✓</span></button>'; }).join('') + '</div>', 'faits');
   if (D.options.length) { var deux = D.options.length % 2 === 0 && D.options.every(function (x) { return x.inconnu && !x.hach && !x.ia && !x.conseil; }), hv = D.options.some(function (x) { return x.hach; });
@@ -231,7 +236,7 @@ function rangees(D) {
       var at = (x.inconnu ? (x.hach ? '<span class="h" aria-label="prix inconnu"></span>' : '') : '<span class="c mono">' + esc(x.cout) + '</span>') + (x.conseil ? tagConseil(x.k) : '') + (x.ia ? tagIA : '') + (ret ? '<span class="v7-ret">☆ retenu</span>' : '');
       return '<div class="v7-o' + (x.ia ? ' ia' : '') + (ret ? ' ret' : '') + '" role="button" tabindex="0" data-k="' + x.k + '"><span class="e">' + x.ic + '</span><span class="tw"><span class="t">' + esc(x.mot) + '</span>' + (at ? '<span class="at">' + at + '</span>' : '') + '</span>' +
         (x.ia ? '<button class="v7-x" data-act="refus" data-k="' + x.k + '" aria-label="Refuser la proposition de l’IA">✕</button>' : '') + '</div>'; }).join('') + (hv ? '<span class="v7-legw"><span class="leg"><span class="sw"></span>prix inconnu</span></span>' : '') + '</div>', 'options'); }
-  if (D.taches.length) h += row('☐', '<div class="v7-ls">' + D.taches.map(function (x) { return '<div class="v7-l' + (x.fait ? ' fait' : '') + (x.ia ? ' ia' : '') + '"><button class="q" data-act="cochem" data-m="' + x.mi + '" aria-label="' + (x.fait ? 'Décocher ' : 'Cocher ') + esc(x.mot) + '">' + (x.fait ? '✓' : '') + '</button><button class="tx" data-k="' + x.k + '">' + esc(x.mot) + '</button>' + (x.ia ? tagIA : '') + '</div>'; }).join('') + '</div>', 'afaire');
+  if (D.taches.length) h += row('☑️', '<div class="v7-ls">' + D.taches.map(function (x) { return '<div class="v7-l' + (x.fait ? ' fait' : '') + (x.ia ? ' ia' : '') + '"><button class="q" data-act="cochem" data-m="' + x.mi + '" aria-label="' + (x.fait ? 'Décocher ' : 'Cocher ') + esc(x.mot) + '">' + (x.fait ? '✓' : '') + '</button><button class="tx" data-k="' + x.k + '">' + esc(x.mot) + '</button>' + (x.ia ? tagIA : '') + '</div>'; }).join('') + '</div>', 'afaire');
   if (D.liste.length) { var nf = D.liste.filter(function (l) { return l.fait; }).length;
     h += row('📋', '<div class="v7-ls">' + D.liste.map(function (l) { return '<div class="v7-l' + (l.fait ? ' fait' : '') + '"><button class="q" data-act="coche" data-i="' + l.i + '" aria-label="' + (l.fait ? 'Décocher ' : 'Cocher ') + esc(l.mot) + '">' + (l.fait ? '✓' : '') + '</button><button class="tx" data-k="' + l.k + '">' + esc(l.mot) + '</button></div>'; }).join('') +
       (nf ? '<span class="v7-n mono">' + nf + '/' + D.liste.length + '</span>' : '') + '</div>', 'liste'); }
@@ -285,7 +290,7 @@ function sansIA(c, enCours) {
       '<div class="v7-body"><span class="v7-act loc">' + esc(hx.l) + '</span>' + (d ? cdHtml(d) : '') + '</div>' +
       '<div class="v7-do">' + (af1 ? '<button class="v7-fait" data-act="fait-local" aria-label="Fait">✓</button><button class="v7-tard" data-act="tard-local" aria-label="Plus tard">⏭<small>plus tard</small></button>' : '') + '<button class="v7-src" data-n="' + hx.n + '" aria-label="Sa ligne dans Mes notes">📝 <span class="mono">' + hx.n + '</span> ↩</button></div></section>'; }
   s += '<section class="v7-lc">' + L.filter(function (x) { return x !== hx; }).map(function (x) {
-    var ch = chips(x), tx = x.x.url.length && /^\S+$/.test(x.l) ? '<b>' + esc(x.x.url[0]) + '</b><small>' + esc(x.l.replace(/^https?:\/\//, '').replace(/^www\./, '').slice(x.x.url[0].length)) + '</small>' : esc(x.l);
+    var seul = x.x.url.length && /^\S+$/.test(x.l), ch = seul ? '' : chips(x), tx = seul ? '<b>' + esc(x.x.url[0]) + '</b><small>' + esc(x.l.replace(/^https?:\/\//, '').replace(/^www\./, '').slice(x.x.url[0].length)) + '</small>' : esc(x.l);
     return '<button class="v7-li" data-n="' + x.n + '"><span class="v7-ln mono">' + x.n + '</span><span class="g">' + GIC[x.x.genre] + '</span><span class="o">' + tx + (ch ? '<span class="cs">' + ch + '</span>' : '') + '</span></button>'; }).join('') + '</section>';
   return s;
 }
@@ -409,6 +414,7 @@ org.addEventListener('click', function (e) {
     if (act === 'retour-tard') { o.tard = false; sauver(); rendreOrg(); return; }
     if (act === 'rouvrir') { o.garde.resolu = false; poserEtat(c, o.etatAvant && o.etatAvant !== 'resolu' ? o.etatAvant : 'cherche'); return; }
     if (act === 'regle-oui') { garder('resolu'); return; }
+    if (act === 'reregle') { poserEtat(c, 'resolu'); return; }
     if (act === 'regle-non') { refuser('resolu'); return; }
     if (act === 'prendre') { prendre(+b.dataset.i); return; }
     if (act === 'commander') { annulable('📦 Commandé chez ' + org.__D.comp.arts[o.choisi].nom, function () { o.commande = true; geste('commandé', ''); }, function () { o.commande = false; }); return; }

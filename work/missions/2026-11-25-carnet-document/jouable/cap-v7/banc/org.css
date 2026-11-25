@@ -155,3 +155,9 @@
 .v7-pt{width:8px;height:8px;border-radius:50%;background:currentColor;animation:m4b-pulse 1s ease-in-out infinite alternate}
 @keyframes m4b-pulse{from{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.v7-bub,.v7-pile,.v7-pt{animation:none}}
+
+/* reprise : toast d’une ligne, héros long, couronne du héros */
+.m4b-toast{width:max-content;max-width:92%}
+.v7-act.m{font-size:22px}
+.v7-cr{font-size:.8em}
+.v7-l.ia{grid-column:1/-1}

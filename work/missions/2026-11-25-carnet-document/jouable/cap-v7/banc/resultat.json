@@ -131,8 +131,8 @@
    "heros": "Rappeler le gérant"
   },
   "bouteilles": {
-   "n": 33,
-   "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+   "n": 29,
+   "mots": "Mes notes Organisé Fournisseur B J-20 15 déc. Prendre Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 Aide 1 Ajouter…",
    "utileY": 90,
    "barre": 52,
    "sousBarre": 38,
@@ -145,7 +145,7 @@
     "jauge",
     "jauge"
    ],
-   "heros": "Choisir l’offre"
+   "heros": "Fournisseur B 👑"
   },
   "cave": {
    "n": 24,
@@ -269,8 +269,8 @@
    "heros": "Goûter la voisine"
   },
   "frigo": {
-   "n": 29,
-   "mots": "Mes notes Organisé Comparer les devis J-6 avant décembre plus tard 14 °C visé 2 Réparer Frigo neuf CHF 480 1 200 1/1 Compresseur Fûts déplacés Aide 1 Ajouter…",
+   "n": 30,
+   "mots": "Mes notes Organisé Comparer les devis J-6 avant décembre plus tard 14 °C visé 2 °C Réparer Frigo neuf CHF 480 1 200 1/1 Compresseur Fûts déplacés Aide 1 Ajouter…",
    "utileY": 90,
    "barre": 52,
    "sousBarre": 38,
@@ -337,8 +337,8 @@
    "heros": "Débit réglé à la sortie"
   },
   "vapeur": {
-   "n": 25,
-   "mots": "Mes notes Organisé Acheter le condenser J-5 30 nov. plus tard KegLand Brewtools pas en stock 2 inch tri-clover inconnu Steam condenser conseillé Aide Ajouter…",
+   "n": 24,
+   "mots": "Mes notes Organisé Acheter le condenser J-5 30 nov. plus tard KegLand 2 inch tri-clover Brewtools pas en stock Steam condenser conseillé Aide Ajouter…",
    "utileY": 90,
    "barre": 52,
    "sousBarre": 38,
@@ -403,8 +403,8 @@
   "g03-bouteilles-prendre": {
    "ok": true,
    "m": {
-    "n": 36,
-    "mots": "Mes notes Organisé choisi Commander chez Fournisseur B J-20 15 déc. plus tard Rouvrir Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "n": 34,
+    "mots": "Mes notes Organisé choisi Commander chez Fournisseur B J-20 15 déc. plus tard Rouvrir Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 Aide 1 Ajouter…",
     "utileY": 90,
     "barre": 52,
     "sousBarre": 38,
@@ -423,8 +423,8 @@
   "g04-bouteilles-commande": {
    "ok": true,
    "m": {
-    "n": 33,
-    "mots": "Mes notes Organisé commandé Fournisseur B J-20 15 déc. Pas encore Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "n": 31,
+    "mots": "Mes notes Organisé commandé Fournisseur B J-20 15 déc. Pas encore Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 Aide 1 Ajouter…",
     "utileY": 90,
     "barre": 52,
     "sousBarre": 38,
@@ -443,8 +443,8 @@
   "g05-bouteilles-rouvrir": {
    "ok": true,
    "m": {
-    "n": 33,
-    "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu Aide 1 Ajouter…",
+    "n": 29,
+    "mots": "Mes notes Organisé Fournisseur B J-20 15 déc. Prendre Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 Aide 1 Ajouter…",
     "utileY": 90,
     "barre": 52,
     "sousBarre": 38,
@@ -457,14 +457,14 @@
      "jauge",
      "jauge"
     ],
-    "heros": "Choisir l’offre"
+    "heros": "Fournisseur B 👑"
    }
   },
   "g06-bouteilles-colonne": {
    "ok": true,
    "m": {
-    "n": 45,
-    "mots": "Mes notes Organisé Choisir l’offre J-20 15 déc. Prendre Fournisseur B Verallia ≥1200 Fournisseur B conseillé Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 inconnu 3 Occasion sur annonce 0.20/bt, à laver, 400 seulement Mes notes Prendre Aide 1 Ajouter…",
+    "n": 41,
+    "mots": "Mes notes Organisé Fournisseur B J-20 15 déc. Prendre Verallia ≥1200 Fournisseur B Occasion 400 à laver total CHF ≥504 410 ≥80 /bt 0.42 0.55 0.20 3 Occasion sur annonce 0.20/bt, à laver, 400 seulement Mes notes Prendre Aide 1 Ajouter…",
     "utileY": 90,
     "barre": 52,
     "sousBarre": 38,
@@ -477,23 +477,23 @@
      "jauge",
      "jauge"
     ],
-    "heros": "Choisir l’offre"
+    "heros": "Fournisseur B 👑"
    }
   },
   "g07-pilsner-repos-puis-rouvrir": {
    "ok": true,
    "m": {
-    "n": 31,
-    "mots": "Mes notes Organisé Commandé chez l’autre J-8 3 déc. plus tard 2 sacs Commandé Autre fournisseur +4 CHF/sac Décaler le brassin Autre malt prix inconnu Autre fournisseur en stock Aide Ajouter…",
+    "n": 30,
+    "mots": "Mes notes Organisé Rouvert Commandé 2 sacs, brassin maintenu Réglé 2 sacs Commandé Autre fournisseur +4 CHF/sac Décaler le brassin Autre malt prix inconnu Autre fournisseur en stock Aide Ajouter…",
     "utileY": 90,
     "barre": 52,
     "sousBarre": 38,
     "tronq": [],
     "debord": false,
     "boosters": [
-     "heros"
+     "rouvert"
     ],
-    "heros": "Commandé chez l’autre"
+    "heros": "Commandé 2 sacs, brassin maintenu"
    }
   },
   "g08-levure-lente-detail": {
@@ -534,7 +534,7 @@
    "ok": true,
    "m": {
     "n": 62,
-    "mots": "Mes notes Organisé ZZ TEST écoulement qui fuit mar. 24 nov. 21:26 Je cherche lu par l’IA à 22:32 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée. Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu. Estimation 150 CHF (exemple). Revenir à Joint du siphon",
+    "mots": "Mes notes Organisé ZZ TEST écoulement qui fuit mar. 24 nov. 21:26 Je cherche lu par l’IA à 22:42 L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage. Pistes joint du siphon trouvé usé fuite sous la dalle, pas trouvée. Contacter l’entreprise X (exemple) pour un sanitaire. Devis attendu. Estimation 150 CHF (exemple). Revenir à Joint du siphon",
     "utileY": 0,
     "barre": 52,
     "sousBarre": -52,
@@ -652,7 +652,7 @@
    "ok": true,
    "m": {
     "n": 36,
-    "mots": "Mes notes Organisé mémo Local Rangement haute Noté lu à 22:32 Ranger Changements Question Ranger la cave J-11 samedi 6 déc. dimanche plus tard Trier les cartons Monter une étagère Jeter les seaux 1/3 Aide Ajouter…",
+    "mots": "Mes notes Organisé mémo Local Rangement haute Noté lu à 22:42 Ranger Changements Question Ranger la cave J-11 samedi 6 déc. dimanche plus tard Trier les cartons Monter une étagère Jeter les seaux 1/3 Aide Ajouter…",
     "utileY": 173,
     "barre": 52,
     "sousBarre": 121,
@@ -686,7 +686,7 @@
    "ok": true,
    "m": {
     "n": 63,
-    "mots": "Mes notes Organisé ZZ TEST CO2 qui baisse vite dans un fût mer. 25 nov. 22:32 Décidé lu par l’IA à 22:32 Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22. Pistes joint du couvercle, raccord gaz ou régulateur. Test à l’eau savonneuse bulles au raccord gaz. Raccord gaz changé, à revérifier dans une semaine. Piste Fuite au régulateur",
+    "mots": "Mes notes Organisé ZZ TEST CO2 qui baisse vite dans un fût mer. 25 nov. 22:42 Décidé lu par l’IA à 22:42 Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22. Pistes joint du couvercle, raccord gaz ou régulateur. Test à l’eau savonneuse bulles au raccord gaz. Raccord gaz changé, à revérifier dans une semaine. Piste Fuite au régulateur",
     "utileY": 0,
     "barre": 52,
     "sousBarre": -52,
@@ -703,8 +703,8 @@
  },
  "malt4": {
   "m": {
-   "n": 39,
-   "mots": "Mes notes Organisé Choisir l’offre Prendre Brouwland total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur conseillé 40 /kg 1.90 1.75 2.10 1.50 inconnu Aide 1 Ajouter…",
+   "n": 35,
+   "mots": "Mes notes Organisé Brouwland Prendre total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur 40 /kg 1.90 1.75 2.10 1.50 Aide 1 Ajouter…",
    "utileY": 90,
    "barre": 52,
    "sousBarre": 38,
@@ -715,15 +715,15 @@
     "jauge",
     "comparer"
    ],
-   "heros": "Choisir l’offre"
+   "heros": "Brouwland 👑"
   },
   "fausses": [
    0,
    []
   ],
   "prendre": {
-   "n": 42,
-   "mots": "Mes notes Organisé choisi Commander chez Brouwland plus tard Rouvrir total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur conseillé 40 /kg 1.90 1.75 2.10 1.50 inconnu Aide 1 Ajouter…",
+   "n": 40,
+   "mots": "Mes notes Organisé choisi Commander chez Brouwland plus tard Rouvrir total CHF 50 Malterie A 125 Moulin B 175 Brouwland 120 Voisin brasseur ≥60 Malterie A Moulin B Brouwland Voisin brasseur 40 /kg 1.90 1.75 2.10 1.50 Aide 1 Ajouter…",
    "utileY": 90,
    "barre": 52,
    "sousBarre": 38,
@@ -804,8 +804,8 @@
    "heros": "Brassage IPA prévu demain 7h"
   },
   "citra": {
-   "n": 26,
-   "mots": "Mes notes Organisé IA absente Réessayer 1 motlerhops.fr /collections/tous-nos-houblons/products/citra-us motlerhops.fr 2 brauundrauchshop.ch /citra-136-2 brauundrauchshop.ch 3 Ça semble dur à obtenir sur le site français Aide Ajouter…",
+   "n": 24,
+   "mots": "Mes notes Organisé IA absente Réessayer 1 motlerhops.fr /collections/tous-nos-houblons/products/citra-us 2 brauundrauchshop.ch /citra-136-2 3 Ça semble dur à obtenir sur le site français Aide Ajouter…",
    "utileY": 88,
    "barre": 52,
    "sousBarre": 36,

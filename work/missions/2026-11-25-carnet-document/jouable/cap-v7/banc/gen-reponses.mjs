@@ -42,7 +42,7 @@ const T = {
   embouteillage: ['embouteillage-planning', 'ZZ TEST — Embouteillage — station complète (2027)'] };
 for (const k in T) { const r = jou(T[k][0]); cas(k, T[k][1], r, 'jouable/reponses/' + T[k][0] + '.json, complété v7'); }
 R.frigo.reponse.faits = [{ emoji: '🛢️', texte: 'Fûts déplacés', ligne: 2, citation: 'Fûts déplacés' }];
-R.frigo.reponse.chiffres = [Object.assign(R.frigo.reponse.chiffres[0], { label: 'visé 2' })];
+R.frigo.reponse.chiffres = [Object.assign(R.frigo.reponse.chiffres[0], { label: 'visé 2 °C' })];
 R.frigo.reponse.conseil = '❄️ Demande combien de temps tient le compresseur réparé.';
 R['levure-lente'].reponse.resolu = { question: 'Monté à 19 °C', ligne: 3, citation: 'Monté à 19 °C, la fermentation démarre le lendemain' };
 R.pompe.reponse.resolu = { question: 'Débit réglé à la sortie', ligne: 3, citation: 'on règle le débit à la sortie maintenant. Résolu' };

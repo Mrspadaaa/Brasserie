@@ -61,7 +61,7 @@ try {
   });
   const cap = async (nom) => { await attendre(260); await page.screenshot({ path: CAP + nom + '.png' }); return nom; };
   const idDe = t => page.evaluate(t => __m4b.etat().carnets.filter(c => c.titre === t)[0].id, t);
-  const ouvrir = async t => { await page.evaluate(i => __m4b.ouvrir(i), await idDe(t)); await attendre(200); };
+  const ouvrir = async t => { await page.evaluate(i => __m4b.ouvrir(i), await idDe(t)); await attendre(200); await page.evaluate(() => document.querySelectorAll('.m4b-toast').forEach(x => x.remove())); };
   const fermer = () => page.evaluate(() => __m4b.fermer());
   const T = n => Object.keys(SLUG).find(t => SLUG[t] === n);
   const clic = async (sel) => { const el = await page.$(sel); if (!el) throw new Error('absent : ' + sel); await el.click(); await attendre(150); };
