@@ -1,0 +1,890 @@
+{
+ "phrase": "ZZ TEST — c68 le fusible de la plaque saute quand je lance la pompe",
+ "source": "aiTask réel, app en ligne index-BRxcNYiQ.js, 2026-11-25, voie c68-releve ; titres, notes et articles de ses carnets anonymisés (Carnet réel n), identifiants remplacés par des alias stables",
+ "requete": {
+  "data": {
+   "task": "rangerCarnet",
+   "tier": "fast",
+   "context": {
+    "texte": "ZZ TEST — c68 le fusible de la plaque saute quand je lance la pompe",
+    "saisie": "2026-11-25",
+    "depuis": null,
+    "carnets": [
+     {
+      "id": "CARNET-ZZ-1",
+      "titre": "ZZ TEST — CO2 qui baisse vite dans un fût",
+      "criteres": [
+       {
+        "texte": "Fût de blonde à 1,2 bar le 15 nov., 0,4 bar le 22."
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-1",
+        "texte": "CO2 qui baisse vite dans un fût"
+       },
+       {
+        "id": "NOTE-2",
+        "texte": "Pistes : joint du couvercle, raccord gaz ou régulateur."
+       },
+       {
+        "id": "NOTE-3",
+        "texte": "Test à l’eau savonneuse : bulles au raccord gaz."
+       },
+       {
+        "id": "NOTE-4",
+        "texte": "Raccord gaz changé, à revérifier dans une semaine."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "domaine": "brasserie",
+      "derniers": [
+       "Raccord gaz changé, à revérifier dans une semaine.",
+       "Test à l’eau savonneuse : bulles au raccord gaz.",
+       "Pistes : joint du couvercle, raccord gaz ou régulateur."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-2",
+      "titre": "ZZ TEST — assurance à renouveler",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-5",
+        "texte": "Échéance le 31 déc."
+       },
+       {
+        "id": "NOTE-6",
+        "texte": "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026."
+       },
+       {
+        "id": "NOTE-7",
+        "texte": "Demander une offre à un 2e assureur."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Demander une offre à un 2e assureur.",
+       "Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.",
+       "Échéance le 31 déc."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-3",
+      "titre": "ZZ TEST — truc à voir",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "ZZ TEST — truc à voir"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-4",
+      "titre": "ZZ TEST — frigo de garde en panne",
+      "criteres": [
+       {
+        "texte": "Le 21 nov., frigo de garde à 14 °C au lieu de 2 °C, 6 fûts dedans.",
+        "caracteristique": {
+         "nom": "température",
+         "unite": "°C",
+         "sens": "plus"
+        }
+       }
+      ],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF."
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-8",
+        "texte": "Devis à comparer avant décembre."
+       },
+       {
+        "id": "NOTE-9",
+        "texte": "À sentir à nouveau dans 2 semaines, avant la mise en fût."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "À sentir à nouveau dans 2 semaines, avant la mise en fût.",
+       "Devis à comparer avant décembre.",
+       "Technicien : compresseur HS, réparation 480 CHF ou frigo neuf 1 200 CHF."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-5",
+      "titre": "ZZ TEST — inspection électrique, fusible",
+      "criteres": [
+       {
+        "texte": "Un fusible 5×20 mm 6,3 A à remplacer.",
+        "caracteristique": {
+         "nom": "fusible 5×",
+         "unite": "mm",
+         "sens": "plus"
+        }
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-10",
+        "texte": "Inspection électrique, fusible"
+       },
+       {
+        "id": "NOTE-11",
+        "texte": "Inspection électrique le 20 nov. : tout est en ordre sauf un fusible grillé sur la ligne de la cuve."
+       },
+       {
+        "id": "NOTE-12",
+        "texte": "Besoin d’un testeur de tension pour vérifier avant de remettre."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+       "Besoin d’un testeur de tension pour vérifier avant de remettre.",
+       "Un fusible 5×20 mm 6,3 A à remplacer."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-6",
+      "titre": "ZZ TEST — écoulement qui fuit",
+      "criteres": [],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Estimation 150 CHF (exemple)."
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-13",
+        "texte": "Écoulement qui fuit"
+       },
+       {
+        "id": "NOTE-14",
+        "texte": "L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage."
+       },
+       {
+        "id": "NOTE-15",
+        "texte": "Pistes : joint du siphon trouvé usé"
+       },
+       {
+        "id": "NOTE-16",
+        "texte": "fuite sous la dalle, pas trouvée."
+       },
+       {
+        "id": "NOTE-17",
+        "texte": "Contacter l’entreprise X (exemple) pour un sanitaire."
+       },
+       {
+        "id": "NOTE-18",
+        "texte": "Devis attendu."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "domaine": "local",
+      "derniers": [
+       "Estimation 150 CHF (exemple).",
+       "Devis attendu.",
+       "Contacter l’entreprise X (exemple) pour un sanitaire."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-7",
+      "titre": "ZZ TEST — trop de vapeur au brassage",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-19",
+        "texte": "Trop de vapeur au brassage"
+       },
+       {
+        "id": "NOTE-20",
+        "texte": "Le 18 nov., pendant l’ébullition, la salle était pleine de vapeur, ça coule sur les murs."
+       },
+       {
+        "id": "NOTE-21",
+        "texte": "Première idée : un humidificateur dans la salle."
+       },
+       {
+        "id": "NOTE-22",
+        "texte": "Plutôt un steam condenser sur la cuve : la vapeur est condensée à l’eau froide."
+       },
+       {
+        "id": "NOTE-23",
+        "texte": "Le 2e pas en stock, à surveiller."
+       },
+       {
+        "id": "NOTE-24",
+        "texte": "Humidificateur finalement pas utile."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "Humidificateur finalement pas utile.",
+       "Achat prévu fin du mois.",
+       "Le 2e pas en stock, à surveiller."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-8",
+      "titre": "ZZ TEST — fenêtre qui ferme mal",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "ZZ TEST — fenêtre qui ferme mal"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-1",
+      "titre": "Carnet réel 1",
+      "criteres": [],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Article réel 1.1",
+        "valeurs": {}
+       },
+       {
+        "nom": "Article réel 1.2",
+        "valeurs": {}
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-25",
+        "texte": "Note réelle 1.1"
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "Note réelle 1.1",
+       "Note réelle 1.2",
+       "Note réelle 1.3"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-9",
+      "titre": "ZZ TEST — ranger la cave",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-26",
+        "texte": "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux."
+       },
+       {
+        "id": "NOTE-27",
+        "texte": "Prévu le samedi 6 déc. au matin."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Prévu le samedi 6 déc. au matin.",
+       "À faire : trier les cartons vides, monter une étagère, jeter les vieux seaux.",
+       "ZZ TEST — ranger la cave"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-10",
+      "titre": "ZZ TEST — odeur de soufre dans un lot",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-28",
+        "texte": "Lot 14 de lager : odeur d’œuf pourri à J+5."
+       },
+       {
+        "id": "NOTE-29",
+        "texte": "Souvent normal avec une levure lager, ça part pendant la garde."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "À sentir à nouveau dans 2 semaines, avant la mise en fût.",
+       "Souvent normal avec une levure lager, ça part pendant la garde.",
+       "Lot 14 de lager : odeur d’œuf pourri à J+5."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-11",
+      "titre": "ZZ TEST — pompe qui chauffe",
+      "criteres": [
+       {
+        "texte": "La pompe de recirculation est brûlante après 30 min d’empâtage."
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-30",
+        "texte": "Pistes : marche à sec, ou débit bridé du mauvais côté."
+       },
+       {
+        "id": "NOTE-31",
+        "texte": "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant"
+       },
+       {
+        "id": "NOTE-32",
+        "texte": "Résolu"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "La vanne d’entrée était à moitié fermée : on règle le débit à la sortie maintenant. Résolu.",
+       "Pistes : marche à sec, ou débit bridé du mauvais côté.",
+       "La pompe de recirculation est brûlante après 30 min d’empâtage."
+      ]
+     },
+     {
+      "id": "CARNET-REEL-2",
+      "titre": "Carnet réel 2",
+      "criteres": [],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Article réel 2.1",
+        "valeurs": {}
+       },
+       {
+        "nom": "Article réel 2.2",
+        "valeurs": {}
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-33",
+        "texte": "Note réelle 2.1"
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "Note réelle 2.1",
+       "Note réelle 2.2",
+       "Note réelle 2.3"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-12",
+      "titre": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+      "criteres": [],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Autre fournisseur : en stock, 4 CHF de plus le sac."
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-34",
+        "texte": "Pilsner 25 kg en rupture jusqu’à mi-décembre."
+       },
+       {
+        "id": "NOTE-35",
+        "texte": "Brassin du 3 déc. à décaler ou à faire avec un autre malt."
+       },
+       {
+        "id": "NOTE-36",
+        "texte": "Commandé 2 sacs chez l’autre, brassin maintenu."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "Commandé 2 sacs chez l’autre, brassin maintenu.",
+       "Autre fournisseur : en stock, 4 CHF de plus le sac.",
+       "Brassin du 3 déc. à décaler ou à faire avec un autre malt."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-13",
+      "titre": "ZZ TEST — débit faible au transfert",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-37",
+        "texte": "Débit faible au transfert"
+       },
+       {
+        "id": "NOTE-38",
+        "texte": "Le transfert vers le fermenteur prend 40 min, le débit baisse vers la fin."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "domaine": "brasserie",
+      "derniers": [
+       "Le transfert vers le fermenteur prend 40 min, le débit baisse vers la fin.",
+       "ZZ TEST — débit faible au transfert"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-14",
+      "titre": "ZZ TEST — fête de la bière en juin",
+      "criteres": [
+       {
+        "texte": "tireuse, 2 tonnelles, gobelets consignés, 10 fûts.",
+        "caracteristique": {
+         "nom": "fûts",
+         "unite": "fûts",
+         "sens": "plus"
+        }
+       }
+      ],
+      "facons": [],
+      "articles": [
+       {
+        "nom": "Budget 1 500 CHF, stand à réserver avant mars."
+       }
+      ],
+      "notes": [
+       {
+        "id": "NOTE-39",
+        "texte": "Idées : 3 bières à la pression, dont une blanche pour l’été."
+       }
+      ],
+      "genre": "achat",
+      "etat": "cherche",
+      "derniers": [
+       "Budget 1 500 CHF, stand à réserver avant mars.",
+       "Liste : tireuse, 2 tonnelles, gobelets consignés, 10 fûts.",
+       "Idées : 3 bières à la pression, dont une blanche pour l’été."
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-15",
+      "titre": "ZZ TEST — moisissure dans un coin",
+      "criteres": [],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-40",
+        "texte": "Moisissure dans un coin"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "domaine": "local",
+      "derniers": [
+       "ZZ TEST — moisissure dans un coin"
+      ]
+     },
+     {
+      "id": "CARNET-ZZ-16",
+      "titre": "ZZ TEST — levure lente à démarrer",
+      "criteres": [
+       {
+        "texte": "aucune activité 36 h après l’ensemencement, moût à 16 °C.",
+        "caracteristique": {
+         "nom": "température",
+         "unite": "°C",
+         "sens": "plus"
+        }
+       },
+       {
+        "texte": "Monté à 19 °C, la fermentation démarre le lendemain.",
+        "caracteristique": {
+         "nom": "température",
+         "unite": "°C",
+         "sens": "plus"
+        }
+       },
+       {
+        "texte": "réhydrater la levure, ensemencer à 18 °C.",
+        "caracteristique": {
+         "nom": "température",
+         "unite": "°C",
+         "sens": "plus"
+        }
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-41",
+        "texte": "Levure lente à démarrer"
+       },
+       {
+        "id": "NOTE-42",
+        "texte": "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid."
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "domaine": "brasserie",
+      "derniers": [
+       "La prochaine fois : réhydrater la levure, ensemencer à 18 °C.",
+       "Monté à 19 °C, la fermentation démarre le lendemain.",
+       "Pistes : levure sèche proche de sa date, pas réhydratée, moût un peu froid."
+      ]
+     },
+     {
+      "id": "CARNET-REEL-3",
+      "titre": "Carnet réel 3",
+      "criteres": [
+       {
+        "texte": "Critère réel 3.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-43",
+        "texte": "Note réelle 3.1"
+       },
+       {
+        "id": "NOTE-44",
+        "texte": "Note réelle 3.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 3.1",
+       "Note réelle 3.2"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-4",
+      "titre": "Carnet réel 4",
+      "criteres": [
+       {
+        "texte": "Critère réel 4.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-45",
+        "texte": "Note réelle 4.1"
+       },
+       {
+        "id": "NOTE-46",
+        "texte": "Note réelle 4.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 4.1",
+       "Note réelle 4.2",
+       "Note réelle 4.3"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-5",
+      "titre": "Carnet réel 5",
+      "criteres": [
+       {
+        "texte": "Critère réel 5.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-47",
+        "texte": "Note réelle 5.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 5.1",
+       "Note réelle 5.2",
+       "Note réelle 5.3"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-6",
+      "titre": "Carnet réel 6",
+      "criteres": [
+       {
+        "texte": "Critère réel 6.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-48",
+        "texte": "Note réelle 6.1"
+       },
+       {
+        "id": "NOTE-49",
+        "texte": "Note réelle 6.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 6.1",
+       "Note réelle 6.2",
+       "Note réelle 6.3"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-7",
+      "titre": "Carnet réel 7",
+      "criteres": [
+       {
+        "texte": "Critère réel 7.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-50",
+        "texte": "Note réelle 7.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 7.1"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-8",
+      "titre": "Carnet réel 8",
+      "criteres": [
+       {
+        "texte": "Critère réel 8.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-51",
+        "texte": "Note réelle 8.1"
+       },
+       {
+        "id": "NOTE-52",
+        "texte": "Note réelle 8.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 8.1",
+       "Note réelle 8.2"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-9",
+      "titre": "Carnet réel 9",
+      "criteres": [
+       {
+        "texte": "Critère réel 9.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-53",
+        "texte": "Note réelle 9.1"
+       },
+       {
+        "id": "NOTE-54",
+        "texte": "Note réelle 9.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 9.1",
+       "Note réelle 9.2"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-10",
+      "titre": "Carnet réel 10",
+      "criteres": [
+       {
+        "texte": "Critère réel 10.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-55",
+        "texte": "Note réelle 10.1"
+       },
+       {
+        "id": "NOTE-56",
+        "texte": "Note réelle 10.2"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 10.1",
+       "Note réelle 10.2"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-11",
+      "titre": "Carnet réel 11",
+      "criteres": [
+       {
+        "texte": "Critère réel 11.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-57",
+        "texte": "Note réelle 11.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 11.1"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-12",
+      "titre": "Carnet réel 12",
+      "criteres": [
+       {
+        "texte": "Critère réel 12.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-58",
+        "texte": "Note réelle 12.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 12.1"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-13",
+      "titre": "Carnet réel 13",
+      "criteres": [
+       {
+        "texte": "Critère réel 13.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-59",
+        "texte": "Note réelle 13.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 13.1"
+      ]
+     },
+     {
+      "id": "CARNET-REEL-14",
+      "titre": "Carnet réel 14",
+      "criteres": [
+       {
+        "texte": "Critère réel 14.1"
+       }
+      ],
+      "facons": [],
+      "articles": [],
+      "notes": [
+       {
+        "id": "NOTE-60",
+        "texte": "Note réelle 14.1"
+       }
+      ],
+      "genre": "idee",
+      "etat": "note",
+      "derniers": [
+       "Note réelle 14.1"
+      ]
+     }
+    ]
+   },
+   "instruction": null
+  }
+ },
+ "reponse": {
+  "result": {
+   "ok": true,
+   "data": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fusible de la plaque saute quand je lance la pompe",
+      "genre": "note",
+      "carnetNeuf": "Fusible plaque saute avec la pompe",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Brassage",
+       "Électricité"
+      ],
+      "etatPropose": "note",
+      "citation": "le fusible de la plaque saute quand je lance la pompe"
+     }
+    ]
+   },
+   "model": "gemini-3.8-flash",
+   "tier": "fast",
+   "elapsedMs": 4229
+  }
+ },
+ "carte": "ZZ TEST — c68 le fusible de la plaque saute quand je lance la pompe ¦ rangé pour toi ¦ Annuler ¦ Fusible plaque saute avec la pompe ¦ Brasserie › Brassage › Électricité ¦ nouveau problème ¦ Noté ¦ OK ¦ Changer ¦ Rattacher à… ¦ Ajouter à Fusible plaque saute avec la pompe…"
+}
