@@ -2928,3 +2928,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 après-midi (Brassins › Atelier › Carnet ; captures plaintes/2026-11-25-bas-vide.jpg (bande vide entourée sous le champ, autour du +), -co2-incoherent.jpg, -citra-tour80.jpg) : « Mais il se passe quoi avec ce carnet ???? »
 - 25.11 après-midi : « Donc là on est au tour 80 et ça a pas été vu ???? »
 - 25.11 après-midi (Comparer de « Houblons citra », capture plaintes/2026-11-25-comparer-tour80.jpg, sans mots)
+- 25.11 après-midi (carnet ZZ CO2, fil en bulles brutes, capture plaintes/2026-11-25-fil-non-classe.jpg) : « Les notes sont pas du tout classé, rien ?? »
