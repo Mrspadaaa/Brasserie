@@ -1,0 +1,9 @@
+# Dossier c75-tests — sur les VRAIS documents (tests/fixtures/c75/*.json)
+
+Pourquoi : voies/c75-releve/RESULTAT.md : les défauts sont DANS les données enregistrées (« 4 CHF de plus le sac » stocké comme article ; « La pompe… brûlante » stockée comme critère ; « Commandé 2 sacs » rangé « à acheter » alors que fait ; « Résolu » coupé en note, carnet resté « idée » ; Citra : un seul prix 3,72 € pour 50 g, aucun 1 kg ; Embouteillage : plan 26.04–04.07.2027, Quand « S26 » sans année). Chaque test MONTE l'écran avec ces documents tels quels (aucune fixture « à la forme »).
+- R98 : un carnet ancien mal rangé montre une carte « Reclasser ce carnet ? » qui dit ce qui change (article → note/piste au montant relatif « +4 CHF le sac » ; critère → constat du problème ; « Commandé » → fait ; « Résolu » → état Résolu ; genre idée → problème) ; UN toucher applique, Annuler rend ; RIEN n'est écrit sans ce toucher (magasin et écritures simulées vérifiés).
+- R99 : tant qu'il n'a pas touché, l'écran n'affiche pas l'erreur comme un fait : pas de veille ni de Choisir sur l'« article » né d'une note ; le « critère » né d'une phrase n'est pas présenté comme critère de choix.
+- R100 (Citra) : sans prix pour 1 kg, aucun bouton « Choisir · 1 kg » ; la fiche montre la table des conditionnements connus (50 g : 3,72 € ≈ prix CHF ; 250 g, 500 g : « prix à relire ») et propose Relire ; Choisir porte le conditionnement qui a un prix, son prix exact jusqu'à À venir.
+- R101 (Embouteillage) : Quand dit la date comme À faire (« dès le 1 mai 2027 » ou « 26 avr. – 4 juil. 2027 ») ; jamais une semaine sans année hors de l'année en cours.
+- R102 : les autres R75-n et R73-n rouverts (voies/reel-75/RESULTAT.md), sur ces documents quand ils les concernent.
+SEULEMENT des tests rouges ; aucun fichier de src/ ni functions/ modifié.
