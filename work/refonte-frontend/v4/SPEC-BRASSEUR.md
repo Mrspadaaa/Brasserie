@@ -2918,3 +2918,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 matin (Carnet, liste, capture plaintes/2026-11-25-carnet-priorite.jpg : « Houblons citra » entouré, flèche vers le haut de Brassage) : « J'aimerais aussi pouvoir dépasser et classé en fonction de la priorité » (lu : déplacer, terme du geste)
 - 25.11 matin (Carnet, priorité) : « Pas du drag and drop »
 - 25.11 matin (Carnet, SON carnet « Houblons citra », captures plaintes/2026-11-25-citra-fiche.jpg et -citra-carnet.jpg) : « Les critiques ont vraiment validé ça ???? Il  y a énormément de problème ??? »
+- 25.11 matin (Carnet, champ d'écriture entouré, capture plaintes/2026-11-25-champ-ouvert.jpg) : « Le chat tout le temps ouvert, ça peut juste être un mini champs text qui se déplie avec les 2 actionnable tout le temps actifs ??? »

@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-25T07:51:18.384Z
+pause: 2026-11-25T07:51:47.642Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -45,7 +45,7 @@ pause: 2026-11-25T07:51:18.384Z
 - [x] (porté, D451) (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
 - [ ] URGENT (sa plainte 25.11) CARNET-SES-DONNEES-EXISTANTES : reel-73 (ses 32 carnets en lecture, tous les écrans) en cours, puis tests/correctif avec c74
-- [ ] URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser, sa parole) ; c74-tests en cours, puis c74-fix, tour 74
+- [ ] URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser) + R92 CHAMP-CARNET-REPLIE (mini champ, photo et micro toujours actifs) ; tests de R92 et des constats reel-73 dans une voie c74b-tests ; c74-tests en cours, puis c74-fix, tour 74
 - [ ] NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; note-tests 2826603b7 (30/40) ; note-fix après banc-modeles (même fichier carnetIA.ts) ; affichage et poids sur le rang : axe des mini maquettes
 - [ ] LIEN-PAS-PRODUIT (ses mots 24.11) : un lien d information (frais d envoi, conditions, guide) n est pas un article ; l IA le range comme information et le rattache au vendeur ou aux articles (frais d envoi → prix rendu) ; avec la synthèse NOTE-EXPLOITEE
 - [x] Écriture à l ouverture d un carnet (LE-1) : cause reprendreLectures (lecture de lien gardée rejouée seule), corrigé 6f2d66fb9, en ligne tour 60 (index-DfTdaO8-.js) ; à vérifier en ligne par le prochain critique

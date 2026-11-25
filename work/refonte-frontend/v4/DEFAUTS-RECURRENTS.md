@@ -554,3 +554,8 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - Ses mots : « Les critiques ont vraiment validé ça ???? Il  y a énormément de problème ??? » (captures plaintes/2026-11-25-citra-fiche.jpg, -citra-carnet.jpg ; son carnet « Houblons citra », lu le 24.11, tour 73).
 - Défaut : ses carnets existants, lus avant les correctifs, s'affichent mal : CHF/kg « ? » au tableau alors que la fiche dit 73,80 CHF/kg ; rang 1 sans prix au kilo ; α en chasse fixe espacée (« 10  -  15 ») ; fiche : α géant, bloc Offre vide, ≈4 CHF pour 50 g alors que 250 g et 500 g sont listés sans prix, α redit dans Caractéristiques ; liens en clair dans le fil (Disparaît n° 5 de D451).
 - Contrôle : chaque test d'écran juge AUSSI ses carnets réels existants (lecture seule), champ par champ, contre la maquette choisie ; une donnée ancienne se recalcule ou se dit « à relire », jamais « ? » à côté d'une valeur connue. Échoue sur index-L94x-z-O.js.
+
+## CHAMP-CARNET-REPLIE (25.11)
+- Ses mots : « Le chat tout le temps ouvert, ça peut juste être un mini champs text qui se déplie avec les 2 actionnable tout le temps actifs ??? » (capture plaintes/2026-11-25-champ-ouvert.jpg).
+- Défaut : le champ « Ajouter à … » (photo, micro) et le + occupent en permanence une bande haute (≈ 70 px) au-dessus de la barre du bas et cachent le fil.
+- Contrôle : au repos, un mini champ (une ligne basse, ≤ 44 px) avec photo et micro TOUJOURS actifs (un toucher les lance sans déplier) ; toucher le texte déplie le champ ; il se replie quand il perd le focus vide. Le champ reste visible (son choix du 24.11 : garder le « chat »). Échoue sur index-L94x-z-O.js.
