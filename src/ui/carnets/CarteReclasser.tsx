@@ -14,8 +14,10 @@ export function CarteReclasser({ proposition: p, onReclasser }: { proposition: P
   if (laisse) return null;
   return (
     <section className="cnp-options cnp-propose" aria-label="Reclasser ce carnet ?" data-reclasser>
-      <p className="cn-mut cnp-propose-tete"><Provenance origine="locale" titre="calculé sur place, rien n’est écrit avant votre OK" /> <b>Reclasser ce carnet ?</b> <span>Rien n’est écrit avant votre OK.</span></p>
-      {p.lignes.map(l => <p key={l} className="cnp-propose-ligne"><span>{l}</span></p>)}
+      {/* C79-fix (EXA-4) : le titre et ce qui change sont dans un même bloc : la carte nomme la phrase qu'elle reclasse sous son titre */}
+      <div className="cn-mut cnp-propose-tete cnp-propose-corps"><Provenance origine="locale" titre="calculé sur place, rien n’est écrit avant votre OK" /> <b>Reclasser ce carnet ?</b> <span>Rien n’est écrit avant votre OK.</span>
+        {p.lignes.map(l => <p key={l} className="cnp-propose-ligne"><span>{l}</span></p>)}
+      </div>
       <div className="cnp-propose-gestes">
         <button type="button" className="cn-action cn-action-vert" onClick={onReclasser}><Check size={16} aria-hidden /> Reclasser</button>
         <button type="button" className="cn-second" onClick={() => setLaisse(true)}>Laisser</button>

@@ -30,6 +30,7 @@ import type { CarnetDoc, GenreCarnet } from '../../domain/carnets/modele';
 import { BarreEtat } from './BarreEtat';
 import { ChipGenre, PastilleCategorie } from './EnTeteGenre';
 import { FilCarnetVue } from './FilCarnet';
+import { cleDeLaNote } from '../../domain/carnets/bulle';
 import { OptionsProbleme, RangeeJetons } from './OptionsProbleme';
 import { FilAncienARanger } from './FilAncienARanger';
 import { CarteReclasser } from './CarteReclasser';
@@ -411,7 +412,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             : <FilCarnetVue c={doc} fil={filVu} messages={messages} annee={annee} rappels={rap} titreCarnet={titreCarnet} onNote={p.onNote} doublons={enDouble} fait={!!c.carnet.archive}
               entourer={(noteId, noeud) => (
                 <React.Fragment key={noteId}>
-                  {p.noteSupprimee && !p.noteSupprimee.apres && noteId === k.notes[0]?.id && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
+                  {p.noteSupprimee && !p.noteSupprimee.apres && k.notes[0] && noteId === cleDeLaNote(doc, messages, k.notes[0]) && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
                   {encadre('note', noteId, noeud)}
                   {p.feuille?.noteId === noteId && p.feuille.contenu}
                   {p.noteSupprimee?.apres === noteId && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}

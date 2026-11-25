@@ -5,7 +5,8 @@ import type React from 'react';
 import { lireMessages, type CarnetDoc } from '../../domain/carnets/modele';
 import { refuserPropositionSuivi } from '../../domain/carnets/fil';
 import { archiverCarnet, basculerVeille, changerSorte, choisir, deplacer, deplacerArticles, detacherPlan, liensQuiRetiennent, noteEnCritere, planSuitCarnet, poserPrixArticle,
-  detacherNoteArticle, poserDomaine, relireArticle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+  detacherNoteArticle, poserDomaine, relireArticle, supprimerBulle, supprimerCarnet, supprimerNote, type EcritureCarnet } from '../../domain/carnets/operations';
+import { carnetsAilleursDe, cleDeLaNote, estCleBulle, lignesDeLaBulle, messageDeLaCle } from '../../domain/carnets/bulle';
 import { poserRangement } from '../../domain/carnets/arbre';
 import { poserPriorites } from '../../domain/carnets/priorite';
 import { mentionValeurs, tableau as tableauDe } from '../../domain/carnets/comparer';
@@ -25,6 +26,7 @@ import { Comparer, nonLusDe } from './Comparer';
 import { Choisir } from './Choisir';
 import { SupprimerCarnet } from './SupprimerCarnet';
 import { FeuilleNote } from './FeuilleNote';
+import { FeuilleBulle } from './FeuilleBulle';
 import { PictoObjet, pictoDe } from './pictos';
 import { RenommerCarnet } from './RenommerCarnet';
 import type { ArticleV } from './EtatIA';
@@ -208,7 +210,14 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     }
   } else {
     const c = ouvert;
-    const note = feuille ? c.carnet.notes.find(n => n.id === feuille) : undefined;
+    const note = feuille && !estCleBulle(feuille) ? c.carnet.notes.find(n => n.id === feuille) : undefined;
+    /* C79-fix (EXA-6, EXA-2) : le ⋯ d'une bulle sans note unique (critère, façon, article, deux notes, ou rangée chez un autre carnet) ouvre la feuille de sa bulle */
+    const bulleOuverte = estCleBulle(feuille) ? messages.find(m => m.id === messageDeLaCle(feuille)) : undefined;
+    const feuilleBulle = bulleOuverte ? { noteId: feuille as string, contenu: <FeuilleBulle lignes={lignesDeLaBulle(c, bulleOuverte)} ailleurs={carnetsAilleursDe(c, bulleOuverte).map(id => tous.find(x => x.id === id)?.title ?? 'un autre carnet')}
+      onModifier={noteId => { const n = c.carnet.notes.find(x => x.id === noteId); if (!n) return; setEdition(n.id); setTexte(n.texte); setFeuille(null); setTimeout(() => champRef.current?.focus(), 0); }}
+      onChangerEnNote={l => { if (l.cible === 'critere' || l.cible === 'facon') appliquer(changerSorte(magasin.lire(), { carnetId: c.id, cible: l.cible, id: l.id, vers: 'note' })); setFeuille(null); }}
+      onSupprimer={() => { const r = appliquer(supprimerBulle(magasin.lire(), { carnetId: c.id, messageId: bulleOuverte.id })); if (r) { setRetour(null); setNoteSupprimee({ id: bulleOuverte.id, inverse: r.inverse }); } setFeuille(null); }}
+      onFermer={() => setFeuille(null)} /> } : null;
     const noteEditee = edition && vue.sorte === 'carnet' ? c.carnet.notes.find(n => n.id === edition) : undefined;
     const enVeille = c.carnet.articles.filter(a => a.veille?.active).map(a => a.id);
     /* P20 (G35) : le carnet proche de celui qu'on supprime (`carnetProche`, lot A), pour y déplacer ses articles en veille */
@@ -241,7 +250,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}
-        feuille={noteEditee ? { noteId: noteEditee.id, contenu: cadreModifier(noteEditee) } : note ? { noteId: note.id, contenu: <FeuilleNote note={note as never} aides={aides as never}
+        feuille={noteEditee ? { noteId: cleDeLaNote(c, messages, noteEditee), contenu: cadreModifier(noteEditee) } : feuilleBulle ?? (note ? { noteId: note.id, contenu: <FeuilleNote note={note as never} aides={aides as never}
           ressembleCritere={aides.noteEnCritere && analyserLigne(note.texte).sorte === 'critere'}
           onPasserCritere={() => { appliquer(noteEnCritere(magasin.lire(), { carnetId: c.id, noteId: note.id })); setFeuille(null); }}
           onModifier={() => { setEdition(note.id); setTexte(note.texte); setFeuille(null); setTimeout(() => champRef.current?.focus(), 0); }}
@@ -250,7 +259,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
           onSupprimer={() => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: c.id, noteId: note.id })); if (r) { setRetour(null); setNoteSupprimee({ id: note.id, inverse: r.inverse }); } setFeuille(null); }}
           carnets={autresPour(c.id, note.texte)}
           onDeplacer={vers => { const titre = carnets.find(x => x.id === vers)?.title ?? 'un autre carnet'; const r = appliquer(deplacer(magasin.lire(), { cible: 'note', id: note.id, depuis: c.id, vers })); if (r) setRetour({ bandeau: { sorte: 'ailleurs', carnet: titre }, inverse: r.inverse, carnetId: c.id }); setFeuille(null); }}
-          onFermer={() => setFeuille(null)} /> } : null}
+          onFermer={() => setFeuille(null)} /> } : null)}
         grise={vue.sorte === 'supprimer'}
         onRetour={() => { setVue({ sorte: 'liste' }); setVientDEtreCree(null); }}
         onRenommer={() => ouvrirRenommer(c)}

@@ -10,6 +10,7 @@ import { Bell, Calculator, Check, Ellipsis, RotateCcw, Sparkles, X } from 'lucid
 import type { EntreeFil, FilCarnet as FilVu } from '../../domain/carnets/fil';
 import type { CarnetDoc, Etiquette, EvenementSuivi, MessageDoc, Note, PropositionSuivi } from '../../domain/carnets/modele';
 import { notePlanningDe } from '../../domain/carnets/taches';
+import { PREFIXE_BULLE } from '../../domain/carnets/bulle';
 import { echeanceDeLaPhrase } from '../../domain/carnets/tacheDatee';
 import { quandDite } from './afaireRegles';
 import { LIBELLE_ETAT, etatOption, optionRetenue } from '../../domain/carnets/suivi';
@@ -179,6 +180,7 @@ export function FilCarnetVue(p: PropsFil) {
       ? lignesBulle.filter(l => !redisLeTitre(l, c) && !/^\s*budget du planning\b/i.test(l))
         .map(l => { const np = notePlanningDe(l); return np ? (np.au ? `jusqu'au ${libelleJour(np.au, annee)}` : '') : l; }).filter(Boolean).join('\n').trim() || texteBrut
       : texteBrut;
+    const cleBulle = liees.length === 1 ? liees[0].id : `${PREFIXE_BULLE}${m.id}`;
     const jetons = jetonsDe(m, c.id);
     const heure = plusieurs ? heureDe(m.carnetMessage.le) : null;
     const photos = photosDe(m.id);
@@ -195,7 +197,7 @@ export function FilCarnetVue(p: PropsFil) {
         {/^https?:\/\/\S+$/i.test(texte.trim()) && article?.lecture !== 'lue' && <p className="cnp-rattache cn-mut" data-lien-non-lu>non lu · produit et prix inconnus</p>}
         {visee && <p className="cnp-rattache cn-mut" data-rattache-article={visee.id}>rattachée à {visee.vendeur ?? visee.nom ?? visee.domaine}</p>}
         {e.rattache && <p className="cnp-rattache cn-mut">rattaché : « {e.rattache.citation} »</p>}
-        {(jetons.length > 0 || heure || (liees.length === 1 && onNote)) && (
+        {(jetons.length > 0 || heure || onNote) && (
           <div className="cnp-pd">
             {jetons.map(({ e: et, i }) => {
               const j = jetonDe(et, options, rangs.get(`${m.id}:${i}`) ?? 1);
@@ -203,14 +205,16 @@ export function FilCarnetVue(p: PropsFil) {
             })}
             <span className="cn-sp" />
             {heure && <time className="cnp-heure">{heure}</time>}
-            {liees.length === 1 && onNote && <button type="button" className="cnp-ico" aria-label={`Note : ${liees[0].texte}, actions`} onClick={() => onNote(liees[0].id)}><Ellipsis size={20} aria-hidden /></button>}
+            {/* C79-fix (EXA-6) : TOUTE bulle a son ⋯ : une note unique garde sa feuille de note ; une phrase rangée en critère, façon, article, en deux notes ou ailleurs
+                ouvre la feuille de sa bulle (clé « msg:… ») */}
+            {onNote && <button type="button" className="cnp-ico" aria-label={liees.length === 1 ? `Note : ${liees[0].texte}, actions` : `Message : ${texteBrut.slice(0, 60)}, actions`} onClick={() => onNote(cleBulle)}><Ellipsis size={20} aria-hidden /></button>}
           </div>
         )}
       </div>
     );
     return (
       <React.Fragment key={e.id}>
-        {liees.length === 1 && entourer ? entourer(liees[0].id, noeud) : noeud}
+        {entourer ? entourer(cleBulle, noeud) : noeud}
         {props.map(({ pr, i }) => <CartePropositionIA key={`${m.id}:${i}`} p={pr} index={i} messageId={m.id} rappels={rappels} titreCarnet={titreCarnet} c={c} phrase={m.carnetMessage.texte} le={m.carnetMessage.le} annee={annee} />)}
       </React.Fragment>
     );

@@ -16,6 +16,7 @@ import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { lienCanonique } from './lien';
+import { lignesDeLaBulle } from './bulle';
 import { quantiteArticle } from './prixUnitaire';
 import { prixCentimesDuChoix } from './prixChoisi';
 import { douteDePage } from './manques';
@@ -579,6 +580,33 @@ export function supprimerLigne(etat: Etat, args: { carnetId: string; cible: Cibl
 
 export const supprimerNote = (etat: Etat, args: { carnetId: string; noteId: string }): Resultat =>
   supprimerLigne(etat, { carnetId: args.carnetId, cible: 'note', id: args.noteId });
+
+/**
+ * C79-fix (EXA-6, EXA-2) : supprimer une BULLE du fil, quelle que soit la sorte de ce qu'elle a rangé ici (notes, critère, façon, article) ou rien du tout.
+ * Ne touche que CE carnet : ce que le message a rangé chez un autre carnet y reste (le message n'est alors pas retiré : il quitte seulement ce fil). Annulable.
+ */
+export function supprimerBulle(etat: Etat, args: { carnetId: string; messageId: string }): Resultat {
+  const b = new Brouillon(etat);
+  const c = b.carnet(args.carnetId);
+  const m = b.messages().find(x => x.id === args.messageId);
+  if (!c || !m) return refus('Message introuvable.');
+  const lignes = lignesDeLaBulle(c, m);
+  for (const l of lignes) {
+    retirerElement(c, l.cible, l.id);
+    if (l.cible === 'facon') for (const a of c.carnet.articles) if (a.faconId === l.id) delete a.faconId;
+  }
+  if (lignes.length) poser(b, c);
+  const cm = m.carnetMessage;
+  const effets = cm.effets.filter(e => e.carnetId !== args.carnetId);
+  if (!effets.some(e => e.cible !== 'carnet')) { b.retirer(m.id); return b.resultat(lignes.some(l => l.cible === 'note') ? 'Note supprimée' : 'Supprimé'); }
+  const etiquettes = (cm.etiquettes ?? []).filter(e => e.carnetId !== args.carnetId);
+  const propositionsSuivi = (cm.propositionsSuivi ?? []).filter(p => p.carnetId !== args.carnetId);
+  const propositions = (cm.propositions ?? []).filter(p => p.carnetId !== args.carnetId);
+  b.ecrire({ ...m, carnetMessage: sansIndefinis({ ...cm, effets, depuis: cm.depuis === args.carnetId ? 'liste' : cm.depuis,
+    etiquettes: etiquettes.length ? etiquettes : undefined, propositionsSuivi: propositionsSuivi.length ? propositionsSuivi : undefined,
+    propositions: propositions.length ? propositions : undefined, rattache: cm.rattache?.carnetId === args.carnetId ? undefined : cm.rattache }) });
+  return b.resultat('Supprimé');
+}
 
 /* ---------- renommer ---------- */
 

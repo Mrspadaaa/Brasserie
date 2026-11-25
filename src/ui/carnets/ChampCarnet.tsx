@@ -345,7 +345,14 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const jointe = p.jointe ?? null;
   const pret = (plein || (!!jointe && !jointe.lecture)) && !jointe?.lecture;
   /* L-47 : après Ajouter, le focus reste dans le champ (le clavier du téléphone ne se ferme pas) */
-  const envoyer = () => { p.onEnvoyer(); if (!renomme) zoneTexte.current?.focus(); };
+  /* C79-fix (EXA-8) : le brouillon part avec l'envoi, au geste même : « Ajouter » sous « Déjà un carnet proche » ouvre l'autre carnet, ce champ-ci est démonté avant d'avoir vu
+     son texte se vider (l'effet ci-dessus ne passe jamais) : sans cela, le brouillon revenait dans le champ de la liste et dans celui du carnet suivant. */
+  const envoyer = () => {
+    const envoye = p.valeur;
+    p.onEnvoyer();
+    if (cleBrouillon && envoye.trim()) { try { localStorage.removeItem(cleBrouillon); } catch { /* idem */ } }
+    if (!renomme) zoneTexte.current?.focus();
+  };
   const montrerBulle = !!p.suggestion && focus && !plein;
   useChampPublie(zone, inset, montrerBulle);
   /* tour 3, f13 (PCN-37, CARNET-CLAV) : clavier ouvert, la barre d'onglets (fixe, en bas de la page) est sous le clavier. La zone ne lui

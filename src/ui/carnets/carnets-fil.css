@@ -320,4 +320,5 @@ span.cnp-tuile { cursor: default; }
 .cnp-propose { display: flex; flex-direction: column; gap: 6px; }
 .cnp-propose-tete { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; }
 .cnp-propose-ligne { display: flex; align-items: flex-start; gap: 8px; margin: 0; }
+.cnp-propose-corps > .cnp-propose-ligne { flex: 0 0 100%; color: var(--c-ink); }
 .cnp-propose-gestes { display: flex; gap: 12px; align-items: center; }

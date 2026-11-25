@@ -10,21 +10,24 @@
  * annulable (l'inverse vient du `Brouillon`). Tant qu'il n'a pas touché, `sansErreurDeRangement` cache l'erreur à l'écran (pas de veille ni de Choisir sur une phrase).
  */
 import { analyserLigne, normaliser, prixDe } from './analyseLocale';
-import { GESTE_FINI } from './filAncien';
+import { GESTE_FINI, propositionFilAncien } from './filAncien';
 import { nouvelIdCarnet, type Article, type CarnetDoc, type Critere, type EffetMessage, type MessageDoc, type Note } from './modele';
 import { appliquerEcritures, Brouillon, poser, refus, type EcritureCarnet, type Etat, type Resultat } from './operations';
 import { etatDe, genreDe, poserGenre, resoudre } from './suivi';
+import { ajouterTache } from './taches';
 
 export interface PropositionReclasser {
   carnetId: string;
   /** Les articles nés d'une phrase : une piste (« Autre fournisseur : … ») ou une note ; le montant relatif s'écrit « +4 CHF le sac ». */
   articles: { id: string; nom: string; messageId?: string; relatif: string | null; texteNote: string; /** « Autre fournisseur : … » : une piste, son nom et sa raison (montant en relatif) */ piste?: { nom: string; raison: string } }[];
   /** Les critères nés d’un constat : ils deviennent une note de constat. */
-  criteres: { id: string; texte: string; messageId?: string }[];
+  criteres: { id: string; texte: string; messageId?: string; /** la phrase entière quand le critère en avait perdu le début (« La prochaine fois : … ») : la note la garde */ phrase?: string; debut?: string }[];
   /** Les notes « à acheter » qui disent un achat fait (« Commandé 2 sacs … ») : elles passent en simple note (fait). */
   faits: { noteId: string; texte: string }[];
   /** « Résolu » seul : l'état du carnet devient Résolu ; `texte` : la phrase de la même bulle qui dit comment. */
-  resolu?: { noteId: string; texte?: string };
+  resolu?: { noteId: string; texte?: string; /** C79-fix (EXA-3) : la note « Commandé … » dit la fin du fil : elle reste (c'est un fait), le carnet passe à Résolu avec elle */ garder?: true };
+  /** C79-fix (EXA-3) : les phrases d'un carnet d'avant le suivi qui disent quelque chose à faire (« Brassin du 3 déc. à décaler … ») : elles entrent dans « À faire ». */
+  taches: { texte: string }[];
   /** Le genre « problème » : un constat ou un Résolu dit que c'en est un (carnet sans genre posé). */
   genre?: 'probleme';
   /** Ce qui change, en phrases, pour la carte. */
@@ -70,34 +73,68 @@ const articleNeDUnePhrase = (a: Article, messages: readonly MessageDoc[]): boole
   return !!prixDe(a.nom) && analyserLigne(a.nom).sorte === 'note';
 };
 
+/**
+ * R111 EXA-4 (c79) : le critère « réhydrater la levure, ensemencer à 18 °C. » est né de la phrase « La prochaine fois : réhydrater la levure, … » : l'analyse locale d'avant en avait
+ * tiré une caractéristique (« température ») et coupé le début de la phrase. Ce que la phrase dit d'une action ou d'un constat, sans seuil à tenir, n'est pas un critère : la phrase
+ * peut donc porter un début de plus que le texte du critère (jamais une autre phrase), et une caractéristique devinée par l'analyse locale ne le protège pas (`origine: 'locale'`,
+ * jamais ce qu'il a écrit lui-même).
+ */
 const critereNeDUnConstat = (k: Critere, messages: readonly MessageDoc[]): boolean => {
-  if (k.origine !== 'locale' || k.caracteristique) return false;
+  if (k.origine !== 'locale') return false;
   const phrase = phraseDeMessage(messages, k.messageId);
-  if (phrase === null || nette(phrase) !== nette(k.texte)) return false;
+  if (phrase === null) return false;
+  const p = nette(phrase), t = nette(k.texte);
+  if (!t || (p !== t && !p.endsWith(` ${t}`))) return false;
   return analyserLigne(k.texte).sorte === 'note';
 };
+
+/** Le début de la phrase d'origine que le critère a perdu (« La prochaine fois : »), ou null. */
+const debutPerdu = (k: Critere, messages: readonly MessageDoc[]): string | null => {
+  const phrase = phraseDeMessage(messages, k.messageId);
+  const i = phrase ? phrase.toLowerCase().lastIndexOf(k.texte.toLowerCase().slice(0, 12)) : -1;
+  const debut = phrase && i > 0 ? phrase.slice(0, i).replace(/[\s:–-]+$/, '').trim() : '';
+  return debut || null;
+};
+
+/** « Brassin du 3 déc. à décaler » : un « à + infinitif » dans une phrase qui n'est pas une question (même motif que `propositionFilAncien`). */
+const A_FAIRE = /\ba\s+(?:[a-z]+(?:er|ir|re))\b/;
+const QUESTION = /\?\s*$/;
+
+/** La note « fait » (« Commandé … ») que dit le DERNIER message du carnet : la fin du fil, jamais un fait plus haut (même règle que `propositionFilAncien`). */
+function faitFinal(c: CarnetDoc, messages: readonly MessageDoc[], faits: readonly { noteId: string; texte: string }[]): { noteId: string; texte: string } | undefined {
+  const siens = messages.filter(m => m.carnetMessage.depuis === c.id || m.carnetMessage.effets.some(e => e.carnetId === c.id)).sort((a, b) => a.carnetMessage.le.localeCompare(b.carnetMessage.le));
+  const dernier = siens[siens.length - 1];
+  return dernier ? faits.find(f => dernier.carnetMessage.effets.some(e => e.carnetId === c.id && e.cible === 'note' && e.id === f.noteId)) : undefined;
+}
 
 /** La proposition de reclassement d'un carnet, ou `null` : rien de mal rangé (un carnet bien rangé ne propose rien). */
 export function propositionReclasser(c: CarnetDoc, messages: readonly MessageDoc[]): PropositionReclasser | null {
   const k = c.carnet;
   if (k.archive) return null;
   const articles = k.articles.filter(a => articleNeDUnePhrase(a, messages)).map(a => ({ id: a.id, nom: a.nom!, ...(a.messageId ? { messageId: a.messageId } : {}), ...(() => { const e = ecartDe(a.nom!); const piste = e.relatif ? pisteDe(e.texteNote, e.relatif) : undefined; return { ...e, ...(piste ? { piste } : {}) }; })() }));
-  const criteres = k.criteres.filter(x => critereNeDUnConstat(x, messages)).map(x => ({ id: x.id, texte: x.texte, ...(x.messageId ? { messageId: x.messageId } : {}) }));
+  const criteres = k.criteres.filter(x => critereNeDUnConstat(x, messages)).map(x => { const debut = debutPerdu(x, messages); return { id: x.id, texte: x.texte, ...(x.messageId ? { messageId: x.messageId } : {}), ...(debut ? { debut, phrase: phraseDeMessage(messages, x.messageId)!.trim() } : {}) }; });
   const faits = k.notes.filter(n => n.genre === 'a-acheter' && GESTE_FINI.test(normaliser(n.texte))).map(n => ({ noteId: n.id, texte: n.texte }));
   const noteResolu = etatDe(c) === 'resolu' ? undefined : k.notes.find(n => RESOLU_SEUL.test(nette(n.texte)));
+  /* EXA-3 : un carnet d'avant le suivi (ni genre, ni suivi, ni tâche) : « Commandé … » en dernier dit la fin (Résolu), « … à décaler » une tâche, une piste ou un fait disent un problème */
+  /* un fil de bulles `brut` se range par `propositionFilAncien` (R95), jamais deux cartes pour le même fil */
+  const davant = !k.genre && !k.suivi && !(k.taches ?? []).length && etatDe(c) !== 'resolu' && !propositionFilAncien(c, messages);
+  const fin = davant && !noteResolu ? faitFinal(c, messages, faits) : undefined;
+  /* « Semble difficile à obtenir » est une phrase de constat, pas une tâche : les tâches ne se proposent qu'à un carnet que l'erreur de rangement a déjà signé (un article né d'une phrase, une fin « Commandé … ») */
+  const taches = davant && (articles.length > 0 || !!fin) ? k.notes.filter(n => n.genre !== 'a-acheter' && A_FAIRE.test(normaliser(n.texte)) && !QUESTION.test(n.texte.trim())).map(n => ({ texte: n.texte.trim() })) : [];
   const resolu = noteResolu
     ? { noteId: noteResolu.id, ...(k.notes.find(n => n.id !== noteResolu.id && !!noteResolu.messageId && n.messageId === noteResolu.messageId) ? { texte: k.notes.find(n => n.id !== noteResolu.id && n.messageId === noteResolu.messageId)!.texte.trim() } : {}) }
-    : undefined;
-  const genre = !k.genre && genreDe(c) !== 'probleme' && (criteres.length > 0 || !!resolu) ? ('probleme' as const) : undefined;
-  if (!articles.length && !criteres.length && !faits.length && !resolu && !genre) return null;
+    : fin ? { noteId: fin.noteId, texte: fin.texte.trim(), garder: true as const } : undefined;
+  const genre = !k.genre && genreDe(c) !== 'probleme' && (criteres.length > 0 || !!resolu || articles.some(a => a.piste) || (davant && faits.length > 0)) ? ('probleme' as const) : undefined;
+  if (!articles.length && !criteres.length && !faits.length && !resolu && !genre && !taches.length) return null;
   const lignes: string[] = [
     ...articles.map(a => `L’article « ${a.nom} » n’est pas un article : il devient ${a.piste ? `la piste « ${a.piste.nom} »` : 'une note'}${a.relatif ? ` (${a.relatif} : un écart, pas un prix)` : ''}.`),
-    ...criteres.map(x => `Le critère « ${x.texte} » est un constat : il devient une note du problème.`),
+    ...criteres.map(x => x.debut ? `Le critère « ${x.texte} » vient de « ${x.phrase} » : ce n’est pas un critère à tenir, il devient une note du problème.` : `Le critère « ${x.texte} » est un constat : il devient une note du problème.`),
     ...faits.map(f => `« ${f.texte} » : de « à acheter » à fait.`),
-    ...(resolu ? [`« Résolu » seul : l’état du carnet passe à Résolu${resolu.texte ? `, avec « ${resolu.texte} »` : ''}.`] : []),
-    ...(genre ? ['Idée → problème.'] : [])
+    ...taches.map(t => `« ${t.texte} » : une tâche, elle entre dans « À faire ».`),
+    ...(resolu ? [resolu.garder ? `« ${resolu.texte} » dit la fin du fil : le carnet passe à Résolu.` : `« Résolu » seul : l’état du carnet passe à Résolu${resolu.texte ? `, avec « ${resolu.texte} »` : ''}.`] : []),
+    ...(genre ? ['« Idée » devient « Problème ».'] : [])
   ];
-  return { carnetId: c.id, articles, criteres, faits, ...(resolu ? { resolu } : {}), ...(genre ? { genre } : {}), lignes };
+  return { carnetId: c.id, articles, criteres, faits, taches, ...(resolu ? { resolu } : {}), ...(genre ? { genre } : {}), lignes };
 }
 
 /** Le carnet tel que l'écran le montre tant qu'il n'a pas touché « Reclasser » : sans l'article ni le critère nés d'une phrase (l'erreur n'est pas affichée comme un fait). */
@@ -148,12 +185,12 @@ export function reclasser(etat: Etat, args: { proposition: PropositionReclasser;
       if (!k.criteres.some(y => y.id === x.id)) continue;
       const id = nouvelIdCarnet('NOTE');
       k.criteres = k.criteres.filter(y => y.id !== x.id);
-      avant.push({ id, texte: x.texte, genre: 'note', ...(x.messageId ? { messageId: x.messageId } : {}) });
+      avant.push({ id, texte: x.phrase ?? x.texte, genre: 'note', ...(x.messageId ? { messageId: x.messageId } : {}) });
       effets.set(`critere:${x.id}`, { carnetId: c.id, cible: 'note', id });
     }
     const faits = new Set(p.faits.map(f => f.noteId));
     k.notes = k.notes.map(n => (faits.has(n.id) && n.genre === 'a-acheter' ? { ...n, genre: 'note' as const } : n));
-    if (p.resolu) {
+    if (p.resolu && !p.resolu.garder) {
       k.notes = k.notes.filter(n => n.id !== p.resolu!.noteId);
       effets.set(`note:${p.resolu.noteId}`, null);
     }
@@ -173,6 +210,7 @@ export function reclasser(etat: Etat, args: { proposition: PropositionReclasser;
   const etapes: Array<() => Resultat> = [
     rangement,
     ...(p.genre ? [() => poserGenre(courant, { carnetId: p.carnetId, genre: p.genre!, origine: 'vous' })] : []),
+    ...p.taches.map(t => () => ajouterTache(courant, { carnetId: p.carnetId, texte: t.texte, le: args.le, origine: 'vous' })),
     ...(p.resolu ? [() => resoudre(courant, { carnetId: p.carnetId, le: args.le, sorte: 'texte', texte: p.resolu!.texte ?? '', origine: 'vous' })] : [])
   ];
   for (const etape of etapes) {
