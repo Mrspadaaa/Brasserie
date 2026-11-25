@@ -2911,3 +2911,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 
 - 24.11 soir (Carnet, exemples) : « Il faut pas overfiter au exemple »
 - 24.11 soir (mode nuit) : « Mode nuit plus d'input de ma part si maquettes il y a et que d'après les critiques elles répondent toutes aux besoins tu peux en faire le portage aussi »
+- 25.11 (Carnet, libellés) : « Le groupe sans catégorie de la liste s'appelle maintenant « Sans catégorie » au lieu de « Autres ». Les sous-catégories de Brasserie sont fixées : Brassage, Fermentation, Conditionnement. Est-ce que ça te convient ? Yes. »
+- 25.11 (IA) : « Concernant l'ia est-ce que maintenant les montant sont bien lu, le choix de Gemini été bon? Tout est ok avec l'ia ? »
