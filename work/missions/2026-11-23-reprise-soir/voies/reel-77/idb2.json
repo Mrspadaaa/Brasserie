@@ -1,0 +1,37 @@
+{
+ "dbs": [
+  "__dbnames",
+  "firebase-heartbeat-database",
+  "firebaseLocalStorageDb",
+  "firestore/[DEFAULT]/brasserie-l-affinee/main",
+  "laffinee-fiches",
+  "laffinee-financial-ledger-v1",
+  "laffinee-justificatifs"
+ ],
+ "stores": [
+  "bundles",
+  "clientMetadata",
+  "collectionParents",
+  "documentMutations",
+  "documentOverlays",
+  "globals",
+  "indexConfiguration",
+  "indexEntries",
+  "indexState",
+  "mutationQueues",
+  "mutations",
+  "namedQueries",
+  "owner",
+  "remoteDocumentGlobal",
+  "remoteDocumentsV14",
+  "targetDocuments",
+  "targetGlobal",
+  "targets"
+ ],
+ "n": 0,
+ "mut": [],
+ "docs": [
+  "{\"prefixPath\":[],\"collectionGroup\":\"creativeItems\",\"documentId\":\"CR-136ff25e-9a94-485f-a94d-a83a5e7ae799\",\"readTime\":[1795602894,811055000],\"hasCommittedMutations\":true,\"noDocument\":{\"path\":[\"creativeItems\",\"CR-136ff25e-9a94-485f-a94d-a83a5e7ae799\"],\"readTime\":{\"seconds\":1795602894,\"nanoseconds\":811055000}}}",
+  "{\"prefixPath\":[],\"collectionGroup\":\"creativeItems\",\"documentId\":\"CR-f9082ee4-81ed-4a05-b5df-8bbb6a469ab0\",\"readTime\":[1795602920,429535000],\"hasCommittedMutations\":true,\"noDocument\":{\"path\":[\"creativeItems\",\"CR-f9082ee4-81ed-4a05-b5df-8bbb6a469ab0\"],\"readTime\":{\"seconds\":1795602920,\"nanoseconds\":429535000}}}"
+ ]
+}
