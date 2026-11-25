@@ -280,7 +280,7 @@ export function usePointeur(options: OptionsPointeur) {
     /* cal-74 : le bord gauche de la frise ne bouge pas pendant un geste ; lu au plus une fois par 250 ms (avant : une mise en page forcée par
        rendu de la barre tenue, 449 ms sur 2 s au bord à ×6) */
     const t = typeof performance !== 'undefined' ? performance.now() : 0;
-    if (s.frise?.isConnected && (s.gaucheT === undefined || t - s.gaucheT >= 250)) { s.gaucheV = s.frise.getBoundingClientRect().left; s.gaucheT = t; }
+    if (s.frise?.isConnected && s.gaucheT === undefined) { s.gaucheV = s.frise.getBoundingClientRect().left; s.gaucheT = t; }
     return { colonnes: o.colonnes, largeurColonne: o.largeurColonne, gauche: s.frise?.isConnected ? (s.gaucheV ?? s.L) : s.L };
   };
   /* le doigt est sur la frise (entre sa gauche et sa droite visibles à l'appui) */
@@ -335,6 +335,7 @@ export function usePointeur(options: OptionsPointeur) {
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
     if (e.button > 0) return;
+    cacheCadre.current = null; /* cal-75 : un geste neuf relit le cadre (rotation, redimensionnement entre deux gestes) */
     stopMinuterie();
     /* CHG-4 : `[data-bord="debut"]` > bord droit > (hors jalon) bord gauche */
     const cibleEl = e.target as HTMLElement | null;
@@ -413,14 +414,16 @@ export function usePointeur(options: OptionsPointeur) {
    */
   /* cal-74 : le cadre de la frise ne bouge pas pendant un geste ; lu au plus une fois par 250 ms (avant : `getBoundingClientRect` et `innerWidth`,
      deux mises en page forcées, à chaque image du défilement) */
-  const cacheCadre = useRef<{ t: number; v: { left: number; right: number } } | null>(null);
+  const cacheCadre = useRef<{ geste: unknown; t: number; v: { left: number; right: number } } | null>(null);
   const cadreDe = (el: Element) => {
     const maintenant = typeof performance !== 'undefined' ? performance.now() : 0;
-    if (cacheCadre.current && maintenant - cacheCadre.current.t < 250) return cacheCadre.current.v;
+    /* cal-75 : lu UNE fois par geste (le cadre ne bouge pas sous le doigt) : chaque lecture, même espacée de 250 ms, forçait la mise en page de l'onglet entier (394 ms sur 2 s au bord à ×6) */
+    const geste = etat.current;
+    if (cacheCadre.current && (geste ? cacheCadre.current.geste === geste : maintenant - cacheCadre.current.t < 250)) return cacheCadre.current.v;
     const cadre = (el.closest('[data-frise]') ?? (etat.current?.frise?.isConnected ? etat.current.frise : null))?.getBoundingClientRect();
     const vue = typeof window !== 'undefined' ? window.innerWidth : 0;
     const v = { left: Math.max(0, cadre?.left ?? 0), right: Math.min(vue || Infinity, cadre && cadre.width > 0 ? cadre.right : Infinity) };
-    cacheCadre.current = { t: maintenant, v };
+    cacheCadre.current = { geste, t: maintenant, v };
     return v;
   };
   const majDefile = (s: Etat, x: number, el: HTMLElement) => {

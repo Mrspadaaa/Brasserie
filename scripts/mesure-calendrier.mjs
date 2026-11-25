@@ -24,7 +24,7 @@ const { fixtureCalendrier } = await import(pathToFileURL(path.join(ICI, 'parcour
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const drap = (n) => args.includes(`--${n}`);
-const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--cpu', '--n', '--json'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'mesure-calendrier'));
+const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--cpu', '--n', '--json', '--css', '--sans', '--vue'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'mesure-calendrier'));
 fs.mkdirSync(sortie, { recursive: true });
 const CPU = Number(opt('cpu') ?? 1);
 const ESSAIS = Number(opt('n') ?? 3);
@@ -69,7 +69,7 @@ function rapporter() {
   L.push('', '| geste | essai | mesure |', '|---|---|---|');
   resultat.ouvrir.forEach((o, i) => L.push(`| OUVRIR | ${i + 1} | ${Math.round(o.duree)} ms jusqu'au cadre ; tâche longue max ${Math.round(o.tache)} ms (${o.taches.length} tâche(s)) |`));
   resultat.relacher.forEach((o, i) => L.push(`| RELACHER | ${i + 1} | ${Math.round(o.duree)} ms (lâcher → image suivante) ; image max ${Math.round(o.imageMax)} ms ; tâche longue max ${Math.round(o.tache)} ms |`));
-  resultat.bord.forEach((o, i) => L.push(`| BORD | ${i + 1} | image médiane ${o.mediane.toFixed(1)} ms ; p90 ${o.p90.toFixed(1)} ; max ${Math.round(o.max)} ; ≤ 17 ms ${o.part17} % ; ≤ 50 ms ${o.part50} % ; ${o.images} images ; défilement ${o.semParSec} sem./s |`));
+  resultat.bord.forEach((o, i) => L.push(`| BORD | ${i + 1} | image médiane ${o.mediane.toFixed(1)} ms ; p90 ${o.p90.toFixed(1)} ; max ${Math.round(o.max)} ; ≤ 17 ms ${o.part17} % ; ≤ 50 ms ${o.part50} % ; ${o.images} images ; ${o.rendus ?? '?'} mises à jour du DOM ; défilement ${o.semParSec} sem./s |`));
   console.log(L.join('\n'));
   const r = (t, f) => (t.length ? mediane(t.map(f)) : NaN);
   const syn = {
@@ -96,15 +96,20 @@ async function jouer(dir) {
   const nav = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222', defaultViewport: null });
   const p = await nav.newPage();
   try {
-    await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+    /* --vue 1280x800 : une autre taille d'écran (cal-75 : capture du geste à 1280) ; par défaut le téléphone 390×844 */
+    const [VW, VH] = (opt('vue') ?? '390x844').split('x').map(Number);
+    await p.setViewport({ width: VW, height: VH, isMobile: VW < 700, hasTouch: true, deviceScaleFactor: 1 });
     const fx = fixtureCalendrier(new Date().toISOString().slice(0, 10));
-    await p.evaluateOnNewDocument((j) => { if (!localStorage.getItem('parcours-calendrier:fixture')) localStorage.setItem('parcours-calendrier:fixture', j); }, JSON.stringify(fx.entrees));
+    /* à chaque essai on repart de la fixture neuve (cal-75) : le glisser précédent a déplacé « Hefe », l'essai suivant ne la retrouvait plus */
+    await p.evaluateOnNewDocument((j) => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('parcours-calendrier:fixture', j); }, JSON.stringify(fx.entrees));
     await p.evaluateOnNewDocument(() => {
       const P = (window.__perf = { lt: [], fr: [], enregistre: false });
       try { new PerformanceObserver((l) => l.getEntries().forEach((e) => P.lt.push({ t: e.startTime, d: e.duration }))).observe({ type: 'longtask', buffered: true }); } catch { /* absent */ }
       let dernier = performance.now();
       const boucle = (t) => { P.fr.push({ t, d: t - dernier }); dernier = t; requestAnimationFrame(boucle); };
       requestAnimationFrame(boucle);
+      /* mises à jour du DOM (une par tâche de commit React environ), pour dire combien de rendus par image */
+      P.mu = []; document.addEventListener('DOMContentLoaded', () => new MutationObserver(() => P.mu.push(performance.now())).observe(document.documentElement, { subtree: true, childList: true, attributes: true }));
     });
     const cdp = await p.createCDPSession();
     await cdp.send('Profiler.enable');
@@ -120,7 +125,21 @@ async function jouer(dir) {
     const dep = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : pt(x, y) });
     const point = (sel, i = 0) => p.evaluate((s, i) => { const e = [...document.querySelectorAll(s)].filter((x) => x.getBoundingClientRect().width > 0)[i]; if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2, r.width, r.height]; }, sel, i);
     const menuDuree = async (nom) => { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await tap(m); await sleep(700); await toucher(nom); await sleep(500); };
+    /* --trace (cal-75) : où va le temps hors JavaScript (mise en page, recalcul des styles, peinture) : trace Chrome « devtools.timeline », durées par genre */
+    const tracer = async (nom, f) => {
+      const fichier = path.join(sortie, `trace-${nom}.json`);
+      await p.tracing.start({ path: fichier, categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline', 'disabled-by-default-devtools.timeline.invalidationTracking'] }); const r = await f(); await p.tracing.stop();
+      const ev = JSON.parse(fs.readFileSync(fichier, 'utf8')).traceEvents ?? [];
+      const par = new Map(); const compte = new Map();
+      for (const e of ev) if (e.ph === 'X' && e.dur && ['Layout', 'UpdateLayoutTree', 'Paint', 'PrePaint', 'Layerize', 'Commit', 'FunctionCall', 'EvaluateScript', 'RunTask', 'HitTest', 'IntersectionObserverController::computeIntersections', 'RunMicrotasks', 'FireAnimationFrame', 'TimerFire', 'EventDispatch', 'ParseHTML', 'UpdateLayer', 'CompositeLayers', 'RasterTask', 'GPUTask'].includes(e.name)) { par.set(e.name, (par.get(e.name) ?? 0) + e.dur); compte.set(e.name, (compte.get(e.name) ?? 0) + 1); }
+      const lay = ev.filter((e) => e.name === 'Layout' && e.ph === 'X').map((e) => Math.round(e.dur / 1000)).sort((a, b) => b - a).slice(0, 8);
+      console.log(`  trace ${nom} : ${[...par.entries()].sort((a, b) => b[1] - a[1]).map(([k, us]) => `${k} ${Math.round(us / 1000)} ms ×${compte.get(k)}`).join(' ; ')} ; plus longues mises en page : ${lay.join(', ')} ms`);
+      const nb = ev.filter((e) => e.name === 'Layout' && e.ph === 'X' && e.args?.beginData).map((e) => e.args.beginData.dirtyObjects + '/' + e.args.beginData.totalObjects).slice(0, 6);
+      if (nb.length) console.log(`  objets sales / total (premières mises en page) : ${nb.join(' ; ')}`);
+      return r;
+    };
     const profiler = async (nom, f) => {
+      if (drap('trace')) return tracer(nom, f);
       if (!drap('profil')) return f();
       await cdp.send('Profiler.start'); const r = await f(); const { profile } = await cdp.send('Profiler.stop');
       fs.writeFileSync(path.join(sortie, `profil-${nom}.cpuprofile`), JSON.stringify(profile));
@@ -131,7 +150,7 @@ async function jouer(dir) {
       console.log(`  profil ${nom} : ${top.join(' ; ')}`);
       return r;
     };
-    const fenetre = (t0, t1) => p.evaluate((t0, t1) => ({ lt: window.__perf.lt.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d), fr: window.__perf.fr.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d) }), t0, t1);
+    const fenetre = (t0, t1) => p.evaluate((t0, t1) => ({ mu: window.__perf.mu.filter((t) => t >= t0 && t <= t1).length, lt: window.__perf.lt.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d), fr: window.__perf.fr.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d) }), t0, t1);
     const MOIS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
     /* le jour dit par la bulle du geste (« S15 · 13 avr. · lâcher ici ») : jour de l'année, ou null */
     const jourBulle = async () => {
@@ -145,6 +164,14 @@ async function jouer(dir) {
     for (let essai = 0; essai < ESSAIS; essai++) {
       // OUVRIR : page rechargée (à froid), sur Bord, puis toucher « Calendrier ».
       await p.goto(url, { waitUntil: 'load' });
+      /* --css "<règles>" (cal-75, expérience) : ajoute une feuille de style à la page, pour mesurer ce qu'une règle coûte */
+      if (opt('css')) await p.evaluate((c) => { const s = document.createElement('style'); s.textContent = c; document.head.appendChild(s); }, opt('css'));
+      /* --sans-has (cal-75, expérience) : retire les règles CSS à :has() de la page, pour mesurer ce qu'elles coûtent */
+      /* --sans "<regex>" : retire de la page les règles CSS dont le sélecteur correspond (ex. --sans "aria-label") */
+      if (drap('sans-has') || opt('sans')) await p.evaluate((re) => {
+        const net = (cont) => { const l = cont.cssRules; for (let i = l.length - 1; i >= 0; i--) { const r = l[i]; if (r.cssRules && !r.selectorText) net(r); else if (new RegExp(re).test(r.selectorText ?? '')) cont.deleteRule(i); } };
+        for (const s of document.styleSheets) { try { net(s); } catch { /* feuille externe */ } }
+      }, opt('sans') ?? ':has\\(');
       await p.waitForSelector('nav button', { timeout: 90000 });
       await sleep(1500);
       if (await p.$('[data-calendrier]')) { await toucher('Bord'); await sleep(1200); }
@@ -206,7 +233,7 @@ async function jouer(dir) {
         await dep('touchEnd', 0, 0); await sleep(600);
         if (await parTexte('Annuler')) await toucher('Annuler');
         const f = w3.fr; const dureeS = (tB1 - tB0) / 1000;
-        resultat.bord.push({ mediane: mediane(f), moyenne: f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0, p90: pct(f, 0.9), max: Math.max(0, ...f), part17: f.length ? Math.round((100 * f.filter((d) => d <= 17).length) / f.length) : 0, part50: f.length ? Math.round((100 * f.filter((d) => d <= 50).length) / f.length) : 0, images: f.length, semParSec: jAvant == null || jApres == null ? null : Math.round((10 * ((((jApres - jAvant) % 365) + 365) % 365)) / 7 / dureeS) / 10, taches: w3.lt.map(Math.round) });
+        resultat.bord.push({ mediane: mediane(f), moyenne: f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0, p90: pct(f, 0.9), max: Math.max(0, ...f), part17: f.length ? Math.round((100 * f.filter((d) => d <= 17).length) / f.length) : 0, part50: f.length ? Math.round((100 * f.filter((d) => d <= 50).length) / f.length) : 0, images: f.length, semParSec: jAvant == null || jApres == null ? null : Math.round((10 * ((((jApres - jAvant) % 365) + 365) % 365)) / 7 / dureeS) / 10, taches: w3.lt.map(Math.round), rendus: w3.mu });
       } else console.log('  barre introuvable avant le bord');
     }
   } finally { await p.close().catch(() => {}); nav.disconnect(); srv.close(); }

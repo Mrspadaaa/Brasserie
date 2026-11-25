@@ -5,7 +5,8 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { etiquetteSemainesAnnees } from '../../src/ui/calendrier/entete/Fenetre';
-import { distinguerHomonymes } from '../../src/ui/calendrier/frise/Rangee';
+import { distinguerHomonymes, placerBulle } from '../../src/ui/calendrier/frise/Rangee';
+import { courbeCaisse, courbeSans } from '../../src/domain/calendrierCaisse';
 import { creerPlanificateur } from '../../src/ui/calendrier/useApresRendu';
 import { largeurMemo, viderLargeurs } from '../../src/ui/calendrier/cacheTexte';
 import { ACCELERATION_MAX, ACCELERATION_S, BANDE_CALENDRIER_PX, PROFONDEUR_PLEINE_PX, accelerationTenue, plafondFenetre, vitesseBordCalendrier } from '../../src/ui/calendrier/frise/defileBord';
@@ -103,8 +104,51 @@ describe('K73-3 : lire la mise en page après le rendu, regroupé et espacé', (
   });
   it('le cadre de la frise et son bord gauche ne se lisent plus à chaque image du défilement', () => {
     const t = src('src/ui/calendrier/frise/usePointeur.ts');
-    expect(t).toMatch(/cacheCadre\.current && maintenant - cacheCadre\.current\.t < 250/);
-    expect(t).toMatch(/s\.gaucheT === undefined \|\| t - s\.gaucheT >= 250/);
+    /* cal-75 : lus UNE fois par geste, non plus toutes les 250 ms (chaque relecture forçait la mise en page de tout l'onglet) */
+    expect(t).toMatch(/cacheCadre\.current\.geste === geste/);
+    expect(t).toMatch(/s\.gaucheT === undefined\) \{/);
+    expect(t).toMatch(/cacheCadre\.current = null;/);
+  });
+});
+
+describe('cal-75 : la lenteur du défilement au bord, ses causes mesurées', () => {
+  it('`--cw` (variable custom) ne se pose plus sur chaque rangée de l’axe partagé : elle refaisait le style de tout le sous-arbre à chaque image', () => {
+    const t = src('src/ui/calendrier/frise/Rangee.tsx');
+    expect(t).toMatch(/props\.lineaire \? \{\} : \{ \['--cw' as string\]/);
+    expect(src('src/ui/calendrier/frise/frise.css')).toMatch(/\.cal-frise--axe \.cal-lane \{ background-image: none; \}/);
+  });
+  it('les graduations de l’axe ont une clé de rang : elles ne sont plus démontées à chaque image', () => {
+    expect(src('src/ui/calendrier/frise/Frise.tsx')).toMatch(/graduations\.map\(\(x, k\) => <i key=\{k\}/);
+  });
+  it('le jugement de la pastille du creux passe par le planificateur, plus par un flushSync à chaque image', () => {
+    const t = src('src/ui/calendrier/entete/EnTete.tsx');
+    expect(t).toMatch(/jugeCle\.current\.planifier\(planifie\)/);
+    expect(t).not.toMatch(/requestAnimationFrame\(\(\) => flushSync\(juger\)\)/);
+  });
+  it('courbeSans rend la même courbe pour la même courbe et la même chose, et une courbe neuve pour une autre', () => {
+    const c = courbeCaisse({ depart: 100000, lundi0: '2026-11-23', nbSemaines: 12, mouvements: [
+      { id: 'm1', jour: '2026-12-01', centimes: -20000, nom: 'A', choseId: 'a' }, { id: 'm2', jour: '2026-12-08', centimes: 5000, nom: 'B', choseId: 'b' }] })!;
+    const sansA = courbeSans(c, 'a');
+    expect(courbeSans(c, 'a')).toBe(sansA);
+    expect(sansA.mouvements.map(m => m.choseId)).toEqual(['b']);
+    expect(courbeSans(c, 'b').mouvements.map(m => m.choseId)).toEqual(['a']);
+    expect(c.mouvements).toHaveLength(2);
+    const autre = courbeCaisse({ depart: 100000, lundi0: '2026-11-23', nbSemaines: 12, mouvements: [] })!;
+    expect(courbeSans(autre, 'a')).not.toBe(sansA);
+  });
+});
+
+describe('cal-75 : la bulle « lâcher ici » (tri par hauteur) garde sa règle', () => {
+  const base = { w: 80, h: 24, x: 100, haut: 40, bas: 60, largeur: 300, piste: { left: 0, top: 0, height: 100 } };
+  it('un mur ou un texte à la hauteur de la place la repousse ; un texte plus bas, jamais', () => {
+    const libre = placerBulle({ ...base, murs: [], obstacles: [] });
+    const gene = placerBulle({ ...base, murs: [], obstacles: [{ left: libre.left, top: libre.top, right: libre.left + 80, bottom: libre.top + 24, poids: 3 }] });
+    expect(gene.left !== libre.left || gene.top !== libre.top).toBe(true);
+    const loin = placerBulle({ ...base, murs: [], obstacles: [{ left: libre.left, top: 5000, right: libre.left + 80, bottom: 5024, poids: 3 }] });
+    expect(loin).toEqual(libre);
+    const mur = { left: libre.left - 4, top: libre.top - 4, right: libre.left + 90, bottom: libre.top + 30 };
+    const evite = placerBulle({ ...base, murs: [mur], obstacles: [] });
+    expect(evite.left !== libre.left || evite.top !== libre.top).toBe(true);
   });
 });
 

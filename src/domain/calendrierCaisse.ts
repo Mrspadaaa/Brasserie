@@ -250,8 +250,17 @@ export function courbeDecalee(courbe: CourbeCaisse, choseId: string, jours: numb
 }
 /** La courbe si la chose `choseId` n'y était plus (Retirer, plan annulé). */
 export function courbeSans(courbe: CourbeCaisse, choseId: string): CourbeCaisse {
-  return rebatir(courbe, courbe.mouvements.filter(m => m.choseId !== choseId), courbe.mises.filter(m => m.id !== choseId));
+  /* cal-75 : mémoire par courbe (les courbes sont immuables) : pendant un glisser, chaque image refaisait la courbe sans la chose tenue, la
+     même à chaque fois ; seule la courbe « avec » change (profil au bord, ×6 : 37 ms sur 2 s) */
+  const memo = MEMOIRE_SANS.get(courbe) ?? new Map<string, CourbeCaisse>();
+  const connue = memo.get(choseId);
+  if (connue) return connue;
+  const r = rebatir(courbe, courbe.mouvements.filter(m => m.choseId !== choseId), courbe.mises.filter(m => m.id !== choseId));
+  if (memo.size >= 8) memo.clear();
+  memo.set(choseId, r); MEMOIRE_SANS.set(courbe, memo);
+  return r;
 }
+const MEMOIRE_SANS = new WeakMap<CourbeCaisse, Map<string, CourbeCaisse>>();
 /** La courbe avec des mouvements et des mises en plus (Dupliquer, accepter une vente probable). */
 export function courbeAvec(courbe: CourbeCaisse, mouvements: readonly MouvementCaisse[], mises: readonly MiseDeCote[] = []): CourbeCaisse {
   return rebatir(courbe, [...courbe.mouvements, ...mouvements], [...courbe.mises, ...mises]);

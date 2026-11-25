@@ -521,7 +521,8 @@ export const Frise: React.FC<FriseProps> = props => {
       <CalqueTraits ref={calque} idMasque={idMasque} />
       {props.axe && (
         <span className="cal-axe" aria-hidden="true" data-axe-grille>
-          {props.axe.graduations.map(x => <i key={x} className="cal-axe-l" data-graduation={x} style={posee(x)} />)}
+          {/* cal-75 : clé = rang, non la position : à chaque image du défilement les graduations se déplacent, et une clé par x démontait et remontait chacune (40 insertions en 2 s au bord, trace) */}
+          {props.axe.graduations.map((x, k) => <i key={k} className="cal-axe-l" data-graduation={x} style={posee(x)} />)}
           {zoneCadre && zoneCadre.a > 0 && <i className="cal-hors-cadre" data-hors-cadre="avant" style={{ ...posee(0), width: zoneCadre.a }} />}
           {zoneCadre && zoneCadre.b < largeur && <i className="cal-hors-cadre" data-hors-cadre="apres" style={{ ...posee(zoneCadre.b), width: largeur - zoneCadre.b }} />}
         </span>

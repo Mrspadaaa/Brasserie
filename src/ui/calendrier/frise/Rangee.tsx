@@ -823,11 +823,16 @@ export function placerBulle(o: { w: number; h: number; x: number; haut: number; 
   gauches.add(gaucheMax);
   let meilleure: (PlaceBulle & { note: number; mur: number }) | null = null;
   for (const [top, prix] of tops) {
+    /* cal-75 : seuls les murs et les obstacles à la hauteur de cette place comptent (`croise` et `surface` valent 0 sinon) : le tri se fait une fois
+       par hauteur, non une fois par position de côté (profil : 129 ms sur 2 s à ×6) */
+    const haut0 = piste.top + top - 2, bas0 = piste.top + top + h + 2;
+    const mursT = murs.filter(m => m.top < bas0 && m.bottom > haut0);
+    const obstaclesT = obstacles.filter(ob => ob.top < piste.top + top + h && ob.bottom > piste.top + top);
     for (const left of gauches) {
       const boite: Boite = { left: piste.left + left, top: piste.top + top, right: piste.left + left + w, bottom: piste.top + top + h };
-      const mur = murs.reduce((s, m) => s + (croise(boite, m) ? 1 + surface(boite, m) : 0), 0);
+      const mur = mursT.reduce((s, m) => s + (croise(boite, m) ? 1 + surface(boite, m) : 0), 0);
       if (meilleure && mur > meilleure.mur) continue;
-      const note = prix + Math.abs(left + w / 2 - x) * 0.5 + obstacles.reduce((s, ob) => s + surface(boite, ob) * ob.poids, 0);
+      const note = prix + Math.abs(left + w / 2 - x) * 0.5 + obstaclesT.reduce((s, ob) => s + surface(boite, ob) * ob.poids, 0);
       if (!meilleure || mur < meilleure.mur || note < meilleure.note) meilleure = { left, top, note, mur };
     }
   }
@@ -841,7 +846,7 @@ const TEXTES_BULLE: ReadonlyArray<[string, number]> = [
   ['.cal-lbl-m', 2],
   ['.cal-lbl-j, .cal-conf, .cal-vide, .cal-duree, .cal-duree-in', 1]
 ];
-const ESPACE_BULLE_MS = 120;
+const ESPACE_BULLE_MS = 300; /* cal-75 : 120 → 300 ms (mesuré : 193 ms sur 2 s à 120 ms, soit ~16 placements complets) */
 function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x: number; haut: number; bas: number; largeur: number; choseId: string }) {
   const el = React.useRef<HTMLSpanElement | null>(null);
   /* cal-74 (K73-3) : le placement complet (une lecture de chaque texte et de chaque barre de la frise, puis tops × gauches × obstacles) coûtait
@@ -992,7 +997,10 @@ export const Rangee: React.FC<RangeeProps> = props => {
       className={`cal-rangee ${CLASSE_TEINTE[id]}${masquee ? ' cal-masquee' : ''}${paysage ? ' cal-rangee-l' : ''}`}
       data-rangee={id}
       aria-label={nom}
-      style={{ ['--cw' as string]: `${largeurColonne}px`, ...(paysage ? { minHeight: mesures.ligne + 2 } : {}) }}
+      /* cal-75 : `--cw` ne sert qu'au quadrillage de `.cal-lane` (frise.css), absent sur l'axe partagé (`.cal-frise--axe .cal-lane { background-image: none }`).
+         Posée sur la rangée, une variable CUSTOM qui change à chaque image du défilement (la fenêtre grandit) refait le style de tout le sous-arbre
+         de chaque rangée : mesuré 64 ms pour une seule variable sur l'onglet, ×6 (sonde), et 4 recalculs de ~1 400 éléments (87 à 139 ms) en 2 s au bord. */
+      style={{ ...(props.lineaire ? {} : { ['--cw' as string]: `${largeurColonne}px` }), ...(paysage ? { minHeight: mesures.ligne + 2 } : {}) }}
     >
       <header className="cal-rh" style={{ height: paysage ? mesures.ligne : mesures.titre }}>
         <button type="button" className="cal-plus" data-plus={id} aria-label={`Ajouter dans ${nom}`} onClick={() => props.onAjouter(id)}>

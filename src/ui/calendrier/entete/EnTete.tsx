@@ -627,6 +627,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [empile, setEmpile] = useState(false);
   const [serre, setSerre] = useState(false);
   const [tresSerre, setTresSerre] = useState(false);
+  const jugeCle = useRef(creerPlanificateur(250));
+  useEffect(() => { const p = jugeCle.current; return () => p.annuler(); }, []);
   useLayoutEffect(() => {
     const el = refCle.current;
     if (!el) return undefined;
@@ -649,11 +651,16 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     /* CAL-LENT (21.11) : lu dans le commit, `offsetWidth` forçait la mise en page de tout le Calendrier juste après le rendu d'un lâcher. Lu
        dans l'image suivante, la mise en page est celle de l'image, faite une fois (A/B apparié 7 tours, session 8 : frise 416 → 312 ms, barre
        232 → 184, Modifier 552 → 440). `flushSync` applique un changement de forme avant que l'image se peigne : aucun saut visible. */
-    const image = typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => flushSync(juger)) : (juger(), 0);
-    if (typeof ResizeObserver === 'undefined') return () => { if (image) cancelAnimationFrame(image); };
+    /* cal-75 : pendant un défilement au bord, le creux change à chaque image et ce jugement (trois `offsetWidth`, donc une mise en page forcée, puis
+       `flushSync`, un rendu synchrone de tout l'onglet) partait à chaque image : 311 ms sur 2 s à ×6. Il passe par le planificateur partagé : une
+       fois par rafale, au plus tous les 250 ms, la dernière demande toujours servie ; la première (ouverture) part à l'image suivante, comme avant. */
+    const planifie = () => { if (el.isConnected) flushSync(juger); };
+    if (typeof requestAnimationFrame !== 'function') { juger(); return undefined; }
+    jugeCle.current.planifier(planifie);
+    if (typeof ResizeObserver === 'undefined') return undefined;
     const ro = new ResizeObserver(juger);
     ro.observe(el);
-    return () => { if (image) cancelAnimationFrame(image); ro.disconnect(); };
+    return () => { ro.disconnect(); };
     // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances). La courbe ne compte que
     // présente ou absente (le bouton n'existe qu'avec elle) ; ses valeurs passent par le creux.
   }, [semaineCreux, creux?.centimes, creuxVide, orientation, vue, !!courbe]);
