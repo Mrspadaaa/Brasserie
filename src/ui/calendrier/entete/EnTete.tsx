@@ -736,7 +736,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const cleAxe = axe ? JSON.stringify(axe) : '';
   const onAxeRef = useRef(props.onAxe);
   onAxeRef.current = props.onAxe;
-  useEffect(() => { onAxeRef.current?.(cleAxe ? JSON.parse(cleAxe) as AxeCourbe : null); }, [cleAxe]);
+  /* cal-76 : avant la peinture (la frise suit l'axe dans la même image ; avant : un rendu de plus, une image plus tard, à chaque pas du bord) */
+  useLayoutEffect(() => { onAxeRef.current?.(cleAxe ? JSON.parse(cleAxe) as AxeCourbe : null); }, [cleAxe]);
   // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
   // `d` : l'index de la première semaine montrée (celui de l'alignement de la courbe, ou de l'en-tête entier en paysage).
   const lacherDe = (d: number) => {

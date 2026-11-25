@@ -9,7 +9,7 @@ import { distinguerHomonymes, placerBulle } from '../../src/ui/calendrier/frise/
 import { courbeCaisse, courbeSans } from '../../src/domain/calendrierCaisse';
 import { creerPlanificateur } from '../../src/ui/calendrier/useApresRendu';
 import { largeurMemo, viderLargeurs } from '../../src/ui/calendrier/cacheTexte';
-import { ACCELERATION_MAX, ACCELERATION_S, BANDE_CALENDRIER_PX, PROFONDEUR_PLEINE_PX, accelerationTenue, plafondFenetre, vitesseBordCalendrier } from '../../src/ui/calendrier/frise/defileBord';
+import { ACCELERATION_MAX, ACCELERATION_S, BANDE_CALENDRIER_PX, DETTE_POSE_MAX_MS, IMAGE_LENTE_MS, PART_LIBRE, PROFONDEUR_PLEINE_PX, accelerationTenue, plafondFenetre, posePermise, vitesseBordCalendrier } from '../../src/ui/calendrier/frise/defileBord';
 import { colonnesParImage, sensDefilement } from '../../src/ui/calendrier/frise/usePointeur';
 import { ajouterJours, numeroSemaine } from '../../src/domain/calendrier';
 import { utc, versIso } from '../../src/domain/calendrier/dates';
@@ -219,5 +219,53 @@ describe('Q-4 : le défilement au bord, plus rapide, réglé, atteignable au pou
     expect(t).toMatch(/Math\.min\(DT_MAX_S, \(t - s\.tPrec\) \/ 1000\)/);
     expect(src('src/ui/calendrier/entete/Fenetre.tsx')).toMatch(/accelerationTenue\(s\.tenu\)/);
     expect(src('src/ui/calendrier/frise/DureeFenetre.tsx')).toMatch(/accelerationTenue\(s\.tenu\)/);
+  });
+});
+
+describe('cal-76 : le geste au bord hors du rendu de chaque image, le lâcher en un rendu', () => {
+  it('contre-pression : la première pose part tout de suite ; la suivante attend un tiers du temps occupé, au plus 400 ms de dette comptée', () => {
+    expect(posePermise(0, 0)).toBe(true);
+    expect(posePermise(300, 99)).toBe(false);
+    expect(posePermise(300, 100)).toBe(true);
+    expect(posePermise(5000, DETTE_POSE_MAX_MS * PART_LIBRE)).toBe(true);
+    expect(IMAGE_LENTE_MS).toBeGreaterThan(17);
+  });
+  it('simulé à ×6 (une pose coûte 180 ms, une image libre 8 ms) : 2 s au bord donnent au moins 3 poses par seconde et une image médiane libre', () => {
+    let t = 0, occupe = 0, libre = 0, poses = 0; const images: number[] = [];
+    while (t < 2000) {
+      if (posePermise(occupe, libre)) { poses++; occupe = 180; libre = 0; images.push(180); t += 180; }
+      else { libre += 8; images.push(8); t += 8; }
+    }
+    const med = [...images].sort((a, b) => a - b)[Math.floor((images.length - 1) / 2)];
+    expect(poses / 2).toBeGreaterThanOrEqual(3);
+    expect(med).toBeLessThanOrEqual(17);
+  });
+  it('la fenêtre du geste avance dans une référence, se pose au rythme du rendu, et le lâcher garde la fenêtre montrée (celle du pas lu)', () => {
+    const t = src('src/components/tabs/CalendrierTab.tsx');
+    const defiler = t.slice(t.indexOf('const defilerFenetre = useCallback'), t.indexOf('const actionsBarre ='));
+    expect(defiler).toMatch(/const f = poseGeste\.current\.fen \?\? fenetreRef\.current;/);
+    expect(defiler).toMatch(/poserFenetreGeste\(fen\);/);
+    expect(defiler).not.toMatch(/agirCadre\(\{ type: 'poser'/);
+    expect(defiler).toMatch(/if \(!poseGeste\.current\.fen\) agirCadre\(\{ type: 'debutGeste' \}\);/);
+    const rendre = t.slice(t.indexOf('const rendreFenetre = '), t.indexOf('const finGeste = '));
+    expect(rendre).not.toMatch(/agirCadre\(\{ type: 'poser'/);
+    expect(rendre).toMatch(/cancelAnimationFrame\(g\.raf\)/);
+    expect(t).toMatch(/if \(enAttente && posePermise\(g\.occupe, g\.libre\)\)/);
+  });
+  it('le lâcher : la fin du geste attend l’écriture et se rend avec son message (un rendu, la barre ne revient pas une image en arrière)', () => {
+    const t = src('src/components/tabs/CalendrierTab.tsx');
+    expect(t).toMatch(/finEnAttente\.current\?\.\(\);\s*compteur\.current \+= 1;/);
+    const glisse = t.slice(t.indexOf('const surLacheGlisse = useCallback'), t.indexOf('const surBord = useCallback'));
+    expect(glisse).toMatch(/if \(annule \|\| k === 0\) \{ finir\(\); return; \}/);
+    expect(glisse).toMatch(/if \(ecrit\) void ecrit\.finally\(finUneFois\); else finUneFois\(\);/);
+    const bord = t.slice(t.indexOf('const surLacheBord = useCallback'), t.indexOf('const surToucher = useCallback'));
+    expect(bord).toMatch(/\.finally\(finUneFois\)/);
+  });
+  it('l’axe, la mesure et le pas relu suivent la pose avant la peinture ; la mesure sous le + est figée pendant un geste', () => {
+    expect(src('src/ui/calendrier/entete/EnTete.tsx')).toMatch(/useLayoutEffect\(\(\) => \{ onAxeRef\.current\?\.\(/);
+    const f = src('src/ui/calendrier/frise/Frise.tsx');
+    expect(f).toMatch(/React\.useLayoutEffect\(\(\) => \{ onMesureRef\.current\?\.\(/);
+    expect(f).toMatch(/const cleMise = props\.drag \? cleMiseFigee\.current : cleMiseVive;/);
+    expect(src('src/ui/calendrier/frise/usePointeur.ts')).toMatch(/useLayoutEffect\(\(\) => \{\s*const s = etat\.current;\s*if \(!s \|\| !\(opts\.current\.largeurColonne > 0\)\) return;/);
   });
 });

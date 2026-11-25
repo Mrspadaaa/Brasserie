@@ -45,3 +45,15 @@ export const accelerationTenue = (tenu: number): number => 1 + (ACCELERATION_MAX
 export const plafondFenetre = (span0: number, dt: number, tenu = 0): number => COLONNES_MAX_PAR_S * accelerationTenue(tenu) * Math.max(1, span0 / COLONNES_PAR_ECRAN) * dt;
 /** Le pas de temps d'une image du défilement : borné pour qu'une image perdue ne saute pas de semaines, assez large pour qu'une image lente garde la vitesse. */
 export const DT_MAX_S = 0.1;
+
+/**
+ * cal-76 (contre-pression du rendu) : pendant un geste au bord, la fenêtre avance à chaque image dans une référence et ne se pose qu'au rythme
+ * du rendu. Depuis la dernière pose, le temps des images lentes (plus de 34 ms : un rendu, une mise en page) est `occupe`, celui des images
+ * libres `libre` ; la pose suivante attend un tiers du temps occupé en temps libre (le fil reste libre un quart du temps au moins : un doigt qui
+ * bouge est lu dans la centaine de ms ; à un demi, la frise ne changeait plus que deux fois par seconde à ×6, contre quatre et demie avant),
+ * jamais plus de 400 ms de dette comptée (la fenêtre montrée suit toujours).
+ */
+export const IMAGE_LENTE_MS = 34;
+export const DETTE_POSE_MAX_MS = 400;
+export const PART_LIBRE = 1 / 3;
+export const posePermise = (occupe: number, libre: number): boolean => libre >= PART_LIBRE * Math.min(occupe, DETTE_POSE_MAX_MS);

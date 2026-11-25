@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 import { aBouge, armerSens, BANDE_PX } from '../../geste';
 import type React from 'react';
@@ -316,8 +316,9 @@ export function usePointeur(options: OptionsPointeur) {
     const d = largeurJourDe(opts.current) || 1;
     return Math.round((s.xPrec - s.L) / d - (s.x0 - s.L) / (s.d0 || d) - 7 * s.recul);
   };
-  /* après chaque rendu de la barre (la fenêtre a pu bouger sous le doigt) : le pas est relu, la bulle et le fantôme suivent */
-  useEffect(() => {
+  /* après chaque rendu de la barre (la fenêtre a pu bouger sous le doigt) : le pas est relu, la bulle et le fantôme suivent ;
+     cal-76 : avant la peinture (la bulle suit la fenêtre dans la même image, pas un rendu de plus une image plus tard) */
+  useLayoutEffect(() => {
     const s = etat.current;
     if (!s || !(opts.current.largeurColonne > 0)) return;
     if (s.mode === 'glisse') {

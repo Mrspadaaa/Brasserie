@@ -365,7 +365,12 @@ export const Frise: React.FC<FriseProps> = props => {
 
   /* D-135 (CRITIQUE-2 n° 13) : au repos, les rangées qui passent à la hauteur du + volant gardent leurs noms hors de sa zone ; mesuré après
      le rendu, une rangée ajoutée n'est jamais retirée tant que la mise en page ne change pas (pas d'oscillation) */
-  const cleMise = `${paysage}|${colonnes.map(c => c.debut).join(',')}|${choses.length}|${masquees.join(',')}|${filtre ?? ''}`;
+  const cleMiseVive = `${paysage}|${colonnes.map(c => c.debut).join(',')}|${choses.length}|${masquees.join(',')}|${filtre ?? ''}`;
+  /* cal-76 : figée pendant un geste (comme `cleFigee`) : une fenêtre qui grandit au bord changeait la clé à chaque pose, la mesure repartait de zéro
+     et rendait l'onglet une fois de plus ~120 ms après chaque pose ; les rangées gardées le restent jusqu'au lâcher, puis la mesure reprend */
+  const cleMiseFigee = React.useRef(cleMiseVive);
+  if (!props.drag) cleMiseFigee.current = cleMiseVive;
+  const cleMise = props.drag ? cleMiseFigee.current : cleMiseVive;
   const [sousFab, setSousFab] = React.useState<{ cle: string; ids: IdRangee[]; reserve: number }>({ cle: '', ids: [], reserve: 0 });
   const idsSousFab = sousFab.cle === cleMise ? sousFab.ids : [];
   /*
@@ -451,7 +456,9 @@ export const Frise: React.FC<FriseProps> = props => {
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);
   onMesureRef.current = onMesure;
-  React.useEffect(() => { onMesureRef.current?.({ largeur, largeurColonne }); }, [largeur, largeurColonne]);
+  /* cal-76 : avant la peinture (une fenêtre qui grandit au bord change la largeur d'une colonne : l'onglet la lit dans la même image, pas un rendu
+     de plus une image plus tard) */
+  React.useLayoutEffect(() => { onMesureRef.current?.({ largeur, largeurColonne }); }, [largeur, largeurColonne]);
 
   /* CAL-PASSE : `ordreComplet` rend les rangées absentes de l'ordre gardé ; un calendrier de section (E44) n'en montre que les siennes */
   const rangees = ordreComplet(ordre).filter(r => !props.seulement || props.seulement.includes(r));

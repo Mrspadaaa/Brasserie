@@ -13,6 +13,7 @@ import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../
 import { useCadre } from '../../ui/calendrier/cadre/useCadre';
 import { libelleDuree, SEMAINES_ANNEE, type AxeCourbe, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
+import { IMAGE_LENTE_MS, posePermise } from '../../ui/calendrier/frise/defileBord';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
 import { isoDate } from '../../domain/finance/ledger';
 import { Message, type MessageCal } from '../../ui/calendrier/frise/Message';
@@ -235,7 +236,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
      Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
      nouveau toucher hors de lui (frise, courbe, bande, + volant, onglets), à l'ouverture d'un détail, d'un menu, d'une feuille, et au
      changement de vue. L'en-tête passe par le même canal (`onMessage`) : jamais deux messages à la fois. */
-  const montrer = useCallback((m: Omit<MessageCal, 'id'>) => { compteur.current += 1; setMessage({ ...m, texte: sansPointDouble(m.texte), id: compteur.current }); }, []);
+  /* cal-76 : la fin d'un geste qui attend son écriture ; le message de l'écriture la rend dans le même rendu */
+  const finEnAttente = useRef<(() => void) | null>(null);
+  const montrer = useCallback((m: Omit<MessageCal, 'id'>) => {
+    finEnAttente.current?.();
+    compteur.current += 1; setMessage({ ...m, texte: sansPointDouble(m.texte), id: compteur.current });
+  }, []);
   const fermerMessage = useCallback(() => setMessage(null), []);
   /* CRITIQUE-10 (constat D n° 1, E33, D-126) : le geste Lier ouvre lui-même le détail ; le défilement qui le dégage du + (lot C) n'est pas
      celui du brasseur et ne chasse pas « Liée à X · Annuler ». Jusqu'à cette heure, un défilement est absorbé (la position repart de là). */
@@ -420,7 +426,45 @@ export function CalendrierTab(props: CalendrierTabProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
   /* CHG-5 : la fenêtre d'avant le premier défilement du geste ; un geste annulé la rend (rien n'est écrit, la fenêtre non plus) */
-  const rendreFenetre = (annule: boolean) => { agirCadre({ type: 'finGeste', annule }); };
+  /*
+   * cal-76 (Q-4 « Trop lente sur le calendrier », 3e passe, L29 : changer de méthode). Une barre tenue au bord avançait la fenêtre d'une semaine
+   * par image : chaque pas re-rendait tout l'onglet (frise, courbe, bande ; 110 ms par image à ×6), et le rendu suivant attendait le précédent.
+   * Méthode standard d'un glisser qui défile (rendu fenêtré, contre-pression) : le geste avance sa fenêtre dans une référence, à chaque image,
+   * sans rendu ; la fenêtre se POSE au plus une fois par coût de rendu mesuré (la pose suivante attend autant que la précédente a coûté, au plus
+   * 400 ms) : le fil reste libre une image sur deux au moins, la vitesse en semaines par seconde ne change pas (seul l'affichage se groupe).
+   * Le lâcher garde la fenêtre montrée (celle où le doigt a visé) ; un geste annulé rend celle d'avant.
+   */
+  const poseVide = () => ({ fen: null as FenetreSemaines | null, posee: null as FenetreSemaines | null, raf: 0, tPrec: 0, occupe: 0, libre: 0 });
+  const poseGeste = useRef(poseVide());
+  const poserFenetreGeste = (fen: FenetreSemaines) => {
+    const g = poseGeste.current;
+    g.fen = fen;
+    if (g.raf) return;
+    if (typeof requestAnimationFrame !== 'function') { g.posee = fen; agirCadre({ type: 'poser', fenetre: fen }); return; }
+    const image = (t: number) => {
+      g.raf = 0;
+      const dt = g.tPrec ? t - g.tPrec : 0;
+      g.tPrec = t;
+      if (dt > IMAGE_LENTE_MS) g.occupe += dt; else g.libre += dt;
+      const enAttente = !!g.fen && g.fen !== g.posee;
+      /* rien à poser et la dette payée : la boucle s'arrête (elle repart au pas suivant, sans dette) */
+      if (!enAttente && g.libre >= g.occupe) { g.tPrec = 0; g.occupe = 0; g.libre = 0; return; }
+      if (enAttente && posePermise(g.occupe, g.libre)) {
+        g.occupe = 0; g.libre = 0; g.posee = g.fen;
+        agirCadre({ type: 'poser', fenetre: g.fen as FenetreSemaines });
+      }
+      g.raf = requestAnimationFrame(image);
+    };
+    g.raf = requestAnimationFrame(image);
+  };
+  const rendreFenetre = (annule: boolean) => {
+    const g = poseGeste.current;
+    /* la fenêtre qui reste est celle que le brasseur voyait en lâchant (le pas lu, la bulle et l'écriture sont lus sur elle) ; les pas du geste
+       pas encore montrés tombent (vu à ×6 : posés au lâcher, la frise passait de 9 semaines à 3 mois sous le doigt levé) */
+    if (g.raf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(g.raf);
+    poseGeste.current = poseVide();
+    agirCadre({ type: 'finGeste', annule });
+  };
   const finGeste = useCallback(() => { parJourRef.current = null; agirCadre({ type: 'finGeste', annule: false }); setDrag(null); setIci(null); setApercu(null); setDuree(null); }, [agirCadre]);
   /*
    * Paquet E n° 4 (PC-NOTE-11, décision du pilote) : une fête ou une activité glissée n'emmène pas seuls ses achats et ventes d'un jour liés (une
@@ -450,18 +494,23 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
     const parJour = parJourRef.current;
-    rendreFenetre(annule);
-    finGeste();
-    if (annule || k === 0) return;
-    const glisserDe = (jours: number) => { if (jours !== 0) void ecrire(deplacerJours(chose, jours, ctxRef.current), false, chose.id, false, suiviDesLies(chose, jours)); };
-    if (enMois(colonnesRef.current)) { glisserDe(ecartJours(chose.debut, ajouterMois(chose.debut, k))); return; }
-    if (aDesJours(colonnesRef.current)) {
-      const r = cibleJour(chose, k);
-      if (r) glisserDe(r.jours);
-      return;
-    }
-    if (estPonctuel(chose) || parJour) { glisserDe(Math.round(k * 7)); return; }
-    void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
+    /* cal-76 (relâcher en un rendu) : la barre fantôme reste où le doigt l'a lâchée jusqu'à l'écriture ; la fin du geste (fenêtre, fantôme,
+       bulle, aperçu), la donnée écrite et le message se rendent ensemble, une fois (avant : trois rendus de tout l'onglet, et la barre revenait
+       une image à sa place d'avant) */
+    const finir = () => { rendreFenetre(annule); finGeste(); };
+    if (annule || k === 0) { finir(); return; }
+    /* une fois, au premier des deux : le message de l'écriture (montrer, même rendu), ou la fin de l'écriture */
+    const finUneFois = () => { if (finEnAttente.current !== finUneFois) return; finEnAttente.current = null; finir(); };
+    finEnAttente.current = finUneFois;
+    const glisserDe = (jours: number) => (jours !== 0 ? ecrire(deplacerJours(chose, jours, ctxRef.current), false, chose.id, false, suiviDesLies(chose, jours)) : undefined);
+    const ecrit = (() => {
+      if (enMois(colonnesRef.current)) return glisserDe(ecartJours(chose.debut, ajouterMois(chose.debut, k)));
+      if (aDesJours(colonnesRef.current)) { const r = cibleJour(chose, k); return r ? glisserDe(r.jours) : undefined; }
+      if (estPonctuel(chose) || parJour) return glisserDe(Math.round(k * 7));
+      return ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
+    })();
+    if (ecrit) void ecrit.finally(finUneFois); else finUneFois();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number, cote: CoteBord = 'fin') => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours, cote });
@@ -469,10 +518,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null);
   }, [aujourdhui]);
   const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean, cote: CoteBord = 'fin') => {
-    rendreFenetre(annule);
-    finGeste();
-    if (annule || jours === 0) return;
-    void ecrire((cote === 'debut' ? allongerDebut : allonger)(chose, jours, ctxRef.current), false, chose.id);
+    /* cal-76 : comme le glisser, la fin du geste se rend avec l'écriture */
+    const finir = () => { rendreFenetre(annule); finGeste(); };
+    if (annule || jours === 0) { finir(); return; }
+    const finUneFois = () => { if (finEnAttente.current !== finUneFois) return; finEnAttente.current = null; finir(); };
+    finEnAttente.current = finUneFois;
+    void ecrire((cote === 'debut' ? allongerDebut : allonger)(chose, jours, ctxRef.current), false, chose.id).finally(finUneFois);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ecrire, finGeste]);
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
@@ -928,9 +980,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
    * début a reculé (le pas sous le doigt se relit par la position), `false` quand elle ne peut plus aller de ce côté.
    */
   const defilerFenetre = useCallback((sens: -1 | 1, mode: 'glisse' | 'bord' = 'glisse', garder = false): false | number => {
-    const f = fenetreRef.current;
+    /* cal-76 : pendant le geste, la fenêtre du geste (en avance sur la fenêtre posée) */
+    const f = poseGeste.current.fen ?? fenetreRef.current;
     if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
-    agirCadre({ type: 'debutGeste' });
+    /* cal-76 : une fois par geste (un `useReducer` re-rend l'onglet à chaque envoi, même sans changement : 39 ms par image à ×6) */
+    if (!poseGeste.current.fen) agirCadre({ type: 'debutGeste' });
     const n = f.semaines + 1;
     /* VISION-tour9 n° 2 (CAL-BARRE-BORD, « ça doit agrandir l'échelle ») : une chose glissée au jour faisait GLISSER la fenêtre dès qu'un jour
        passait sous 8 px (390, 6 sem. : S47–S52 devenait S49–S1). Elle grandit comme un bord tiré ; le pas reste celui figé à l'appui. */
@@ -950,8 +1004,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
     fenetreRef.current = fen;
     /* B8 (WFP-4, 21.11) : « Nov. » devenu « 16 nov. → 27 déc. » après un glisser, et resté au rechargement. Le défilement au bord est celui du
        geste : la fenêtre suit la barre (elle reste où le doigt l'a lâchée), la période de l'app et de Finances ne bouge que par le brasseur. */
-    agirCadre({ type: 'poser', fenetre: fen });
+    /* cal-76 : posée au rythme du rendu, pas à chaque pas */
+    poserFenetreGeste(fen);
     return recul;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [premierLundi, derniereSemaine, agirCadre]);
   /* CAL-JOUR : `parJour` passe par `{...props.barre}` de Rangee jusqu'à Barre (une variable : le Pick de Rangee ne le nomme pas encore, voie V7) */
   const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(bordDefilable ? { defile: defilerFenetre } : {}), ...(defilable ? { marge } : {}), ...(parJourVu ? { parJour: true } : {}) };

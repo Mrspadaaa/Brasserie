@@ -68,8 +68,8 @@ function rapporter() {
   L.push(`Build : ${resultat.build} ; processeur ×${CPU} ; ${ESSAIS} essais`);
   L.push('', '| geste | essai | mesure |', '|---|---|---|');
   resultat.ouvrir.forEach((o, i) => L.push(`| OUVRIR | ${i + 1} | ${Math.round(o.duree)} ms jusqu'au cadre ; tâche longue max ${Math.round(o.tache)} ms (${o.taches.length} tâche(s)) |`));
-  resultat.relacher.forEach((o, i) => L.push(`| RELACHER | ${i + 1} | ${Math.round(o.duree)} ms (lâcher → image suivante) ; image max ${Math.round(o.imageMax)} ms ; tâche longue max ${Math.round(o.tache)} ms |`));
-  resultat.bord.forEach((o, i) => L.push(`| BORD | ${i + 1} | image médiane ${o.mediane.toFixed(1)} ms ; p90 ${o.p90.toFixed(1)} ; max ${Math.round(o.max)} ; ≤ 17 ms ${o.part17} % ; ≤ 50 ms ${o.part50} % ; ${o.images} images ; ${o.rendus ?? '?'} mises à jour du DOM ; défilement ${o.semParSec} sem./s |`));
+  resultat.relacher.forEach((o, i) => L.push(`| RELACHER | ${i + 1} | ${Math.round(o.duree)} ms (lâcher → image suivante) ; image max ${Math.round(o.imageMax)} ms ; tâche longue max ${Math.round(o.tache)} ms ; ${o.commits ?? '?'} commits React |`));
+  resultat.bord.forEach((o, i) => L.push(`| BORD | ${i + 1} | image médiane ${o.mediane.toFixed(1)} ms ; p90 ${o.p90.toFixed(1)} ; max ${Math.round(o.max)} ; ≤ 17 ms ${o.part17} % ; ≤ 50 ms ${o.part50} % ; ${o.images} images ; ${o.rendus ?? '?'} mises à jour du DOM ; ${o.commits ?? '?'} commits React ; défilement ${o.semParSec} sem./s |`));
   console.log(L.join('\n'));
   const r = (t, f) => (t.length ? mediane(t.map(f)) : NaN);
   const syn = {
@@ -109,6 +109,29 @@ async function jouer(dir) {
       const boucle = (t) => { P.fr.push({ t, d: t - dernier }); dernier = t; requestAnimationFrame(boucle); };
       requestAnimationFrame(boucle);
       /* mises à jour du DOM (une par tâche de commit React environ), pour dire combien de rendus par image */
+      /* cal-76 : les commits React (crochet des outils de développement, posé avant React) : leur heure, pour dire combien de rendus par image */
+      P.co = [];
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = { supportsFiber: true, renderers: new Map(), inject: () => 1, checkDCE: () => {}, onCommitFiberUnmount: () => {}, onPostCommitFiberRoot: () => {},
+        onCommitFiberRoot: (_id, root) => {
+          P.co.push(performance.now());
+          /* --pourquoi (cal-76) : l'origine de chaque commit, les composants dont un état (useState, useReducer : un crochet à `queue`) a changé ;
+             lent (tout l'arbre parcouru), avec --non-minifie pour les noms */
+          if (!P.pourquoi) return;
+          const mem = P.mem ?? (P.mem = new WeakMap()); const origines = []; const pile = [root.current]; let n = 0;
+          while (pile.length && n < 50000) {
+            const f = pile.pop(); n++;
+            if (typeof f.type === 'function' && f.memoizedState && typeof f.memoizedState === 'object' && 'next' in f.memoizedState) {
+              let rec = mem.get(f) ?? (f.alternate && mem.get(f.alternate)); if (!rec) { rec = { v: [] }; mem.set(f, rec); if (f.alternate) mem.set(f.alternate, rec); }
+              const v = []; for (let h = f.memoizedState, i = 0; h && i < 80; h = h.next, i++) if (h.queue) v.push(h.memoizedState);
+              const nom = f.type.displayName || f.type.name || '?';
+              v.forEach((x, i) => { if (rec.v.length && rec.v[i] !== x) origines.push(`${nom}#${i}${typeof x === 'number' || typeof x === 'boolean' ? '=' + x : x && typeof x === 'object' && 'largeur' in x ? '=' + JSON.stringify(x) : ''}`); });
+              rec.v = v;
+            }
+            if (f.sibling) pile.push(f.sibling); if (f.child) pile.push(f.child);
+          }
+          P.pq.push({ t: Math.round(performance.now()), o: origines.slice(0, 12).join(' ') });
+        } };
+      P.pq = [];
       P.mu = []; document.addEventListener('DOMContentLoaded', () => new MutationObserver(() => P.mu.push(performance.now())).observe(document.documentElement, { subtree: true, childList: true, attributes: true }));
     });
     const cdp = await p.createCDPSession();
@@ -150,7 +173,7 @@ async function jouer(dir) {
       console.log(`  profil ${nom} : ${top.join(' ; ')}`);
       return r;
     };
-    const fenetre = (t0, t1) => p.evaluate((t0, t1) => ({ mu: window.__perf.mu.filter((t) => t >= t0 && t <= t1).length, lt: window.__perf.lt.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d), fr: window.__perf.fr.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d) }), t0, t1);
+    const fenetre = (t0, t1) => p.evaluate((t0, t1) => ({ pq: (window.__perf.pq ?? []).filter((e) => e.t >= t0 && e.t <= t1).map((e) => `${Math.round(e.t - t0)}:${e.o}`), coT: window.__perf.co.filter((t) => t >= t0 && t <= t1).map((t) => Math.round(t - t0)), frT: window.__perf.fr.filter((e) => e.t >= t0 && e.t <= t1).map((e) => [Math.round(e.t - t0), Math.round(e.d)]), co: window.__perf.co.filter((t) => t >= t0 && t <= t1).length, mu: window.__perf.mu.filter((t) => t >= t0 && t <= t1).length, lt: window.__perf.lt.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d), fr: window.__perf.fr.filter((e) => e.t >= t0 && e.t <= t1).map((e) => e.d) }), t0, t1);
     const MOIS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
     /* le jour dit par la bulle du geste (« S15 · 13 avr. · lâcher ici ») : jour de l'année, ou null */
     const jourBulle = async () => {
@@ -163,7 +186,10 @@ async function jouer(dir) {
     await cdp.send('Emulation.setCPUThrottlingRate', { rate: CPU });
     for (let essai = 0; essai < ESSAIS; essai++) {
       // OUVRIR : page rechargée (à froid), sur Bord, puis toucher « Calendrier ».
+      /* cal-76 : un onglet caché ou recouvert (un autre agent a pris le premier plan) n'a plus qu'une image par seconde : 3 essais sur 4 faussés */
+      await p.bringToFront();
       await p.goto(url, { waitUntil: 'load' });
+      if (await p.evaluate(() => document.visibilityState) !== 'visible') console.log(`  essai ${essai + 1} : onglet caché (mesure faussée)`);
       /* --css "<règles>" (cal-75, expérience) : ajoute une feuille de style à la page, pour mesurer ce qu'une règle coûte */
       if (opt('css')) await p.evaluate((c) => { const s = document.createElement('style'); s.textContent = c; document.head.appendChild(s); }, opt('css'));
       /* --sans-has (cal-75, expérience) : retire les règles CSS à :has() de la page, pour mesurer ce qu'elles coûtent */
@@ -173,6 +199,7 @@ async function jouer(dir) {
         for (const s of document.styleSheets) { try { net(s); } catch { /* feuille externe */ } }
       }, opt('sans') ?? ':has\\(');
       await p.waitForSelector('nav button', { timeout: 90000 });
+      if (drap('pourquoi')) await p.evaluate(() => { window.__perf.pourquoi = true; });
       await sleep(1500);
       if (await p.$('[data-calendrier]')) { await toucher('Bord'); await sleep(1200); }
       await sleep(600);
@@ -211,7 +238,8 @@ async function jouer(dir) {
       });
       const tF = await horloge();
       const w2 = await fenetre(tL, tF);
-      resultat.relacher.push({ duree: Math.max(0, ...w2.fr.slice(0, 4)), imageMax: Math.max(0, ...w2.fr), tache: Math.max(0, ...w2.lt) });
+      resultat.relacher.push({ duree: Math.max(0, ...w2.fr.slice(0, 4)), imageMax: Math.max(0, ...w2.fr), tache: Math.max(0, ...w2.lt), commits: w2.co, chrono: { images: w2.frT, commits: w2.coT } });
+      if (drap('pourquoi') && essai === 0) console.log(`  pourquoi relacher : ${w2.pq.join(' | ')}`);
       if (essai === 0) await cap('apres-relacher');
       await sleep(300);
       if (await parTexte('Annuler')) await toucher('Annuler');
@@ -232,8 +260,9 @@ async function jouer(dir) {
         await cap(`bord-${essai}`);
         await dep('touchEnd', 0, 0); await sleep(600);
         if (await parTexte('Annuler')) await toucher('Annuler');
+        if (drap('pourquoi') && essai === 0) console.log(`  pourquoi bord : ${w3.pq.join(' | ')}`);
         const f = w3.fr; const dureeS = (tB1 - tB0) / 1000;
-        resultat.bord.push({ mediane: mediane(f), moyenne: f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0, p90: pct(f, 0.9), max: Math.max(0, ...f), part17: f.length ? Math.round((100 * f.filter((d) => d <= 17).length) / f.length) : 0, part50: f.length ? Math.round((100 * f.filter((d) => d <= 50).length) / f.length) : 0, images: f.length, semParSec: jAvant == null || jApres == null ? null : Math.round((10 * ((((jApres - jAvant) % 365) + 365) % 365)) / 7 / dureeS) / 10, taches: w3.lt.map(Math.round), rendus: w3.mu });
+        resultat.bord.push({ mediane: mediane(f), moyenne: f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0, p90: pct(f, 0.9), max: Math.max(0, ...f), part17: f.length ? Math.round((100 * f.filter((d) => d <= 17).length) / f.length) : 0, part50: f.length ? Math.round((100 * f.filter((d) => d <= 50).length) / f.length) : 0, images: f.length, semParSec: jAvant == null || jApres == null ? null : Math.round((10 * ((((jApres - jAvant) % 365) + 365) % 365)) / 7 / dureeS) / 10, taches: w3.lt.map(Math.round), rendus: w3.mu, commits: w3.co, chrono: { images: w3.frT, commits: w3.coT } });
       } else console.log('  barre introuvable avant le bord');
     }
   } finally { await p.close().catch(() => {}); nav.disconnect(); srv.close(); }
