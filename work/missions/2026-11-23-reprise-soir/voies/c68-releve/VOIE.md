@@ -1,6 +1,6 @@
 # Voie c68-releve — vraies réponses de l'IA de rangement, pour des tests qui jugent le vrai chemin
 
-- Agent : executant ; Modèle : haiku ; Niveau : mécanique ; Plafond : 70 tours.
+- Agent : critique ; Modèle : opus ; Niveau : test sur l app réelle (ZZ TEST, mandat du brasseur : « les seul vrai tests sont ceux sur la vrai app », budget IA 0,10 CHF par test journalisé, comme critique-NN) ; Plafond : 70 tours.
 - Lis DOSSIER.md (même dossier), qui prime.
 - Possède : work/missions/2026-11-23-reprise-soir/voies/c68-releve/, tests/fixtures/c68/ (neuf).
 

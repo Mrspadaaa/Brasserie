@@ -16,3 +16,6 @@ Pour chacune : enregistre requête ET réponse brutes (JSON), la capture de la c
 Anonymise (aucun nom, email ou identifiant de ses données réelles ; remplace les titres de SES carnets listés dans la requête par « Carnet réel n ») et écris tests/fixtures/c68/rangement-<n>.json : { phrase, requete, reponse }.
 Coût : ≤ 0,05 CHF, chaque appel au journal work/missions/2026-11-23-carnet-en-ligne/ia-journal.jsonl.
 Ligne rendue : « RELEVE <n réponses> carnet identique <oui|non> ».
+
+## Autorisation (pilote, 25.11)
+Ce relevé est un test d app réelle du type critique-NN : carnets « ZZ TEST — c68 » créés puis retirés et appels IA journalisés sont autorisés par le brasseur (consignes de test, budget 0,10 CHF par test). SES carnets restent intouchés (relevé avant/après).
