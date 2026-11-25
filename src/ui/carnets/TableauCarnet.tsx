@@ -14,7 +14,7 @@ import { liesParNbsp } from './insecable';
 import { jetonArome } from '../../domain/levure/couleurs';
 import {
   alphaDe, aromesCommuns, aDesPaliers, choisirMesures, classerAuKilo, colonnesMatiere, ecouterQuantitePour, estCarnetDeMatiere, largeursBarres, lignesSelonLaQuantite, meilleursPrixAuKilo,
-  phraseSelonLaQuantite, plusBasDe, poserQuantitePour, prixAuKilo, prixParMesure, quantitePour, QUANTITES_POUR, recolteDe, texteChfKg, texteQuantite, uniteExtensive, type ArticleRegle
+  phraseSelonLaQuantite, plusBasDe, poserQuantitePour, prixAuKilo, nomAuTableau, prixParMesure, quantitePour, QUANTITES_POUR, recolteDe, texteChfKg, texteQuantite, uniteExtensive, type ArticleRegle
 } from './tableauRegles';
 
 /** La quantité d'achat de référence du carnet (« pour 1 kg »), partagée par le tableau, « Selon la quantité » et l'en-tête ; clé : le titre du carnet. */
@@ -231,7 +231,7 @@ export function TableauCarnet({ carnet: k, titre, tableau: tableauBrut, aRelire,
                   <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, b.facon?.nom, titre]} classe="cn-vignette-petite" taille={30} />
                   <span className="cn-tab-nom" role="cell">
                     {/* tour 3, f5c n° 9 : le nom entier ; deux articles de même nom se distinguent par leur vendeur (« · Brassage Romandie ») */}
-                    <span className="cn-nom-entier">{liesParNbsp(l.nom)}</span>
+                    <span className="cn-nom-entier" title={nomAuTableau(l.nom) !== l.nom ? l.nom : undefined}>{liesParNbsp(b.lignes.filter(x => nomAuTableau(x.nom) === nomAuTableau(l.nom)).length > 1 ? l.nom : nomAuTableau(l.nom))}</span>
                     <span className="cn-mut">
                       {sous}
                       {doute && <>{sous ? ' ' : ''}<span className="cn-tag-att" title={douteDe(a)}><TriangleAlert size={14} aria-hidden /> {doute}</span></>}

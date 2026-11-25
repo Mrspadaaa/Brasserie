@@ -168,10 +168,13 @@ export function FilCarnetVue(p: PropsFil) {
     const props = (m.carnetMessage.propositionsSuivi ?? []).map((pr, i) => ({ pr, i })).filter(x => x.pr.carnetId === c.id && !(x.pr.sorte === 'retenir' && x.pr.optionId !== undefined && x.pr.optionId === optionRetenue(c)?.id)); /* C71-2 : jamais « à retenir ? » d'une option déjà retenue */
     if (m.carnetMessage.depuis === 'liste' && redisLeTitre(texte, c) && !photos.length && !props.length && !jetons.length && !liees.length) return null;
     const article = c.carnet.articles.find(a => a.messageId === m.id) ?? c.carnet.articles.find(a => (m.carnetMessage.effets ?? []).some(x => x.cible === 'article' && x.id === a.id));
+    /* R77-8 (c77, maquette v01-carnet) : une note dont le fait est rangé sur la fiche d'un article le dit dans sa bulle (« rattachée à MotlerHops ») */
+    const visee = c.carnet.articles.find(a => (a.notesSur ?? []).some(x => x.messageId === m.id));
     const noeud = (
       <div className="cnp-b cnp-b-vous" data-message={m.id}>
         {photos.map(ph => <img key={ph.id} className="cnp-photo" src={ph.jpeg} alt={`Photo du ${libelleJour(m.carnetMessage.le.slice(0, 10), annee)}`} loading="lazy" />)}
         <p className="cnp-texte-court">{texteDuFil(texte, article?.nom)}</p>
+        {visee && <p className="cnp-rattache cn-mut" data-rattache-article={visee.id}>rattachée à {visee.vendeur ?? visee.nom ?? visee.domaine}</p>}
         {e.rattache && <p className="cnp-rattache cn-mut">rattaché : « {e.rattache.citation} »</p>}
         {(jetons.length > 0 || heure || (liees.length === 1 && onNote)) && (
           <div className="cnp-pd">

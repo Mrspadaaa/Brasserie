@@ -43,7 +43,9 @@ describe('L-33 : une carte Idée sans article dit son coût et sa date', () => {
     expect(prixDe(idee({ criteres: ['Silencieux'] }))).toBeNull();
   });
   it('la date du carnet en horizon (« vers févr. », « S48 »)', () => {
-    expect(quandDe(idee({ date: '2027-02-01' }), '2026-11-23')).toBe('vers févr.');
+    /* R105 (c77) : une date hors de l'année en cours dit son année, quelle que soit sa forme (« vers févr. 2027 » vu de novembre 2026) */
+    expect(quandDe(idee({ date: '2027-02-01' }), '2026-11-23')).toBe('vers févr. 2027');
+    expect(quandDe(idee({ date: '2026-12-14' }), '2026-11-23')).toBe('vers déc.');
     expect(quandDe(idee({ date: '2026-11-30', precision: 'semaine' }), '2026-11-23')).toBe('S49');
     expect(quandDe(idee({}), '2026-11-23')).toBeNull();
   });

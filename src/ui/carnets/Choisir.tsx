@@ -13,15 +13,21 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { detailPrix, prixUnique } from './PrixPastille';
-import { prixAuKilo, quantitePour, texteChfKg } from './tableauRegles';
+import { centimesRendus, estCarnetDeMatiere, prixAuKilo, quantiteDuChoix, quantitePour, texteChfKg, vendeurCourt } from './tableauRegles';
 import { articleHonnete } from '../../domain/carnets/prixUnitaire';
 import { fourchetteSerree } from '../../domain/carnets/alpha';
-import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
+import { dateCourte, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
 import { liesParNbsp } from './insecable';
+
+/**
+ * R75-6 (c77) : la chasse fixe est réservée aux CHIFFRES (DESIGN : un mot en mono qui n'est pas une mesure est une faute) : « 4,06 m³ », « 230 V », « 2 697,74 CHF » ;
+ * « 0 à 8 °C », « 550 Watt », « 1N~/PE » portent des mots ou des signes de branchement : police normale.
+ */
+export const estChiffres = (t: string): boolean => /^[<>≈~+−-]?\s*\d[\d\s'’.,]*(?:\s*[x×]\s*\d[\d\s.,]*)*\s*(?:°C|°|%|CHF|EUR|€|kg|g|mm|cm|m|m²|m³|dl|cl|ml|l|L|V|kW|W|Hz|bar|A)?$/.test(t.trim());
 
 export interface ValeurPlaceeV { nom: string; texte: string; rang?: number; exAequo?: boolean }
 
@@ -302,13 +308,16 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
     ? valeursToutes.flatMap(v => (v.place?.nom !== 'prix' ? [v] : prixKg ? [{ nom: nomPlace(prixKg), texte: prixKg.texte, rang: prixKg.rang!, place: prixKg } as ValeurPlaceeV & { place?: Place }] : []))
     : valeursToutes;
   /* R94 (C74B) : une valeur se dit une fois par écran. Le prix est dit en tête (« 3,72 € · 73,80 CHF/kg ») : sa ligne ne revient dans « Ses autres valeurs » que pour dire sa PLACE (« 1er sur 2 »). L'α se lit serré (10–15 %). */
-  const toutes = valeursBrutes.filter(v => !(v.place?.nom === 'prix' && !placeTexte(v.place))).map(v => ({ ...v, texte: fourchetteSerree(v.texte) }));
+  /* R73-10 (c77) : le prix est dit en tête et dans « Part dans À venir » ; sa ligne de valeurs ne dit que sa PLACE (« 1er sur 2 »), pas un 3e « 2 697,74 CHF » */
+  const toutes = valeursBrutes.filter(v => !(v.place?.nom === 'prix' && !placeTexte(v.place))).map(v => ({ ...v, texte: fourchetteSerree(!p.quantite && v.place?.nom === 'prix' ? '' : v.texte) }));
   /* R94 : Choisir tient sur un écran : 8 lignes de valeurs, celles qui classent d'abord ; le reste se déplie (« + 13 autres valeurs »), jamais recopié en bloc (20 caractéristiques d'une chambre froide) */
   const MAX_VALEURS = 8;
   const rangee = (v: (typeof toutes)[number]) => !!v.place && placeTexte(v.place) !== null;
   const ordre = toutes.length > MAX_VALEURS ? [...toutes.filter(rangee), ...toutes.filter(v => !rangee(v))] : toutes;
   const valeurs = ordre.slice(0, MAX_VALEURS);
   const resteValeurs = ordre.slice(MAX_VALEURS);
+  const matiereCarnet = estCarnetDeMatiere([a, ...p.autres.map(o => o.article)] as never);
+  const kgCartes = p.quantite?.kg ?? quantitePour(p.titre);
   /* C69-13 : une valeur dit sa place (« 1er sur 2 ») ou n'en dit rien ; la colonne n'existe que si au moins une la dit */
   const aUnePlace = valeurs.some(v => ((v.place ? placeTexte(v.place) : v.rang ? rangTexte(v.rang) : '') ?? '').trim() !== '');
   /* R94 : « En stock, MotlerHops. » redit la tête (vendeur et dispo). Ce qui décide un houblon, c'est le prix au kilo : le dire, sans le chiffre déjà en tête. */
@@ -355,7 +364,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           <Photo src={a.photo} className="cn-vignette cn-offre-photo" repli={p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
-            : <div className="cn-sp cn-offre-nom"><b>{liesParNbsp(a.nom ?? a.vendeur)}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
+            : <div className="cn-sp cn-offre-nom"><b>{liesParNbsp(a.nom ?? a.vendeur)}</b><span className="cn-mut">{[a.nom ? (a.vendeur ? vendeurCourt(a) : a.vendeur) : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
               {detail && <span className="cn-mut">{detail}</span>}
               {/* n° 39 : le prix seul, sans rond vide devant (il n'avait aucun rôle) */}
               {prix && <span className="cn-offre-prix"><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
@@ -373,7 +382,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
                 const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
                 return (
                   <React.Fragment key={v.nom}>
-                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : /\d/.test(v.texte) ? 'cn-mono' : 'cn-place-mot'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
+                    <tr className={`${chiffree ? 'cn-place-avec-reglette' : ''}${v.texte.length > 14 ? ' cn-place-ligne-longue' : ''}`.trim() || undefined}><th scope="row">{v.nom}</th><td className={v.texte.length > 14 ? 'cn-place-long' : estChiffres(v.texte) ? 'cn-mono' : 'cn-place-mot'} {...(aUnePlace && !rang ? { colSpan: 2 } : {})}>{v.texte}</td>{aUnePlace && !!rang && <td className={`${v.rang === 1 ? 'cn-vert' : 'cn-mut'}${(rang ?? '').length > 14 ? ' cn-place-long' : ''}`}>{rang}</td>}</tr>
                     {chiffree && <tr className="cn-place-reglette"><td colSpan={aUnePlace ? 3 : 2}><Reglette place={pl!} sansTete /></td></tr>}
                   </React.Fragment>
                 );
@@ -405,7 +414,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         </label>
         <div className="cn-rang-boutons">
           {/* n° 33 : un geste, un habit : vert et ✓, comme « Choisir · <vendeur> » de l'article (FicheArticle) */}
-          <button type="button" className="cn-action cn-action-vert cn-sp" disabled={!!sa} aria-describedby={sa ? `cn-non-lue-${a.id}` : undefined} onClick={() => { if (!sa) p.onChoisir(pourquoi.trim()); }}><Check size={18} aria-hidden /> Choisir{a.vendeur && !sa ? ` chez ${a.vendeur}` : ''}</button>
+          <button type="button" className="cn-action cn-action-vert cn-sp" disabled={!!sa} aria-describedby={sa ? `cn-non-lue-${a.id}` : undefined} onClick={() => { if (!sa) p.onChoisir(pourquoi.trim()); }}><Check size={18} aria-hidden /> Choisir{a.vendeur && !sa ? ` chez ${vendeurCourt(a)}` : ''}</button>
           <button type="button" className="cn-second" onClick={() => setRaison(raison === null ? '' : null)}>Écarter</button>
         </div>
         {raison !== null && (
@@ -420,14 +429,21 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
       </section>
       {p.autres.map(o => {
         const so = sansApercu(o.article);
+        /* R77-4 (c77) : le même rang que le tableau : un houblon dont le prix au kilo n'est pas lu n'a pas de rang (« ? »), comme là-bas */
+        const sansRang = matiereCarnet && !prixAuKilo(articleHonnete(o.article) as never, kgCartes, p.taux);
+        /* R77-3 (c77) : le prix de la carte dit son unité et le même chiffre que Comparer et la fiche (« ≈3,69 CHF »), jamais « 3,72 » nu */
+        const honnete = articleHonnete(o.article);
+        const pkCarte = matiereCarnet ? prixAuKilo(honnete as never, kgCartes, p.taux) : null;
+        const qCarte = pkCarte ? quantiteDuChoix(honnete as never, kgCartes, p.taux) : null;
+        const prixCarte = pkCarte && qCarte ? `${pkCarte.estime ? '≈' : ''}${prixTexte(centimesRendus(pkCarte.chf, qCarte.kg), 'CHF') ?? ''}`.trim() : prixChoix(honnete, p.taux);
         return (
           <div key={o.article.id} className="cn-carte cn-article" data-apercu={so ? 'aucun' : undefined}>
-            <span className="cn-rang">{o.rang}</span>
+            {sansRang ? <span className="cn-rang cn-rang-vide" aria-label="sans rang : le prix au kilo n'est pas connu">?</span> : <span className="cn-rang">{o.rang}</span>}
             <Photo src={o.article.photo} className="cn-vignette" />
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
               : <div className="cn-article-tx"><b>{liesParNbsp(o.article.nom)}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
-            <div className="cn-droite">{montant(articleHonnete(o.article).prixCentimes) && <span className="cn-mono cn-prix">{montant(articleHonnete(o.article).prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
+            <div className="cn-droite">{prixCarte && <span className="cn-mono cn-prix">{prixCarte}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
           </div>
         );
       })}

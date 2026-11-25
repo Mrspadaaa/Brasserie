@@ -447,7 +447,24 @@ export function compromisMatiere(articles: ReadonlyArray<ArticleRegle & { id: st
 }
 
 /** Le texte du bouton Choisir de Comparer : « Choisir · MotlerHops, 1 kg » (matière pesée) ; sinon « Choisir la 4,06 m³ » (la valeur de tête du 1er) ou « Choisir ». */
-export function libelleChoisir(args: { vendeur?: string; pourKg?: number; /** R100 : le conditionnement dont le prix est lu (« 50 g »), qui prime sur la quantité d'achat */ libelle?: string; tete?: string | null }): string {
+export function libelleChoisir(args: { vendeur?: string; pourKg?: number; /** R100 : le conditionnement dont le prix est lu (« 50 g »), qui prime sur la quantité d'achat */ libelle?: string; tete?: string | null; /** R73-13 (c77) : le vendeur du 1er, que le bouton nomme comme celui de la fiche (« Choisir · Gastro Held ») */ chez?: string }): string {
   if (args.vendeur && args.pourKg) return `Choisir · ${args.vendeur}, ${args.libelle ?? texteQuantite(args.pourKg)}`;
+  if (args.chez) return `Choisir · ${args.chez}`;
   return args.tete ? `Choisir la ${args.tete}` : 'Choisir';
+}
+
+/**
+ * R75-3 (c77) : le nom d'un article au tableau tient sur deux lignes (40 signes au plus) : les dimensions, la puissance et les options
+ * (« 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus ») vont à la fiche, qui dit le nom entier. Un nom court reste tel quel ; sans
+ * dimension à couper, le nom se coupe au dernier mot entier qui tient.
+ */
+export const NOM_AU_TABLEAU_MAX = 40;
+export function nomAuTableau(nom: string, max: number = NOM_AU_TABLEAU_MAX): string {
+  const t = nom.replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  const sansMesures = t.replace(/\s+\d[\d.,]*\s*(?:x|×|\*)?\s*\d?[\d.,]*\s*(?:mm|cm|dm|m|l|kw|w|watt|kg|g|m²|m³)\b.*$/i, '').replace(/[\s,;:–—-]+$/u, '').trim();
+  if (sansMesures.length >= 6 && sansMesures.length <= max) return sansMesures;
+  const mots = t.slice(0, max + 1).split(' ');
+  if (!/\s/.test(t.charAt(max)) || mots.length === 1) mots.pop();
+  return mots.join(' ').replace(/[\s,;:–—-]+$/u, '') || t.slice(0, max);
 }

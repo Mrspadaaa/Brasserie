@@ -5,8 +5,8 @@ import { Horizons } from '../saisie/Horizons';
 import { DureeFenetre } from '../calendrier/frise/DureeFenetre';
 import { plageDate } from '../plageDate';
 import { lundiDe } from '../../domain/calendrier';
-import { ORDRES_DE_GRANDEUR, texteIntention } from '../../domain/horizons';
-import { MOIS_COURTS } from '../../domain/calendrier/dates';
+import { ORDRES_DE_GRANDEUR } from '../../domain/horizons';
+import { dateDite, jourDit } from '../../domain/carnets/dateDite';
 import { montant } from './EtatIA';
 import type { CarnetOuvertProps } from './carnetOuvertTypes';
 
@@ -30,8 +30,9 @@ export function RubriqueQuand(p: { /** R96 (c74c) : le début du projet du Plann
   useEffect(() => { tireRef.current = null; setTire(null); }, [lundiPose]);
   /* R101 (c75) : tant que la date est celle de l'import (le lundi du début, ou un jour du projet : le plan porte son dernier jour), Quand dit le début, avec son année, comme À faire (« 1 mai 2027 »), jamais « S26 » */
   const dansLeProjet = !!p.planning && !!lundiPose && (lundiDe(p.planning) === lundiPose || (!!p.planningAu && lundiPose >= lundiDe(p.planning) && lundiPose <= p.planningAu));
-  const jourPlanning = p.planning && dansLeProjet && !tire && p.planning >= p.aujourdhui ? `${Number(p.planning.slice(8, 10))} ${MOIS_COURTS[Number(p.planning.slice(5, 7)) - 1]} ${p.planning.slice(0, 4)}` : null;
-  const quand = tire ? texteIntention(tire, p.aujourdhui, 'semaine') : jourPlanning ?? texteIntention(p.date, p.aujourdhui, p.precision);
+  const jourPlanning = p.planning && dansLeProjet && !tire && p.planning >= p.aujourdhui ? jourDit(p.planning, p.aujourdhui) : null;
+  /* R105 (c77) : la même fonction de date que la liste et À faire (`dateDite`) : l'année quand elle n'est pas celle d'aujourd'hui, jamais autrement */
+  const quand = tire ? dateDite(tire, p.aujourdhui, 'semaine') : jourPlanning ?? dateDite(p.date, p.aujourdhui, p.precision);
   const plage = plageDate(lundiPose ?? p.aujourdhui, p.aujourdhui);
   const [changerPrix, setChangerPrix] = useState(false);
   const pose = p.prix?.centimes;

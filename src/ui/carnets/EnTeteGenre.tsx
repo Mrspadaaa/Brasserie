@@ -10,6 +10,7 @@ import { Leaf, Lightbulb, NotebookPen } from 'lucide-react';
 import type { CarnetDoc, GenreCarnet } from '../../domain/carnets/modele';
 import { DOMAINES, DOMAINE_LIBELLE, domaineDe, type DomaineCarnet } from '../../domain/carnets/domaines';
 import { categorieDe, genreDe, jourLocal, suiviDe } from '../../domain/carnets/suivi';
+import { semaineDite } from '../../domain/carnets/dateDite';
 import { domaineParMots } from './domaineMots';
 import { PictoDomaine } from './Domaines';
 import { libelleJour } from './filRegles';
@@ -28,11 +29,13 @@ export function semaineIso(jour: string): number | null {
 const MOIS_LONGS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 /** « vers S10 » (une semaine), « vers mars » (un mois) ; sans date posée : `null`. */
-export function versQuand(date?: string, precision?: 'semaine' | 'mois'): string | null {
+export function versQuand(date?: string, precision?: 'semaine' | 'mois', annee?: number): string | null {
   if (!date) return null;
-  if (precision === 'mois') { const m = Number(date.slice(5, 7)); return MOIS_LONGS[m - 1] ? `vers ${MOIS_LONGS[m - 1]}` : null; }
+  /* R105 (c77) : l'année quand elle n'est pas l'année en cours (`annee`), dite comme Quand, la liste et À faire (`dateDite`) ; sans `annee`, jamais d'année */
+  const courante = annee === undefined ? date.slice(0, 4) : String(annee);
+  if (precision === 'mois') { const m = Number(date.slice(5, 7)); return MOIS_LONGS[m - 1] ? `vers ${MOIS_LONGS[m - 1]}${date.slice(0, 4) !== courante ? ` ${date.slice(0, 4)}` : ''}` : null; }
   const s = semaineIso(date);
-  return s ? `vers S${s}` : null;
+  return s ? `vers ${semaineDite(date, courante)}` : null;
 }
 
 /** Le texte de la puce du genre ; `null` pour un problème (sa barre d'état) et pour un achat (son en-tête reste celui du carnet). */
@@ -43,7 +46,7 @@ export function texteGenre(c: CarnetDoc, annee?: number): string | null {
     return r ? `mémo · fait le ${libelleJour(jourLocal(r.le), annee)}` : 'mémo';
   }
   if (g === 'recolte') return 'récolte';
-  if (g === 'idee') { const v = versQuand(c.date, c.precision); return v ? `idée · ${v}` : 'idée'; }
+  if (g === 'idee') { const v = versQuand(c.date, c.precision, annee); return v ? `idée · ${v}` : 'idée'; }
   return null;
 }
 

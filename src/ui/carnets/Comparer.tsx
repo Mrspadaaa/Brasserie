@@ -27,7 +27,7 @@ import { BoutonEscalader } from './BoutonEscalader';
 import { Insec, liesParNbsp } from './insecable';
 import { BlocPrixParMesure, usePour } from './TableauCarnet';
 import {
-  aDesPaliers, compromisMatiere, departager, ditDifférents, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
+  aDesPaliers, aromesCommuns, compromisMatiere, departager, ditDifférents, ditIdentiques, estCarnetDeMatiere, largeursBarres, libelleChoisir, lignesSelonLaQuantite, meilleursPrixAuKilo, phraseSelonLaQuantite, plusBasDe,
   centimesRendus, classerAuKilo, plusLargeEtendue, prixAuKilo, quantiteDuChoix, texteChfKg, texteQuantite, uniteExtensive, vendeurCourt, venduPar, type ArticleRegle
 } from './tableauRegles';
 import './carnets-decider.css';
@@ -130,7 +130,7 @@ const MESURE = /^[<>≈~]?\s*[+−-]?\d[\d\s'’.,]*(?:\s*[x×]\s*[+−-]?\d[\d\
 export function estMesure(txt: string): boolean { return MESURE.test(txt.trim()); }
 /** Un nombre posé par la page (prix compris) est une mesure même sans unité ; sinon la forme du texte en décide. */
 export function genreCellule(c: ColonneVue, v: ValeurV | undefined, txt: string): 'mesure' | 'texte' {
-  if (c.cle === '__prix' || (v && typeof v.valeur === 'number')) return 'mesure';
+  if (c.cle === '__prix' || c.cle === '__kg' || (v && typeof v.valeur === 'number')) return 'mesure';
   return estMesure(txt) ? 'mesure' : 'texte';
 }
 /** Une mesure à plusieurs termes (« 1800 x 1500 x 2200 mm ») : un terme par ligne, jamais coupée au milieu d'un nombre. */
@@ -423,10 +423,15 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 }
 
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
-function CellulePrix({ l, taux, onRelire, onEscalader, prixKg, port }: { port?: string | null; l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void>; prixKg?: string | null }) {
+function CellulePrix({ l, taux, onRelire, onEscalader, prixKg, port, sachet, compact }: { compact?: boolean; port?: string | null; sachet?: { texte: string; libelle: string } | null; l: LigneT; taux?: number; onRelire?: (articleId: string) => void | Promise<void>; onEscalader?: (articleId: string) => void | Promise<void>; prixKg?: string | null }) {
   const escalader = onEscalader && !l.ecarte && l.aEscalader?.length ? <BoutonEscalader onEscalader={() => onEscalader(l.articleId)} raison={l.aEscalader.map(x => (x === 'doute' ? 'les deux lectures ne s\u2019accordent pas' : `${x} manquant`)).join(' ; ')} classe="cn-escalader-cellule" /> : null;
   /* C48-1 : l'article est lu mais son prix ne l'est pas : « Relire » est un geste du brasseur (rien ne part tout seul) */
+  /* R77-5 (c77) : dans un carnet de matière pesée (houblons), les gestes (Relire, Escalader) sont sur la fiche de l'article ; la cellule dit seulement « ? · à relire », sans bouton dans une cellule étroite.
+     Ailleurs (Chambre froide), la cellule garde ses gestes (c48 R1, pxPrixEcrans) */
+  if (l.prixCentimes === undefined && compact) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article (sur sa fiche)">?</span>{!l.ecarte && (onRelire || escalader) ? <small className="cn-mut">à relire</small> : null}</>;
   if (l.prixCentimes === undefined) return <><span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>{onRelire && !l.ecarte ? <BoutonRelire onRelire={() => onRelire(l.articleId)} classe="cn-relire-cellule" /> : null}{escalader}</>;
+  /* R103 (R77-1, c77) : la ligne « prix CHF » dit le prix de ce qu'on achète (« ≈3,69 », les 50 g) ; le prix au kilo a sa propre ligne « CHF/kg » (une ligne, une unité) */
+  if (sachet) return <><span className="cn-mono">{sachet.texte}</span><small className="cn-mut">{sachet.libelle}</small>{port ? <small className="cn-mut cn-mono">{port}</small> : null}</>;
   /* D451 (maquette v01, « CHF/kg ≈ 41 ») : un carnet de matière pesée compare le kilo rendu à la quantité d'achat du carnet ; les gestes de la cellule restent */
   /* N5 : le port que dit le vendeur (sa page d'information, ou la page de l'article) se dit sous le prix rendu ; jamais inventé : absent, rien */
   if (prixKg) return <><span className="cn-mono">{prixKg}</span>{port ? <small className="cn-mut cn-mono">{port}</small> : null}{escalader}</>;
@@ -505,18 +510,36 @@ export function Comparer(p: ComparerProps) {
   /* v01 : « vendu par 50 g à 1 kg » juste après le prix, pour un carnet de matière dont un article dit ses conditionnements ; l'inconnu reste « ? » */
   const venduParDe = new Map(enLice.map(a => [a.id, matiere ? venduPar(a as never) : null] as const));
   const iPrix = lignesLues.findIndex(c => c.cle === '__prix');
+  /* R103 (c77) : un carnet de matière dit le prix de ce qu'on achète (« prix CHF ») ET, sur sa propre ligne, le prix au kilo rendu (« CHF/kg ») */
+  const aUnKilo = matiere && iPrix >= 0 && enLice.some(a => prixAuKilo(a, pour, p.taux));
+  /* le kilo rendu d'abord (c'est lui qui classe, le ✓ et l'épingle), puis le prix de ce qu'on achète */
+  const lignesAvecKg = aUnKilo ? [...lignesLues.slice(0, iPrix), { cle: '__kg', nom: 'CHF/kg', sens: 'moins' as Sens, critere: false } as ColonneVue, ...lignesLues.slice(iPrix)] : lignesLues;
+  const iFin = aUnKilo ? iPrix + 1 : iPrix;
   const lignesVues = matiere && [...venduParDe.values()].some(Boolean) && iPrix >= 0
-    ? [...lignesLues.slice(0, iPrix + 1), { cle: '__vendu', nom: 'vendu par', sens: 'texte' as Sens, critere: false } as ColonneVue, ...lignesLues.slice(iPrix + 1)]
-    : lignesLues;
-  const texteDe = (l: LigneT, c: ColonneVue): string | null => { const t = c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : texteCellule(l, c); return t ? fourchetteSerree(t) : t; };
+    ? [...lignesAvecKg.slice(0, iFin + 1), { cle: '__vendu', nom: 'vendu par', sens: 'texte' as Sens, critere: false } as ColonneVue, ...lignesAvecKg.slice(iFin + 1)]
+    : lignesAvecKg;
+  /* R104 (c77) : une valeur que le carnet montre (« Arômes lus sur les pages ») est la même dans Comparer : l'article dont la page ne les dit pas reprend ceux de la variété (jamais « ? » quand une autre surface la connaît) */
+  const aromesDeLaVariete = matiere ? aromesCommuns(enLice as never).join(', ') : '';
+  const estColonneArome = (c: ColonneVue) => !c.cle.startsWith('__') && /^(?:aromes?|saveurs?|aroma|aromen|geschmack)\b/.test(sansAccentNom(c.nom).toLowerCase());
+  const texteDe = (l: LigneT, c: ColonneVue): string | null => {
+    const t = c.cle === '__vendu' ? venduParDe.get(l.articleId) ?? null : c.cle === '__kg' ? prixKgDe.get(l.articleId) ?? null : texteCellule(l, c);
+    /* l'arôme repris de la variété le dit (« · variété ») : ce n'est pas la lecture de la page de CET article, la ligne reste une différence */
+    const dit = t ?? (aromesDeLaVariete && estColonneArome(c) ? `${aromesDeLaVariete} · variété` : null);
+    return dit ? fourchetteSerree(dit) : dit;
+  };
   const sansValeurLue = t ? cols.filter(c => c.cle !== '__vendeur' && !lignesLues.includes(c) && !(matiere && CONDITIONNEMENT_NU.test(sansAccentNom(c.nom)))) : [];
   /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
-  const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
+  const cleEpinglee = prixClasse ? (aUnKilo ? '__kg' : '__prix') : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
   const colEntete = lignesVues.find(c => c.critere) ?? lignesVues.find(c => /volume/i.test(c.nom));
   /* D451 (maquettes2/v01) : un carnet de matière pesée se compare au kilo rendu, à la quantité d'achat du carnet ; le reste se compare à ses mesures. */
   const kilos = new Map(enLice.map(a => [a.id, matiere ? prixAuKilo(a, pour, p.taux) : null] as const));
   const prixKgDe = new Map([...kilos].flatMap(([id, pk]) => (pk ? [[id, texteChfKg(pk)] as const] : [])));
   const meilleursKg = meilleursPrixAuKilo(kilos);
+  /* R103 : ce qu'on achète, au prix rendu : « ≈3,69 » les 50 g (le même chiffre que la fiche, « ≈3,69 CHF rendu · 50 g ») */
+  const sachetDe = new Map(enLice.flatMap(a => {
+    const pk = kilos.get(a.id), q = pk ? quantiteDuChoix(a, pour, p.taux) : null;
+    return pk && q ? [[a.id, { texte: `${pk.estime ? '≈' : ''}${montant(centimesRendus(pk.chf, q.kg)) ?? ''}`, libelle: q.libelle }] as const] : [];
+  }));
   const meilleursVendu = matiere ? plusLargeEtendue(enLice as never) : new Set<string>();
   const barresMatiere = (() => {
     if (matiere) {
@@ -538,7 +561,8 @@ export function Comparer(p: ComparerProps) {
   const premier = actifs.find(l => l.rang === 1);
   const libelleBouton = libelleChoisir({
     ...(matiere && premier ? (() => { const a = enLice.find(x => x.id === premier.articleId); return a ? { vendeur: vendeurCourt(a), pourKg: pour, libelle: quantiteDuChoix(a, pour, p.taux).libelle } : {}; })() : {}),
-    tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null
+    tete: !matiere && premier && colEntete && uniteExtensive(colEntete.unite) ? texteEntete(premier, colEntete) : null,
+    ...(!matiere && p.articles && premier?.vendeur ? { chez: vendeurCourt({ vendeur: premier.vendeur }) } : {})
   });
   /* C70-1 : « Choisir · MotlerHops, 1 kg » emporte CETTE quantité et son prix au kilo rendu (≈40), jamais le sachet de 50 g de l'article */
   const quantiteChoisie = (() => {
@@ -615,7 +639,7 @@ export function Comparer(p: ComparerProps) {
               <tbody>
                 {lignesAffichees.map(({ c }) => {
                   /* C66-5 : le meilleur est coché sur CHAQUE ligne chiffrée qui diffère : le kilo rendu, et l'alpha le plus haut (le prix n'est pas la seule ligne cochée) */
-                  const meilleurs = matiere && c.cle === '__vendu' ? meilleursVendu : matiere && c.cle === '__prix' ? meilleursKg : meilleursDe(t, matiere && NOM_ALPHA.test(sansAccentNom(c.nom)) ? { ...c, sens: 'plus' } : c);
+                  const meilleurs = matiere && c.cle === '__vendu' ? meilleursVendu : matiere && c.cle === '__kg' ? meilleursKg : matiere && c.cle === '__prix' ? new Set<string>() : meilleursDe(t, matiere && NOM_ALPHA.test(sansAccentNom(c.nom)) ? { ...c, sens: 'plus' } : c);
                   const replie = identiques.some(x => x.cle === c.cle) && !identiquesDepliees;
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
@@ -636,7 +660,7 @@ export function Comparer(p: ComparerProps) {
                         const hors = l.horsSeuil?.[c.cle];
                         return (
                           <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} prixKg={matiere ? prixKgDe.get(l.articleId) ?? null : null} port={(() => { const art = p.articles?.find(x => x.id === l.articleId); return art ? portDit(art as unknown as ArticleV) : null; })()} />
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} onRelire={p.onRelire} onEscalader={p.onEscalader} prixKg={matiere ? prixKgDe.get(l.articleId) ?? null : null} sachet={aUnKilo ? sachetDe.get(l.articleId) ?? null : null} compact={matiere} port={(() => { const art = p.articles?.find(x => x.id === l.articleId); return art ? portDit(art as unknown as ArticleV) : null; })()} />
                               : txt ? <>{genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte"><Insec t={txt} /></span>}{unite && !porteUnite(txt) ? <span className="cn-cache"> {unite}</span> : null}</>
                               : <span className="cn-inconnu" aria-label="inconnu">?</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}{' '}{/* C58-2 : une espace en fin de cellule (invisible) : copiée ou lue d'un bloc, « 11,5 » et « 12,5 » ne se recollent pas en « 11,512,5 » */}

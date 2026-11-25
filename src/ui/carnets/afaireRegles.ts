@@ -8,7 +8,8 @@
  * Honnêteté : un coût absent (ou nul) n'est pas dit ; un coût estimé garde son « ≈ » ; la proposition ne décrit jamais une photo
  * (aucune IA ne l'a lue) et sa raison est ce que l'on sait : la date de la dernière écriture, pas une ouverture à l'écran.
  */
-import { MOIS_COURTS, ajouterJours, dimancheDe, ecartJours, jourAvecAnnee, jourLisible, lundiDe } from '../../domain/calendrier/dates';
+import { ajouterJours, dimancheDe, ecartJours, jourLisible, lundiDe } from '../../domain/calendrier/dates';
+import { jourDit, moisDit } from '../../domain/carnets/dateDite';
 import { prixTexte } from '../../domain/carnets/comparer';
 import { plier } from '../../domain/carnets/domaines';
 import type { CarnetDoc, MessageDoc, PrecisionTache, Tache } from '../../domain/carnets/modele';
@@ -73,14 +74,11 @@ export function groupesDeLaMaquette(liste: AFaire, maintenant?: Maintenant): AFa
 export function quandDite(t: Pick<TacheVue, 'echeance' | 'precision' | 'derivee' | 'finPlanning' | 'debutPlanning'>, maintenant: Maintenant): string | null {
   if (!t.echeance) return null;
   const auj = aujourdhuiDe(maintenant);
-  if (t.derivee && t.finPlanning && t.echeance <= dimancheDe(auj)) return `jusqu’au ${jourAvecAnnee(t.finPlanning, auj)}`;
+  if (t.derivee && t.finPlanning && t.echeance <= dimancheDe(auj)) return `jusqu’au ${jourDit(t.finPlanning, auj)}`;
   /* R96 (c74c) : un projet du Planning dit son premier jour (« 1 mai 2027 »), le même que Quand, pas le lundi de sa semaine */
-  if (t.derivee && t.debutPlanning) return `dès le ${jourAvecAnnee(t.debutPlanning, auj)}`;
-  if (t.precision === 'mois') {
-    const mois = MOIS_COURTS[Number(t.echeance.slice(5, 7)) - 1];
-    return `fin ${mois}${t.echeance.slice(0, 4) !== auj.slice(0, 4) ? ` ${t.echeance.slice(0, 4)}` : ''}`;
-  }
-  return `sem. du ${jourAvecAnnee(t.echeance, auj)}`;
+  if (t.derivee && t.debutPlanning) return `dès le ${jourDit(t.debutPlanning, auj)}`;
+  if (t.precision === 'mois') return `fin ${moisDit(t.echeance, auj)}`;
+  return `sem. du ${jourDit(t.echeance, auj)}`;
 }
 
 /* ---------- coût ---------- */

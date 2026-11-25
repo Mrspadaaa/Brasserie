@@ -25,7 +25,7 @@ import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comp
 import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
 import { articleHonnete, quantiteArticle } from '../../domain/carnets/prixUnitaire';
 import { renduArticle } from '../../domain/carnets/prixRendu';
-import { texteIntention } from '../../domain/horizons';
+import { dateDite } from '../../domain/carnets/dateDite';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
@@ -177,7 +177,7 @@ const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() 
 
 /** L-33 (PNC-5) : la date du carnet, dite comme sa rubrique Quand (« vers févr. », « S48 ») ; `null` sans date. */
 export function quandDe(c: CarnetV, aujourdhui = jourLocal()): string | null {
-  return texteIntention(c.date, aujourdhui, c.precision);
+  return dateDite(c.date, aujourdhui, c.precision);
 }
 
 /** R19 : par carnet, les genres des notes nées du message `messageId` (« note » compris, dit seulement s'il est seul). */

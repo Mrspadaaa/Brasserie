@@ -37,7 +37,7 @@ import { nomAlpha } from '../../domain/carnets/alpha';
 import { estMatierePesee } from '../../domain/carnets/prixUnitaire';
 import { libelleDoute, usePour } from './TableauCarnet';
 import {
-  alphaDe, aromesDe, centimesRendus, conditionnementsDe, ligneDuPour, noteImport, quantiteDuChoix, sachetsSansPrix, recolteDe, textePrixConditionnement, texteChfKg, type ArticleRegle
+  alphaDe, aromesCommuns, aromesDe, centimesRendus, conditionnementsDe, ligneDuPour, noteImport, quantiteDuChoix, sachetsSansPrix, recolteDe, textePrixConditionnement, texteChfKg, type ArticleRegle
 } from './tableauRegles';
 
 /** R54 : la quantité cochée dans « je prends » (`libelle` : « 1 kg »), son poids et son prix en francs (centimes). */
@@ -239,20 +239,26 @@ export function FicheArticle(p: FicheArticleProps) {
     ? (ligneChoisie.chfKg?.estime ? `≈${montant(centimesRendus(ligneChoisie.chfKg.chf, ligneChoisie.kg))} CHF rendu` : prixTexte(ligneChoisie.centimes, ligneChoisie.devise))
     : null;
   const detailCoche: string | null = prixCoche && ligneChoisie
-    ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
+    ? [ligneChoisie.libelle, ligneChoisie.chfKg ? `${ligneChoisie.chfKg.estime ? '≈' : ''}${texteChfKg({ ...ligneChoisie.chfKg, estime: false })} CHF/kg` : null, a.taxe ? mentionTaxe(a.taxe).trim() : null, ligneChoisie.chfKg?.estime && !noteImport(regle, pour, p.taux) ? 'TVA d’import comptée' : null].filter(Boolean).join(' · ')
     : null;
   /* ce que « Choisir » emporte : le conditionnement coché et son prix en francs (le même chiffre que le bloc Offre) */
   const quantiteChoisie: QuantiteChoisie | undefined = prixCoche && ligneChoisie
     ? { kg: ligneChoisie.kg, libelle: ligneChoisie.libelle, centimes: ligneChoisie.devise === 'CHF' ? ligneChoisie.centimes : ligneChoisie.chfKg ? centimesRendus(ligneChoisie.chfKg.chf, ligneChoisie.kg) : 0, ...(ligneChoisie.devise !== 'CHF' && ligneChoisie.chfKg?.estime ? { estime: true } : {}) }
     : undefined;
-  const aromes = houblon ? aromesDe(regle) : [];
+  /* R104 (c77) : une valeur que le carnet montre (« Arômes lus sur les pages ») est la même sur la fiche de chaque article de la variété : un article dont la page ne dit pas les arômes
+     reprend ceux que le carnet dit des autres (jamais « Non publié » quand une autre surface la connaît) ; les arômes d'une fiche se disent une fois (puces), pas aussi dans la grille */
+  const aromesLus = houblon ? aromesDe(regle) : [];
+  const aromes = aromesLus.length ? aromesLus : houblon && p.carnet ? aromesCommuns(p.carnet.articles as unknown as ArticleRegle[]) : [];
+  const estArome = (nom: string) => /^(?:aromes?|saveurs?|aroma|aromen|geschmack)\b/.test(normaliser(nom));
   const recolte = houblon ? recolteDe(regle) : null;
   const puceDoute = libelleDoute(regle.doute);
   /* le doute D450 sur la dispo se dit à côté de la disponibilité (« ⚠ dispo ? ») ; la grille reste celle de la page, dans l'ordre de décision */
   /* R94 (C74B) : l'α d'un houblon se dit UNE fois, dans la tête de fiche ; la grille ne le redit pas (« Alpha 13,6 % » sous « α 13,6 % ») */
   /* c74c (D-25.11 sa plainte : valeur dite une fois) : sur un houblon, « Alpha » SORT de la grille Caractéristiques, la tête de fiche le dit (« α 13,6 % », « α 10–15 % ») */
   const sansAlpha = houblon ? cases.filter(c => !memeCaracteristique(c.nom, 'Alpha') && !/^alpha\b/.test(normaliser(c.nom))) : cases;
-  const casesVues: Case[] = puceDoute ? sansAlpha.map(c => (c.nom === 'Disponibilité' ? { ...c, puce: puceDoute } : c)) : sansAlpha;
+  const sansArome = houblon && aromes.length ? sansAlpha.filter(c => !estArome(c.nom)) : sansAlpha;
+  const manquesDits = houblon && aromes.length ? manque.filter(n => !estArome(n)) : manque;
+  const casesVues: Case[] = puceDoute ? sansArome.map(c => (c.nom === 'Disponibilité' ? { ...c, puce: puceDoute } : c)) : sansArome;
 
   /* Les offres de la même machine : même nom (normalisé), dans le carnet ; la moins chère d'abord. */
   const offres = k && a.nom
@@ -339,7 +345,7 @@ export function FicheArticle(p: FicheArticleProps) {
           </p>
           <p className="cn-fiche-alpha"><span className="cn-mut">α{recolte ? ` lot ${recolte}` : ''}</span> <span className="cn-mono cn-fiche-alpha-val">{alpha} %</span></p>
           {aromes.length > 0 && (
-            <p className="cn-aromes-liste" aria-label="Arômes lus sur la page">{aromes.map(m => {
+            <p className="cn-aromes-liste" aria-label={aromesLus.length ? 'Arômes lus sur la page' : 'Arômes de la variété, lus sur la page d’un autre article'}><span className="cn-mut cn-aromes-nom">arômes{aromesLus.length ? '' : ' · variété'}</span> {aromes.map(m => {
               const j = jetonArome(m);
               return <span key={m} className="cn-arome" style={j ? { background: j.fond, color: j.texte } : undefined}>{m}</span>;
             })}</p>
@@ -353,7 +359,7 @@ export function FicheArticle(p: FicheArticleProps) {
                   <div key={l.kg} className={`cn-prend-ligne${on ? ' cn-prend-on' : ''}`} aria-current={on || undefined}>
                     <span>{l.libelle}{on ? <> <Check size={16} aria-hidden /></> : null}</span>
                     <span className="cn-mono">{textePrixConditionnement(l)}</span>
-                    <span className="cn-mono">{l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}{' '}</span>
+                    <span className="cn-mono">{on && detailCoche && !a.prixUnite && l.chfKg ? <span className="cn-mut cn-mono" title="Le prix au kilo se lit dans l'offre, juste dessous (une valeur, une fois)">offre ↓</span> : l.chfKg ? <>{l.chfKg.estime ? '≈ ' : ''}{texteChfKg({ ...l.chfKg, estime: false })}</> : <span className="cn-inconnu" aria-label="inconnu">?</span>}{' '}</span>
                   </div>
                 );
               })}
@@ -432,7 +438,7 @@ export function FicheArticle(p: FicheArticleProps) {
           {poserPrix && p.onPrix && <PoserPrix centimes={a.prixCentimes} onPoser={c => { p.onPrix!(c); setPoserPrix(false); }} onFermer={() => setPoserPrix(false)} />}
         </>
       )}
-      {(casesVues.length > 0 || manque.length > 0) && (
+      {(casesVues.length > 0 || manquesDits.length > 0) && (
         <>
           <h3 className="cn-sous">Caractéristiques {lu && <span className="cn-mut">lues sur la fiche du vendeur, {lu}</span>}</h3>
           <dl className="cn-carac" aria-label="Caractéristiques">
@@ -447,7 +453,7 @@ export function FicheArticle(p: FicheArticleProps) {
               </div>
             ))}
           </dl>
-          {manque.length > 0 && <p className="cn-mut cn-carac-manque">Non publié par le vendeur : {manque.join(' · ')}</p>}
+          {manquesDits.length > 0 && <p className="cn-mut cn-carac-manque">Non publié par le vendeur : {manquesDits.join(' · ')}</p>}
         </>
       )}
       <div className="cn-veille-bloc">
