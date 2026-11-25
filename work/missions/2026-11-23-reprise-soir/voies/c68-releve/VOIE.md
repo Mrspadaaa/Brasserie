@@ -8,7 +8,7 @@
 - Mécanique : un seul script puppeteer pour tout le relevé (releve.mjs), relancé sans modification en cas d'échec réseau seulement.
 - Gestes : un script ; captures 390 à demi-échelle, ouvertes : avant, chaque carte « rangé pour toi », après.
 - Captures 390 et 1280 ouvertes : 390 seulement (relevé, pas de jugement d'écran) ; 1280 sans objet.
-- Tests : sans objet (relevé de données) ; écrit dans RESULTAT.md la liste des fixtures produites.
+- Tests : sans objet (relevé de données, aucun test lancé ; un test éventuel se lancerait avec --reporter=dot > tests.log) ; écrit dans RESULTAT.md la liste des fixtures produites.
 
 ## Tenue
 - RESULTAT.md tenu au fil.
