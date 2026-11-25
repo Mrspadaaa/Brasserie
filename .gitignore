@@ -136,3 +136,9 @@ e2e/rapport/
 # Pièces réelles du brasseur (captures de son téléphone) : jamais dans Git (nettoyage 23.11)
 .local/
 .cache/
+
+# Relevés de SES données réelles par les tests en ligne (dépôt public) : jamais suivis
+work/missions/**/voies/**/avant.json
+work/missions/**/voies/**/apres.json
+work/missions/**/voies/**/idb*.json
+work/missions/**/voies/**/tous*.json
