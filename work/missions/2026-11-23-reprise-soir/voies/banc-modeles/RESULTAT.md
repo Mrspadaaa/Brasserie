@@ -1,7 +1,7 @@
 OK — BANC lite 5/8, flash38 7/8, hydrogen 6/8 (tenues) ; recommandé gemini-3.8-flash, inchangé
 
 ## Ligne rendue
-BANC lite 5/8, flash38 7/8, hydrogen 6/8 (tenues, contexte sans ; avec un carnet du même sujet : 4/8, 5/8, 5/8) ; coût total 0,4561 CHF ; recommandé flash38 (gemini-3.8-flash, le modèle de production actuel) <hash>
+BANC lite 5/8, flash38 7/8, hydrogen 6/8 (tenues, contexte sans ; avec un carnet du même sujet : 4/8, 5/8, 5/8) ; coût total 0,4561 CHF ; recommandé flash38 (gemini-3.8-flash, le modèle de production actuel) b40a337d8
 
 ## Fichiers écrits
 - `scripts/banc-rangement.ts` : options `--modele lite|flash38|hydrogen`, `--contexte sans|avec`, `--jeu tenue|reglage` et `--tableau` (sans appel). Les noms des modèles viennent de `functions/src/models.ts` (`GEMINI_LITE_MODEL` = gemini-3.5-flash-lite, `GEMINI_MODEL` = gemini-3.8-flash, `INVOICE_STRONG_MODEL` = gemini-4-hydrogen), les mêmes que `lienIA` et `aiTask`. Les trois modèles reçoivent la même consigne et le même schéma (`RANGER_CARNET`), la même température 0 et la même réflexion basse. `MEME_SUJET` ajoute un carnet ZZ fictif du même sujet pour chacune des 16 phrases ; r4 et t8 reprennent ceux de c70-ia. Sans `--modele`, le comportement de c70-ia ne change pas (modèle `geminiAttempts`, dossier c70-ia).
