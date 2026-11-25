@@ -55,3 +55,5 @@ Prédiction : « M4 pas mal, c'est ça l'idée ; je prendrais la marge de M3 dan
 DÉCISION À PRENDRE : aucune de mon ressort. Le choix entre M1 et M4, ou leur mélange, revient au brasseur sur `page.html`.
 CONNAISSANCE : Mem a fermé le 16.11.2026 (page officielle lue le 25.11). La recherche web par DuckDuckGo est bloquée par un captcha depuis l'agent : lire directement les pages officielles.
 LEÇON PROPOSÉE : aucune.
+
+- correction 1 · M2 : problèmes traités 7/7 (consignes de CORRECTION-1 ; juges : critique 10/10, ux 10/11, ia 9/9 ; reste ux 4 en partie : la fiche fait 48 % de l’écran à l’état 2, elle se replie en jetons ensuite, toutes ses notes restent visibles) ; états ajoutés : options, decide, resolu, relire, memo, sans-ia (avant, apres, annuler refaits) ; captures cap/m2-{avant,apres,options,decide,resolu,relire,memo,sans-ia,annuler}.png, 390 × 844, ouvertes.
