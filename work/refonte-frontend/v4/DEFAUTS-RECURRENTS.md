@@ -577,3 +577,26 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - Ses mots : « Ça répond à Aucune problématique ??? » (plaintes/2026-11-25-aucune-problematique.jpg, carnet écoulement), après « Les notes sont pas du tout classé, rien ?? ».
 - Défaut : l'écran du problème n'a la forme de sa maquette (v01 passe 3 : jetons trouvé / pas trouvé / devis / coût, options, carte « tâche proposée », dernier pas) que si l'IA a étiqueté chaque bulle ; sans étiquettes (tout carnet écrit avant, ou IA absente), il ne reste que des bulles : rien ne dit ce qui est trouvé (joint du siphon usé), ce qui ne l'est pas (fuite sous la dalle), qui contacter (entreprise X), le devis attendu, l'estimation (150 CHF).
 - Contrôle : pour TOUT carnet de genre problème, l'écran montre DÈS L'OUVERTURE, calculé à l'affichage par l'analyse locale (marqué « lu par l'app »), les jetons trouvé / pas trouvé / devis / coût, les options et la prochaine tâche ; un toucher l'enregistre ; Correction (25.11, sa parole : « Non l'ai a un rôle très important là dedans, en fait moi je fais que des mini input, mini note et elle doit m'aide, m'appuie, conseillé, classé, corrigé ECT... ») : l'IA est au cœur ; chaque mini note est lue par l'IA, qui classe, structure, conseille la suite et corrige ; un carnet ancien est relu par l'IA d'un toucher ; l'analyse locale n'est qu'un repli hors ligne. Échoue sur le tour 80 (écoulement, CO2).
+
+## ORGANISE-TROP-TEXTUEL (25.11 soir, jouable M4 b)
+- Ses mots : « C'est très bien, même très très bien mais poud un TDAH, Visual learner, c'est un peu trop textuel » ; « cette vue est pas incroyable 6.5/10 pour un TDAH, visual learner ».
+- Version rejetée : jouable M4 b v4 (cap-m4b/22-visuel.png) : cartes de texte empilées, phrases de conseil, libellés.
+- Contrôle : au premier écran d'Organisé (390 × 844), au plus 30 mots visibles hors titre du carnet, et chaque bloc porte un repère non textuel
+  (icône, couleur, jauge, forme, position) qui se lit sans lire. Échoue sur 22-visuel.png (plus de 30 mots).
+
+## FRISE-GENERIQUE (25.11 soir, jouable M4 b)
+- Ses mots : « Je suis très mitigé sur la frise d'action... Elle est trop central et donne pas de bonne indication et trop générique et convient pas à tout les cas ».
+- Version rejetée : la frise Noté › Je cherche › Décidé › Résolu en pleine largeur sous le titre, la même pour tout carnet.
+- Contrôle : aucune frise d'états fixe en pleine largeur au premier écran ; l'avancement, s'il est montré, dépend du genre du carnet
+  (ex. achat : comparé › choisi › commandé ; échéance : jours restants ; événement : compte à rebours ; mémo : rien) et dit la prochaine chose utile.
+
+## ENTETE-PEU-UTILE (25.11 soir, jouable M4 b)
+- Ses mots : « Et il y a beaucoup d'info mais peu vraiment utile donc au final c'est assez peu compact en info vraiment importante, utile. Ça revient sur le fait que pour un TDAH, Visual learner c'est pas adapté ».
+- Version rejetée : en-tête d'Organisé sur ~35 % de l'écran (titre, date, genre, « Rangé à », « Changements », frise) avant la première info utile.
+- Contrôle : la première info utile (ce qui est trouvé, ce qui bloque, la prochaine action, le chiffre clé) commence dans les 120 premiers px
+  sous la barre ; date, genre, heure de rangement et accès aux changements tiennent sur une ligne discrète ou derrière une icône.
+
+## BOUTON-FLOTTANT-COUVRE (25.11 nuit, Ma bière › Eau)
+- Ses mots : « ??? » sur une capture où le « + » flottant cache « 2. Sels 3,5 g », « Doser » et « Repartir d'une recette vierge ».
+- Contrôle : sur chaque étape de Ma bière à 390 × 844, au repos et défilée, le bouton flottant ne recouvre aucun élément actionnable ni texte
+  (intersection des rectangles = 0) ; échoue sur l'étape Eau actuelle.
