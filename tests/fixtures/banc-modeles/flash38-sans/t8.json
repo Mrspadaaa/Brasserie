@@ -1,0 +1,47 @@
+{
+ "id": "t8",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne",
+ "brut": {
+  "sujet": {
+   "titre": "Chariot élévateur bloqué",
+   "domaine": "outils",
+   "genreCarnet": "probleme",
+   "chemin": [
+    "Manutention",
+    "Chariot élévateur"
+   ],
+   "etatPropose": "cherche"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "Le chariot élévateur ne monte plus jusqu'en haut, bruit de chaîne",
+    "genre": "note",
+    "carnetNeuf": "Chariot élévateur bloqué",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "outils",
+    "genreCarnet": "probleme",
+    "chemin": [
+     "Manutention",
+     "Chariot élévateur"
+    ],
+    "etatPropose": "cherche"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "probleme",
+  "genreDit": true,
+  "domaine": "outils",
+  "chemin": [
+   "Manutention",
+   "Chariot élévateur"
+  ],
+  "titre": "Chariot élévateur bloqué"
+ },
+ "juste": true,
+ "fautes": []
+}

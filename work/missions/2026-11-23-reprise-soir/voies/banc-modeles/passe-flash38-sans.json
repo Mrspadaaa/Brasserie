@@ -1,0 +1,346 @@
+{
+ "passe": "flash38-sans",
+ "cle": "flash38",
+ "contexte": "sans",
+ "modele": "gemini-3.8-flash",
+ "reflexion": "low",
+ "date": "2026-11-25T07:12:08.088Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "sujet": {
+     "titre": "Fuite vanne cuve empâtage",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Brassage",
+      "Empâtage"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+      "genre": "note",
+      "carnetNeuf": "Fuite vanne cuve empâtage",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Brassage",
+       "Empâtage"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.009355,
+   "ms": 8980,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3809,
+    "sortie": 236,
+    "total": 4045
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Surchauffe fermenteur 3",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Fermenteur"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19 °C",
+      "genre": "note",
+      "carnetNeuf": "Surchauffe fermenteur 3",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Fermentation",
+       "Fermenteur"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.009398,
+   "ms": 11991,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3812,
+    "sortie": 240,
+    "total": 4052
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Soutireuse"
+     ],
+     "etatPropose": "resolu"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetNeuf": "Soutireuse à contre-pression",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "genreCarnet": "memo",
+      "chemin": [
+       "Conditionnement",
+       "Soutireuse"
+      ],
+      "etatPropose": "resolu"
+     }
+    ]
+   },
+   "chf": 0.010692,
+   "ms": 6896,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3807,
+    "sortie": 379,
+    "total": 4186
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende douane déclaration manquante",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Douane"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+      "genre": "note",
+      "carnetNeuf": "Amende douane déclaration manquante",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "papiers",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Douane"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.009199,
+   "ms": 6249,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3806,
+    "sortie": 220,
+    "total": 4026
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Malt Pilsner et sulfate",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Brassage",
+      "Matières premières"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Malt Pilsner, 25 kg",
+      "genre": "a-acheter",
+      "carnetNeuf": "Malt Pilsner et sulfate",
+      "unite": "kg",
+      "domaine": "brasserie",
+      "quantite": 25,
+      "genreCarnet": "achat",
+      "chemin": [
+       "Brassage",
+       "Matières premières"
+      ],
+      "etatPropose": "note"
+     },
+     {
+      "sorte": "note",
+      "texte": "Sulfate de calcium, 1 kg",
+      "genre": "a-acheter",
+      "carnetNeuf": "Malt Pilsner et sulfate",
+      "unite": "kg",
+      "domaine": "brasserie",
+      "quantite": 1,
+      "genreCarnet": "achat",
+      "chemin": [
+       "Brassage",
+       "Matières premières"
+      ],
+      "etatPropose": "note"
+     },
+     {
+      "sorte": "note",
+      "texte": "Commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+      "genre": "a-faire",
+      "carnetNeuf": "Malt Pilsner et sulfate",
+      "domaine": "brasserie",
+      "genreCarnet": "achat",
+      "chemin": [
+       "Brassage",
+       "Matières premières"
+      ],
+      "etatPropose": "note",
+      "tachePropose": {
+       "quand": "un-jour",
+       "texte": "Commander le malt Pilsner et le sulfate de calcium"
+      }
+     }
+    ]
+   },
+   "chf": 0.01257,
+   "ms": 8217,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3804,
+    "sortie": 580,
+    "total": 4384
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse devant l'entrée",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "idee",
+      "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+      "titre": "Terrasse devant l'entrée",
+      "carnetNeuf": "Terrasse devant l'entrée",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "local",
+      "genreCarnet": "idee",
+      "chemin": [
+       "Extérieur",
+       "Terrasse"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.010506,
+   "ms": 11635,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3803,
+    "sortie": 360,
+    "total": 4163
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour filtres",
+     "domaine": "outils",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Outils",
+      "Filtration"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetNeuf": "Clé à sangle pour filtres",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "outils",
+      "genreCarnet": "achat",
+      "chemin": [
+       "Outils",
+       "Filtration"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.009417,
+   "ms": 5647,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3807,
+    "sortie": 243,
+    "total": 4050
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Chariot élévateur bloqué",
+     "domaine": "outils",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Manutention",
+      "Chariot élévateur"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, bruit de chaîne",
+      "genre": "note",
+      "carnetNeuf": "Chariot élévateur bloqué",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "outils",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Manutention",
+       "Chariot élévateur"
+      ],
+      "etatPropose": "cherche"
+     }
+    ]
+   },
+   "chf": 0.009424,
+   "ms": 5132,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3806,
+    "sortie": 244,
+    "total": 4050
+   }
+  }
+ }
+}

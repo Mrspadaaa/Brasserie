@@ -1,0 +1,285 @@
+{
+ "passe": "hydrogen-avec",
+ "cle": "hydrogen",
+ "contexte": "avec",
+ "modele": "gemini-4-hydrogen",
+ "reflexion": "low",
+ "date": "2026-11-25T07:13:27.699Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "sujet": {
+     "titre": "Fuite vanne cuve d'empâtage",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Brassage",
+      "Empâtage"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+      "genre": "note",
+      "carnetId": "zz-vanne-empatage",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "la cuve d'empâtage perd par la vanne du bas"
+     }
+    ]
+   },
+   "chf": 0.016472,
+   "ms": 4940,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5255,
+    "reflexion": 484,
+    "sortie": 222,
+    "total": 5961
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression fonctionnelle",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Embouteillage"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetId": "zz-soutireuse",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "la nouvelle soutireuse à contre-pression"
+     }
+    ]
+   },
+   "chf": 0.015546,
+   "ms": 4244,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5246,
+    "reflexion": 398,
+    "sortie": 211,
+    "total": 5855
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Température du fermenteur 3",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Température"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19 °C",
+      "genre": "note",
+      "carnetId": "zz-temp-fermenteur",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "fermenteur 3"
+     }
+    ]
+   },
+   "chf": 0.016127,
+   "ms": 4582,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5251,
+    "reflexion": 466,
+    "sortie": 204,
+    "total": 5921
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Commande d'ingrédients de brassage",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Ingrédients"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Malt Pilsner, 25 kg",
+      "genre": "a-acheter",
+      "carnetId": "zz-malt",
+      "unite": "kg",
+      "domaine": "brasserie",
+      "quantite": 25,
+      "citation": "25 kg de malt Pilsner"
+     },
+     {
+      "sorte": "note",
+      "texte": "Sulfate de calcium, 1 kg",
+      "genre": "a-acheter",
+      "carnetNeuf": "Sulfate de calcium",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.019266,
+   "ms": 5626,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5235,
+    "reflexion": 702,
+    "sortie": 306,
+    "total": 6243
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende douane déclaration manquante",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Douane"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+      "genre": "note",
+      "carnetId": "zz-douane",
+      "domaine": "papiers",
+      "etiquette": "constat",
+      "citation": "la douane réclame une amende, notre déclaration du trimestre"
+     }
+    ]
+   },
+   "chf": 0.014183,
+   "ms": 3312,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5234,
+    "reflexion": 341,
+    "sortie": 125,
+    "total": 5700
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse d'été devant l'entrée",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+      "genre": "note",
+      "carnetId": "zz-terrasse",
+      "domaine": "local",
+      "citation": "petite terrasse devant l'entrée pour l'été"
+     }
+    ]
+   },
+   "chf": 0.015925,
+   "ms": 7491,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5233,
+    "reflexion": 465,
+    "sortie": 187,
+    "total": 5885
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Panne du chariot élévateur",
+     "domaine": "outils",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Manutention",
+      "Chariot"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne.",
+      "genre": "note",
+      "carnetId": "zz-chariot",
+      "domaine": "outils",
+      "etiquette": "constat",
+      "citation": "le chariot élévateur"
+     }
+    ]
+   },
+   "chf": 0.016844,
+   "ms": 4381,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5243,
+    "reflexion": 559,
+    "sortie": 189,
+    "total": 5991
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour filtres",
+     "domaine": "outils",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Outils"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetId": "zz-filtres",
+      "domaine": "outils",
+      "citation": "boîtiers des filtres à cartouche"
+     }
+    ]
+   },
+   "chf": 0.018188,
+   "ms": 30858,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5245,
+    "reflexion": 696,
+    "sortie": 195,
+    "total": 6136
+   }
+  }
+ }
+}

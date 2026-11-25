@@ -1,0 +1,47 @@
+{
+ "id": "t2",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19",
+ "brut": {
+  "sujet": {
+   "titre": "Surchauffe fermenteur 3",
+   "domaine": "brasserie",
+   "genreCarnet": "probleme",
+   "chemin": [
+    "Fermentation",
+    "Fermenteur"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19 °C",
+    "genre": "note",
+    "carnetNeuf": "Surchauffe fermenteur 3",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "brasserie",
+    "genreCarnet": "probleme",
+    "chemin": [
+     "Fermentation",
+     "Fermenteur"
+    ],
+    "etatPropose": "note"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "probleme",
+  "genreDit": true,
+  "domaine": "brasserie",
+  "chemin": [
+   "Fermentation",
+   "Fermenteur"
+  ],
+  "titre": "Surchauffe fermenteur 3"
+ },
+ "juste": true,
+ "fautes": []
+}

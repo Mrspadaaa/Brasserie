@@ -13,6 +13,10 @@
  *   npx tsx scripts/banc-rangement.ts --passe avant --ia reel --confirm-paid-ai [--budget 0.08] [--fixtures]
  *   npx tsx scripts/banc-rangement.ts --passe avant --rejouer      (relit les réponses gardées avec la lecture actuelle, sans appel)
  *
+ * D453 (voie banc-modeles) : comparaison de modèles, même consigne et même schéma, contexte sans ou avec un carnet du même sujet :
+ *   npx tsx scripts/banc-rangement.ts --modele lite|flash38|hydrogen --contexte sans|avec [--jeu tenue] --ia reel --confirm-paid-ai --budget 0.50
+ *   npx tsx scripts/banc-rangement.ts --tableau                    (le tableau des passes gardées, sans appel)
+ *
  * Jamais dans `npm test` : `tests/unit/c70RangementIA.test.ts` rejoue les réponses relevées (`tests/fixtures/c70-ia/`).
  */
 import fs from 'node:fs';
@@ -22,14 +26,27 @@ import { RANGER_CARNET, assainirRangerCarnet, contexteRangerCarnet, type GenreSu
 import { geminiBody, userTextOf } from '../functions/src/geminiBody';
 import { geminiAnswerText } from '../functions/src/geminiResponse';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
-import { TIERS, geminiAttempts } from '../functions/src/models';
+import { GEMINI_LITE_MODEL, GEMINI_MODEL, INVOICE_STRONG_MODEL, TIERS, geminiAttempts, type GeminiThinkingLevel } from '../functions/src/models';
 import { contexteModele, lireReponse, sansAccents, sujetLu, type CarnetPourIA, type LigneCarnet, type SujetLu } from '../src/domain/carnets/ia';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const JOURNAL = path.join(ROOT, 'work/missions/2026-11-23-carnet-en-ligne/ia-journal.jsonl');
-const SORTIES = path.join(ROOT, 'work/missions/2026-11-23-reprise-soir/voies/c70-ia');
+const SORTIES_C70 = path.join(ROOT, 'work/missions/2026-11-23-reprise-soir/voies/c70-ia');
+const SORTIES_MODELES = path.join(ROOT, 'work/missions/2026-11-23-reprise-soir/voies/banc-modeles');
 export const FIXTURES = path.join(ROOT, 'tests/fixtures/c70-ia');
-const VOIE = 'c70-ia';
+export const FIXTURES_MODELES = path.join(ROOT, 'tests/fixtures/banc-modeles');
+
+/**
+ * D453 (banc-modeles, 25.11) : les trois modèles comparés, sous les noms de `functions/src/models.ts` (ceux de `lienIA` et d'`aiTask`).
+ * Même consigne, même schéma, même température, même réflexion basse pour les trois : seule la variable « modèle » change.
+ * La production reste `geminiAttempts('rangerCarnet', 'fast')` (3.8, réflexion basse) : le banc ne la change pas.
+ */
+export const MODELES: Record<'lite' | 'flash38' | 'hydrogen', { model: string; thinkingLevel: GeminiThinkingLevel }> = {
+  lite: { model: GEMINI_LITE_MODEL, thinkingLevel: 'low' },
+  flash38: { model: GEMINI_MODEL, thinkingLevel: TIERS.fast.thinkingLevel },
+  hydrogen: { model: INVOICE_STRONG_MODEL, thinkingLevel: 'low' }
+};
+export type CleModele = keyof typeof MODELES;
 
 /** Le jour de saisie du banc (fixe : une tâche « cette semaine » ne dépend pas du jour du lancement). */
 export const SAISIE = new Date(2026, 10, 25, 10, 0, 0);
@@ -52,6 +69,38 @@ export const CARNETS_ZZ: CarnetPourIA[] = [
   { id: 'zz-densimetres', titre: 'ZZ Densimètres et réfractomètre', majLe: 1, genre: 'achat', etat: 'note', domaine: 'outils', chemin: ['Mesure'] },
   { id: 'zz-chariot', titre: 'ZZ Chariot élévateur : contrôle annuel', majLe: 1, genre: 'memo', etat: 'resolu', domaine: 'outils', chemin: ['Manutention', 'Chariot'] }
 ];
+
+/**
+ * D453 : pour chaque phrase, un carnet fictif du MÊME sujet (cas qui a échoué au test en ligne 70). Contexte « sans » : les 8 voisins proches
+ * seuls ; contexte « avec » : les 8 voisins et ce carnet-là. Avec lui, l'IA peut proposer « Rattacher ? » (permis), mais la phrase doit porter
+ * quand même genre, chemin et titre (le « sujet »), que « Garder à part » donne au carnet qui naît. r4 et t8 reprennent les deux de c70-ia.
+ */
+const zz = (id: string, titre: string, genre: CarnetPourIA['genre'], etat: CarnetPourIA['etat'], domaine: string, chemin: string[]): CarnetPourIA =>
+  ({ id, titre: `ZZ ${titre}`, majLe: 1, genre, etat, domaine, chemin } as CarnetPourIA);
+const voisinDe = (id: string) => CARNETS_ZZ.find((c) => c.id === id)!;
+export const MEME_SUJET: Record<string, CarnetPourIA> = {
+  r1: zz('zz-pompe', 'Pompe de transfert', 'probleme', 'note', 'brasserie', ['Brassage', 'Pompe']),
+  r2: zz('zz-chambre-froide', 'Chambre froide : porte et givre', 'probleme', 'decide', 'brasserie', ['Froid', 'Chambre froide']),
+  r3: zz('zz-visites', 'Visites de la brasserie', 'idee', 'note', 'brasserie', ['Accueil', 'Visites']),
+  r4: voisinDe('zz-densimetres'),
+  r5: zz('zz-echangeur', 'Échangeur à plaques', 'memo', 'note', 'brasserie', ['Brassage', 'Refroidissement']),
+  r6: zz('zz-vente-emporter', 'Autorisation de vente à l\'emporter', 'memo', 'cherche', 'papiers', ['Autorisations']),
+  r7: zz('zz-toilettes', 'Électricité des toilettes', 'probleme', 'note', 'local', ['Électricité', 'Toilettes']),
+  r8: zz('zz-etabli', 'Établi roulant', 'idee', 'note', 'meuble', ['Atelier', 'Établi']),
+  t1: zz('zz-vanne-empatage', 'Cuve d\'empâtage : vanne du bas', 'probleme', 'note', 'brasserie', ['Brassage', 'Empâtage']),
+  t2: zz('zz-temp-fermenteur', 'Température du fermenteur 3', 'probleme', 'cherche', 'brasserie', ['Fermentation', 'Température']),
+  t3: zz('zz-soutireuse', 'Soutireuse à contre-pression', 'achat', 'decide', 'brasserie', ['Conditionnement', 'Embouteillage']),
+  t4: zz('zz-malt', 'Malts de base', 'achat', 'cherche', 'brasserie', ['Ingrédients', 'Malt']),
+  t5: zz('zz-terrasse', 'Terrasse d\'été', 'idee', 'note', 'local', ['Extérieur', 'Terrasse']),
+  t6: zz('zz-douane', 'Déclarations à la douane', 'memo', 'note', 'papiers', ['Douane']),
+  t7: zz('zz-filtres', 'Boîtiers des filtres à cartouche', 'memo', 'note', 'brasserie', ['Filtration', 'Cartouches']),
+  t8: voisinDe('zz-chariot')
+};
+const IDS_MEME_SUJET = new Set(Object.values(MEME_SUJET).map((c) => c.id));
+/** Les carnets du contexte d'une phrase : les 8 voisins proches (jamais du même sujet), plus le sien « avec ». */
+export function carnetsBanc(id: string, avec: boolean): CarnetPourIA[] {
+  return [...CARNETS_ZZ.filter((c) => !IDS_MEME_SUJET.has(c.id)), ...(avec ? [MEME_SUJET[id]] : [])];
+}
 
 export interface Attendu {
   /** Genres admis du carnet neuf (un seul quand le sens est net). */
@@ -107,8 +156,8 @@ export const PHRASES: PhraseBanc[] = [
 ];
 
 /** Le contexte envoyé : celui du client (`contexteModele`, phrase tapée sur la liste), compacté par le serveur comme dans `aiTask`. */
-export function contexteBanc(texte: string) {
-  const ctx = contexteRangerCarnet(contexteModele(texte, SAISIE, null, CARNETS_ZZ));
+export function contexteBanc(texte: string, carnets: CarnetPourIA[] = CARNETS_ZZ) {
+  const ctx = contexteRangerCarnet(contexteModele(texte, SAISIE, null, carnets));
   if (!ctx) throw new Error('contexte refusé par le serveur');
   return ctx;
 }
@@ -120,9 +169,9 @@ const sansPrefixe = (t: string) => t.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').
  * Ce que l'écran tire des lignes lues pour une phrase tapée sur la liste (chemin « cree » de `rangementCarnets.ts`, `suiviDesLignes`) :
  * genre du carnet neuf (« idée » quand aucune ligne n'en dit), domaine, chemin, titre proposé, tâche ; un carnet existant désigné = rattachement.
  */
-export function rangementVu(lignes: LigneCarnet[] | null, sujet?: SujetLu): Vu {
+export function rangementVu(lignes: LigneCarnet[] | null, sujet?: SujetLu, carnets: CarnetPourIA[] = CARNETS_ZZ): Vu {
   if (!lignes) return { genre: 'idee', genreDit: false };
-  const connus = new Set(CARNETS_ZZ.map((c) => c.id));
+  const connus = new Set(carnets.map((c) => c.id));
   const ici = lignes.filter((l) => !(l.carnetId && connus.has(l.carnetId)));
   const dit = ici.find((l) => l.genreCarnet)?.genreCarnet;
   const rattache = lignes.find((l) => (l.carnetId && connus.has(l.carnetId)) || (l.carnetSuggere && connus.has(l.carnetSuggere)));
@@ -162,10 +211,10 @@ export function juger(p: PhraseBanc, vu: Vu): { juste: boolean; fautes: string[]
 }
 
 /** La lecture complète d'une réponse brute (déjà assainie par le serveur) : lignes du client, puis ce que l'écran en montre. */
-export function lireEtJuger(p: PhraseBanc, brut: unknown) {
+export function lireEtJuger(p: PhraseBanc, brut: unknown, carnets: CarnetPourIA[] = CARNETS_ZZ) {
   const texte = PREFIXE + p.texte;
-  const lignes = lireReponse(brut, { texte, carnets: CARNETS_ZZ, depuis: null, maintenant: SAISIE });
-  const vu = rangementVu(lignes, sujetLu(brut, { texte, carnets: CARNETS_ZZ, depuis: null }));
+  const lignes = lireReponse(brut, { texte, carnets, depuis: null, maintenant: SAISIE });
+  const vu = rangementVu(lignes, sujetLu(brut, { texte, carnets, depuis: null }), carnets);
   return { vu, ...juger(p, vu) };
 }
 
@@ -173,18 +222,81 @@ export function lireEtJuger(p: PhraseBanc, brut: unknown) {
 
 const arg = (n: string) => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : undefined; };
 
-function cumuleVoie(): number {
+function cumuleVoie(voie: string): number {
   if (!fs.existsSync(JOURNAL)) return 0;
   let s = 0;
   for (const l of fs.readFileSync(JOURNAL, 'utf8').split(/\r?\n/)) {
     if (!l.trim()) continue;
-    try { const j = JSON.parse(l); if (j.voie === VOIE) s += Number(j.estimation_chf) || 0; } catch { /* ligne d'une autre voie */ }
+    try { const j = JSON.parse(l); if (j.voie === voie) s += Number(j.estimation_chf) || 0; } catch { /* ligne d'une autre voie */ }
   }
   return s;
 }
 
+type Contexte = 'avec' | 'sans';
+/** La phrase telle que le banc la juge dans un contexte : « sans », aucun rattachement n'est juste ; « avec », seulement à son carnet. */
+export function phraseEnContexte(p: PhraseBanc, contexte?: Contexte): PhraseBanc {
+  if (!contexte) return p;
+  return { ...p, attendu: { ...p.attendu, voisin: contexte === 'avec' ? MEME_SUJET[p.id].id : undefined } };
+}
+export const carnetsEnContexte = (p: PhraseBanc, contexte?: Contexte) => contexte ? carnetsBanc(p.id, contexte === 'avec') : CARNETS_ZZ;
+
+/** Le genre de chaque faute d'une phrase tenue, pour le tableau : genre, chemin (domaine compris), titre, carnet (rattachement), tâche. */
+const familleFaute = (f: string) => f.startsWith('genre') ? 'genre' : f.startsWith('domaine') || f.startsWith('chemin') ? 'chemin'
+  : f.startsWith('titre') ? 'titre' : f.startsWith('rattach') ? 'carnet' : 'tâche';
+
+/** `--tableau` : relit toutes les passes de banc-modeles (aucun appel) et rend le tableau du RESULTAT, tenues à part seulement pour le score. */
+function tableau() {
+  const fichiers = fs.readdirSync(SORTIES_MODELES).filter((f) => /^passe-[a-z0-9]+-(avec|sans)\.json$/.test(f)).sort();
+  const ordre: CleModele[] = ['lite', 'flash38', 'hydrogen'];
+  const lignes = ['| modèle | contexte | tenues justes (écran) | sujet du modèle juste | réglage justes | fautes des tenues (genre / chemin / titre / carnet / tâche) | CHF par appel | ms par appel (médiane) | appels |',
+    '|---|---|---|---|---|---|---|---|---|'];
+  const total: Record<string, { justes: number; n: number; chf: number; appels: number }> = {};
+  const details: string[] = [];
+  for (const cle of ordre) for (const contexte of ['sans', 'avec'] as Contexte[]) {
+    const f = fichiers.find((x) => x === `passe-${cle}-${contexte}.json`);
+    if (!f) continue;
+    const { reponses, modele } = JSON.parse(fs.readFileSync(path.join(SORTIES_MODELES, f), 'utf8'));
+    const score = { tenue: 0, reglage: 0, nTenue: 0, nReglage: 0, sujet: 0 };
+    const fautes: Record<string, number> = { genre: 0, chemin: 0, titre: 0, carnet: 0, 'tâche': 0 };
+    const ms: number[] = []; let chf = 0;
+    for (const p0 of PHRASES) {
+      const r = reponses[p0.id]; if (!r) continue;
+      const p = phraseEnContexte(p0, contexte);
+      const v = lireEtJuger(p, r.brut ?? null, carnetsEnContexte(p0, contexte));
+      ms.push(r.ms); chf += r.chf ?? 0;
+      /* Vue secondaire, le modèle seul : son « sujet » (genre, domaine, chemin, titre) jugé comme la phrase, tâche et carnet pris des lignes.
+         Elle sépare ce que le modèle rend de ce que la lecture du client en tire (une ligne versée dans un carnet mémo n'est pas complétée). */
+      const s = sujetLu(r.brut ?? null, { texte: PREFIXE + p.texte, carnets: carnetsEnContexte(p0, contexte), depuis: null });
+      const js = juger(p, { ...v.vu, genre: s?.genre ?? 'idee', genreDit: !!s, domaine: s?.domaine, chemin: s?.chemin, titre: s?.titre });
+      if (p.jeu === 'tenue' && js.juste) score.sujet++;
+      if (p.jeu === 'tenue') { score.nTenue++; if (v.juste) score.tenue++; else for (const x of new Set(v.fautes.map(familleFaute))) fautes[x]++; }
+      else { score.nReglage++; if (v.juste) score.reglage++; }
+      details.push(`${v.juste ? '✓' : '✗'} ${cle}-${contexte} ${p.id} ${v.vu.genre} | ${[v.vu.domaine ?? '∅', ...(v.vu.chemin ?? [])].join(' › ')} | « ${v.vu.titre ?? '∅'} »${v.vu.rattache ? ` | → ${v.vu.rattache}` : ''}${v.fautes.length ? `  — ${v.fautes.join(' ; ')}` : ''}`);
+    }
+    ms.sort((a, b) => a - b);
+    const med = ms.length ? ms[Math.floor(ms.length / 2)] : 0;
+    lignes.push(`| ${cle} (${modele}) | ${contexte} | ${score.tenue}/${score.nTenue} | ${score.sujet}/${score.nTenue} | ${score.nReglage ? `${score.reglage}/${score.nReglage}` : '–'} | ${Object.values(fautes).join(' / ')} | ${ms.length ? (chf / ms.length).toFixed(4) : '–'} | ${med} | ${ms.length} |`);
+    const t = (total[cle] ??= { justes: 0, n: 0, chf: 0, appels: 0 });
+    t.justes += score.tenue; t.n += score.nTenue; t.chf += chf; t.appels += ms.length;
+  }
+  console.log(lignes.join('\n'));
+  console.log('\n' + ordre.filter((c) => total[c]).map((c) => `${c} : tenues ${total[c].justes}/${total[c].n} (avec + sans) ; ${total[c].chf.toFixed(4)} CHF pour ${total[c].appels} appels`).join('\n'));
+  console.log(`cumul voie banc-modeles au journal : ${cumuleVoie('banc-modeles').toFixed(4)} CHF\n\n${details.join('\n')}`);
+}
+
 async function main() {
-  const passe = arg('--passe');
+  if (process.argv.includes('--tableau')) return tableau();
+  /* D453 : `--modele lite|flash38|hydrogen --contexte avec|sans` : passe d'un modèle du banc comparatif (voie banc-modeles, son dossier, son budget). */
+  const cle = arg('--modele') as CleModele | undefined;
+  if (cle && !(cle in MODELES)) throw new Error('--modele lite|flash38|hydrogen attendu');
+  const contexte = arg('--contexte') as Contexte | undefined;
+  if (contexte && contexte !== 'avec' && contexte !== 'sans') throw new Error('--contexte avec|sans attendu');
+  if (cle && !contexte) throw new Error('--modele demande --contexte avec|sans');
+  const jeu = arg('--jeu');
+  if (jeu && jeu !== 'tenue' && jeu !== 'reglage') throw new Error('--jeu tenue|reglage attendu');
+  const VOIE = cle ? 'banc-modeles' : 'c70-ia';
+  const SORTIES = cle ? SORTIES_MODELES : SORTIES_C70;
+  const passe = cle ? `${cle}-${contexte}` : arg('--passe');
   if (!passe || !/^[a-z0-9-]+$/.test(passe)) throw new Error('--passe <etiquette> attendu (avant, apres)');
   const fichier = path.join(SORTIES, `passe-${passe}.json`);
   let reponses: Record<string, { brut: unknown; chf: number | null; ms: number; finish: string | null; jetons: unknown }> = {};
@@ -196,10 +308,11 @@ async function main() {
     const optIn = await import(pathToFileURL(path.join(ROOT, 'scripts/paid-ai-test-guard.mjs')).href);
     optIn.requirePaidAiTestOptIn({ label: 'banc du rangement du Carnet avec Gemini réel', command: 'npx tsx scripts/banc-rangement.ts --passe avant --ia reel --confirm-paid-ai' });
     const garde = await import(pathToFileURL(path.join(ROOT, 'scripts/gemini-usage-bench-guard.mjs')).href);
-    const cle: string | undefined = garde.readLocalKey({});
-    if (!cle) throw new Error('Aucune clé Gemini lisible : aucun appel.');
+    const cleApi: string | undefined = garde.readLocalKey({});
+    if (!cleApi) throw new Error('Aucune clé Gemini lisible : aucun appel.');
     const budget = Number(arg('--budget') ?? 0.08);
-    const [{ model, thinkingLevel }] = geminiAttempts('rangerCarnet', 'fast');
+    // Sans `--modele` : le modèle de production (`geminiAttempts`), inchangé ; avec, celui du banc comparatif (D453).
+    const { model, thinkingLevel } = cle ? MODELES[cle] : geminiAttempts('rangerCarnet', 'fast')[0];
     /* `--consigne <rév>` : consigne, schéma et garde serveur d'une version Git de carnetIA.ts (la passe « avant » après le changement), copiée
        dans le dossier temporaire du système (L17) ; la lecture du client reste l'actuelle (elle ne fait que compléter avec un « sujet » absent). */
     const rev = arg('--consigne');
@@ -218,9 +331,9 @@ async function main() {
     const deja = fs.existsSync(JOURNAL) ? fs.readFileSync(JOURNAL, 'utf8').split(/\r?\n/).flatMap((l) => {
       try { const j = JSON.parse(l); return j.voie === VOIE && j.methode === 'banc-rangement' ? [Number(j.estimation_chf) || 0] : []; } catch { return []; }
     }) : [];
-    let depense = cumuleVoie(), engage = 0, plusCher = Math.max(0, ...deja);
+    let depense = cumuleVoie(VOIE), engage = 0, plusCher = Math.max(0, ...deja);
     const appeler = async (p: PhraseBanc) => {
-      const corps = geminiBody({ systemPrompt: tache.def.system, userText: userTextOf(undefined, contexteBanc(PREFIXE + p.texte)), schema: tache.def.schema as Record<string, unknown>,
+      const corps = geminiBody({ systemPrompt: tache.def.system, userText: userTextOf(undefined, contexteBanc(PREFIXE + p.texte, carnetsEnContexte(p, contexte))), schema: tache.def.schema as Record<string, unknown>,
         settings: { temperature: TIERS.fast.temperature, thinkingLevel }, maxOutputTokens: tache.def.maxOutputTokens });
       const devis = quoteGeminiCost(model, corps);
       // La réservation du devis (1 octet = 1 jeton, plafond de sortie entier, ≈ 10 fois l'observé) bloquerait le banc bien avant le plafond :
@@ -232,7 +345,7 @@ async function main() {
       let rep: any = null, http = 0;
       try {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cle }, body: JSON.stringify(devis.body), signal: AbortSignal.timeout(60_000) });
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cleApi }, body: JSON.stringify(devis.body), signal: AbortSignal.timeout(60_000) });
         http = res.status; rep = await res.json().catch(() => null);
       } catch { http = -1; } finally { engage -= reserve; }
       const obs = rep ? observedGeminiCostDetails(devis, rep) : null;
@@ -248,12 +361,12 @@ async function main() {
       try { if (http === 200) brut = tache.assainir(JSON.parse(geminiAnswerText(rep).replace(/```json/g, '').replace(/```/g, '').trim())); } catch { brut = null; }
       reponses[p.id] = { brut, chf, ms, finish, jetons: u ? { entree: u.promptTokenCount, reflexion: u.thoughtsTokenCount, sortie: u.candidatesTokenCount, total: u.totalTokenCount } : null };
       // Chaque réponse payée est gardée dès son arrivée : un arrêt au budget ne perd rien (25.11, 3 réponses perdues ainsi).
-      fs.writeFileSync(fichier, JSON.stringify({ passe, modele: model, reflexion: thinkingLevel, date: new Date().toISOString(), reponses }, null, 1));
+      fs.writeFileSync(fichier, JSON.stringify({ passe, cle, contexte, modele: model, reflexion: thinkingLevel, date: new Date().toISOString(), reponses }, null, 1));
     };
     if (fs.existsSync(fichier)) reponses = JSON.parse(fs.readFileSync(fichier, 'utf8')).reponses ?? {};
     const seul = arg('--seul')?.split(',');
     // Une phrase déjà rangée dans cette passe ne se repaie pas.
-    const file = PHRASES.filter((p) => (!seul || seul.includes(p.id)) && !reponses[p.id]);
+    const file = PHRASES.filter((p) => (!seul || seul.includes(p.id)) && (!jeu || p.jeu === jeu) && !reponses[p.id]);
     const suivant = async () => {
       for (let p = file.shift(); p; p = file.shift()) {
         try { await appeler(p); } catch (e) { console.error(`ARRÊT : ${e instanceof Error ? e.message : String(e)}`); file.length = 0; }
@@ -266,19 +379,23 @@ async function main() {
 
   const score = { reglage: 0, tenue: 0 };
   const lignes: string[] = [];
-  for (const p of PHRASES) {
-    const r = reponses[p.id];
-    const v = lireEtJuger(p, r?.brut ?? null);
+  // Les fixtures d'une passe de modèle vont dans leur propre dossier (tests/fixtures/banc-modeles/<modèle>-<contexte>/), jamais sur celles de c70-ia.
+  const dossierFixtures = cle ? path.join(FIXTURES_MODELES, passe) : FIXTURES;
+  for (const p0 of PHRASES) {
+    if (jeu && p0.jeu !== jeu) continue;
+    const r = reponses[p0.id];
+    const p = phraseEnContexte(p0, contexte);
+    const v = lireEtJuger(p, r?.brut ?? null, carnetsEnContexte(p0, contexte));
     if (v.juste) score[p.jeu]++;
     lignes.push(`${v.juste ? '✓' : '✗'} ${p.id} ${v.vu.genre} | ${[v.vu.domaine ?? '∅', ...(v.vu.chemin ?? [])].join(' › ')} | « ${v.vu.titre ?? '∅'} »${v.vu.tache ? ` | tâche « ${v.vu.tache} »` : ''}${v.fautes.length ? `  — ${v.fautes.join(' ; ')}` : ''}`);
     if (process.argv.includes('--fixtures') && r?.brut) {
-      fs.mkdirSync(FIXTURES, { recursive: true });
-      fs.writeFileSync(path.join(FIXTURES, `${p.id}.json`), JSON.stringify({ id: p.id, jeu: p.jeu, passe, texte: PREFIXE + p.texte, brut: r.brut, vu: v.vu, juste: v.juste, fautes: v.fautes }, null, 1) + '\n');
+      fs.mkdirSync(dossierFixtures, { recursive: true });
+      fs.writeFileSync(path.join(dossierFixtures, `${p.id}.json`), JSON.stringify({ id: p.id, jeu: p.jeu, passe, ...(contexte ? { contexte } : {}), texte: PREFIXE + p.texte, brut: r.brut, vu: v.vu, juste: v.juste, fautes: v.fautes }, null, 1) + '\n');
     }
   }
   const chf = Object.values(reponses).reduce((s, r) => s + (r.chf ?? 0), 0);
   console.log(lignes.join('\n'));
-  console.log(`\nPASSE ${passe} : réglage ${score.reglage}/8 ; TENUES À PART ${score.tenue}/8 ; coût de la passe ${chf.toFixed(4)} CHF ; cumul voie ${cumuleVoie().toFixed(4)} CHF`);
+  console.log(`\nPASSE ${passe} : réglage ${score.reglage}/8 ; TENUES À PART ${score.tenue}/8 ; coût de la passe ${chf.toFixed(4)} CHF ; cumul voie ${cumuleVoie(VOIE).toFixed(4)} CHF`);
 }
 
 if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {

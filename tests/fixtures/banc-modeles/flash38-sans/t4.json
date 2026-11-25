@@ -1,0 +1,81 @@
+{
+ "id": "t4",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+ "brut": {
+  "sujet": {
+   "titre": "Malt Pilsner et sulfate",
+   "domaine": "brasserie",
+   "genreCarnet": "achat",
+   "chemin": [
+    "Brassage",
+    "Matières premières"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "Malt Pilsner, 25 kg",
+    "genre": "a-acheter",
+    "carnetNeuf": "Malt Pilsner et sulfate",
+    "unite": "kg",
+    "domaine": "brasserie",
+    "quantite": 25,
+    "genreCarnet": "achat",
+    "chemin": [
+     "Brassage",
+     "Matières premières"
+    ],
+    "etatPropose": "note"
+   },
+   {
+    "sorte": "note",
+    "texte": "Sulfate de calcium, 1 kg",
+    "genre": "a-acheter",
+    "carnetNeuf": "Malt Pilsner et sulfate",
+    "unite": "kg",
+    "domaine": "brasserie",
+    "quantite": 1,
+    "genreCarnet": "achat",
+    "chemin": [
+     "Brassage",
+     "Matières premières"
+    ],
+    "etatPropose": "note"
+   },
+   {
+    "sorte": "note",
+    "texte": "Commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+    "genre": "a-faire",
+    "carnetNeuf": "Malt Pilsner et sulfate",
+    "domaine": "brasserie",
+    "genreCarnet": "achat",
+    "chemin": [
+     "Brassage",
+     "Matières premières"
+    ],
+    "etatPropose": "note",
+    "tachePropose": {
+     "quand": "un-jour",
+     "texte": "Commander le malt Pilsner et le sulfate de calcium"
+    }
+   }
+  ]
+ },
+ "vu": {
+  "genre": "achat",
+  "genreDit": true,
+  "domaine": "brasserie",
+  "chemin": [
+   "Brassage",
+   "Matières premières"
+  ],
+  "titre": "Malt Pilsner et sulfate",
+  "tache": "Commander le malt Pilsner et le sulfate de calcium"
+ },
+ "juste": true,
+ "fautes": []
+}

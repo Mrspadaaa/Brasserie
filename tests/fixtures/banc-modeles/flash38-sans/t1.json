@@ -1,0 +1,47 @@
+{
+ "id": "t1",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — la cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+ "brut": {
+  "sujet": {
+   "titre": "Fuite vanne cuve empâtage",
+   "domaine": "brasserie",
+   "genreCarnet": "probleme",
+   "chemin": [
+    "Brassage",
+    "Empâtage"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+    "genre": "note",
+    "carnetNeuf": "Fuite vanne cuve empâtage",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "brasserie",
+    "genreCarnet": "probleme",
+    "chemin": [
+     "Brassage",
+     "Empâtage"
+    ],
+    "etatPropose": "note"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "probleme",
+  "genreDit": true,
+  "domaine": "brasserie",
+  "chemin": [
+   "Brassage",
+   "Empâtage"
+  ],
+  "titre": "Fuite vanne cuve empâtage"
+ },
+ "juste": true,
+ "fautes": []
+}

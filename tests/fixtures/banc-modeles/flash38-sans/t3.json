@@ -1,0 +1,48 @@
+{
+ "id": "t3",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — la nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+ "brut": {
+  "sujet": {
+   "titre": "Soutireuse à contre-pression",
+   "domaine": "brasserie",
+   "genreCarnet": "memo",
+   "chemin": [
+    "Conditionnement",
+    "Soutireuse"
+   ],
+   "etatPropose": "resolu"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+    "genre": "note",
+    "carnetNeuf": "Soutireuse à contre-pression",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "brasserie",
+    "etiquette": "constat",
+    "genreCarnet": "memo",
+    "chemin": [
+     "Conditionnement",
+     "Soutireuse"
+    ],
+    "etatPropose": "resolu"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "memo",
+  "genreDit": true,
+  "domaine": "brasserie",
+  "chemin": [
+   "Conditionnement",
+   "Soutireuse"
+  ],
+  "titre": "Soutireuse à contre-pression"
+ },
+ "juste": true,
+ "fautes": []
+}

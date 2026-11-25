@@ -1,0 +1,47 @@
+{
+ "id": "t5",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — et si on installait une petite terrasse devant l'entrée pour l'été",
+ "brut": {
+  "sujet": {
+   "titre": "Terrasse devant l'entrée",
+   "domaine": "local",
+   "genreCarnet": "idee",
+   "chemin": [
+    "Extérieur",
+    "Terrasse"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "idee",
+    "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+    "titre": "Terrasse devant l'entrée",
+    "carnetNeuf": "Terrasse devant l'entrée",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "local",
+    "genreCarnet": "idee",
+    "chemin": [
+     "Extérieur",
+     "Terrasse"
+    ],
+    "etatPropose": "note"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "idee",
+  "genreDit": true,
+  "domaine": "local",
+  "chemin": [
+   "Extérieur",
+   "Terrasse"
+  ],
+  "titre": "Terrasse devant l'entrée"
+ },
+ "juste": true,
+ "fautes": []
+}

@@ -1,0 +1,256 @@
+{
+ "passe": "lite-avec",
+ "cle": "lite",
+ "contexte": "avec",
+ "modele": "gemini-3.5-flash-lite",
+ "reflexion": "low",
+ "date": "2026-11-25T07:11:46.696Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+      "genre": "note",
+      "carnetId": "zz-vanne-empatage",
+      "etiquette": "constat",
+      "citation": "la cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration"
+     }
+    ]
+   },
+   "chf": 0.001857,
+   "ms": 1143,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3883,
+    "sortie": 128,
+    "total": 4011
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Température du fermenteur 3 trop haute",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Température"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19",
+      "genre": "note",
+      "carnetId": "zz-temp-fermenteur",
+      "etiquette": "constat",
+      "citation": "le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19"
+     }
+    ]
+   },
+   "chf": 0.002074,
+   "ms": 1021,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3880,
+    "sortie": 198,
+    "total": 4078
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Commander malt Pilsner et sulfate de calcium",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Ingrédients",
+      "Malt"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+      "genre": "a-acheter",
+      "carnetId": "zz-malt",
+      "citation": "commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+      "tachePropose": {
+       "quand": "semaine",
+       "texte": "Commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium"
+      }
+     }
+    ]
+   },
+   "chf": 0.00188,
+   "ms": 1021,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3863,
+    "sortie": 138,
+    "total": 4001
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Embouteillage"
+     ],
+     "etatPropose": "resolu"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetId": "zz-soutireuse",
+      "etiquette": "constat",
+      "citation": "la nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse"
+     }
+    ]
+   },
+   "chf": 0.002066,
+   "ms": 1162,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3876,
+    "sortie": 196,
+    "total": 4072
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse d'été",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "idee",
+      "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+      "carnetId": "zz-terrasse",
+      "citation": "et si on installait une petite terrasse devant l'entrée pour l'été"
+     }
+    ]
+   },
+   "chf": 0.001933,
+   "ms": 883,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3862,
+    "sortie": 155,
+    "total": 4017
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende de la douane",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Douane"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Régler la déclaration du trimestre",
+      "genre": "a-faire",
+      "carnetId": "zz-douane",
+      "etiquette": "constat",
+      "citation": "la douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée"
+     }
+    ]
+   },
+   "chf": 0.001803,
+   "ms": 952,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3864,
+    "sortie": 113,
+    "total": 3977
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour filtres à cartouche",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Filtration",
+      "Cartouches"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetId": "zz-filtres",
+      "titrePropose": "Clé à sangle pour filtres",
+      "citation": "besoin d'une clé à sangle pour ouvrir les boîtiers des filtres à cartouche"
+     }
+    ]
+   },
+   "chf": 0.002088,
+   "ms": 1083,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3874,
+    "sortie": 203,
+    "total": 4077
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Chariot élévateur en panne",
+     "domaine": "outils",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Manutention",
+      "Chariot"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne",
+      "genre": "note",
+      "carnetId": "zz-chariot",
+      "etiquette": "constat",
+      "citation": "le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne"
+     }
+    ]
+   },
+   "chf": 0.001826,
+   "ms": 813,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3877,
+    "sortie": 119,
+    "total": 3996
+   }
+  }
+ }
+}

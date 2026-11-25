@@ -1,0 +1,50 @@
+{
+ "id": "t7",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — besoin d'une clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+ "brut": {
+  "sujet": {
+   "titre": "Clé à sangle pour filtres",
+   "domaine": "outils",
+   "genreCarnet": "achat",
+   "chemin": [
+    "Outils",
+    "Filtration"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+    "genre": "a-acheter",
+    "carnetNeuf": "Clé à sangle pour filtres",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "outils",
+    "genreCarnet": "achat",
+    "chemin": [
+     "Outils",
+     "Filtration"
+    ],
+    "etatPropose": "note"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "achat",
+  "genreDit": true,
+  "domaine": "outils",
+  "chemin": [
+   "Outils",
+   "Filtration"
+  ],
+  "titre": "Clé à sangle pour filtres"
+ },
+ "juste": false,
+ "fautes": [
+  "chemin Outils › Filtration : 1er niveau ≠ cle|filtr|serrage|outillage",
+  "tâche non proposée"
+ ]
+}

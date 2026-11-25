@@ -1,0 +1,265 @@
+{
+ "passe": "flash38-avec",
+ "cle": "flash38",
+ "contexte": "avec",
+ "modele": "gemini-3.8-flash",
+ "reflexion": "low",
+ "date": "2026-11-25T07:12:27.695Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "sujet": {
+     "titre": "Fuite vanne cuve d'empâtage",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Brassage",
+      "Empâtage"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration.",
+      "genre": "note",
+      "carnetId": "zz-vanne-empatage",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "cuve d'empâtage perd par la vanne du bas"
+     }
+    ]
+   },
+   "chf": 0.010797,
+   "ms": 4267,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3883,
+    "sortie": 375,
+    "total": 4258
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Embouteillage"
+     ],
+     "etatPropose": "resolu"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetId": "zz-soutireuse",
+      "domaine": "brasserie",
+      "citation": "soutireuse à contre-pression"
+     }
+    ]
+   },
+   "chf": 0.009012,
+   "ms": 3076,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3876,
+    "sortie": 186,
+    "total": 4062
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Commande malt et sels",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Ingrédients",
+      "Malt"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Commander 25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+      "genre": "a-acheter",
+      "carnetId": "zz-malt",
+      "citation": "malt Pilsner"
+     }
+    ]
+   },
+   "chf": 0.0088,
+   "ms": 7043,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3863,
+    "sortie": 166,
+    "total": 4029
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Température fermenteur 3 trop haute",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Température"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19 °C",
+      "genre": "note",
+      "carnetId": "zz-temp-fermenteur",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19"
+     }
+    ]
+   },
+   "chf": 0.009235,
+   "ms": 8166,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3880,
+    "sortie": 209,
+    "total": 4089
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse d'été devant l'entrée",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+      "genre": "note",
+      "carnetId": "zz-terrasse",
+      "domaine": "local",
+      "citation": "terrasse"
+     }
+    ]
+   },
+   "chf": 0.010448,
+   "ms": 5283,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3862,
+    "sortie": 342,
+    "total": 4204
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende douane déclaration manquante",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Douane"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+      "genre": "note",
+      "carnetId": "zz-douane",
+      "citation": "la douane"
+     }
+    ]
+   },
+   "chf": 0.00882,
+   "ms": 3375,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3864,
+    "sortie": 168,
+    "total": 4032
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour filtres",
+     "domaine": "outils",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Outils",
+      "Filtration"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetId": "zz-filtres",
+      "citation": "boîtiers des filtres à cartouche"
+     }
+    ]
+   },
+   "chf": 0.008924,
+   "ms": 4862,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3874,
+    "sortie": 177,
+    "total": 4051
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Chariot élévateur bloqué en hauteur",
+     "domaine": "outils",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Manutention",
+      "Chariot"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne",
+      "genre": "note",
+      "carnetId": "zz-chariot",
+      "domaine": "outils",
+      "etiquette": "constat",
+      "citation": "chariot élévateur"
+     }
+    ]
+   },
+   "chf": 0.010664,
+   "ms": 5839,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3877,
+    "sortie": 362,
+    "total": 4239
+   }
+  }
+ }
+}

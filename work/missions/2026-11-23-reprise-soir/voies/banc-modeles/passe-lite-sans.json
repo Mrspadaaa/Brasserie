@@ -1,0 +1,271 @@
+{
+ "passe": "lite-sans",
+ "cle": "lite",
+ "contexte": "sans",
+ "modele": "gemini-3.5-flash-lite",
+ "reflexion": "low",
+ "date": "2026-11-25T07:11:41.632Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "sujet": {
+     "titre": "Fuite vanne cuve d'empâtage",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Brassage",
+      "Cuve"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+      "genre": "note",
+      "carnetNeuf": "Cuve d'empâtage",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "brasserie",
+      "etiquette": "constat",
+      "citation": "la cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration"
+     }
+    ]
+   },
+   "chf": 0.001891,
+   "ms": 1331,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3809,
+    "sortie": 148,
+    "total": 3957
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Fermenteur 3 température trop haute",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Régulation"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19",
+      "genre": "note",
+      "carnetNeuf": "Fermenteur 3 température",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "caracteristique": {
+       "nom": "température",
+       "sens": "moins",
+       "unite": "°C"
+      }
+     }
+    ]
+   },
+   "chf": 0.002139,
+   "ms": 1075,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3812,
+    "sortie": 227,
+    "total": 4039
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Soutireuse"
+     ],
+     "etatPropose": "resolu"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetNeuf": "Soutireuse à contre-pression",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.002053,
+   "ms": 1173,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3807,
+    "sortie": 200,
+    "total": 4007
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Commander malt et sulfate de calcium",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Brassage",
+      "Malt"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "25 kg de malt Pilsner et 1 kg de sulfate de calcium",
+      "genre": "a-acheter",
+      "carnetNeuf": "Malt et sels",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.002002,
+   "ms": 1012,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3804,
+    "sortie": 184,
+    "total": 3988
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse devant l'entrée pour l'été",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "idee",
+      "texte": "Et si on installait une petite terrasse devant l'entrée pour l'été",
+      "carnetNeuf": "Terrasse devant l'entrée",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.00198,
+   "ms": 1154,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3803,
+    "sortie": 177,
+    "total": 3980
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende de la douane",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Assurances"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Régler l'amende de la douane pour la déclaration du trimestre non reçue",
+      "genre": "a-faire",
+      "carnetNeuf": "Amende de la douane",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.001993,
+   "ms": 1221,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3806,
+    "sortie": 181,
+    "total": 3987
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Chariot élévateur",
+     "domaine": "outils",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Chariot"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne",
+      "genre": "note",
+      "carnetNeuf": "Chariot élévateur",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "outils",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Chariot"
+      ],
+      "etatPropose": "cherche",
+      "citation": "le chariot élévateur ne monte plus jusqu'en haut, il fait un bruit de chaîne"
+     }
+    ]
+   },
+   "chf": 0.001887,
+   "ms": 881,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3806,
+    "sortie": 147,
+    "total": 3953
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour boîtiers de filtres",
+     "domaine": "outils",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Outils",
+      "Filtres"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetNeuf": "Clé à sangle",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "outils"
+     }
+    ]
+   },
+   "chf": 0.001819,
+   "ms": 1155,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 3807,
+    "sortie": 125,
+    "total": 3932
+   }
+  }
+ }
+}

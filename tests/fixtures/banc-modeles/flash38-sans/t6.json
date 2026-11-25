@@ -1,0 +1,44 @@
+{
+ "id": "t6",
+ "jeu": "tenue",
+ "passe": "flash38-sans",
+ "contexte": "sans",
+ "texte": "ZZ TEST — la douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+ "brut": {
+  "sujet": {
+   "titre": "Amende douane déclaration manquante",
+   "domaine": "papiers",
+   "genreCarnet": "probleme",
+   "chemin": [
+    "Douane"
+   ],
+   "etatPropose": "note"
+  },
+  "lignes": [
+   {
+    "sorte": "note",
+    "texte": "La douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+    "genre": "note",
+    "carnetNeuf": "Amende douane déclaration manquante",
+    "raisonCarnet": "aucun carnet n'en parle",
+    "domaine": "papiers",
+    "genreCarnet": "probleme",
+    "chemin": [
+     "Douane"
+    ],
+    "etatPropose": "note"
+   }
+  ]
+ },
+ "vu": {
+  "genre": "probleme",
+  "genreDit": true,
+  "domaine": "papiers",
+  "chemin": [
+   "Douane"
+  ],
+  "titre": "Amende douane déclaration manquante"
+ },
+ "juste": true,
+ "fautes": []
+}

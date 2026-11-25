@@ -1,0 +1,298 @@
+{
+ "passe": "hydrogen-sans",
+ "cle": "hydrogen",
+ "contexte": "sans",
+ "modele": "gemini-4-hydrogen",
+ "reflexion": "low",
+ "date": "2026-11-25T07:12:45.149Z",
+ "reponses": {
+  "t1": {
+   "brut": {
+    "sujet": {
+     "titre": "Fuite cuve d'empâtage",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Brassage",
+      "Cuve d'empâtage"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La cuve d'empâtage perd par la vanne du bas, ça goutte pendant toute la filtration",
+      "genre": "note",
+      "carnetNeuf": "Fuite cuve d'empâtage",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.016776,
+   "ms": 5148,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5187,
+    "reflexion": 534,
+    "sortie": 218,
+    "total": 5939
+   }
+  },
+  "t2": {
+   "brut": {
+    "sujet": {
+     "titre": "Fermenteur 3 monte à 24 °C",
+     "domaine": "brasserie",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Fermentation",
+      "Fermenteur"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le fermenteur 3 monte à 24 °C la nuit alors que la consigne est à 19 °C",
+      "genre": "note",
+      "carnetNeuf": "Fermenteur 3 monte à 24 °C",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.016592,
+   "ms": 5150,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5189,
+    "reflexion": 517,
+    "sortie": 215,
+    "total": 5921
+   }
+  },
+  "t3": {
+   "brut": {
+    "sujet": {
+     "titre": "Soutireuse à contre-pression",
+     "domaine": "brasserie",
+     "genreCarnet": "memo",
+     "chemin": [
+      "Conditionnement",
+      "Soutireuse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La nouvelle soutireuse à contre-pression marche nickel, 40 bouteilles sans mousse",
+      "genre": "note",
+      "carnetNeuf": "Soutireuse à contre-pression",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.016817,
+   "ms": 5029,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5184,
+    "reflexion": 617,
+    "sortie": 140,
+    "total": 5941
+   }
+  },
+  "t5": {
+   "brut": {
+    "sujet": {
+     "titre": "Terrasse devant l'entrée",
+     "domaine": "local",
+     "genreCarnet": "idee",
+     "chemin": [
+      "Extérieur",
+      "Terrasse"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "idee",
+      "texte": "Installer une petite terrasse devant l'entrée pour l'été",
+      "titre": "Terrasse devant l'entrée",
+      "carnetNeuf": "Terrasse devant l'entrée",
+      "raisonCarnet": "aucun carnet n'en parle"
+     }
+    ]
+   },
+   "chf": 0.016388,
+   "ms": 5243,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5180,
+    "reflexion": 558,
+    "sortie": 154,
+    "total": 5892
+   }
+  },
+  "t6": {
+   "brut": {
+    "sujet": {
+     "titre": "Amende douane",
+     "domaine": "papiers",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Douane"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "La douane réclame une amende, notre déclaration du trimestre n'est jamais arrivée",
+      "genre": "note",
+      "carnetNeuf": "Amende douane",
+      "raisonCarnet": "Aucun carnet ne parle de la douane",
+      "domaine": "papiers",
+      "etiquette": "constat",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Douane"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.016534,
+   "ms": 6391,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5183,
+    "reflexion": 496,
+    "sortie": 231,
+    "total": 5910
+   }
+  },
+  "t4": {
+   "brut": {
+    "sujet": {
+     "titre": "Malt Pilsner et sulfate de calcium",
+     "domaine": "brasserie",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Brassage",
+      "Ingrédients"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Malt Pilsner, 25 kg",
+      "genre": "a-acheter",
+      "carnetNeuf": "Malt Pilsner et sulfate de calcium",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "unite": "kg",
+      "domaine": "brasserie",
+      "quantite": 25
+     },
+     {
+      "sorte": "note",
+      "texte": "Sulfate de calcium, 1 kg",
+      "genre": "a-acheter",
+      "carnetNeuf": "Malt Pilsner et sulfate de calcium",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "unite": "kg",
+      "domaine": "brasserie",
+      "quantite": 1
+     }
+    ]
+   },
+   "chf": 0.018555,
+   "ms": 6459,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5181,
+    "reflexion": 712,
+    "sortie": 231,
+    "total": 6124
+   }
+  },
+  "t7": {
+   "brut": {
+    "sujet": {
+     "titre": "Clé à sangle pour filtres",
+     "domaine": "outils",
+     "genreCarnet": "achat",
+     "chemin": [
+      "Outillage"
+     ],
+     "etatPropose": "cherche"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Clé à sangle pour ouvrir les boîtiers des filtres à cartouche",
+      "genre": "a-acheter",
+      "carnetNeuf": "Clé à sangle",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "outils",
+      "genreCarnet": "achat",
+      "chemin": [
+       "Outillage"
+      ],
+      "etatPropose": "cherche"
+     }
+    ]
+   },
+   "chf": 0.016244,
+   "ms": 5551,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5183,
+    "reflexion": 457,
+    "sortie": 239,
+    "total": 5879
+   }
+  },
+  "t8": {
+   "brut": {
+    "sujet": {
+     "titre": "Chariot élévateur en panne",
+     "domaine": "local",
+     "genreCarnet": "probleme",
+     "chemin": [
+      "Manutention",
+      "Chariot élévateur"
+     ],
+     "etatPropose": "note"
+    },
+    "lignes": [
+     {
+      "sorte": "note",
+      "texte": "Le chariot élévateur ne monte plus jusqu'en haut, bruit de chaîne",
+      "genre": "note",
+      "carnetNeuf": "Chariot élévateur en panne",
+      "raisonCarnet": "aucun carnet n'en parle",
+      "domaine": "local",
+      "etiquette": "constat",
+      "genreCarnet": "probleme",
+      "chemin": [
+       "Manutention",
+       "Chariot élévateur"
+      ],
+      "etatPropose": "note"
+     }
+    ]
+   },
+   "chf": 0.017031,
+   "ms": 4808,
+   "finish": "STOP",
+   "jetons": {
+    "entree": 5183,
+    "reflexion": 545,
+    "sortie": 235,
+    "total": 5963
+   }
+  }
+ }
+}
