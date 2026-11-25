@@ -1,0 +1,6 @@
+# Dossier c74-tests — CARNET-LISTE-COMPACTE (sa plainte du 25.11)
+
+Défaut : work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md § CARNET-LISTE-COMPACTE ; capture : work/missions/2026-11-23-reprise-soir/plaintes/2026-11-25-carnet-liste-compact.jpg (ouvre-la).
+- R89 (repli avec filtre) : Vitest par le composant (ListeCarnets/ArbreCarnets montés, filtre « je cherche » actif) : toucher l'en-tête de domaine puis de sous-domaine replie ses lignes, retoucher les rend ; idem sans filtre (garde).
+- R90 (densité) : un contrôle Chrome `scripts/controle-liste-compacte.mjs` (puppeteer-core, Chrome de débug 127.0.0.1:9222, ton onglet, page.close() puis disconnect, JAMAIS browser.close()) sur le serveur local de dev avec la fixture du suivi (comme les voies du port D451 : voir work/missions/2026-11-24-port-d451/voies/liste/RESULTAT.md pour lancer le banc et la route), 390 × 844 : mesure la part de la hauteur utile (sous l'en-tête de l'app, au-dessus du champ et de la barre du bas) occupée par les lignes de carnets, et le nombre de lignes visibles sans défiler ; sort « LISTE OK » si ≥ 70 % et ≥ 7 lignes, avec et sans filtre, sinon « LISTE KO <mesures> ». Il doit sortir KO sur le code actuel (écris la sortie au RESULTAT).
+Aucun fichier de src/ modifié.
