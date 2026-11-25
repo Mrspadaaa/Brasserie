@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M2 · Mes notes intactes, la fiche IA au-dessus · 25.11</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* M2 : ses notes ne bougent jamais (ordre, mots). L'IA tient une fiche au-dessus, qui renvoie à chaque note ; ses changements se listent et se décochent. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--mut:#666;--ink:#111;--ia:#6a4fb0;--ok:#3f6b2e;--bad:#a8291f;--att:#7f5b10;--fin:#1f64a3;--stk:#4c6b2a;--prod:#9a4f1e;
+--iabg:color-mix(in srgb,var(--ia) 9%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 13%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 11%,var(--bg));--attbg:color-mix(in srgb,var(--att) 14%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 11%,var(--bg))}
+*{box-sizing:border-box}
+body{margin:0;background:#d9d6d2;font:16px/1.35 "Source Sans 3",system-ui,sans-serif;color:var(--ink);display:flex;flex-wrap:wrap;gap:24px;padding:24px}
+.m2-ecran{width:390px;min-height:844px;background:var(--s1);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.m2-barre{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border-bottom:1px solid var(--line)}
+.m2-barre svg{width:22px;height:22px}
+.m2-barre h1{font-size:18px;margin:0;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m2-dom{display:flex;gap:4px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:14px;color:var(--prod);font-weight:700}
+.m2-dom svg{width:15px;height:15px}
+.m2-fiche{margin:10px;background:var(--bg);border:2px solid var(--ia);border-radius:16px;padding:10px 12px 12px;box-shadow:0 2px 0 color-mix(in srgb,var(--ia) 25%,transparent)}
+.m2-fh{display:flex;align-items:center;gap:6px;color:var(--ia);font-weight:800;font-size:15px;margin-bottom:8px}
+.m2-fh svg{width:18px;height:18px}
+.m2-fh .m2-sp{flex:1}
+.m2-fh .m2-ver{font-weight:600;color:var(--mut);display:flex;gap:4px;align-items:center}
+.m2-grille{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.m2-t{border-radius:12px;padding:7px 9px;position:relative;min-height:62px}
+.m2-t .k{font-size:14px;font-weight:800;display:flex;gap:5px;align-items:center}
+.m2-t .v{font-weight:600;line-height:1.2;margin-top:2px}
+.m2-t .v.n{font-family:"IBM Plex Mono",monospace;font-size:18px}
+.m2-t.oui{background:var(--okbg)}.m2-t.oui .k{color:var(--ok)}
+.m2-t.non{background:var(--badbg)}.m2-t.non .k{color:var(--bad)}
+.m2-t.cout{background:var(--s1)}.m2-t.cout .k{color:var(--ink)}
+.m2-t.dev{background:var(--attbg)}.m2-t.dev .k{color:var(--att)}
+.m2-src{position:absolute;right:6px;top:6px;font-size:14px;font-weight:700;color:var(--mut);background:var(--bg);border-radius:999px;padding:0 6px;line-height:20px}
+.m2-neuf{outline:2.5px solid var(--ia);outline-offset:-2.5px}
+.m2-neuf::after{content:"nouveau";position:absolute;right:6px;bottom:5px;font-size:14px;font-weight:800;color:var(--ia)}
+.m2-etape{display:flex;align-items:center;gap:8px;margin-top:8px;background:var(--ink);color:#fff;border-radius:12px;padding:9px 10px;font-weight:700}
+.m2-etape .m2-av{margin-left:auto;background:#fff;color:var(--ink);border-radius:999px;padding:2px 10px;font-size:14px;white-space:nowrap}
+.m2-conseil{margin-top:8px;background:var(--iabg);border-radius:12px;padding:8px 10px;display:flex;gap:8px}
+.m2-conseil svg{width:18px;height:18px;color:var(--ia);flex:none;margin-top:2px}
+.m2-corr{margin-top:8px;border:1.5px dashed var(--ia);border-radius:12px;padding:7px 10px;display:flex;align-items:center;gap:8px;font-size:15px}
+.m2-corr .x{text-decoration:line-through;color:var(--mut)}
+.m2-corr b{color:var(--ia)}
+.m2-corr .m2-non{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-weight:700;background:var(--bg)}
+.m2-notes{margin:2px 10px 10px}
+.m2-nh{font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:6px 2px}
+.m2-n{display:flex;gap:10px;background:var(--bg);border-radius:10px;padding:8px 10px;margin-bottom:4px;align-items:baseline}
+.m2-n .no{font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--mut);flex:none;width:18px}
+.m2-n.vient{background:color-mix(in srgb,var(--ia) 7%,var(--bg))}
+.m2-saisie{margin-top:auto;background:var(--bg);border-top:1px solid var(--line);padding:8px 10px 14px}
+.m2-chips{display:flex;gap:6px;margin-bottom:7px}
+.m2-chip{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:15px;font-weight:600;white-space:nowrap}
+.m2-chip svg{width:18px;height:18px}
+.m2-chip.lien{border-color:var(--fin);color:var(--fin);background:var(--finbg)}
+.m2-ligne{display:flex;gap:8px;align-items:flex-end}
+.m2-champ{flex:1;min-height:48px;border:1.5px solid var(--line);border-radius:14px;padding:12px;color:var(--mut)}
+.m2-champ.plein{color:var(--ink);border-color:var(--ink)}
+.m2-envoi{width:48px;height:48px;border-radius:50%;background:var(--ia);color:#fff;display:grid;place-items:center;flex:none}
+.m2-envoi svg{width:24px;height:24px}
+.m2-voile{position:absolute;inset:0;background:rgba(0,0,0,.38)}
+.m2-feuille{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:18px 18px 0 0;padding:10px 14px 18px}
+.m2-poig{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.m2-feuille h2{font-size:18px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+.m2-feuille h2 svg{width:18px;height:18px;color:var(--ia)}
+.m2-ch{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--s2)}
+.m2-ch .c{width:26px;height:26px;border-radius:7px;border:2px solid var(--ia);display:grid;place-items:center;flex:none;font-weight:800;color:#fff;background:var(--ia)}
+.m2-ch.off .c{background:var(--bg);color:transparent}
+.m2-ch.off .t{color:var(--mut);text-decoration:line-through}
+.m2-ch .t{flex:1;line-height:1.25}
+.m2-ch .s{font-size:14px;color:var(--mut);white-space:nowrap}
+.m2-actions{display:flex;gap:8px;margin-top:12px}
+.m2-actions button{flex:1;height:46px;border-radius:12px;font:inherit;font-weight:800}
+.m2-actions .a{background:var(--bg);border:1.5px solid var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px}
+.m2-actions .b{background:var(--ink);border:0;color:#fff}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<symbol id="m2-retour" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="m2-maison" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="m2-photo" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="m2-lien" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+<symbol id="m2-ia" viewBox="0 0 24 24"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z M19 15l.9 2.4 2.4.9-2.4.9L19 21.6l-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor"/></symbol>
+<symbol id="m2-annule" viewBox="0 0 24 24"><path d="M9 7H4V2M4.5 7A8.5 8.5 0 1 1 6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="m2-hist" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- 1. Avant : fiche de 21:18 (coût inconnu, devis rangé à tort en achat) ; la note 7 est dans le champ. -->
+<section class="m2-ecran" id="avant">
+  <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
+  <div class="m2-fiche">
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche<span class="m2-sp"></span><span class="m2-ver"><svg width="16" height="16"><use href="#m2-hist"/></svg>21:18</span></div>
+    <div class="m2-grille">
+      <div class="m2-t oui"><div class="k">✓ Trouvé</div><div class="v">Joint du siphon usé</div><span class="m2-src">3</span></div>
+      <div class="m2-t non"><div class="k">✕ Pas trouvé</div><div class="v">Fuite sous la dalle</div><span class="m2-src">4</span></div>
+      <div class="m2-t cout"><div class="k">Coût</div><div class="v" style="color:var(--mut)">inconnu</div></div>
+      <div class="m2-t dev"><div class="k">À acheter</div><div class="v">Devis</div><span class="m2-src">6</span></div>
+    </div>
+    <div class="m2-etape">Contacter l’entreprise X (exemple)<span class="m2-av">→ À venir</span></div>
+  </div>
+  <div class="m2-notes">
+    <div class="m2-nh">Mes notes · 6</div>
+    <div class="m2-n"><span class="no">1</span>Écoulement qui fuit</div>
+    <div class="m2-n"><span class="no">2</span>L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</div>
+    <div class="m2-n"><span class="no">3</span>Pistes : joint du siphon trouvé usé</div>
+    <div class="m2-n"><span class="no">4</span>fuite sous la dalle, pas trouvée.</div>
+    <div class="m2-n"><span class="no">5</span>Contacter l’entreprise X (exemple) pour un sanitaire.</div>
+    <div class="m2-n"><span class="no">6</span>Devis attendu.</div>
+  </div>
+  <div class="m2-saisie">
+    <div class="m2-chips"><span class="m2-chip"><svg><use href="#m2-photo"/></svg>Photo</span><span class="m2-chip lien"><svg><use href="#m2-lien"/></svg>Coller entreprise-x.ch</span></div>
+    <div class="m2-ligne"><div class="m2-champ plein">Estimation 150 CHF (exemple).</div><span class="m2-envoi"><svg><use href="#m2-ia"/></svg></span></div>
+  </div>
+</section>
+
+<!-- 2. Après : note 7 ajoutée telle quelle ; la fiche se met à jour, ses nouveautés cerclées de violet. -->
+<section class="m2-ecran" id="apres">
+  <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
+  <div class="m2-fiche">
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche · 3 changements<span class="m2-sp"></span><span class="m2-ver"><svg width="16" height="16"><use href="#m2-hist"/></svg>21:26</span></div>
+    <div class="m2-grille">
+      <div class="m2-t oui"><div class="k">✓ Trouvé</div><div class="v">Joint du siphon usé</div><span class="m2-src">3</span></div>
+      <div class="m2-t non"><div class="k">✕ Pas trouvé</div><div class="v">Fuite sous la dalle</div><span class="m2-src">4</span></div>
+      <div class="m2-t cout m2-neuf"><div class="k">Coût estimé</div><div class="v n">150 CHF</div><span class="m2-src">7</span></div>
+      <div class="m2-t dev m2-neuf"><div class="k">Devis</div><div class="v">attendu</div><span class="m2-src">6</span></div>
+    </div>
+    <div class="m2-corr"><svg width="18" height="18" style="color:var(--ia)"><use href="#m2-ia"/></svg><span>Devis : <span class="x">à acheter</span> <b>→ attente</b></span><span class="m2-non">Non</span></div>
+    <div class="m2-etape">Contacter l’entreprise X (exemple)<span class="m2-av">→ À venir</span></div>
+    <div class="m2-conseil m2-neuf" style="position:relative;padding-bottom:22px"><svg><use href="#m2-ia"/></svg><span>Joint du siphon d’abord, puis un nettoyage. Flaque encore là : c’est la dalle.</span></div>
+  </div>
+  <div class="m2-notes">
+    <div class="m2-nh">Mes notes · 7 <span style="letter-spacing:0;text-transform:none;font-weight:600">· ▲ 1 à 4 plus haut</span></div>
+    <div class="m2-n"><span class="no">5</span>Contacter l’entreprise X (exemple) pour un sanitaire.</div>
+    <div class="m2-n"><span class="no">6</span>Devis attendu.</div>
+    <div class="m2-n vient"><span class="no">7</span>Estimation 150 CHF (exemple).</div>
+  </div>
+  <div class="m2-saisie">
+    <div class="m2-chips"><span class="m2-chip"><svg><use href="#m2-photo"/></svg>Photo</span><span class="m2-chip lien"><svg><use href="#m2-lien"/></svg>Coller entreprise-x.ch</span></div>
+    <div class="m2-ligne"><div class="m2-champ">Une mini note…</div><span class="m2-envoi"><svg><use href="#m2-ia"/></svg></span></div>
+  </div>
+</section>
+
+<!-- 3. Annuler : toucher l'heure de la fiche ouvre ses changements ; on décoche, ou on revient à la fiche d'avant. Ses notes ne bougent pas. -->
+<section class="m2-ecran" id="annuler">
+  <div class="m2-barre"><svg><use href="#m2-retour"/></svg><h1>Écoulement qui fuit</h1><span class="m2-dom"><svg><use href="#m2-maison"/></svg>Local</span></div>
+  <div class="m2-fiche">
+    <div class="m2-fh"><svg><use href="#m2-ia"/></svg>Fiche · 3 changements<span class="m2-sp"></span><span class="m2-ver"><svg width="16" height="16"><use href="#m2-hist"/></svg>21:26</span></div>
+    <div class="m2-grille">
+      <div class="m2-t oui"><div class="k">✓ Trouvé</div><div class="v">Joint du siphon usé</div></div>
+      <div class="m2-t non"><div class="k">✕ Pas trouvé</div><div class="v">Fuite sous la dalle</div></div>
+      <div class="m2-t cout"><div class="k">Coût estimé</div><div class="v n">150 CHF</div></div>
+      <div class="m2-t dev"><div class="k">À acheter</div><div class="v">Devis</div></div>
+    </div>
+  </div>
+  <div class="m2-voile"></div>
+  <div class="m2-feuille">
+    <div class="m2-poig"></div>
+    <h2><svg><use href="#m2-ia"/></svg>Changé par l’IA à 21:26</h2>
+    <div class="m2-ch"><span class="c">✓</span><span class="t">Coût : inconnu → 150 CHF estimé</span><span class="s">note 7</span></div>
+    <div class="m2-ch off"><span class="c">✓</span><span class="t">Devis : à acheter → attente</span><span class="s">note 6</span></div>
+    <div class="m2-ch"><span class="c">✓</span><span class="t">Conseil : joint du siphon d’abord</span><span class="s">notes 3, 4</span></div>
+    <div class="m2-actions"><button class="a"><svg width="18" height="18"><use href="#m2-annule"/></svg>Fiche de 21:18</button><button class="b">Garder 2 sur 3</button></div>
+  </div>
+</section>
+</body>
+</html>

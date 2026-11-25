@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet, pas un chat · 4 maquettes · 25.11</title>
+<style>
+:root{--bg:#F5F5F5;--carte:#FFFFFF;--fg:#111111;--doux:#666666;--ligne:#E3E3E3;--ia:#6A4FB0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.4 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+.page{max-width:1280px;margin:0 auto;padding:12px}
+h1{font-size:20px;margin:4px 0 8px}
+#a-choisir{background:var(--carte);border:2px solid var(--ia);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+#a-choisir p{margin:4px 0}
+.doux{color:var(--doux)}
+.quatre{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:900px){.quatre{grid-template-columns:repeat(4,1fr)}}
+.m{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:10px}
+.m h2{font-size:17px;margin:0 0 4px}
+.m h2 span{color:var(--ia)}
+.m p{margin:0 0 8px}
+.etats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.etats a{display:block;text-decoration:none;color:var(--doux);font-size:14px;text-align:center}
+.etats img{width:100%;display:block;border-radius:8px;border:1px solid var(--ligne);margin-bottom:2px}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Carnet, pas un chat · 4 maquettes · 25.11</h1>
+
+<div id="a-choisir">
+<p><b>À choisir :</b> laquelle, ou quel mélange, pour le Carnet. Cas réel : « écoulement qui fuit ».</p>
+<p class="doux">Chaque maquette : avant l’envoi · après · annuler. Toutes ont le champ, la photo, « Coller le lien » et le bouton IA. Touche une vignette pour l’ouvrir en grand.</p>
+</div>
+
+<div class="quatre">
+<section class="m">
+<h2><span>M1</span> · Le carnet se range</h2>
+<p>Un seul document : l’IA le réécrit par sections (pistes, étape, coût, conseil), un trait violet sur ce qu’elle a touché ; Annuler remet ton texte tel quel.</p>
+<div class="etats" data-vignette>
+<a href="cap/m1-avant.png"><img src="cap/m1-avant.png" width="780" height="1688" alt="M1 avant l’envoi">avant</a>
+<a href="cap/m1-apres.png"><img src="cap/m1-apres.png" width="780" height="1688" alt="M1 après">après</a>
+<a href="cap/m1-annuler.png"><img src="cap/m1-annuler.png" width="780" height="1688" alt="M1 annuler">annuler</a>
+</div>
+</section>
+
+<section class="m">
+<h2><span>M2</span> · La fiche au-dessus</h2>
+<p>Tes notes ne bougent jamais ; l’IA tient une fiche en tête, chaque case renvoie à sa note, et ses changements se décochent un par un.</p>
+<div class="etats" data-vignette>
+<a href="cap/m2-avant.png"><img src="cap/m2-avant.png" width="780" height="1688" alt="M2 avant l’envoi">avant</a>
+<a href="cap/m2-apres.png"><img src="cap/m2-apres.png" width="780" height="1688" alt="M2 après">après</a>
+<a href="cap/m2-annuler.png"><img src="cap/m2-annuler.png" width="780" height="1688" alt="M2 annuler">annuler</a>
+</div>
+</section>
+
+<section class="m">
+<h2><span>M3</span> · Dans la marge</h2>
+<p>Ta page reste à toi ; l’IA écrit à l’encre violette dans la marge (trouvé, correction, coût, conseil), et la gomme efface une note ou tout ce qu’elle a écrit.</p>
+<div class="etats" data-vignette>
+<a href="cap/m3-avant.png"><img src="cap/m3-avant.png" width="780" height="1688" alt="M3 avant l’envoi">avant</a>
+<a href="cap/m3-apres.png"><img src="cap/m3-apres.png" width="780" height="1688" alt="M3 après">après</a>
+<a href="cap/m3-annuler.png"><img src="cap/m3-annuler.png" width="780" height="1688" alt="M3 annuler">annuler</a>
+</div>
+</section>
+
+<section class="m">
+<h2><span>M4</span> · Deux vues</h2>
+<p>« Mes notes », ton texte brut ; « Organisé », la vue IA très visuelle, chaque bloc porte le numéro de sa note ; un appui long pour la voir, remettre ou retirer.</p>
+<div class="etats" data-vignette>
+<a href="cap/m4-avant.png"><img src="cap/m4-avant.png" width="780" height="1688" alt="M4 Mes notes">Mes notes</a>
+<a href="cap/m4-apres.png"><img src="cap/m4-apres.png" width="780" height="1688" alt="M4 Organisé">Organisé</a>
+<a href="cap/m4-annuler.png"><img src="cap/m4-annuler.png" width="780" height="1688" alt="M4 annuler">annuler</a>
+</div>
+</section>
+</div>
+</div>
+</body>
+</html>

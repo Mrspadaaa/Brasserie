@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M1 · Le carnet se range · écoulement qui fuit · 25.11</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* M1 : un seul document. L'IA le range par sections ; ce qu'elle a touché porte un trait violet ; un toucher annule tout. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--mut:#666;--ink:#111;--ia:#6a4fb0;--ok:#3f6b2e;--bad:#a8291f;--att:#7f5b10;--fin:#1f64a3;--stk:#4c6b2a;--prod:#9a4f1e;
+--iabg:color-mix(in srgb,var(--ia) 10%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 11%,var(--bg));--attbg:color-mix(in srgb,var(--att) 13%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 11%,var(--bg))}
+*{box-sizing:border-box}
+body{margin:0;background:#d9d6d2;font:16px/1.38 "Source Sans 3",system-ui,sans-serif;color:var(--ink);display:flex;flex-wrap:wrap;gap:24px;padding:24px}
+.m1-ecran{width:390px;min-height:844px;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.m1-top{display:flex;align-items:center;gap:8px;padding:10px 12px 0;color:var(--mut);font-size:15px}
+.m1-top svg{width:22px;height:22px}
+.m1-top .m1-sp{flex:1}
+.m1-doc{padding:6px 18px 12px;flex:1}
+.m1-titre{font-size:26px;font-weight:800;line-height:1.1;margin:6px 0 4px;letter-spacing:-.01em}
+.m1-meta{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:15px;margin-bottom:14px}
+.m1-meta .m1-etat{background:var(--finbg);color:var(--fin);font-weight:700;border-radius:999px;padding:1px 10px}
+.m1-meta svg{width:16px;height:16px;color:var(--prod)}
+.m1-p{margin:0 0 10px}
+.m1-tag{display:inline-block;font-size:14px;font-weight:700;border-radius:6px;padding:0 7px;margin-left:4px;vertical-align:1px}
+.m1-tag.achat{background:var(--attbg);color:var(--att)}
+/* rangé */
+.m1-bande{display:flex;align-items:center;gap:8px;background:var(--ia);color:#fff;padding:9px 12px;font-weight:700;font-size:15px}
+.m1-bande svg{width:18px;height:18px}
+.m1-bande .m1-sp{flex:1}
+.m1-bande button{font:inherit;font-weight:800;border:0;border-radius:999px;padding:5px 12px;background:#fff;color:var(--ia);display:flex;gap:5px;align-items:center}
+.m1-sec{margin:0 0 14px;padding-left:10px;border-left:3px solid transparent}
+.m1-sec.ia{border-left-color:var(--ia)}
+.m1-h{font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ia);margin:0 0 5px;display:flex;align-items:center;gap:5px}
+.m1-h svg{width:14px;height:14px}
+.m1-piste{display:flex;align-items:center;gap:10px;border-radius:10px;padding:8px 10px;margin-bottom:6px;font-weight:600}
+.m1-piste .m1-ic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.m1-piste.oui{background:var(--okbg)}.m1-piste.oui .m1-ic{background:var(--ok)}
+.m1-piste.non{background:var(--badbg)}.m1-piste.non .m1-ic{background:var(--bad)}
+.m1-piste small{margin-left:auto;font-size:14px;font-weight:700}
+.m1-piste.oui small{color:var(--ok)}.m1-piste.non small{color:var(--bad)}
+.m1-etape{display:flex;align-items:center;gap:10px;border:2px solid var(--ink);border-radius:12px;padding:9px 10px;font-weight:700}
+.m1-etape .m1-case{width:22px;height:22px;border:2px solid var(--ink);border-radius:6px;flex:none}
+.m1-etape .m1-av{margin-left:auto;background:var(--ink);color:#fff;border-radius:999px;padding:3px 10px;font-size:14px;white-space:nowrap}
+.m1-cout{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:baseline}
+.m1-cout .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px}
+.m1-cout .m1-att{color:var(--att);font-weight:700}
+.m1-barre{text-decoration:line-through;color:var(--mut)}
+.m1-corr{font-size:14px;color:var(--ia);font-weight:700}
+.m1-conseil{background:var(--iabg);border-radius:12px;padding:10px 12px;margin:0}
+/* saisie */
+.m1-saisie{border-top:1px solid var(--line);padding:8px 10px 14px;background:var(--bg)}
+.m1-colle{display:flex;align-items:center;gap:8px;background:var(--finbg);color:var(--fin);border-radius:10px;padding:7px 10px;margin-bottom:8px;font-size:15px}
+.m1-colle svg{width:18px;height:18px;flex:none}
+.m1-colle b{margin-left:auto;background:var(--fin);color:#fff;border-radius:999px;padding:2px 12px}
+.m1-ligne{display:flex;gap:8px;align-items:center}
+.m1-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--s1);display:grid;place-items:center;flex:none;color:var(--ink)}
+.m1-btn svg{width:24px;height:24px}
+.m1-champ{flex:1;min-height:46px;border:1.5px solid var(--line);border-radius:23px;padding:11px 14px;font-size:16px;color:var(--mut)}
+.m1-champ.plein{color:var(--ink);border-color:var(--ink)}
+.m1-envoi{height:46px;border-radius:23px;border:0;background:var(--ia);color:#fff;font:inherit;font-weight:800;padding:0 14px;display:flex;align-items:center;gap:6px;flex:none}
+.m1-envoi svg{width:20px;height:20px}
+.m1-toast{position:absolute;left:12px;right:12px;bottom:92px;background:var(--ink);color:#fff;border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;font-weight:600}
+.m1-toast b{margin-left:auto;color:#d9c9ff}
+.m1-neuf{background:color-mix(in srgb,var(--ink) 6%,var(--bg));border-radius:6px;padding:0 4px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<symbol id="m1-retour" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="m1-plus" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></symbol>
+<symbol id="m1-maison" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="m1-photo" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="m1-lien" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+<symbol id="m1-ia" viewBox="0 0 24 24"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z M19 15l.9 2.4 2.4.9-2.4.9L19 21.6l-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor"/></symbol>
+<symbol id="m1-annule" viewBox="0 0 24 24"><path d="M9 7H4V2M4.5 7A8.5 8.5 0 1 1 6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- 1. Avant l'envoi : ses lignes telles qu'il les a tapées ; la nouvelle mini note est dans le champ. -->
+<section class="m1-ecran" id="avant">
+  <div class="m1-top"><svg><use href="#m1-retour"/></svg>Carnets<span class="m1-sp"></span><svg><use href="#m1-plus"/></svg></div>
+  <div class="m1-doc">
+    <h1 class="m1-titre">Écoulement qui fuit</h1>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-etat">Je cherche</span> · 24 nov.</div>
+    <p class="m1-p">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</p>
+    <p class="m1-p">Pistes : joint du siphon trouvé usé</p>
+    <p class="m1-p">fuite sous la dalle, pas trouvée.</p>
+    <p class="m1-p">Contacter l’entreprise X (exemple) pour un sanitaire.</p>
+    <p class="m1-p">Devis attendu. <span class="m1-tag achat">à acheter</span></p>
+  </div>
+  <div class="m1-saisie">
+    <div class="m1-colle"><svg><use href="#m1-lien"/></svg>Lien copié · entreprise-x.ch<b>Coller</b></div>
+    <div class="m1-ligne">
+      <span class="m1-btn"><svg><use href="#m1-photo"/></svg></span>
+      <div class="m1-champ plein">Estimation 150 CHF (exemple).</div>
+      <button class="m1-envoi"><svg><use href="#m1-ia"/></svg>Ranger</button>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Après : la note est entrée, le document est rangé par sections ; trait violet = touché par l'IA. -->
+<section class="m1-ecran" id="apres">
+  <div class="m1-bande"><svg><use href="#m1-ia"/></svg>Rangé · 5 changements<span class="m1-sp"></span><button><svg width="16" height="16"><use href="#m1-annule"/></svg>Annuler</button></div>
+  <div class="m1-doc">
+    <h1 class="m1-titre">Écoulement qui fuit</h1>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-etat">Je cherche</span> · 24 nov.</div>
+    <div class="m1-sec"><div class="m1-h" style="color:var(--mut)">Constat</div>
+      <p class="m1-p">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</p></div>
+    <div class="m1-sec ia"><div class="m1-h"><svg><use href="#m1-ia"/></svg>Pistes</div>
+      <div class="m1-piste oui"><span class="m1-ic">✓</span>Joint du siphon usé<small>trouvé</small></div>
+      <div class="m1-piste non"><span class="m1-ic">✕</span>Fuite sous la dalle<small>pas trouvé</small></div></div>
+    <div class="m1-sec ia"><div class="m1-h"><svg><use href="#m1-ia"/></svg>Prochaine étape</div>
+      <div class="m1-etape"><span class="m1-case"></span>Contacter l’entreprise X (exemple), sanitaire<span class="m1-av">→ À venir</span></div></div>
+    <div class="m1-sec ia"><div class="m1-h"><svg><use href="#m1-ia"/></svg>Coût</div>
+      <div class="m1-cout"><span>Estimation <span class="m1-neuf">ta note</span></span><span class="v">150 CHF</span>
+      <span>Devis <span class="m1-corr"><span class="m1-barre">à acheter</span> → attente</span></span><span class="m1-att">attendu</span></div></div>
+    <div class="m1-sec ia"><div class="m1-h"><svg><use href="#m1-ia"/></svg>Conseil</div>
+      <p class="m1-conseil">Changer d’abord le joint du siphon, puis nettoyer. Flaque encore là : c’est la dalle, à montrer au sanitaire.</p></div>
+  </div>
+  <div class="m1-saisie">
+    <div class="m1-ligne">
+      <span class="m1-btn"><svg><use href="#m1-photo"/></svg></span>
+      <span class="m1-btn"><svg><use href="#m1-lien"/></svg></span>
+      <div class="m1-champ">Une mini note…</div>
+      <button class="m1-envoi"><svg><use href="#m1-ia"/></svg>Ranger</button>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Annuler : un toucher remet son document comme il l'avait tapé ; sa note reste ; Refaire. -->
+<section class="m1-ecran" id="annuler">
+  <div class="m1-top"><svg><use href="#m1-retour"/></svg>Carnets<span class="m1-sp"></span><svg><use href="#m1-plus"/></svg></div>
+  <div class="m1-doc">
+    <h1 class="m1-titre">Écoulement qui fuit</h1>
+    <div class="m1-meta"><svg><use href="#m1-maison"/></svg>Local · <span class="m1-etat">Je cherche</span> · 24 nov.</div>
+    <p class="m1-p">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</p>
+    <p class="m1-p">Pistes : joint du siphon trouvé usé</p>
+    <p class="m1-p">fuite sous la dalle, pas trouvée.</p>
+    <p class="m1-p">Contacter l’entreprise X (exemple) pour un sanitaire.</p>
+    <p class="m1-p">Devis attendu. <span class="m1-tag achat">à acheter</span></p>
+    <p class="m1-p"><span class="m1-neuf">Estimation 150 CHF (exemple).</span></p>
+  </div>
+  <div class="m1-toast"><svg width="20" height="20"><use href="#m1-annule"/></svg>Rangement annulé, ta note reste<b>Refaire</b></div>
+  <div class="m1-saisie">
+    <div class="m1-ligne">
+      <span class="m1-btn"><svg><use href="#m1-photo"/></svg></span>
+      <span class="m1-btn"><svg><use href="#m1-lien"/></svg></span>
+      <div class="m1-champ">Une mini note…</div>
+      <button class="m1-envoi"><svg><use href="#m1-ia"/></svg>Ranger</button>
+    </div>
+  </div>
+</section>
+</body>
+</html>
