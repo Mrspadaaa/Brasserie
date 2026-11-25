@@ -1,0 +1,11 @@
+# Dossier c74b-tests — ses plaintes du 25.11 matin et les constats de reel-73 et critique-73
+
+Sources : work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md § CHAMP-CARNET-REPLIE, § CARNET-SES-DONNEES-EXISTANTES, § NOTE-PAS-ARTICLE ; voies/reel-73/RESULTAT.md (31 problèmes en 6 causes, R73-n de BUGS.md) ; voies/critique-73/RESULTAT.md (C73-1..6). Captures : work/missions/2026-11-23-reprise-soir/plaintes/2026-11-25-*.jpg (ouvre-les).
+Fixtures : construis des carnets à la FORME de ses vieux carnets (lus avant les correctifs : champs manquants, conditionnements absents, fil en messages bruts sans étiquettes, carnets importés du Planning), anonymisés ; jamais seulement des carnets neufs (L28).
+- R92 (CHAMP-CARNET-REPLIE) : au repos, le champ est une ligne ≤ 44 px ; texte, photo et micro actifs d'un seul toucher ; il grandit avec le texte et redevient une ligne vide. Par le composant (structure, classes, focus).
+- R93 (cause A, données anciennes) : un article lu avant les correctifs montre son CHF/kg recalculé depuis ce qui est stocké (73,80) ou « à relire » — jamais « ? » quand la fiche le connaît ; un rang sans base n'est pas « 1 » ; Choisir sur un prix au gramme ne part jamais à « 0,10 CHF ».
+- R94 (cause B, rendu) : pas de chasse fixe espacée pour α ; pas de bloc Offre vide ; une valeur dite une fois par écran ; Choisir de Chambre froide tient à 390.
+- R95 (cause C + fil ancien) : un lien dans le fil est un lien court (domaine + titre), jamais l'adresse brute avec gclid/utm ; un fil ancien en bulles brutes est rangé à l'ouverture par l'analyse LOCALE (options, état « Résolu », tâche), sans écriture tant qu'il ne valide pas ; le titre n'est pas redit en 1re bulle.
+- R96 (NOTE-PAS-ARTICLE, cause E) : une note qui cite un montant reste une note (au plus une piste au montant relatif « +4 CHF ») ; une phrase de constat n'est jamais un Critère ; un budget importé du Planning n'est pas un Critère ; Quand d'un carnet importé = la date du Planning (même date partout, À faire compris) ; « prix ? » jamais quand le budget est connu.
+- R97 : C73-1 (« semaine du 14 décembre » → sa date, pas « Fin du mois »), C73-2..6.
+SEULEMENT des tests rouges ; aucun fichier de src/ ni functions/ modifié ; une autre voie (c74-fix) écrit src/ui/carnets en ce moment.
