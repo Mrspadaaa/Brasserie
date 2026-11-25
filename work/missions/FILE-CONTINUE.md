@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-25T16:15:29.742Z
+pause: 2026-11-25T16:18:03.256Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -45,7 +45,7 @@ pause: 2026-11-25T16:15:29.742Z
 - [x] (porté, D451) (D451 mode nuit : porter si le critique juge qu une base + greffes répond à tous les besoins, sinon écrire le manque ; après tour 65) Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement — VERDICT : base v01 p3 + greffes v01 p2, v05 p3, v03 p3 (D451/VERDICT.md) ; plan en cours work/missions/2026-11-24-port-d451
 - [x] (porté, D451) (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
-- [ ] URGENT Carnet sur SES carnets (plaintes 25.11 ; historique des tours 73→80 : voies reel-73..reel-80, c74..c79) : c80-fix en cours (mise en page mesurée, bande vide, chiffres espacés) ∥ c81-tests en cours (CARNET-COHERENT) → c81-fix → tour 81 → reel-81 ; ZZ CO2 : option retenue fausse à corriger par geste ; cal-77 restes : CALP-6, CALP-13, ouvrir 251–510 ms, relâcher 196–277 ms
+- [ ] URGENT Carnet sur SES carnets (plaintes 25.11 ; historique des tours 73→80 : voies reel-73..reel-80, c74..c79) : c80-fix en cours (mise en page mesurée, bande vide, chiffres espacés) ∥ c81-tests en cours (CARNET-COHERENT + R120 Comparer + R121 fil rangé) → c81-fix → tour 81 → reel-81 ; ZZ CO2 : option retenue fausse à corriger par geste ; cal-77 restes : CALP-6, CALP-13, ouvrir 251–510 ms, relâcher 196–277 ms
 - [ ] (D454 : A, 25.11) Refaire les carnets ZZ au nouveau format (Reclasser en ligne, sinon gestes, sinon recréer) : voie exemples-a faite (16 ZZ au nouveau format, 11 défauts EXA dont 5 B)
 - [attente] AVANT TOUT PUSH : l historique local contient des relevés de ses données (avant/apres/idb/tous*.json des voies critique-NN, reel-NN) : purger l historique (git filter-repo) avant de pousser, avec son accord
 - [ ] URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser) + R92 CHAMP-CARNET-REPLIE (mini champ, photo et micro toujours actifs) ; tests de R92 et des constats reel-73 dans une voie c74b-tests ; c74-tests 5a522f29a (18/20 rouges, LISTE KO 50 %, 6 lignes) ; c74-fix f9edbd78a, tour 74 en ligne index-Bc5cx_3w.js ; c74b-tests 541de81bd → c74b-fix 1d5cb0cfa (35/50 : R92 champ, R93 CHF/kg, …) → c74c-fix (15 restants + décisions) en cours
