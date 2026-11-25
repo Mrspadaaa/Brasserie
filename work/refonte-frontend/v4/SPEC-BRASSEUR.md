@@ -2921,3 +2921,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 matin (Carnet, champ d'écriture entouré, capture plaintes/2026-11-25-champ-ouvert.jpg) : « Le chat tout le temps ouvert, ça peut juste être un mini champs text qui se déplie avec les 2 actionnable tout le temps actifs ??? »
 - 25.11 matin (champ du carnet) : « Le champs text aussi toujours actif, je veux pas + d'action pour écrire... »
 - 25.11 matin (carnet ZZ « malt pilsner en rupture », fil en bulles brutes, capture plaintes/2026-11-25-notes-vrac.jpg) : « Mais les notes sont complètement en vrac ? Je comprends pas, qu'est-ce qui c'est passé ??? »
+- 25.11 matin (une note « Autre fournisseur : en stock, 4 CHF de plus le sac. » devenue un ARTICLE à 4 CHF avec veille du prix et Choisir, capture plaintes/2026-11-25-note-devenue-article.jpg) : « ¿?????? »

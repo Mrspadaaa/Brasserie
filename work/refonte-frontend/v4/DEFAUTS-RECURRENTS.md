@@ -560,3 +560,8 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - Ses mots : « Le chat tout le temps ouvert, ça peut juste être un mini champs text qui se déplie avec les 2 actionnable tout le temps actifs ??? » (capture plaintes/2026-11-25-champ-ouvert.jpg).
 - Défaut : le champ « Ajouter à … » (photo, micro) et le + occupent en permanence une bande haute (≈ 70 px) au-dessus de la barre du bas et cachent le fil.
 - Contrôle : au repos, un mini champ (une ligne basse, ≤ 44 px) : le TEXTE, la photo et le micro sont TOUJOURS actifs (sa parole : « Le champs text aussi toujours actif, je veux pas + d'action pour écrire... ») : un seul toucher sur le champ et il écrit, aucun geste de plus ; le champ grandit avec le texte et redevient une ligne quand il est vide. Le champ reste visible (son choix du 24.11 : garder le « chat »). Échoue sur index-L94x-z-O.js.
+
+## NOTE-PAS-ARTICLE (25.11)
+- Ses mots : « ¿?????? » (capture plaintes/2026-11-25-note-devenue-article.jpg).
+- Défaut : la note « Autre fournisseur : en stock, 4 CHF de plus le sac. » est devenue un ARTICLE (titre = la phrase, offre 4 CHF, veille du prix, Choisir → « Part dans À venir : … 4 CHF »). Un écart de prix (« 4 CHF de plus ») est pris pour un prix ; une phrase pour un produit.
+- Contrôle : un article ne naît que d'un lien produit, d'une photo de produit ou de son geste « Ajouter un article » ; une note qui cite un montant reste une note (au plus une option/piste du problème, avec un montant RELATIF dit comme tel : « +4 CHF le sac ») ; jamais de veille ni de Choisir sur une phrase. Échoue sur index-L94x-z-O.js (carnet ZZ malt pilsner).
