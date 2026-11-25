@@ -19,7 +19,7 @@ npx tsc --noEmit > "$S/t4-tsc.log" 2>&1 || { tail -15 "$S/t4-tsc.log"; echo TYPE
 npx vitest run tests/unit/proprietes > "$S/t4-regles.log" 2>&1 || { tail -20 "$S/t4-regles.log"; echo REGLES KO; rm -f .env; exit 1; }; echo REGLES OK
 rm -f .env; echo "W=$W"; [ -n "$DEPLOYER" ] || { echo "PRET, NON DEPLOYE"; exit 0; }
 npx firebase deploy --only hosting --project brasserie-l-affinee --non-interactive 2>&1 | grep -E "Deploy complete|Error|release" | head -4
-cd "$P"; T=en-ligne/2026-11-23-tour75
-git tag -a $T $H -m "Tour 75 du 25.11 en ligne"  # tag local seulement : dépôt public, captures de l app réelle (24.11)
+cd "$P"; T=en-ligne/2026-11-23-tour76
+git tag -a $T $H -m "Tour 76 du 25.11 en ligne"  # tag local seulement : dépôt public, captures de l app réelle (24.11)
 curl -s https://brasserie-l-affinee.web.app/ | grep -o 'assets/index-[^"]*\.js' | head -1; grep -o 'assets/index-[^"]*\.js' "$W/dist/index.html" | head -1
 echo FINI
