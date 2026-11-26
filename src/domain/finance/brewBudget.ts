@@ -158,7 +158,31 @@ export interface EstimateBrewBudgetInput {
 const finite = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0;
 const money = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;
 /* B3 (WFR-11) : une recette figée peut porter une levure sans nom (la seule référence de stock) ; un texte absent ne fait jamais tomber l'écran */
-const nameKey = (s: string | undefined) => (s ?? '').trim().toLocaleLowerCase('fr-CH');
+/* PERF (nuit du 26.11) : le Bord passait ≈ 1,3 s (CPU ×4) dans resolveBudgetStock, appelé pour chaque demande de chaque brassin planifié, pour chaque
+   brassin estimé : la clé de nom (toLocaleLowerCase, lent) était recalculée pour tout le stock à chaque appel. Mémo des clés et index du stock (méthode
+   standard : jointure par table de hachage), même résultat : premier article par référence, articles du même nom dans l'ordre du stock. */
+const clesNoms = new Map<string, string>();
+const nameKey = (s: string | undefined) => {
+  const t = s ?? '';
+  let k = clesNoms.get(t);
+  if (k === undefined) { k = t.trim().toLocaleLowerCase('fr-CH'); if (clesNoms.size > 20000) clesNoms.clear(); clesNoms.set(t, k); }
+  return k;
+};
+type IndexStock = { articles: StockItem[]; parRef: Map<string, StockItem>; parNom: Map<string, StockItem[]>; parRefCle: string[]; noms: (string | undefined)[] };
+const indexDesStocks = new WeakMap<StockItem[], IndexStock>();
+/** Index valable tant que le tableau garde les mêmes articles (même objets, même ordre) : un tableau modifié sur place est réindexé. */
+function indexStock(stock: StockItem[]): IndexStock {
+  const ancien = indexDesStocks.get(stock);
+  if (ancien && ancien.articles.length === stock.length && ancien.articles.every((a, i) => a === stock[i] && a.ref === (ancien.parRefCle[i] ?? a.ref) && a.name === ancien.noms[i])) return ancien;
+  const parRef = new Map<string, StockItem>(), parNom = new Map<string, StockItem[]>();
+  for (const s of stock) {
+    if (!parRef.has(s.ref)) parRef.set(s.ref, s);
+    const k = nameKey(s.name); const l = parNom.get(k); if (l) l.push(s); else parNom.set(k, [s]);
+  }
+  const index = { articles: [...stock], parRef, parNom, parRefCle: stock.map(s => s.ref), noms: stock.map(s => s.name) };
+  indexDesStocks.set(stock, index);
+  return index;
+}
 export const demandKey = (name: string | undefined, unit: string | undefined, stockItemRef?: string) => `${nameKey(name)}|${(unit ?? '').trim().toLowerCase()}${stockItemRef ? `|ref:${stockItemRef}` : ''}`;
 
 /** Whole-recipe requirements, including additions after the brew day. */
@@ -200,11 +224,12 @@ export function brewBudgetDemands(source: Recipe | RecipeSnapshot): BrewBudgetDe
 export function resolveBudgetStock(demand: BrewBudgetDemand, stock: StockItem[], binding?: string): { item?: StockItem; issue?: string } {
   if (binding === '') return { issue: 'Article à associer ou prix à renseigner' };
   const ref = binding ?? demand.stockItemRef;
+  const index = indexStock(stock);
   if (ref) {
-    const item = stock.find(s => s.ref === ref);
+    const item = index.parRef.get(ref);
     return item ? { item } : { issue: 'Article associé introuvable' };
   }
-  const matches = stock.filter(s => nameKey(s.name) === nameKey(demand.name));
+  const matches = index.parNom.get(nameKey(demand.name)) ?? [];
   return matches.length === 1 ? { item: matches[0] } : { issue: matches.length ? 'Plusieurs articles portent ce nom : choisir le bon' : 'Article à associer ou prix à renseigner' };
 }
 
