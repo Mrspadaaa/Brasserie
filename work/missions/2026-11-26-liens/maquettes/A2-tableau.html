@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>A2 — tableau de bord pro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* A2 « tableau de bord pro » : outil de suivi façon Linear. Glyphes d'état, propriétés, sous-listes, barre de commande. */
+:root{--bg:#12100E;--s1:#1A1613;--s2:#221D19;--l1:#2C2521;--l2:#3D342E;--t1:#F5F0EA;--t2:#D8CEC5;--t3:#A3958A;
+--amb:#E3B55D;--red:#F29289;--grn:#A3C97A;--blu:#86B9E6;--ia:#BCA5E8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--t1);font:400 14px/20px "Source Sans 3","Segoe UI",system-ui,sans-serif}
+body{width:390px;min-height:844px;position:relative;overflow:hidden}
+.a2-m{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums;font-size:12px}
+.ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.g{width:14px;height:14px;flex:none}
+.c-amb{color:var(--amb)}.c-red{color:var(--red)}.c-grn{color:var(--grn)}.c-blu{color:var(--blu)}.c-t3{color:var(--t3)}.c-ia{color:var(--ia)}
+/* barre haute */
+.a2-bar{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border-bottom:1px solid var(--l1)}
+.a2-bar b{font-weight:600}
+.a2-bar .a2-sp{flex:1}
+.a2-ib{width:28px;height:28px;display:grid;place-items:center;border-radius:6px;color:var(--t3);border:0;background:none}
+.a2-tabs{display:flex;gap:16px;padding:0 12px;height:36px;align-items:stretch;border-bottom:1px solid var(--l1)}
+.a2-tabs span{display:flex;align-items:center;font-size:14px;color:var(--t3);font-weight:600}
+.a2-tabs span.on{color:var(--t1);box-shadow:inset 0 -2px 0 var(--t1)}
+.a2-chips{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--l1)}
+.a2-chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:1px solid var(--l2);border-radius:6px;font-size:12px;color:var(--t2);background:var(--s1)}
+.a2-chip .a2-m{color:var(--t1)}
+/* liste */
+.a2-gh{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;background:var(--s1);border-bottom:1px solid var(--l1);font-size:12px;font-weight:700;color:var(--t2)}
+.a2-gh .a2-m{color:var(--t3);font-weight:400}
+.a2-gh .a2-sp{flex:1}
+.a2-row{display:flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 28px;border-bottom:1px solid rgba(44,37,33,.6)}
+.a2-row .a2-t{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.a2-row .a2-r{display:flex;align-items:center;gap:6px;color:var(--t3);font-size:12px;white-space:nowrap}
+.a2-row .ico{width:14px;height:14px;color:var(--t3)}
+.a2-row.dim .a2-t{color:var(--t3)}
+.a2-row.sel{background:var(--s2);box-shadow:inset 2px 0 0 var(--red)}
+/* fiche */
+.a2-crumb{display:flex;align-items:center;gap:6px;height:44px;padding:0 12px;border-bottom:1px solid var(--l1);font-size:14px;color:var(--t3)}
+.a2-crumb b{color:var(--t1);font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.a2-pg{padding:10px 12px 0}
+.a2-h1{font-size:20px;line-height:26px;font-weight:700;margin-bottom:8px}
+.a2-props{display:grid;grid-template-columns:84px 1fr;row-gap:2px;margin-bottom:10px}
+.a2-props dt{font-size:12px;color:var(--t3);height:28px;display:flex;align-items:center}
+.a2-props dd{display:flex;align-items:center;min-height:28px}
+.a2-pv{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:6px;border:1px solid transparent;margin-left:-8px}
+.a2-pv:hover,.a2-pv.ed{border-color:var(--l2);background:var(--s1)}
+.a2-box{border:1px solid var(--l1);border-radius:8px;background:var(--s1);margin-bottom:10px;overflow:hidden}
+.a2-bh{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border-bottom:1px solid var(--l1);font-size:12px;font-weight:700;color:var(--t2)}
+.a2-bh .a2-sp{flex:1}
+.a2-bh .a2-m{color:var(--t3);font-weight:400}
+.a2-it{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 10px;border-bottom:1px solid var(--l1)}
+.a2-it:last-child{border-bottom:0}
+.a2-it .a2-t{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.a2-it .a2-r{font-size:12px;color:var(--t3);white-space:nowrap}
+.a2-it.sug{background:rgba(188,165,232,.06);box-shadow:inset 2px 0 0 var(--ia);padding:6px 10px;align-items:flex-start}
+.a2-it.sug .a2-t{white-space:normal;color:var(--t2);line-height:18px}
+.a2-acts{display:flex;gap:4px;flex:none}
+.a2-acts button{height:24px;padding:0 8px;border-radius:6px;font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--l2);background:none;color:var(--t2)}
+.a2-acts button.k{border-color:rgba(188,165,232,.6);color:var(--ia)}
+.a2-feed{font-size:12px;line-height:16px;color:var(--t3)}
+.a2-feed li{list-style:none;display:flex;gap:8px;padding:4px 10px;border-bottom:1px solid var(--l1)}
+.a2-feed li:last-child{border-bottom:0}
+.a2-feed .a2-m{flex:none;width:36px}
+.a2-feed span:last-child{color:var(--t2)}
+/* comparaison */
+.a2-cmp{width:100%;border-collapse:collapse;table-layout:fixed}
+.a2-cmp th,.a2-cmp td{height:32px;padding:0 8px;text-align:right;border-bottom:1px solid var(--l1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a2-cmp th{font-size:12px;font-weight:700;color:var(--t1);height:34px}
+.a2-cmp th:first-child,.a2-cmp td:first-child{text-align:left;width:88px;font-size:12px;color:var(--t3);font-weight:400}
+.a2-cmp td.a2-m{font-size:14px}
+.a2-cmp tr:last-child td{border-bottom:0;font-weight:600}
+.a2-w{background:rgba(163,201,122,.07)}
+.a2-cmp th.a2-w{box-shadow:inset 0 2px 0 var(--grn)}
+.a2-sub{display:block;font:400 12px/14px "Source Sans 3",sans-serif}
+/* barre de commande */
+.a2-dock{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--l1);padding:8px 12px 12px}
+.a2-next{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.a2-pri{flex:1;display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:6px;background:var(--t1);color:#12100E;border:0;font:700 14px "Source Sans 3",sans-serif}
+.a2-pri .a2-m{margin-left:auto;font-weight:500;color:#574A42}
+.a2-sec{height:36px;padding:0 10px;border-radius:6px;border:1px solid var(--l2);background:var(--s1);color:var(--t2);font:600 14px "Source Sans 3",sans-serif;white-space:nowrap}
+.a2-short{display:flex;gap:6px;margin-bottom:8px}
+.a2-kbd{display:inline-flex;align-items:center;height:24px;padding:0 7px;border-radius:5px;border:1px solid var(--l2);border-bottom-width:2px;font-size:12px;color:var(--t2);background:var(--s1)}
+.a2-cmd{display:flex;gap:6px;align-items:center;height:40px;border:1px solid var(--l2);border-radius:8px;background:var(--s1);padding:0 4px 0 10px}
+.a2-cmd input{flex:1;min-width:0;height:36px;border:0;background:none;color:var(--t1);font:16px "Source Sans 3",sans-serif;outline:none}
+.a2-cmd input::placeholder{color:var(--t3)}
+.a2-cb{width:32px;height:32px;border-radius:6px;border:0;background:none;color:var(--t2);display:grid;place-items:center;font-size:16px}
+.a2-cb.ia{color:var(--ia)}
+.a2-cb.on{background:var(--ia);color:#12100E}
+.a2-cb.pl{background:var(--s2);border:1px solid var(--l2)}
+.a2-ruler{position:relative;height:48px;margin:0 0 8px}
+.a2-ruler .ln{position:absolute;left:0;right:0;top:22px;border-top:1px solid var(--l2)}
+.a2-ruler .done{position:absolute;left:0;top:13px;height:3px;background:var(--t3);border-radius:2px}
+.a2-ruler .tk{position:absolute;top:16px;width:0;height:13px;border-left:1px solid var(--t3)}
+.a2-ruler .lb{position:absolute;top:30px;font-size:12px;color:var(--t3);transform:translateX(-50%);white-space:nowrap}
+</style></head><body><div id="a2"></div>
+<script>
+(function(){
+var q=new URLSearchParams(location.search),E=q.get('e')||'liste',IA=q.get('ia')==='1';
+var P={probleme:'<path d="M8 2.2 14.3 13.3H1.7Z"/><path d="M8 6.6v3M8 11.4v.2"/>',achat:'<path d="M1.5 2.5h2l1.5 7.5h7.3l1.4-5.3H4.2"/><circle cx="6.3" cy="13" r=".9"/><circle cx="11.6" cy="13" r=".9"/>',echeance:'<rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/>',idee:'<path d="M6 12h4M6.5 14.2h3"/><path d="M8 1.8a4.2 4.2 0 0 0-2.5 7.6c.4.3.7.8.7 1.3V11h3.6v-.3c0-.5.3-1 .7-1.3A4.2 4.2 0 0 0 8 1.8Z"/>',tache:'<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="2"/><path d="m5 8.2 2 2 4-4.3"/>',vente:'<path d="M2 6.5 3.2 2.5h9.6L14 6.5H2Z"/><path d="M3 6.5v7h10v-7M6.5 13.5v-4h3v4"/>',plus:'<path d="M8 3v10M3 8h10"/>',back:'<path d="M10 3 5 8l5 5"/>',down:'<path d="m4 6 4 4 4-4"/>',search:'<circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/>',filter:'<path d="M2 3.5h12M4.5 8h7M7 12.5h2"/>',more:'<circle cx="3.5" cy="8" r=".6"/><circle cx="8" cy="8" r=".6"/><circle cx="12.5" cy="8" r=".6"/>',pin:'<path d="M8 14.5s4.5-4.2 4.5-7.7a4.5 4.5 0 0 0-9 0c0 3.5 4.5 7.7 4.5 7.7Z"/><circle cx="8" cy="6.8" r="1.5"/>',clock:'<circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.2 1.6"/>',bell:'<path d="M4 11.5V7.5a4 4 0 0 1 8 0v4l1 1H3Z"/><path d="M6.8 14h2.4"/>',box:'<path d="M2.5 5 8 2.5 13.5 5v6L8 13.5 2.5 11Z"/><path d="M2.5 5 8 7.5 13.5 5M8 7.5v6"/>'};
+function ic(n,c){return '<svg class="ico'+(c?' '+c:'')+'" viewBox="0 0 16 16">'+P[n]+'</svg>'}
+/* glyphes d'état, au trait */
+var G={note:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5" stroke-dasharray="2.2 2"/></svg>',
+cherche:'<svg class="g c-amb" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7Z" fill="currentColor" stroke="none"/></svg>',
+decide:'<svg class="g c-blu" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 3.5A3.5 3.5 0 1 1 3.5 7H7Z" fill="currentColor" stroke="none"/></svg>',
+regle:'<svg class="g c-grn" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="currentColor"/><path d="m4.3 7.2 1.8 1.8 3.6-3.8" fill="none" stroke="#12100E" stroke-width="1.6"/></svg>',
+urgent:'<svg class="g c-red" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="3" fill="currentColor"/><path d="M7 4v3.6M7 9.6v.2" stroke="#12100E" stroke-width="1.8" stroke-linecap="round"/></svg>',
+nontrouve:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="m3.2 10.8 7.6-7.6"/></svg>',
+case:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="11" height="11" rx="3"/></svg>',
+attente:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.2V7l2 1.3"/></svg>',
+ia:'<svg class="g c-ia" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5" stroke-dasharray="1.4 1.8"/><path d="M7 4.2 7.8 6.2 9.8 7 7.8 7.8 7 9.8 6.2 7.8 4.2 7 6.2 6.2Z" fill="currentColor" stroke="none"/></svg>'};
+function m(s){return '<span class="a2-m">'+s+'</span>'}
+function num(s){return s.replace(/\d+(?:[,.]\d+)?(?![\dA-Za-zéè])(?:\s?(?:°C|%|bar))?/g,function(x){return m(x)})}
+var T=[
+['Brasserie',[
+['Chaudière en panne jour de brassage','probleme','urgent','demain 7 h'],
+['600 bouteilles 33 cl','achat','cherche','avant le 15'],
+['Frigo de garde en panne','probleme','cherche','devis avant déc.'],
+['Trop de vapeur au brassage','probleme','decide','condenseur'],
+['Odeur de soufre dans un lot','probleme','decide','lot 14'],
+['CO2 qui baisse vite dans un fût','probleme','decide','0,4 bar'],
+['Levure récoltée à tester','tache','note','3e gén.'],
+['Idée bière au sureau','idee','note','4,5 %'],
+['Levure lente à démarrer','probleme','regle','18 °C'],
+['Malt pilsner en rupture','achat','regle','2 sacs'],
+['Pompe qui chauffe','probleme','regle','vanne']]],
+['Local',[
+['Écoulement qui fuit','probleme','cherche','devis attendu'],
+['Inspection électrique, fusible','tache','cherche','testeur'],
+['Ranger la cave','tache','note','sam. 6 déc.']]],
+['Administratif',[['Assurance à renouveler','echeance','note','31 déc.']]],
+['Ventes',[['Bar du Centre veut nos bières','vente','note','rappeler lundi'],['Fête de la bière en juin','idee','note','juin']]]];
+function dock(next,short){
+ return '<div class="a2-dock">'+(next||'')+(short?'<div class="a2-short">'+short.map(function(s){return '<span class="a2-kbd">'+s+'</span>'}).join('')+'</div>':'')+
+ '<div class="a2-cmd"><input placeholder="Noter, coller un lien…" aria-label="Noter"><button class="a2-cb ia'+(IA?' on':'')+'" aria-label="Suggestions de l’IA" data-booster="ia">✦</button><button class="a2-cb pl" aria-label="Ajouter">'+ic('plus')+'</button></div></div>'}
+function liste(){
+ var h='<div class="a2-bar"><b>Carnets</b><span class="a2-m c-t3">17</span><span class="a2-sp"></span><button class="a2-ib" aria-label="Chercher">'+ic('search')+'</button><button class="a2-ib" aria-label="Filtrer">'+ic('filter')+'</button></div>';
+ h+='<div class="a2-tabs"><span class="on">Organisé</span><span>Échéances</span><span>Récents</span></div>';
+ h+='<div class="a2-chips" data-booster="filtre"><span class="a2-chip">'+G.urgent+m('1')+'</span><span class="a2-chip">'+G.cherche+m('5')+'</span><span class="a2-chip">'+G.decide+m('3')+'</span><span class="a2-chip">'+G.note+m('5')+'</span><span class="a2-chip">'+G.regle+m('3')+'</span></div>';
+ T.forEach(function(g){h+='<div class="a2-gh">'+ic('down')+g[0]+'<span class="a2-m">'+g[1].length+'</span><span class="a2-sp"></span><span class="c-t3">'+ic('plus')+'</span></div>';
+  g[1].forEach(function(r,i){h+='<div class="a2-row'+(r[2]==='regle'?' dim':'')+(i===0&&g[0]==='Brasserie'?' sel':'')+'">'+G[r[2]]+'<span class="a2-t">'+r[0]+'</span><span class="a2-r">'+num(r[3])+ic(r[1])+'</span></div>'})});
+ return h+dock('',['/tâche','/prix','/date','@carnet'])}
+function crumb(dom,t){return '<div class="a2-crumb">'+ic('back')+dom+' <span>›</span> <b>'+t+'</b><span style="flex:1"></span>'+ic('more')+'</div>'}
+function acts(){return '<span class="a2-acts"><button class="k">Garder</button><button aria-label="Ignorer">×</button></span>'}
+function probleme(){
+ var h=crumb('Local','Écoulement qui fuit')+'<div class="a2-pg"><div class="a2-h1">Écoulement qui fuit</div>';
+ h+='<dl class="a2-props"><dt>Statut</dt><dd><span class="a2-pv ed">'+G.cherche+'En recherche</span></dd>'+
+ '<dt>Cause</dt><dd><span class="a2-pv">'+G.regle+'Joint du siphon usé</span></dd>'+
+ '<dt>Lieu</dt><dd><span class="a2-pv">'+ic('pin','c-t3')+'Salle, écoulement au sol</span></dd>'+
+ '<dt>Symptôme</dt><dd><span class="a2-pv">Flaque après chaque nettoyage</span></dd></dl>';
+ h+='<div class="a2-box"><div class="a2-bh">Pistes<span class="a2-m">1/2</span><span class="a2-sp"></span></div>'+
+ '<div class="a2-it">'+G.regle+'<span class="a2-t">Joint du siphon</span><span class="a2-r c-grn">usé · trouvé</span></div>'+
+ '<div class="a2-it">'+G.nontrouve+'<span class="a2-t">Fuite sous la dalle</span><span class="a2-r">pas trouvée</span></div></div>';
+ h+='<div class="a2-box"><div class="a2-bh">Démarches<span class="a2-m">0/2</span><span class="a2-sp"></span>'+(IA?'<span class="c-ia">✦ '+m('2')+'</span>':'')+'</div>'+
+ '<div class="a2-it">'+G['case']+'<span class="a2-t">Contacter l’entreprise X, sanitaire</span></div>'+
+ '<div class="a2-it">'+G.attente+'<span class="a2-t">Devis</span><span class="a2-r">attendu</span></div>'+
+ (IA?'<div class="a2-it sug">'+G.ia+'<span class="a2-t">Faire confirmer par X que le joint est la seule cause, avant de valider le devis</span>'+acts()+'</div>'+
+ '':'')+'</div>';
+ h+='<div class="a2-box"><div class="a2-bh">Options<span class="a2-m">'+(IA?'1 + 1':'1')+'</span></div>'+'<div class="a2-it">'+G.attente+'<span class="a2-t">Entreprise X répare</span><span class="a2-r">devis attendu</span></div>'+(IA?'<div class="a2-it sug">'+G.ia+'<span class="a2-t">Changer le joint du siphon toi-même <span class="c-t3">· coût —</span></span>'+acts()+'</div>':'')+'</div>';
+ if(!IA)h+='<div class="a2-box"><div class="a2-bh">Notes<span class="a2-m">6</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">24.11, 21:26</span></div><ul class="a2-feed">'+
+ [['21:26','L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.'],['21:26','Pistes : joint du siphon trouvé usé · fuite sous la dalle, pas trouvée.'],['21:26','Contacter l’entreprise X (exemple) pour un sanitaire.'],['21:26','Devis attendu.']].map(function(x){return '<li><span class="a2-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul></div>';
+ return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="fait">'+G['case'].replace('c-t3','')+'Contacter l’entreprise X</button><button class="a2-sec">Devis reçu</button></div>')}
+function achat(){
+ var h=crumb('Brasserie','600 bouteilles 33 cl')+'<div class="a2-pg"><div class="a2-h1">600 bouteilles 33 cl</div>';
+ h+='<dl class="a2-props"><dt>Statut</dt><dd><span class="a2-pv ed">'+G.cherche+'3 offres à départager</span></dd>'+
+ '<dt>Besoin</dt><dd><span class="a2-pv">'+ic('box','c-t3')+m('600')+' bt · 33 cl</span></dd>'+
+ '<dt>Délai</dt><dd><span class="a2-pv c-amb">'+ic('clock')+'avant le '+m('15')+'</span></dd></dl>';
+ h+='<div class="a2-box"><div class="a2-bh">Comparaison<span class="a2-m">3 offres · CHF</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">tri : total</span></div>'+
+ '<table class="a2-cmp"><colgroup><col style="width:88px"><col><col><col></colgroup>'+
+ '<tr><th></th><th class="a2-w">Fourn. B</th><th>Verallia</th><th>Occasion</th></tr>'+
+ '<tr><td>Prix / bt</td><td class="a2-m a2-w">0,55</td><td class="a2-m">0,42</td><td class="a2-m">0,20</td></tr>'+
+ '<tr><td>Lot</td><td class="a2-m a2-w">× 600</td><td class="a2-m">≥ 1200</td><td class="a2-m">≤ 400</td></tr>'+
+ '<tr><td>Livraison</td><td class="a2-m a2-w">80</td><td class="a2-m c-t3">—</td><td class="a2-m c-t3">—</td></tr>'+
+ '<tr><td>État</td><td class="a2-m a2-w c-t3">—</td><td class="a2-m c-t3">—</td><td class="c-amb" style="font-size:12px">à laver</td></tr>'+
+ '<tr><td>Couvre 600 <span class="c-ia">✦</span></td><td class="a2-w c-grn" style="font-size:12px">oui</td><td class="c-amb" style="font-size:12px">+'+m('600')+' en trop</td><td class="c-red" style="font-size:12px">manque '+m('200')+'</td></tr>'+
+ '<tr><td>Total <span class="c-ia">✦</span></td><td class="a2-m a2-w">410<span class="a2-sub c-grn">le plus bas</span></td><td class="a2-m">504<span class="a2-sub c-t3">+ livr. —</span></td><td class="a2-m">80<span class="a2-sub c-t3">pour 400 bt</span></td></tr></table></div>';
+ h+='<div class="a2-box"><div class="a2-bh">Notes<span class="a2-m">4</span></div><ul class="a2-feed">'+
+ [['n1','Verallia : 0.42/bt, palette de 1200 min'],['n2','Fournisseur B : 0.55/bt par 600, livraison 80 CHF'],['n3','Occasion sur annonce : 0.20/bt, à laver, 400 seulement'],['n4','Besoin avant le 15 du mois']].map(function(x){return '<li><span class="a2-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul></div>';
+ return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="retenir">Retenir Fournisseur B<span class="a2-m">410 CHF</span></button><button class="a2-sec">Plus tard</button></div>')}
+function echeance(){
+ var h=crumb('Administratif','Assurance à renouveler')+'<div class="a2-pg"><div class="a2-h1">Assurance à renouveler</div>';
+ h+='<dl class="a2-props"><dt>Échéance</dt><dd><span class="a2-pv ed c-amb">'+ic('echeance')+m('31.12')+' · dans '+m('35')+' j</span></dd>'+
+ '<dt>Rappel&nbsp;<span class="c-ia">✦</span></dt><dd><span class="a2-pv">'+ic('bell','c-t3')+'fin novembre</span></dd>'+
+ '<dt>Statut</dt><dd><span class="a2-pv">'+G.note+'Noté · '+m('0/5')+'</span></dd></dl>';
+ h+='<div class="a2-ruler" data-booster="delai"><div class="ln"></div><div class="tk" style="left:0"></div><div class="tk" style="left:11%"></div><div class="tk" style="left:calc(100% - 1px);border-color:var(--amb);height:18px;top:14px"></div>'+
+ '<span class="lb" style="left:0;transform:none">auj. '+m('26.11')+'</span><span class="lb c-ia" style="left:11%;top:-2px">✦ rappel</span><span class="lb c-amb" style="left:auto;right:0;transform:none">'+m('31.12')+'</span></div>';
+ h+='<div class="a2-box"><div class="a2-bh">Pièces à réunir<span class="a2-m">0/3</span></div>'+
+ ['Police actuelle','Inventaire du matériel','Chiffre d’affaires '+m('2026')].map(function(x){return '<div class="a2-it">'+G['case']+'<span class="a2-t">'+x+'</span></div>'}).join('')+'</div>';
+ h+='<div class="a2-box"><div class="a2-bh">Démarches<span class="a2-m">0/2</span></div>'+
+ '<div class="a2-it">'+G['case']+'<span class="a2-t">Demander une offre à un 2e assureur</span></div>'+
+ '<div class="a2-it">'+G['case']+'<span class="a2-t">Renouveler l’assurance</span><span class="a2-r c-amb">≤ '+m('31.12')+'</span></div></div>';
+ h+='<div class="a2-box"><div class="a2-bh">Offres<span class="a2-m">0/2</span></div><table class="a2-cmp"><colgroup><col style="width:88px"><col><col></colgroup><tr><th></th><th>Actuelle</th><th>2e assureur</th></tr><tr><td>Offre</td><td class="a2-m c-t3">—</td><td class="a2-m c-t3">—</td></tr></table></div>';
+ return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="fait">'+G['case'].replace('c-t3','')+'Demander l’offre au 2e assureur</button></div>')}
+document.getElementById('a2').innerHTML=({liste:liste,probleme:probleme,achat:achat,echeance:echeance})[E]();
+})();
+</script></body></html>
