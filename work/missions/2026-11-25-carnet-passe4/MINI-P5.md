@@ -34,6 +34,8 @@ Sources : `v01.html … v06.html` (ce dossier), page passe 4 `page/index.html` (
 « Mais toujours bon visuel pour un visal learner. » (26.11) : moins enfantin ne veut pas dire moins visuel. Garder les représentations visuelles
 de sa version (couleur d’état, jauges, barres de prix, icônes au trait) ; un écran qui devient texte ou tableau sec est raté (PRO-MAIS-PAS-CLAIR).
 
+Tableaux : « Dans certaine cas comme les comparaisons, c’est ok mais globalement non » (26.11) — un tableau seulement pour Comparer.
+
 ## Toutes ses remarques (à relire en entier, aucune n'est facultative)
 - `work/refonte-frontend/v4/SPEC-BRASSEUR.md`, lignes du 24.11 à la fin, pour la partie Carnet.
 - `work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md` § CARNET-* (lignes 519 à 580). Puis ORGANISE-TROP-TEXTUEL, FRISE-GENERIQUE, ENTETE-PEU-UTILE,
