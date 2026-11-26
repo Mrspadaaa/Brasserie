@@ -1,0 +1,164 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O · Organisé b, arbre des causes</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0B0908}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15px;line-height:1.25;display:flex;gap:28px;align-items:flex-start;padding:0 0 0 0;width:max-content}
+.o-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:#12100E;display:flex;flex-direction:column;flex:none}
+.o-hd{height:48px;display:flex;align-items:center;gap:4px;padding:0 4px;flex:none}
+.o-bt{width:44px;height:44px;display:grid;place-items:center;color:#D8CEC5;flex:none}
+.o-hd h1{font-size:18px;font-weight:700;color:#F5F0EA;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-chip{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;font-size:14px;color:#D8CEC5;white-space:nowrap;flex:none}
+.o-seg{height:46px;display:flex;align-items:center;gap:8px;padding:0 10px 4px;flex:none;border-bottom:1px solid #2C2521}
+.o-tabs{flex:1;display:flex;height:40px;background:#1A1613;border-radius:11px;padding:3px}
+.o-tabs>span{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:15px;color:#9A8A7E}
+.o-tabs>.on{background:#3D342E;color:#F5F0EA;font-weight:600}
+.o-tabs .n{font-size:14px;color:#9A8A7E;font-weight:400}
+.o-rg{height:40px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;display:flex;align-items:center;gap:5px;font-size:14px;color:#BCA5E8;flex:none}
+.o-main{flex:1;min-height:0;overflow:hidden;padding:10px 12px 0;position:relative}
+.o-pouce{height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none;background:#12100E;border-top:1px solid #2C2521;position:relative;z-index:6}
+.o-champ{flex:1;height:44px;border-radius:22px;background:#221D19;border:1px solid #3D342E;display:flex;align-items:center;padding:0 4px 0 16px;color:#9A8A7E;font-size:15px;min-width:0}
+.o-champ .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-champ i{width:38px;height:40px;display:grid;place-items:center;color:#D8CEC5}
+.o-ia{width:44px;height:44px;border-radius:22px;border:1.5px solid #BCA5E8;color:#BCA5E8;display:grid;place-items:center;font-size:19px;flex:none}
+.o-ia.on{background:#BCA5E8;color:#12100E}
+.o-plus{width:44px;height:44px;border-radius:22px;background:#F2C14E;color:#12100E;display:grid;place-items:center;flex:none}
+.o-barre{height:56px;display:flex;flex:none;border-top:1px solid #2C2521;background:#1A1613;position:relative;z-index:6}
+.o-barre span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:#9A8A7E}
+.o-barre .on{color:#F5F0EA;font-weight:600}
+.o-lab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600}
+.o-s{color:#9A8A7E}
+.o-v{color:#F5F0EA}
+.o-b{font-weight:700}
+.o-sb{font-weight:600}
+.o-d{display:flex;align-items:center}
+.o-e{flex:1;min-width:0}
+.o-nw{white-space:nowrap}
+.o-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-iat{color:#BCA5E8}
+.o-pt{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
+.o-ok{color:#A3C97A;background:rgba(110,155,91,.16)}
+.o-am{color:#E3B55D;background:rgba(227,181,93,.13)}
+.o-bl{color:#8FBEDB;background:rgba(91,138,166,.18)}
+.o-vi{color:#BCA5E8;background:rgba(188,165,232,.13)}
+.o-gr{color:#D8CEC5;background:#2C2521}
+.o-dec{color:#F2C14E;background:rgba(224,160,46,.15)}
+.o-carte{background:#1A1613;border:1px solid #2C2521;border-radius:12px}
+.o-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;font-weight:600;border:1px solid #3D342E;color:#F5F0EA;background:#221D19;white-space:nowrap}
+.o-btn.p{background:#F2C14E;color:#12100E;border-color:#F2C14E}
+.o-btn.ia{border-color:rgba(188,165,232,.5);color:#BCA5E8;background:rgba(188,165,232,.08)}
+.o-q{font-style:normal;color:#D8CEC5}
+.o-src{width:390px;flex:none;color:#D8CEC5;font-size:14px;line-height:1.4;padding-top:0}
+.o-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
+.o-src h2{font-size:15px;color:#F5F0EA;margin:10px 0 4px}
+.o-src p{margin:0 0 6px;color:#D8CEC5}
+.o-src ul{margin:0 0 6px 18px}
+
+.oo-cases{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.oo-case{background:#1A1613;border:1px solid #2C2521;border-radius:12px;padding:8px 11px 9px;height:74px;display:flex;flex-direction:column;justify-content:space-between}
+.oo-case .k{font-size:14px;color:#9A8A7E;display:flex;align-items:center;gap:5px}
+.oo-case .v{font-size:18px;font-weight:700;color:#F5F0EA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oo-case .s{font-size:14px;color:#9A8A7E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oo-case.bl{border-left:3px solid #5B8AA6}
+.oo-case.am{border-left:3px solid #E0A02E}
+.oo-case.ok{border-left:3px solid #6E9B5B}
+.oo-case.ia{border-color:rgba(188,165,232,.35);background:rgba(188,165,232,.06)}
+.oo-sec{margin-top:14px}
+.oo-sech{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}
+.oo-root{display:flex;align-items:center;gap:7px;height:30px;font-size:15px;color:#F5F0EA;font-weight:600}
+.oo-root .s{font-weight:400;font-size:14px;color:#9A8A7E;margin-left:auto}
+.oo-trunk{margin-left:9px;border-left:2px solid #574A42;padding-left:0}
+.oo-row{position:relative;padding:8px 0 8px 14px;min-height:66px}
+.oo-dh{display:flex;font-size:13px;color:#9A8A7E;height:18px}
+.oo-dh span{width:40px;text-align:center}
+.oo-row::before{content:"";position:absolute;left:0;top:21px;width:12px;border-top:2px solid var(--c)}
+.oo-row:last-child{border-left:2px solid #12100E;margin-left:-2px;padding-left:16px}
+.oo-row:last-child::before{left:0;top:0;height:21px;width:14px;border-top:0;border-left:2px solid #574A42;border-bottom:2px solid var(--c);border-bottom-left-radius:8px}
+.oo-l1{display:flex;align-items:center;height:26px}
+.oo-nom{width:126px;font-weight:700;font-size:15px;color:var(--t);white-space:nowrap;flex:none}
+.oo-tr{width:100px;flex:none}
+.oo-l1 .o-pt{margin-left:auto}
+.oo-cit{font-size:14px;color:#9A8A7E;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oo-cit q{color:#D8CEC5;quotes:"« " " »"}
+.oo-dates{display:flex;margin-left:auto;width:226px;font-size:13px;color:#9A8A7E}
+.oo-dates span{width:40px;text-align:center}
+.oo-reg{display:flex;align-items:center;gap:11px;height:58px;border-top:1px solid #2C2521}
+.oo-reg:last-child{border-bottom:1px solid #2C2521}
+.oo-rond{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none}
+.oo-reg .n{font-size:15px;font-weight:700;color:#F5F0EA}
+.oo-reg .s{font-size:14px;color:#9A8A7E}
+.oo-reg .c{margin-left:auto;text-align:right;font-size:14px;color:#9A8A7E;flex:none}
+.oo-reg .c b{display:block;font-size:16px;color:#D8CEC5;font-weight:600}
+.oo-voile{position:absolute;inset:0;background:rgba(8,6,5,.62);z-index:4}
+.oo-feuille{position:absolute;left:0;right:0;bottom:0;z-index:5;background:#221D19;border-top:1px solid #3D342E;border-radius:16px 16px 0 0;padding:8px 12px 10px}
+.oo-poig{width:40px;height:4px;border-radius:2px;background:#574A42;margin:0 auto 8px}
+.oo-sug{display:flex;align-items:center;gap:11px;min-height:62px;border-top:1px solid #3D342E}
+.oo-sug .n{font-size:15px;font-weight:700;color:#F5F0EA}
+.oo-sug .s{font-size:14px;color:#9A8A7E}
+.oo-sug .o-btn{margin-left:auto;height:44px;padding:0 12px;font-size:14px}
+
+.ob-sym{background:#1A1613;border:1px solid #2C2521;border-radius:12px;padding:10px 12px;display:flex;gap:11px;align-items:center}
+.ob-sym .n{font-size:17px;font-weight:700;color:#F5F0EA}
+.ob-sym .s{font-size:14px;color:#9A8A7E;margin-top:2px}
+.ob-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob-cause{border-radius:12px;padding:9px 11px;background:#1A1613;border:1px solid #2C2521;border-top:3px solid var(--c);height:114px;display:flex;flex-direction:column}
+.ob-cause.pt{border-top-style:dashed}
+.ob-cause .e{font-size:14px;font-weight:700;color:var(--t);display:flex;align-items:center;gap:5px}
+.ob-cause .n{font-size:17px;font-weight:700;color:#F5F0EA;margin-top:4px;line-height:1.15}
+.ob-cause .s{font-size:14px;color:#9A8A7E;margin-top:auto}
+.ob-fix{border-radius:12px;padding:9px 11px;background:#221D19;border:1px solid #3D342E;height:132px;display:flex;flex-direction:column;gap:4px}
+.ob-fix .h{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:700;color:#F5F0EA}
+.ob-fix .s{font-size:14px;color:#9A8A7E}
+.ob-fix .cout{margin-top:auto;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #3D342E;padding-top:6px;font-size:14px;color:#9A8A7E}
+.ob-fix .cout b{color:#D8CEC5;font-weight:600}
+.ob-fl{display:flex;justify-content:center;height:22px}
+.ob-ghost{border:1.5px dashed rgba(188,165,232,.55);border-radius:12px;background:rgba(188,165,232,.06);padding:7px 6px 7px 10px;display:flex;align-items:center;gap:6px;min-height:56px;margin-top:8px}
+.ob-ghost .n{font-size:14px;font-weight:700;color:#F5F0EA;line-height:1.15}
+.ob-ghost .s{font-size:13.5px;color:#BCA5E8}
+.ob-ghost .o-plus{width:44px;height:44px;background:transparent;border:1.5px solid #BCA5E8;color:#BCA5E8;margin-left:auto}
+.ob-next{margin-top:12px;display:flex;align-items:center;gap:10px;background:#1A1613;border:1px solid #2C2521;border-radius:12px;padding:8px 8px 8px 12px}
+.ob-che{margin-top:8px;display:flex;align-items:center;gap:0;font-size:14px;color:#9A8A7E}
+.ob-che i{font-style:normal;display:flex;flex-direction:column;align-items:center;flex:1;gap:3px;position:relative}
+.ob-che i::before{content:"";position:absolute;top:6px;left:-50%;right:50%;border-top:2px solid #574A42}
+.ob-che i:first-child::before{display:none}
+.ob-che i b{width:12px;height:12px;border-radius:6px;position:relative;z-index:1}
+.ob-che i span{white-space:nowrap}
+</style></head><body><section class="o-ecran" data-cap="O-organise-b"><div class="o-hd"><span class="o-bt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></span><h1>Écoulement qui fuit</h1><span class="o-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg>Local</span><span class="o-bt" style="color:#9A8A7E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/></svg></span></div><div class="o-seg"><div class="o-tabs"><span class=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/><path d="M14 7l3.5 3.5"/></svg>Mes notes <span class="n">5</span></span><span class="on"><span class="o-iat">✦</span>Organisé</span></div><span class="o-rg">✦ 25.11<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg></span></div><div class="o-main">
+  <div class="ob-sym"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8FBEDB" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg><div class="o-e"><div class="n">Flaque après chaque nettoyage</div><div class="s">écoulement au sol · depuis 2 j · 24.11 21:26 ›</div></div></div>
+  <svg width="366" height="26" viewBox="0 0 366 26" style="display:block"><path d="M183 0V9M183 9H92Q89 9 89 12V26M183 9H274Q277 9 277 12V26" fill="none" stroke="#574A42" stroke-width="2"/></svg>
+  <div class="ob-cols">
+    <div>
+      <div class="ob-cause" style="--c:#6E9B5B;--t:#A3C97A"><span class="e"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Trouvé</span><span class="n">Joint du siphon usé</span><span class="s">24.11 21:26 ›</span></div>
+      <div class="ob-fl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#574A42" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+      <div class="ob-fix" style="border-color:rgba(188,165,232,.4)"><span class="h"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5l3 3 5.7-5.7a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.3-.7-.7-2.3z"/></svg>Changer le joint</span><span class="s">moi-même</span><span class="o-pt o-vi" style="align-self:flex-start;height:24px">✦ d’abord : le moins cher</span><span class="cout">coût<b>prix ?</b></span></div>
+      
+    </div>
+    <div>
+      <div class="ob-cause pt" style="--c:#E3B55D;--t:#E3B55D"><span class="e">? Pas trouvé</span><span class="n">Fuite sous la dalle</span><span class="s">24.11 21:26 ›</span></div>
+      <div class="ob-fl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#574A42" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+      <div class="ob-fix"><span class="h"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8FBEDB" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3.5l2 5-2.4 1.5a11 11 0 0 0 5.4 5.4L15 13.5l5 2V19a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Entreprise X</span><span class="s">sanitaire · n° pas noté</span><span class="o-pt o-bl" style="align-self:flex-start;height:24px">devis attendu · 2 j</span><span class="cout">coût<b>devis ?</b></span></div>
+      
+    </div>
+  </div>
+  <div class="ob-next"><span class="oo-rond" style="background:rgba(188,165,232,.13)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><div class="o-e"><div class="o-s" style="font-size:14px">prochaine</div><div class="o-v o-b" style="font-size:16px">Changer le joint du siphon</div></div><span class="o-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tâche</span></div>
+  <div class="o-lab" style="margin-top:16px">Le chemin de ce carnet</div><div class="ob-che"><i><b style="background:#9A8A7E"></b><span>24.11 créé</span></i><i><b style="background:#6E9B5B"></b><span>21:26 trouvé</span></i><i><b style="background:#5B8AA6"></b><span>25.11 je cherche</span></i><i><b style="background:#12100E;border:2px dashed #5B8AA6"></b><span>auj. devis ?</span></i></div>
+  <div class="ob-ghost" style="margin-top:14px;border-color:#574A42;background:transparent"><span class="oo-rond" style="background:rgba(227,181,93,.13)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E3B55D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg></span><div class="o-e"><div class="n">Si la flaque revient après le joint</div><div class="s" style="color:#9A8A7E">la cause est sous la dalle : Entreprise X</div></div></div>
+  </div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à Écoulement…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><section class="o-ecran" data-cap="O-organise-b-ia"><div class="o-hd"><span class="o-bt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></span><h1>Écoulement qui fuit</h1><span class="o-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg>Local</span><span class="o-bt" style="color:#9A8A7E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/></svg></span></div><div class="o-seg"><div class="o-tabs"><span class=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/><path d="M14 7l3.5 3.5"/></svg>Mes notes <span class="n">5</span></span><span class="on"><span class="o-iat">✦</span>Organisé</span></div><span class="o-rg">✦ 25.11<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg></span></div><div class="o-main">
+  <div class="ob-sym"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8FBEDB" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg><div class="o-e"><div class="n">Flaque après chaque nettoyage</div><div class="s">écoulement au sol · depuis 2 j · 24.11 21:26 ›</div></div></div>
+  <svg width="366" height="26" viewBox="0 0 366 26" style="display:block"><path d="M183 0V9M183 9H92Q89 9 89 12V26M183 9H274Q277 9 277 12V26" fill="none" stroke="#574A42" stroke-width="2"/></svg>
+  <div class="ob-cols">
+    <div>
+      <div class="ob-cause" style="--c:#6E9B5B;--t:#A3C97A"><span class="e"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Trouvé</span><span class="n">Joint du siphon usé</span><span class="s">24.11 21:26 ›</span></div>
+      <div class="ob-fl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#574A42" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+      <div class="ob-fix" style="border-color:rgba(188,165,232,.4)"><span class="h"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5l3 3 5.7-5.7a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.3-.7-.7-2.3z"/></svg>Changer le joint</span><span class="s">moi-même</span><span class="o-pt o-vi" style="align-self:flex-start;height:24px">✦ d’abord : le moins cher</span><span class="cout">coût<b>prix ?</b></span></div>
+      <div class="ob-ghost"><div class="o-e"><div class="n">Prix du joint</div><div class="s">✦ chercher</div></div><span class="o-plus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span></div>
+    </div>
+    <div>
+      <div class="ob-cause pt" style="--c:#E3B55D;--t:#E3B55D"><span class="e">? Pas trouvé</span><span class="n">Fuite sous la dalle</span><span class="s">24.11 21:26 ›</span></div>
+      <div class="ob-fl"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#574A42" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+      <div class="ob-fix"><span class="h"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8FBEDB" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3.5l2 5-2.4 1.5a11 11 0 0 0 5.4 5.4L15 13.5l5 2V19a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Entreprise X</span><span class="s">sanitaire · n° pas noté</span><span class="o-pt o-bl" style="align-self:flex-start;height:24px">devis attendu · 2 j</span><span class="cout">coût<b>devis ?</b></span></div>
+      <div class="ob-ghost"><div class="o-e"><div class="n">Relancer X</div><div class="s">✦ ve 27.11</div></div><span class="o-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    </div>
+  </div>
+  <div class="ob-ghost" style="margin-top:10px"><span class="oo-rond" style="background:rgba(227,181,93,.13)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E3B55D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg></span><div class="o-e"><div class="n">Après le joint : regarder la flaque</div><div class="s">✦ au prochain nettoyage</div></div><span class="o-plus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span></div>
+  <div class="o-s" style="font-size:14px;margin-top:8px;text-align:center"><span class="o-iat">✦</span> 3 suggestions posées sur l’arbre · + pour garder</div>
+  </div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à Écoulement…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia on">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><aside class="o-src"><img src="../page/img/v04-11.webp" alt="source"><h2>Variante b, depuis v04 : l’arbre des causes</h2><p>Les lignes de métro de v04 tournées d’un quart : la flaque en haut, une branche par piste, et sous chaque cause SA façon de régler avec son coût. Répond en 3 s à « trouvé / pas trouvé / quoi faire ».</p><ul><li>Vert plein = trouvé, ambre tireté = pas trouvé, bleu = attendu, violet = l’IA.</li><li>✦ ouvert : les suggestions se posent sur la branche qu’elles servent (fantômes tiretés), pas dans une liste à part.</li><li>Le fil en bas : 4 pas datés de CE carnet, pas une frise d’états.</li></ul></aside></body></html>

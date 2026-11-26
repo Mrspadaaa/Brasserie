@@ -1,0 +1,83 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O · Relecture des mois plus tard (reprise v03)</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0B0908}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15px;line-height:1.25;display:flex;gap:28px;align-items:flex-start;padding:0 0 0 0;width:max-content}
+.o-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:#12100E;display:flex;flex-direction:column;flex:none}
+.o-hd{height:48px;display:flex;align-items:center;gap:4px;padding:0 4px;flex:none}
+.o-bt{width:44px;height:44px;display:grid;place-items:center;color:#D8CEC5;flex:none}
+.o-hd h1{font-size:18px;font-weight:700;color:#F5F0EA;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-chip{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;font-size:14px;color:#D8CEC5;white-space:nowrap;flex:none}
+.o-seg{height:46px;display:flex;align-items:center;gap:8px;padding:0 10px 4px;flex:none;border-bottom:1px solid #2C2521}
+.o-tabs{flex:1;display:flex;height:40px;background:#1A1613;border-radius:11px;padding:3px}
+.o-tabs>span{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:15px;color:#9A8A7E}
+.o-tabs>.on{background:#3D342E;color:#F5F0EA;font-weight:600}
+.o-tabs .n{font-size:14px;color:#9A8A7E;font-weight:400}
+.o-rg{height:40px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;display:flex;align-items:center;gap:5px;font-size:14px;color:#BCA5E8;flex:none}
+.o-main{flex:1;min-height:0;overflow:hidden;padding:10px 12px 0;position:relative}
+.o-pouce{height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none;background:#12100E;border-top:1px solid #2C2521;position:relative;z-index:6}
+.o-champ{flex:1;height:44px;border-radius:22px;background:#221D19;border:1px solid #3D342E;display:flex;align-items:center;padding:0 4px 0 16px;color:#9A8A7E;font-size:15px;min-width:0}
+.o-champ .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-champ i{width:38px;height:40px;display:grid;place-items:center;color:#D8CEC5}
+.o-ia{width:44px;height:44px;border-radius:22px;border:1.5px solid #BCA5E8;color:#BCA5E8;display:grid;place-items:center;font-size:19px;flex:none}
+.o-ia.on{background:#BCA5E8;color:#12100E}
+.o-plus{width:44px;height:44px;border-radius:22px;background:#F2C14E;color:#12100E;display:grid;place-items:center;flex:none}
+.o-barre{height:56px;display:flex;flex:none;border-top:1px solid #2C2521;background:#1A1613;position:relative;z-index:6}
+.o-barre span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:#9A8A7E}
+.o-barre .on{color:#F5F0EA;font-weight:600}
+.o-lab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600}
+.o-s{color:#9A8A7E}
+.o-v{color:#F5F0EA}
+.o-b{font-weight:700}
+.o-sb{font-weight:600}
+.o-d{display:flex;align-items:center}
+.o-e{flex:1;min-width:0}
+.o-nw{white-space:nowrap}
+.o-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-iat{color:#BCA5E8}
+.o-pt{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
+.o-ok{color:#A3C97A;background:rgba(110,155,91,.16)}
+.o-am{color:#E3B55D;background:rgba(227,181,93,.13)}
+.o-bl{color:#8FBEDB;background:rgba(91,138,166,.18)}
+.o-vi{color:#BCA5E8;background:rgba(188,165,232,.13)}
+.o-gr{color:#D8CEC5;background:#2C2521}
+.o-dec{color:#F2C14E;background:rgba(224,160,46,.15)}
+.o-carte{background:#1A1613;border:1px solid #2C2521;border-radius:12px}
+.o-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;font-weight:600;border:1px solid #3D342E;color:#F5F0EA;background:#221D19;white-space:nowrap}
+.o-btn.p{background:#F2C14E;color:#12100E;border-color:#F2C14E}
+.o-btn.ia{border-color:rgba(188,165,232,.5);color:#BCA5E8;background:rgba(188,165,232,.08)}
+.o-q{font-style:normal;color:#D8CEC5}
+.o-src{width:390px;flex:none;color:#D8CEC5;font-size:14px;line-height:1.4;padding-top:0}
+.o-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
+.o-src h2{font-size:15px;color:#F5F0EA;margin:10px 0 4px}
+.o-src p{margin:0 0 6px;color:#D8CEC5}
+.o-src ul{margin:0 0 6px 18px}
+
+.ol-sub{padding:0 14px 6px 48px;font-size:14px;color:#9A8A7E;flex:none;margin-top:-6px}
+.ol-c{border-radius:12px;border:1.5px solid rgba(188,165,232,.5);padding:10px 12px}
+.ol-c blockquote{border-left:3px solid #BCA5E8;padding-left:9px;margin-top:6px;font-size:15px;color:#D8CEC5;font-style:italic}
+.ol-c .d{font-size:13.5px;color:#9A8A7E;padding-left:12px}
+.ol-k{display:flex;align-items:center;gap:9px;min-height:40px;border-top:1px solid #2C2521;font-size:15px}
+.ol-k .dt{margin-left:auto;font-size:14px;color:#9A8A7E;flex:none}
+.ol-ab{display:flex;align-items:center;gap:10px;margin-top:10px;background:#1A1613;border:1px solid #2C2521;border-radius:12px;padding:9px 12px}
+.ol-ab .x{flex:1;display:flex;align-items:center;gap:8px}
+.ol-ab .x b{display:block;font-size:15px;color:#F5F0EA}
+.ol-ab .x span{font-size:13px;color:#9A8A7E}
+</style></head><body><section class="o-ecran" data-cap="O-relecture"><div class="o-hd"><span class="o-bt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></span><h1>Trop de vapeur au brassage</h1><span class="o-chip" style="padding:0 8px" title="Brassage"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20c-2-2.5 2-4-0-7s2-4.5 0-7M13 20c-2-2.5 2-4 0-7s2-4.5 0-7M18 20c-2-2.5 2-4 0-7s2-4.5 0-7"/></svg></span><span class="o-bt" style="color:#9A8A7E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="19" cy="12" r="1.2" fill="currentColor"/></svg></span></div><div class="ol-sub">résolu le 9.12.2026 · il y a 3 mois · Brasserie › Brassage</div><div class="o-seg"><div class="o-tabs"><span class=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/><path d="M14 7l3.5 3.5"/></svg>Mes notes <span class="n">12</span></span><span class="on"><span class="o-iat">✦</span>Organisé</span></div><span class="o-rg">✦ 9.12<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#BCA5E8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5L4 9l4 4"/></svg></span></div><div class="o-main">
+  <div class="ol-c"><div class="o-d" style="gap:8px"><span class="o-iat" style="font-size:17px">✦</span><span class="o-v o-b" style="font-size:17px">Pourquoi tu as pris ça</span></div>
+  <div style="font-size:16px;color:#F5F0EA;margin-top:5px">Le <b>condenseur n° 2 (US)</b>, 540 CHF, plutôt que le n° 1 ou l’humidificateur.</div>
+  <blockquote>« Le 2e pas en stock, à surveiller. »</blockquote><div class="d">24.11 · tes lignes ›</div>
+  <blockquote>« De nouveau en stock aux États-Unis. Achat fin du mois. »</blockquote><div class="d">27.11 · tes lignes ›</div>
+  <div class="o-lab" style="margin-top:10px;margin-bottom:2px">Ce que tu savais alors</div>
+  <div class="ol-k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>n° 2 : de nouveau en stock</span><span class="dt">27.11</span></div>
+  <div class="ol-k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8FBEDB" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20c-2-2.5 2-4-0-7s2-4.5 0-7M13 20c-2-2.5 2-4 0-7s2-4.5 0-7M18 20c-2-2.5 2-4 0-7s2-4.5 0-7"/></svg><span>n° 1 : dispo et adapté</span><span class="dt">24.11</span></div>
+  <div class="ol-k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg><span class="o-s">Humidificateur : « finalement pas utile »</span><span class="dt">25.11</span></div>
+  <div class="ol-k"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E3B55D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg><span>n° 2 plutôt que n° 1 : <span class="o-s">tes notes ne le disent pas</span></span></div>
+  </div>
+  <div class="ol-ab"><div class="x"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F29289" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 20c-2-2.5 2-4-0-7s2-4.5 0-7M13 20c-2-2.5 2-4 0-7s2-4.5 0-7M18 20c-2-2.5 2-4 0-7s2-4.5 0-7"/></svg><div><b>Vapeur aux murs</b><span>18.11 · « ça coule »</span></div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg><div class="x" style="flex:.8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A3C97A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b>3 brassins secs</b><span>9.12 · 21 j</span></div></div></div>
+  <div class="ol-ab" style="border-style:dashed"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E3B55D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5l3 3 5.7-5.7a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.3-.7-.7-2.3z"/></svg><div class="o-e" style="font-size:15px"><b class="o-v">Si ça revient :</b> autre système, jamais essayé</div></div>
+  <span class="o-btn" style="width:100%;margin-top:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/><path d="M14 7l3.5 3.5"/></svg>Voir dans Mes notes</span>
+  </div><div class="o-pouce"><div class="o-champ" style="padding-left:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><span class="t" style="margin-left:8px">Chercher dans les résolus…</span></div><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><aside class="o-src"><img src="../page/img/v03-16.webp" alt="source"><h2>Sa version : v03, Relecture (rang 3, « Bof »)</h2><p>Gardé, et gardé simple : « Pourquoi tu as pris ça » avec ses notes citées et datées, « Ce que tu savais alors » ligne par ligne, « tes notes ne le disent pas », avant → après, « Si ça revient », Voir dans Mes notes, la recherche dans les résolus au pouce.</p><ul>
+<li>Scène du ma 16.3.2027 (« il y a 3 mois »). Citations : la 1re est SA note du 24.11 ; la 2e (27.11) est la suite fictive, d’après ses mots « de nouveau [en stock] … Achat fin du mois ».</li>
+<li>Avant → après sans photo inventée (aucune dans ses notes) : ses mots « ça coule sur les murs » face à « 3 brassins secs ».</li>
+<li>Retiré : « Toujours le bon choix ? Oui / Pas sûr » (question non demandée, PAS-DE-HARCELEMENT) ; la ligne des autres résolus sous le pli.</li></ul></aside></body></html>

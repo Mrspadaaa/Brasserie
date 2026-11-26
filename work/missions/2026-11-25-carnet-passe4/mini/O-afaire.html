@@ -1,0 +1,94 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O · À faire, tous les carnets (reprise v01)</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0B0908}
+body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15px;line-height:1.25;display:flex;gap:28px;align-items:flex-start;padding:0 0 0 0;width:max-content}
+.o-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:#12100E;display:flex;flex-direction:column;flex:none}
+.o-hd{height:48px;display:flex;align-items:center;gap:4px;padding:0 4px;flex:none}
+.o-bt{width:44px;height:44px;display:grid;place-items:center;color:#D8CEC5;flex:none}
+.o-hd h1{font-size:18px;font-weight:700;color:#F5F0EA;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-chip{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;font-size:14px;color:#D8CEC5;white-space:nowrap;flex:none}
+.o-seg{height:46px;display:flex;align-items:center;gap:8px;padding:0 10px 4px;flex:none;border-bottom:1px solid #2C2521}
+.o-tabs{flex:1;display:flex;height:40px;background:#1A1613;border-radius:11px;padding:3px}
+.o-tabs>span{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:15px;color:#9A8A7E}
+.o-tabs>.on{background:#3D342E;color:#F5F0EA;font-weight:600}
+.o-tabs .n{font-size:14px;color:#9A8A7E;font-weight:400}
+.o-rg{height:40px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;display:flex;align-items:center;gap:5px;font-size:14px;color:#BCA5E8;flex:none}
+.o-main{flex:1;min-height:0;overflow:hidden;padding:10px 12px 0;position:relative}
+.o-pouce{height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none;background:#12100E;border-top:1px solid #2C2521;position:relative;z-index:6}
+.o-champ{flex:1;height:44px;border-radius:22px;background:#221D19;border:1px solid #3D342E;display:flex;align-items:center;padding:0 4px 0 16px;color:#9A8A7E;font-size:15px;min-width:0}
+.o-champ .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-champ i{width:38px;height:40px;display:grid;place-items:center;color:#D8CEC5}
+.o-ia{width:44px;height:44px;border-radius:22px;border:1.5px solid #BCA5E8;color:#BCA5E8;display:grid;place-items:center;font-size:19px;flex:none}
+.o-ia.on{background:#BCA5E8;color:#12100E}
+.o-plus{width:44px;height:44px;border-radius:22px;background:#F2C14E;color:#12100E;display:grid;place-items:center;flex:none}
+.o-barre{height:56px;display:flex;flex:none;border-top:1px solid #2C2521;background:#1A1613;position:relative;z-index:6}
+.o-barre span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:#9A8A7E}
+.o-barre .on{color:#F5F0EA;font-weight:600}
+.o-lab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600}
+.o-s{color:#9A8A7E}
+.o-v{color:#F5F0EA}
+.o-b{font-weight:700}
+.o-sb{font-weight:600}
+.o-d{display:flex;align-items:center}
+.o-e{flex:1;min-width:0}
+.o-nw{white-space:nowrap}
+.o-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-iat{color:#BCA5E8}
+.o-pt{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
+.o-ok{color:#A3C97A;background:rgba(110,155,91,.16)}
+.o-am{color:#E3B55D;background:rgba(227,181,93,.13)}
+.o-bl{color:#8FBEDB;background:rgba(91,138,166,.18)}
+.o-vi{color:#BCA5E8;background:rgba(188,165,232,.13)}
+.o-gr{color:#D8CEC5;background:#2C2521}
+.o-dec{color:#F2C14E;background:rgba(224,160,46,.15)}
+.o-carte{background:#1A1613;border:1px solid #2C2521;border-radius:12px}
+.o-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;font-weight:600;border:1px solid #3D342E;color:#F5F0EA;background:#221D19;white-space:nowrap}
+.o-btn.p{background:#F2C14E;color:#12100E;border-color:#F2C14E}
+.o-btn.ia{border-color:rgba(188,165,232,.5);color:#BCA5E8;background:rgba(188,165,232,.08)}
+.o-q{font-style:normal;color:#D8CEC5}
+.o-src{width:390px;flex:none;color:#D8CEC5;font-size:14px;line-height:1.4;padding-top:0}
+.o-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
+.o-src h2{font-size:15px;color:#F5F0EA;margin:10px 0 4px}
+.o-src p{margin:0 0 6px;color:#D8CEC5}
+.o-src ul{margin:0 0 6px 18px}
+
+.oa-app{height:50px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none}
+.oa-logo{width:32px;height:32px;border-radius:9px;background:#F2C14E;display:grid;place-items:center;color:#12100E}
+.oa-sub{height:42px;display:flex;align-items:center;gap:4px;padding:0 8px;border-bottom:1px solid #2C2521;flex:none;font-size:15px;white-space:nowrap}
+.oa-sub span{padding:0 8px;height:34px;display:flex;align-items:center;border-radius:9px;color:#9A8A7E}
+.oa-sub .on{background:#3D342E;color:#F5F0EA;font-weight:700}
+.oa-tg{display:flex;gap:6px;align-items:center;height:44px}
+.oa-tg span{height:36px;border-radius:18px;border:1px solid #3D342E;padding:0 14px;display:flex;align-items:center;font-size:15px;color:#D8CEC5}
+.oa-tg .on{background:#F5F0EA;color:#12100E;font-weight:700;border-color:#F5F0EA}
+.oa-h{display:flex;align-items:baseline;gap:7px;height:28px;padding-top:6px;font-size:15px;font-weight:700}
+.oa-h span{font-weight:400;font-size:14px;color:#9A8A7E}
+.oa-l{display:flex;align-items:center;gap:8px;height:48px;border-bottom:1px solid #2C2521}
+.oa-cb{width:44px;height:44px;display:grid;place-items:center;flex:none;margin-left:-8px}
+.oa-cb b{width:22px;height:22px;border-radius:11px;border:2px solid var(--c)}
+.oa-l .ico{width:30px;height:30px;border-radius:8px;background:#2C2521;display:grid;place-items:center;flex:none}
+.oa-l .n{font-size:15px;color:#F5F0EA;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oa-l .s{font-size:13.5px;color:#9A8A7E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oa-l .r{margin-left:auto;text-align:right;flex:none;font-size:14px;color:#D8CEC5}
+.oa-l .r small{display:block;font-size:13px;color:#9A8A7E}
+.oa-l.f .n{color:#9A8A7E;text-decoration:line-through}
+</style></head><body><section class="o-ecran" data-cap="O-afaire"><div class="oa-app"><span class="oa-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg></span><span class="o-v o-b" style="font-size:17px">L’Affinée</span><span class="o-chip" style="margin-left:auto;height:36px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Tout<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span><span class="o-bt" style="width:40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></span></div><div class="oa-sub"><span>Matériel ▾</span><span>Parc</span><span>À venir 11</span><span class="on">Carnets 12</span><span>Réalisés 5</span></div><div class="o-main" style="padding-top:0">
+  <div class="oa-tg"><span>Problèmes 7</span><span class="on">À faire 8</span><span class="o-s" style="border:0;margin-left:auto;font-size:14px">au je 26.11</span></div>
+  <div class="oa-h" style="color:#8FBEDB">Pour avancer<span>je cherche</span></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#5B8AA6"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4.4 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 3-6.6 6-11z"/></svg></span><div class="o-e"><div class="n">Relancer Entreprise X</div><div class="s">Écoulement qui fuit · devis</div></div><div class="r">attendu<small>2 j</small></div></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#5B8AA6"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M3.5 7l17 10M20.5 7l-17 10M9 3.5l3 2.5 3-2.5M9 20.5l3-2.5 3 2.5"/></svg></span><div class="o-e"><div class="n">Comparer les devis</div><div class="s">Frigo de garde en panne</div></div><div class="r">avant lu 1.12<small>dans 5 j</small></div></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#5B8AA6"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L5 13.5h6L10 22l8.5-12h-6z"/></svg></span><div class="o-e"><div class="n">Acheter un testeur de tension</div><div class="s">Inspection électrique · fusible</div></div><div class="r">prix ?</div></div>
+  <div class="oa-h" style="color:#F2C14E">Datés<span>aussi dans À venir</span></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#E0A02E"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.8 18.5A1.7 1.7 0 0 0 6.3 21h11.4a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/></svg></span><div class="o-e"><div class="n">Revérifier le raccord gaz</div><div class="s">CO2 qui baisse · « dans une semaine »</div></div><div class="r">≈ lu 1.12<small>dans 5 j</small></div></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#E0A02E"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5L12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5L12 11.5l8.5-4M12 11.5v9"/></svg></span><div class="o-e"><div class="n">Ranger la cave</div><div class="s">cartons, étagère, vieux seaux</div></div><div class="r">sa 6.12<small>matin · 10 j</small></div></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#E0A02E"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.8 18.5A1.7 1.7 0 0 0 6.3 21h11.4a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/></svg></span><div class="o-e"><div class="n">Sentir le lot 14</div><div class="s">Odeur de soufre · avant mise en fût</div></div><div class="r">≈ ma 8.12<small>dans 12 j</small></div></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#E0A02E"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/></svg></span><div class="o-e"><div class="n">Renouveler l’assurance</div><div class="s">+ offre d’un 2e assureur · 3 pièces</div></div><div class="r">avant le 31.12<small>dans 35 j</small></div></div>
+  <div class="oa-h" style="color:#9A8A7E">Quand j’ai le temps<span>notés</span></div>
+  <div class="oa-l"><span class="oa-cb"><b style="--c:#574A42"></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#D8CEC5" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><div class="o-e"><div class="n">Fête de la bière</div><div class="s">3 bières à la pression, dont une blanche</div></div><div class="r">juin</div></div>
+  <div class="oa-h" style="color:#A3C97A">Fait cette semaine<span>3 · 2 visibles</span></div>
+  <div class="oa-l f"><span class="oa-cb"><b style="border:0;background:#6E9B5B;display:grid;place-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.8 18.5A1.7 1.7 0 0 0 6.3 21h11.4a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/></svg></span><div class="o-e"><div class="n">Raccord gaz changé</div><div class="s">CO2 qui baisse vite · 24.11</div></div></div>
+  <div class="oa-l f"><span class="oa-cb"><b style="border:0;background:#6E9B5B;display:grid;place-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></b></span><span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10l2 14H5z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg></span><div class="o-e"><div class="n">2 sacs de pilsner commandés</div><div class="s">Malt en rupture · 24.11</div></div></div>
+  </div><div class="o-pouce"><div class="o-champ"><span class="t">Une idée, un problème…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><aside class="o-src"><img src="../page/img/v01-13.webp" alt="source"><h2>Sa version : v01, À faire (rang 3)</h2><p>Gardé : la même place (Carnets › À faire), les 4 groupes colorés par état (je cherche bleu, datés ambre, notés gris, fait vert), une case ronde par tâche, l’icône du carnet, la valeur à droite.</p><ul>
+<li>Plus précis : les tâches viennent de SES 12 carnets ZZ (relevé c79), chacune avec son carnet ; les dates sont comptées depuis le je 26.11 (« dans 5 j ») ; « ≈ » quand la date vient d’une formule (« dans une semaine », « dans 2 semaines »). Les montants estimés de v01 (≈ 150, ≈ 35, ≈ 25 CHF) ne sont pas dans ses notes : « prix ? ».</li>
+<li>Plus pratique : case de 44 px ; « Achats datés » devient « Datés » (une échéance n’est pas toujours un achat).</li>
+<li>Moins enfantin : noms réels de 2 à 5 mots ; plus d’emoji ni de pictos colorés, icônes au trait.</li></ul></aside></body></html>
