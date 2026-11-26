@@ -2979,3 +2979,8 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 7:25 : « Montre moi les mini maquettes et autres avant que soit jouable »
 - 26.11 7:25 : « Montre moi les mini maquettes et autres avant que soit jouable »
 - 26.11 7:27 : « Je veux aussi voir les conceptions de mini maquettes qui ont abouti à ces choix de maquette jouable »
+- 26.11 (classement passe 4 par écran, texte complet : work/missions/2026-11-25-carnet-passe4/CLASSEMENT-4.md) : « Noter vite : … 3 M4 (M4 : Directement écrit dans le carnet ) »
+- 26.11 (même classement, Mes notes, sa ligne retrouvée) : « v03 : On peut quand même un peu organiser les notes »
+- 26.11 (même classement, Organisé : écoulement qui fuit) : « base : Pas encore ça mais mieux »
+- 26.11 (même classement, Options et Comparer) : « v02 : Fonctionne mal du on en a vraiment beaucoup... »
+- 26.11 (même classement, Relecture des mois plus tard) : « v03 : Bof »

@@ -619,3 +619,8 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - 26.11 7:23, deuxième refus : « Mais toujours trop simpliste et enfentin ». Deux refus du même élément : changer de genre de solution (L13).
   Contrôle ajouté : pas d'emoji de plus de 20 px, pas de bulles rondes géantes, pas de hachures décoratives, pas de pastilles « comparé » ;
   le visuel passe par la typographie (taille, graisse), l'alignement en colonnes, de petites icônes monochromes et la couleur réservée à l'état.
+
+## COMPARER-BEAUCOUP-D-OPTIONS (26.11, classement passe 4)
+- Ses mots : « v02 : Fonctionne mal du on en a vraiment beaucoup... » (Options et Comparer, rang 3).
+- Contrôle : Comparer tient avec 6 options ou plus à 390 px : les options en lignes défilantes (pas en colonnes qui s'écrasent), le gagnant
+  de chaque critère lisible sans défilement horizontal ; essai sur une fixture à 6 offres.
