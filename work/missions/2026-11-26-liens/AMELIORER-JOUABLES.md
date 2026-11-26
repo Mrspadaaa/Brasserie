@@ -72,5 +72,5 @@ On garde le moteur et les acquis :
 13. **Actions manquantes** : « Relire » un lien (écrit demandes/<id> avec type "relire" ; la puce passe « 🔗 en lecture ») et « Escalader à
     l'IA » (relance la lecture avec sample modelTier "complex", marquée « IA forte »), sur chaque lien et sur la lecture du carnet. Voir l'app :
     src/ui/carnets/apercuCarnet.tsx, ArticlesCarnet.tsx, Bandeau.tsx.
-14. **Tout l'historique** : relire SPEC-BRASSEUR du 16.11 à la fin (Carnet) et DEFAUTS-RECURRENTS § CARNET-* et suivants. Chaque plainte
+14. **Tout l’historique, pour la vision** : relire SPEC-BRASSEUR du 16.11 à la fin (Carnet). « ça doit pas bridé. Il y a eu quelques contre indication mais ça donne peut être une meilleure vision » : une vision, pas une liste qui bride ; ses mots les plus récents priment en cas de contradiction ; seules les règles dures (DEFAUTS-RECURRENTS) sont des critères bloquants.
     devient un critère de ton tableau RESULTAT-AMELIO.md.
