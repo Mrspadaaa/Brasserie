@@ -314,11 +314,12 @@ export function ignoredPurchaseLines(transactions: FinanceTransaction[], stock: 
 function weightedPurchases(transactions: FinanceTransaction[], stock: StockItem[], beforeDate?: string): { prices: Record<string, BrewPrice>; ignored: IgnoredPurchaseLine[] } {
   const totals = new Map<string, { cost: number; quantity: number; unit: string; count: number; date: string; netCost: number }>();
   const ignored: IgnoredPurchaseLine[] = [];
+  const parRef = indexStock(stock).parRef;
   for (const tx of transactions) {
     const date = brewBudgetDateKey(tx.date);
     if (tx.finance?.kind !== 'expense' || tx.finance.voidedAt || !date || (beforeDate && date > beforeDate)) continue;
     for (const line of tx.finance.lines) {
-      const item = stock.find(s => s.ref === line.stockItemRef);
+      const item = line.stockItemRef === undefined ? undefined : parRef.get(line.stockItemRef);
       if (!item || !(line.quantity > 0) || !line.unit || !finite(line.amountCents)) continue;
       const qty = Units.convert(line.quantity, line.unit, item.unit);
       if (qty === null) { ignored.push({ stockRef: item.ref, name: item.name, unit: line.unit, stockUnit: item.unit, description: line.description, date }); continue; }
@@ -359,7 +360,7 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
   for (const batch of input.batches.filter(b => b.id !== batchId && b.status !== 'annule' && b.status !== 'termine')) {
     const pending = (batch as Batch & { stockConsumption?: { pendingItems?: Array<{ stockItemRef: string; quantity: number; unit: string }> } }).stockConsumption?.pendingItems ?? [];
     for (const line of pending) {
-      const item = stockItems.find(s => s.ref === line.stockItemRef);
+      const item = indexStock(stockItems).parRef.get(line.stockItemRef);
       const qty = item ? Units.convert(line.quantity, line.unit, item.unit) : null;
       if (!item || qty === null) { issues.push(`${batch.name} : réservation de fermentation à vérifier`); continue; }
       const used = Math.min(available.get(item.ref) ?? 0, qty);
