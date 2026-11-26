@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet, six styles · 26.11.2026</title>
+<style>
+:root{--fond:#f6f5f2;--carte:#fff;--texte:#1d1c1a;--doux:#5f5c56;--filet:#dedbd4;--accent:#6a4fd6;--ok:#2f7d4f;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fond:#151513;--carte:#1f1e1b;--texte:#ecebe7;--doux:#a9a59d;--filet:#34322d;--accent:#a593ff;--ok:#6cc08f;color-scheme:dark}}
+:root[data-theme="dark"]{--fond:#151513;--carte:#1f1e1b;--texte:#ecebe7;--doux:#a9a59d;--filet:#34322d;--accent:#a593ff;--ok:#6cc08f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:24px;margin:0 0 6px}
+h2{font-size:19px;margin:0}
+p{margin:6px 0}
+.doux{color:var(--doux)}
+.tete{margin-bottom:22px}
+.tete ul{margin:8px 0 0;padding-left:18px}
+.var{background:var(--carte);border:1px solid var(--filet);border-radius:10px;padding:16px;margin:0 0 18px}
+.var header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+.lettre{font-weight:700;color:var(--accent);font-size:19px}
+.notes{font-size:14px;color:var(--doux)}
+.bande{display:flex;gap:10px;overflow-x:auto;padding:12px 0 4px;scroll-snap-type:x mandatory}
+figure{margin:0;flex:0 0 340px;scroll-snap-align:start}
+figure img{width:340px;height:auto;display:block;border:1px solid var(--filet);border-radius:8px}
+figcaption{font-size:14px;color:var(--doux);margin-top:4px}
+.plus{color:var(--ok)}
+.moins{color:var(--doux)}
+.greffe{border-left:3px solid var(--accent);padding:8px 12px;background:var(--carte);border-radius:0 8px 8px 0;margin:10px 0}
+@media (max-width:600px){figure{flex-basis:340px}}
+</style>
+</head>
+<body>
+<main>
+<section class="tete">
+<div id="a-choisir" class="greffe"><strong>À choisir :</strong> le style du Carnet, un genre parmi les six (B3, A2, B1, B2, A1, A3) ou des morceaux de plusieurs. Le prochain jouable le prendra.</div>
+<h1>Carnet : six styles « adultes », à choisir</h1>
+<p class="doux">26.11.2026 · tes mots : « Un petit peu trop enfantin et simpliste » puis « Mais toujours trop simpliste et enfentin ». Six genres différents, les mêmes 4 écrans : la liste en arbre, l'écoulement qui fuit (avec ✦ ouvert), les 600 bouteilles, l'assurance.</p>
+<ul class="doux">
+<li>Tout a le champ texte en bas et le ✦ à côté du « + ». Tes notes telles quelles ; ✦ = ce que l'IA ajoute.</li>
+<li>Bouteilles : aucune offre poussée ; ligne ✦ « prix par bouteille livrée » (B 0,68, Verallia 0,42 hors livraison, occasion 0,20).</li>
+<li>C'est le style seulement. Le parcours suivra ton classement de la passe 4 (rangs 1 : v01 glisser, v04 Mes notes).</li>
+<li>Tu peux prendre un genre, ou des morceaux de plusieurs.</li>
+</ul>
+</section>
+
+<article class="var">
+<header><span class="lettre">B3</span><h2>Cartes de décision</h2><span class="notes">critique 7,5 · personas 8 / 7 / 7,5</span></header>
+<p>Chaque carnet devient des questions : « D'où vient la fuite ? », « Quelle offre ? ». Options côte à côte, chiffrées, ✦ qui remplit la case vide.</p>
+<p class="notes"><span class="plus">+ pense en questions, visuel et adulte</span> · <span class="moins">− cartes un peu hautes</span></p>
+<div class="bande">
+<figure><img src="cap/B-decision-liste.png" alt="B3 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/B-decision-probleme.png" alt="B3 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/B-decision-probleme-ia.png" alt="B3 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/B-decision-achat.png" alt="B3 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/B-decision-echeance.png" alt="B3 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<article class="var">
+<header><span class="lettre">A2</span><h2>Outil pro, façon Linear</h2><span class="notes">critique 7 · personas 6,5 / 7,5 / 7,5</span></header>
+<p>Petits symboles d'état, filtres qui comptent, propriétés en tête, barre d'action au pouce. Règle des dates pour l'assurance.</p>
+<p class="notes"><span class="plus">+ le plus « outil pro », meilleure action au pouce</span> · <span class="moins">− symboles à apprendre</span></p>
+<div class="bande">
+<figure><img src="cap/A2-1-liste.png" alt="A2 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/A2-2-probleme.png" alt="A2 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/A2-2b-probleme-ia.png" alt="A2 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/A2-3-achat.png" alt="A2 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/A2-4-echeance.png" alt="A2 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<article class="var">
+<header><span class="lettre">B1</span><h2>Listes calmes, façon Things</h2><span class="notes">critique 7 · personas 6,5 / 7 / 7</span></header>
+<p>Filets fins, une action par ligne, les 3 prochaines actions datées en tête. « Qui gagne quoi » au-dessus du tableau.</p>
+<p class="notes"><span class="plus">+ calme, comparaison claire</span> · <span class="moins">− l'état se voit peu, risque de faire simple</span></p>
+<div class="bande">
+<figure><img src="cap/B-things-liste.png" alt="B1 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/B-things-probleme.png" alt="B1 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/B-things-probleme-ia.png" alt="B1 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/B-things-achat.png" alt="B1 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/B-things-echeance.png" alt="B1 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<article class="var">
+<header><span class="lettre">B2</span><h2>Cockpit de brassage</h2><span class="notes">critique 6,5 · personas 7 / 6,5 / 6</span></header>
+<p>Trois instruments en tête (urgent, à vérifier, ouverts), grands chiffres, échelle de prix, jauge du temps, journal horodaté.</p>
+<p class="notes"><span class="plus">+ le meilleur visuel des prix</span> · <span class="moins">− liste à plat, chargé</span></p>
+<div class="bande">
+<figure><img src="cap/B-cockpit-liste.png" alt="B2 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/B-cockpit-probleme.png" alt="B2 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/B-cockpit-probleme-ia.png" alt="B2 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/B-cockpit-achat.png" alt="B2 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/B-cockpit-echeance.png" alt="B2 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<article class="var">
+<header><span class="lettre">A1</span><h2>Fiche technique</h2><span class="notes">critique 6,5 · personas 5,5 / 6,5 / 7</span></header>
+<p>Que des filets et de la typographie : arbre en 3 colonnes, carnet en tableau de propriétés (État, Lieu, Symptôme, Cause).</p>
+<p class="notes"><span class="plus">+ la plus nette</span> · <span class="moins">− reste textuelle</span></p>
+<div class="bande">
+<figure><img src="cap/A1-1-liste.png" alt="A1 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/A1-2-probleme.png" alt="A1 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/A1-2b-probleme-ia.png" alt="A1 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/A1-3-achat.png" alt="A1 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/A1-4-echeance.png" alt="A1 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<article class="var">
+<header><span class="lettre">A3</span><h2>Carnet de labo</h2><span class="notes">critique 5,5 · personas 5 / 5 / 6</span></header>
+<p>Feuille réglée : heure et cases dans la marge gauche, annotations de l'IA en violet à droite, calcul posé à la main, tampon d'échéance.</p>
+<p class="notes"><span class="plus">+ la plus honnête (« cause probable »)</span> · <span class="moins">− risque « cahier d'école »</span></p>
+<div class="bande">
+<figure><img src="cap/A3-1-liste.png" alt="A3 liste"><figcaption>Liste en arbre</figcaption></figure>
+<figure><img src="cap/A3-2-probleme.png" alt="A3 écoulement"><figcaption>Écoulement</figcaption></figure>
+<figure><img src="cap/A3-2b-probleme-ia.png" alt="A3 écoulement, ✦ ouvert"><figcaption>Écoulement, ✦ ouvert</figcaption></figure>
+<figure><img src="cap/A3-3-achat.png" alt="A3 600 bouteilles"><figcaption>600 bouteilles</figcaption></figure>
+<figure><img src="cap/A3-4-echeance.png" alt="A3 assurance"><figcaption>Assurance</figcaption></figure>
+</div>
+</article>
+
+<section>
+<h2>Greffes proposées par les juges</h2>
+<div class="greffe"><strong>B3 + A2 + B1</strong> : questions en titres de B3, barre d'action au pouce d'A2, « Qui gagne quoi » de B1 avec trois « Choisir » égaux, règle des dates d'A2.</div>
+<div class="greffe"><strong>A2 + B3 + B2</strong> : liste d'A2 sous les cartes de tête de B3, état en mots colorés, échelle des prix par bouteille de B2.</div>
+<p class="doux">Ordre des juges (une proposition) : B3, A2, B1, B2, A1, A3. Aucune n'est écartée.</p>
+</section>
+</main>
+</body>
+</html>
