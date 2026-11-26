@@ -89,3 +89,7 @@ Commit local de tes seuls chemins. Rends une ligne : écrans faits, commit.
 O-comparer-caracteristiques sur la chambre froide (tests/fixtures/c54/chambre-froide.json, c52/caracteristiques.json, c55/comparer.json) :
 TOUTES les caractéristiques des offres, en tableau adapté au téléphone (1re colonne figée, écarts mis en avant, unités, gagnant par ligne
 visible, inconnu « — » ou « 🔗 en lecture »), le résumé « qui gagne quoi » au-dessus.
+Puis : « Mais peut être une vue spécifique comme il y avait au début pour la comparaison ». La vue Comparer d'origine de l'app (articles et
+caractéristiques côte à côte : src/ui/carnets/CarnetOuvert.tsx, ArticlesCarnet.tsx, carnets-decider.css ; fixture c55/comparer.json ; défaut
+COMPARER-QUI-GAGNE) : la comparaison complète vit dans cette vue dédiée, ouverte depuis Organisé ; Organisé n'en garde que le résumé
+« qui gagne quoi ». O-comparer-caracteristiques EST cette vue, reprise et rendue lisible au téléphone.

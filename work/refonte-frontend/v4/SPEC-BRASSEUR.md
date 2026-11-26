@@ -2992,3 +2992,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 ~08:30 (sur « des tableaux secs et des symboles à apprendre ») : « Dans certaine cas comme les comparaisons, c'est ok mais globalement non »
 - 26.11 ~08:32 : « En soit les tableaux sont un bon outil tout de même, mais il doit être adapté »
 - 26.11 ~08:34 : « Par exemple, pour les chambres froides, je veux quand même pouvoir comparer toutes leur caractéristiques »
+- 26.11 ~08:36 : « Mais peut être une vue spécifique comme il y avait au début pour la comparaison »
