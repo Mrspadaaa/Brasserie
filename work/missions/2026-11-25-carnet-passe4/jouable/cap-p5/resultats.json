@@ -1,0 +1,112 @@
+{
+ "gestes": [
+  {
+   "nom": "Liste au repos : 15 carnets, arbre catégorie › sous-catégorie, n° = priorité",
+   "ok": true,
+   "detail": "Carnets 15 · Brasserie / Local / Bureau / Cas d’épreuve · rangs 1234567 · 4 je cherche3 décidés5 notés3 résolus ·  À décider 2 · À faire 6"
+  },
+  {
+   "nom": "Ranger en glissant : Inspection électrique (filtre notés) → Brasserie › Brassage",
+   "ok": true,
+   "detail": "pastille « → Brasserie › Brassage · 2e » → Brasserie › Brassage"
+  },
+  {
+   "nom": "Noter vite : écrit dans le carnet visé (Trop de vapeur), puis note rangée",
+   "ok": true,
+   "detail": "écrit dans « Trop de vapeur au brassage » · 3 changements proposés, acceptés"
+  },
+  {
+   "nom": "Organisé (v04) : tuiles, trouvé / pas trouvé, chemin, pour régler",
+   "ok": true,
+   "detail": "depuis / dernier pas / coût · estimé / prochaine / Trouvé / Pas trouvé"
+  },
+  {
+   "nom": "Changé par l’IA (v05) : décocher une lecture, garder",
+   "ok": true,
+   "detail": "9 cochés → « Garder 8 sur 9 », 1 lecture coupée"
+  },
+  {
+   "nom": "Mes notes (v04) : on écrit, l’IA lit (carte Arrêter), Organisé suit",
+   "ok": true,
+   "detail": "carte « L’IA lit » vue, puis relu"
+  },
+  {
+   "nom": "Sa ligne retrouvée : l. 2 › ouvre Mes notes sur la ligne",
+   "ok": true,
+   "detail": "Mes notes, ligne 2 surlignée"
+  },
+  {
+   "nom": "Décider (v01) : devis 185 CHF ou moi-même 9 CHF, Retenir, tâche gardée puis cochée",
+   "ok": true,
+   "detail": "retenu [0] · état decide · tâche cochée"
+  },
+  {
+   "nom": "Résoudre sur preuve (v01) puis Résolu",
+   "ok": true,
+   "detail": "Résolu"
+  },
+  {
+   "nom": "À faire, tous les carnets (v01) : cocher avec Annuler",
+   "ok": true,
+   "detail": "Dans les 7 jours 2 · aussi dans À venir | À décider 2 · montants notés | Plus tard 4 | Sans date 3 · « Fait : Acheter le Brewtools (B)Annuler »"
+  },
+  {
+   "nom": "Options (O-options-a) puis 6 offres et Comparer (figé 17.11)",
+   "ok": true,
+   "detail": "6 offres, Comparer ouvert"
+  },
+  {
+   "nom": "Article ouvert (h01-6), Choisir, choisi (v09-3), envoyer dans À venir (h05-9)",
+   "ok": true,
+   "detail": "choisi [1], dans À venir"
+  },
+  {
+   "nom": "Chambre froide : 2 articles lus, Comparer 17 lignes, Relire un lien",
+   "ok": true,
+   "detail": "demandes/<id> type relire écrit · puce « en lecture »"
+  },
+  {
+   "nom": "Escalader à l’IA : relecture avec modelTier complex, tampon « IA forte »",
+   "ok": true,
+   "detail": "modelTier complex · tampon « ✦ IA forte 10:33 »"
+  },
+  {
+   "nom": "Relecture « pourquoi » (v03) sur un résolu",
+   "ok": true,
+   "detail": "carte Pourquoi"
+  },
+  {
+   "nom": "Mémo (v02) : rien à faire, ses lignes, autres mémos",
+   "ok": true,
+   "detail": "mémo"
+  },
+  {
+   "nom": "Glisser repos (S-ranger-repos) : liste après les gestes",
+   "ok": true,
+   "detail": "capture"
+  },
+  {
+   "nom": "L’IA n’a pas pu lire (v01) : lignes gardées, lu sans l’IA, Réessayer",
+   "ok": true,
+   "detail": "erreur montrée, puis lu au 2e essai"
+  }
+ ],
+ "erreursPage": [],
+ "mesures": {
+  "liste": {
+   "n": "15",
+   "cats": [
+    "Brasserie",
+    "Local",
+    "Bureau",
+    "Cas d’épreuve"
+   ],
+   "rangs": "1234567",
+   "oeil": "4 je cherche3 décidés5 notés3 résolus",
+   "ad": " À décider 2",
+   "af": "6"
+  },
+  "organiseBas": -91,
+  "deborde": []
+ }
+}

@@ -1,0 +1,61 @@
+<div id="app">
+  <!-- ===== passe 5 : liste des carnets (mini S-liste, v02) ; arbre catégorie › sous-catégorie, n° = priorité, glisser (v01) ===== -->
+  <section class="vue on" id="v-liste" aria-label="Carnets">
+    <div class="p5-app">
+      <span class="p5-logo">A</span><b class="p5-marque">L’Affinée</b>
+      <span class="p5-tout"><button type="button" aria-label="Avant" data-leg="hors du jouable">‹</button><span>Tout</span><button type="button" aria-label="Après" data-leg="hors du jouable">›</button></span>
+      <button type="button" class="p5-rond" id="p5-loupe" aria-label="Chercher" data-leg="hors du jouable"></button>
+      <span class="p5-av">G</span><span class="p5-av">A</span>
+    </div>
+    <div class="p5-sous" role="tablist">
+      <button type="button" class="p5-mat" data-leg="Matériel : hors du jouable">Matériel ▾</button><i class="p5-sep"></i>
+      <button type="button" data-leg="Parc : hors du jouable">Parc</button>
+      <button type="button" id="p5-avenir-t">À venir <b id="p5-n-avenir">0</b></button>
+      <button type="button" role="tab" class="on" id="tab-carnets">Carnets <b id="liste-n"></b></button>
+      <button type="button" data-leg="Réalisés : hors du jouable">Réalisés <b id="p5-n-real">3</b></button>
+    </div>
+    <div class="p5-oeil" id="oeil"></div>
+    <div class="p5-oeil2" id="p5-oeil2"><button type="button" class="p5-chip ad" id="p5-adecider"></button><button type="button" class="p5-chip af" id="tab-afaire">À faire <b id="n-afaire"></b></button><span class="p5-prio" id="p5-prio">n° = priorité</span></div>
+    <div class="p5-filtre" id="p5-filtre" hidden></div>
+    <div class="p5-liste" id="liste"></div>
+    <div class="p5-ecrit" id="p5-ecrit" hidden></div>
+    <div class="p5-pouce" id="p5-pouce-l">
+      <label class="p5-champ"><textarea id="noter" rows="1" placeholder="Noter une idée…" enterkeyhint="send" autocomplete="off" aria-label="Noter"></textarea><span class="p5-ics" id="p5-ics-l"></span></label>
+      <button type="button" class="p5-ia" id="p5-ia-l" aria-label="Suggestions de l’IA"></button>
+      <button type="button" class="p5-plus" id="nouveau" aria-label="Noter"></button>
+    </div>
+  </section>
+
+  <!-- ===== un carnet (S-notes, O-organise) ===== -->
+  <section class="vue" id="v-carnet" aria-label="Carnet" data-vue="org">
+    <div class="p5-tete">
+      <button class="p5-ic" id="b-retour" type="button" aria-label="Carnets"></button>
+      <div class="p5-titre" id="tete-titre"></div>
+      <button type="button" class="p5-cat" id="p5-cat" aria-label="Ranger dans…"></button>
+      <button class="m4b-ic edition-seule" id="k-undo" type="button" aria-label="Annuler"><svg><use href="#i-undo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-redo" type="button" aria-label="Refaire"><svg><use href="#i-redo"/></svg></button>
+      <button class="m4b-ic edition-seule" id="k-fini" type="button" aria-label="Fini"><svg><use href="#i-fini"/></svg></button>
+      <button class="p5-ic hors-edition" id="k-menu" type="button" aria-label="Plus : ranger, changements, question"></button>
+    </div>
+    <div class="p5-sous-t" id="p5-sous-t" hidden></div>
+    <div class="p5-bascule" role="tablist">
+      <span class="p5-seg"><button type="button" role="tab" id="t-notes"></button><button type="button" role="tab" id="t-org" class="on"></button></span>
+      <button type="button" class="p5-tampon" id="p5-tampon" aria-label="Changé par l’IA"></button>
+      <i id="point-org" hidden></i><span id="n-file" hidden>1</span>
+    </div>
+    <div id="defil">
+      <div id="p-notes">
+        <div class="p5-lit" id="p5-lit-n" hidden></div>
+        <div class="m4b-titre" id="titre" contenteditable="true" spellcheck="true" enterkeyhint="next" aria-label="Titre"></div>
+        <div class="m4b-meta p5-meta" id="meta"></div>
+        <div class="m4b-doc" id="doc" contenteditable="true" spellcheck="true" aria-label="Mes notes" aria-multiline="true" role="textbox"></div>
+      </div>
+      <div id="p-org" class="p5-org" hidden></div>
+    </div>
+    <div id="action" hidden></div>
+    <div class="m4b-outils" id="outils"></div>
+    <div class="m4b-pied" id="pied-org" hidden></div>
+    <input type="file" accept="image/*" capture="environment" id="f-photo" hidden>
+  </section>
+  <nav class="p5-onglets" id="p5-onglets" aria-label="Sections"></nav>
+</div>
