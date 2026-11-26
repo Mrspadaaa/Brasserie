@@ -42,3 +42,13 @@ Preuve : un tableau dans RESULTAT-P5.md, une ligne par écran de la recette : ca
 browser.close()), `window.claude` simulé : glisser un carnet, noter vite, écrire dans Mes notes, rangement IA, Organisé écoulement, Comparer
 avec 6 options, décider, tâche, résoudre, relecture, IA en erreur. Captures 390 × 844, toutes ouvertes. Commit local de tes chemins.
 Rends une ligne : écrans repris / adaptés, gestes n/n, commit.
+
+## Mise à jour 26.11 ~09:10 : le jouable part des mini maquettes p5
+Sa question : « Et les modifications des maquettes jouable ?? ». Le jouable p5 se construit MAINTENANT, sans attendre son regard sur la page.
+Interface : les mini maquettes corrigées `mini/S-*.html` et `mini/O-*.html` (page https://claude.ai/artifact/6ds7soVDsMyA9xgo4CZAvm),
+jetons `mini/COMMUN.md`, données `mini/DONNEES.md`, défauts levés `mini/CRITIQUE-P5.md`. Elles remplacent la colonne « Pris de » ci-dessus
+(qui reste leur source). Organisé : la variante a (sa v04 reprise) par défaut. Comparer : SON choix figé du 17.11 (maquettes.json ›
+ecrans_choisis.figes.comparer : h04-7, v03-4, g05-8, g01-8, h06-7 ; images work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/),
+défaut COMPARER-PAS-SON-CHOIX ; un autre concepteur refait en ce moment mini/O-comparer-caracteristiques.html et mini/O-options-b.html sur ce
+choix : relis-les à la fin et aligne ta vue Comparer dessus. Visuel pour un TDAH, moins enfantin, tableau seulement adapté (Comparer).
+Preuve : capture de chaque écran du jouable à côté de sa mini maquette. Publication : par le pilote, artefact neuf.
