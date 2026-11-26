@@ -1,0 +1,141 @@
+<!doctype html><html lang="fr" data-theme="cave"><head><meta charset="utf-8"><meta name="viewport" content="width=390"><title>S · Noter vite</title><style>
+:root{--pg:#12100E;--pn:#1A1613;--su:#221D19;--bd:#2C2521;--bd2:#3D342E;--tr:#574A42;--t3:#9A8A7E;--t2:#D8CEC5;--t1:#F5F0EA;
+--act:#F2C14E;--act-t:#12100E;--cherche:#8FBEDB;--cherche-a:#5B8AA6;--cherche-bg:rgba(91,138,166,.20);--decide:#F2C14E;--decide-a:#E0A02E;--decide-bg:rgba(224,160,46,.16);
+--note:#9A8A7E;--note-bg:rgba(154,138,126,.16);--resolu:#A3C97A;--resolu-a:#6E9B5B;--resolu-bg:rgba(110,155,91,.22);--trouve:#A3C97A;--pastrouve:#E3B55D;
+--estime:#8FBEDB;--lien:#86B9E6;--ia:#BCA5E8;--ia-bg:rgba(188,165,232,.12);--alerte:#F29289}
+.s-mt{display:inline-flex;width:15px;height:15px;border-radius:8px;background:var(--trouve);color:var(--pg);font-size:10px;font-weight:900;align-items:center;justify-content:center;font-style:normal;vertical-align:-2px;margin-right:4px;flex:none}
+.s-mp{display:inline-flex;width:15px;height:15px;border-radius:8px;border:1.5px solid var(--pastrouve);color:var(--pastrouve);font-size:10px;font-weight:800;align-items:center;justify-content:center;font-style:normal;vertical-align:-2px;margin-right:4px;flex:none}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0B0A09;overflow-x:hidden}
+body{font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;color:var(--t2);font-size:15px;-webkit-font-smoothing:antialiased}
+.s-planche{display:flex;gap:28px;align-items:flex-start;width:max-content}
+.s-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--pg);flex:none;display:flex;flex-direction:column;font-variant-numeric:tabular-nums}
+.s-src{width:390px;padding-top:8px;color:var(--t2);font-size:13px;line-height:1.45}
+.s-src img{width:390px;border-radius:10px;border:1px solid var(--bd2);display:block}
+.s-src h2{font-size:15px;color:var(--t1);margin:10px 0 4px}.s-src ul{padding-left:18px}.s-src li{margin:2px 0}
+.s-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.s-tuile .s-ic{width:20px;height:20px}.s-tuile{width:32px;height:32px;border-radius:7px;background:var(--su);display:inline-flex;align-items:center;justify-content:center;color:var(--t2);flex:none}
+/* en-tête app */
+.s-app{height:44px;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid var(--bd);flex:none}
+.s-logo{width:28px;height:28px;border-radius:7px;background:var(--act);color:var(--act-t);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.s-app b{color:var(--t1);font-size:16px;font-weight:600}
+.s-saison{height:32px;border:1px solid var(--bd2);border-radius:16px;display:flex;align-items:center;gap:14px;padding:0 10px;color:var(--t2);font-size:13px}
+.s-rond{width:32px;height:32px;border-radius:16px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.s-faire{width:auto;padding:0 9px;gap:4px;margin-left:0}.s-faire b{color:var(--t1);font-size:14px}.s-saison{margin-left:auto}
+.s-av{width:26px;height:26px;border-radius:13px;background:var(--su);color:var(--t1);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:-8px;border:2px solid var(--pg)}
+.s-sous{height:36px;display:flex;align-items:center;gap:14px;padding:0 10px;font-size:13.5px;color:var(--t3);border-bottom:1px solid var(--bd);flex:none;white-space:nowrap}
+.s-sous b{color:var(--t1);font-weight:600}.s-sous .s-on{background:var(--t1);color:var(--pg);border-radius:14px;padding:4px 10px;font-weight:700}
+.s-sous .s-sep{width:1px;height:16px;background:var(--bd2)}
+/* coup d'oeil */
+.s-oeil{height:42px;display:flex;align-items:center;gap:6px;padding:0 10px;flex:none}.s-oeil .s-pil{flex:1;justify-content:center}
+.s-pil{height:32px;border-radius:16px;display:flex;align-items:center;gap:5px;padding:0 9px;font-size:14px;color:var(--t2);background:var(--su);white-space:nowrap}
+.s-pil b{font-size:15px;font-weight:700}
+.s-pil.cherche{background:var(--cherche-bg)}.s-pil.cherche b{color:var(--cherche)}
+.s-pil.decide{background:var(--decide-bg)}.s-pil.decide b{color:var(--decide)}
+.s-pil.note{background:var(--note-bg)}.s-pil.note b{color:var(--t1)}
+.s-pil.resolu{background:var(--resolu-bg)}.s-pil.resolu b{color:var(--resolu)}
+.s-pil.actif{outline:2px solid var(--t1);outline-offset:-2px}
+.s-pil.faire{margin-left:auto;background:none;border:1px solid var(--bd2)}
+/* arbre */
+.s-liste{flex:1;overflow:hidden;position:relative}
+.s-cat{height:32px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--pn);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);color:var(--t1);font-weight:600;font-size:15px}
+.s-cat .s-n{margin-left:auto;color:var(--t3);font-size:13px;font-weight:600}
+.s-cat .s-chev{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--t3);margin-right:-8px}
+.s-sc{height:22px;display:flex;align-items:center;gap:6px;padding:0 12px 0 22px;font-size:13px;font-weight:600;color:var(--t3);letter-spacing:.01em}
+.s-sc .s-ic{width:12px;height:12px}
+.s-sc i{font-style:normal;font-weight:400}
+.s-pli{height:30px;display:flex;align-items:center;gap:6px;padding:0 12px 0 20px;font-size:14px;color:var(--t3);white-space:nowrap;overflow:hidden}
+.s-pli b{color:var(--cherche);font-weight:600}.s-pli .s-ic{width:12px;height:12px;color:var(--cherche)}
+.s-pli em{font-style:normal;color:var(--t3)}
+.s-ligne{min-height:44px;display:flex;align-items:center;gap:10px;padding:4px 12px 4px 22px;position:relative}
+.s-ligne::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:1px;background:var(--bd2)}
+.s-lt{flex:1;min-width:0}
+.s-lt b{display:block;color:var(--t1);font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.s-lm{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t3);white-space:nowrap;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);line-height:1.35}
+.s-lm q{quotes:"« " " »"}
+.s-barre{display:inline-flex;gap:2px;flex:none}.s-barre i{width:9px;height:4px;border-radius:2px;background:var(--bd2)}
+.s-barre.note i:nth-child(-n+1){background:var(--note)}
+.s-barre.cherche i:nth-child(-n+2){background:var(--cherche-a)}
+.s-barre.decide i:nth-child(-n+3){background:var(--decide-a)}
+.s-barre.resolu i{background:var(--resolu-a)}
+.s-et{font-style:normal;font-weight:700}.s-et.note{color:var(--t2)}.s-et.cherche{color:var(--cherche)}.s-et.decide{color:var(--decide)}.s-et.resolu{color:var(--resolu)}
+.s-quand{flex:none;text-align:right;font-size:13px;color:var(--t3);line-height:1.2}
+.s-quand b{display:block;font-size:14px;color:var(--t1);font-weight:700}
+.s-quand.proche b{color:var(--decide)}
+.s-est{color:var(--estime);border:1px dashed var(--estime);border-radius:5px;padding:0 4px;font-weight:600}
+/* pouce */
+.s-pouce{height:56px;display:flex;align-items:center;gap:8px;padding:0 10px;border-top:1px solid var(--bd);background:var(--pg);flex:none}
+.s-champ{flex:1;height:44px;border-radius:22px;background:var(--su);border:1px solid var(--bd2);display:flex;align-items:center;padding-left:14px;color:var(--t3);font-size:15px;min-width:0}
+.s-champ span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s-champ b{color:var(--t2);font-weight:600}
+.s-champ .s-z{width:40px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.s-champ .s-z .s-ic{width:18px;height:18px}
+.s-carre{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.s-carre .s-ic{width:20px;height:20px;stroke-width:2}
+.s-carre.act{background:var(--act);color:var(--act-t)}
+.s-carre.ia{border:1.5px solid var(--ia);color:var(--ia);background:var(--ia-bg)}
+.s-nav{height:56px;display:flex;border-top:1px solid var(--bd);background:var(--pn);flex:none}
+.s-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:var(--t3)}
+.s-nav a .s-ic{width:18px;height:18px}
+.s-nav a.on{color:var(--t1);background:var(--su)}.s-nav a.on .s-ic{color:var(--resolu)}
+/* carnet */
+.s-tete{height:48px;display:flex;align-items:center;gap:6px;padding:0 4px;flex:none}
+.s-btn44{width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--t2);flex:none}
+.s-btn44 .s-ic{width:20px;height:20px}
+.s-tete h1{font-size:18px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:4px}
+.s-lieu{margin-left:auto;height:28px;border:1px solid var(--bd2);border-radius:10px;padding:0 9px;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--t3);white-space:nowrap}
+.s-lieu .s-ic{width:12px;height:12px}
+.s-ong{height:44px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none}.s-ong .s-h{font-size:13px;color:var(--ia);display:flex;align-items:center;gap:4px;white-space:nowrap}.s-ong .s-h .s-ic{width:14px;height:14px}
+.s-onglets{height:40px;flex:1;background:var(--pn);border-radius:10px;display:flex;padding:3px;gap:3px}
+.s-onglets a{white-space:nowrap;flex:1;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:14px;font-weight:600;color:var(--t3)}
+.s-onglets a.on{background:var(--su);color:var(--t1);box-shadow:0 1px 0 var(--bd2)}
+.s-onglets a .s-ic{width:14px;height:14px}
+.s-badge{white-space:nowrap;font-size:13px;font-weight:700;border-radius:9px;padding:1px 7px;background:var(--ia-bg);color:var(--ia)}
+.s-badge.rose{background:rgba(242,146,137,.14);color:var(--pastrouve)}
+.s-meta{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t3);padding:8px 14px 2px;white-space:nowrap}
+.s-pt{width:8px;height:8px;border-radius:4px;display:inline-block}
+.s-pt.cherche{background:var(--cherche-a)}.s-pt.decide{background:var(--decide-a)}.s-pt.note{background:var(--note)}.s-pt.resolu{background:var(--resolu-a)}
+.s-ex{font-style:italic;font-size:13px;color:var(--t3)}
+.s-corps{flex:1;overflow:hidden;position:relative}
+/* clavier */
+.s-kb{background:#1C1C1E;padding:6px 3px 4px;flex:none}
+.s-kr{display:flex;gap:5px;justify-content:center;margin:0 0 9px}
+.s-k{height:40px;flex:1;max-width:33px;border-radius:5px;background:#4A4A4D;color:#F2F2F2;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 0 #000}
+.s-k.g{background:#2E2E30;max-width:44px;font-size:14px}.s-k.w{max-width:none;flex:4;font-size:14px}.s-k.ok{max-width:none;flex:2;background:#2E2E30;font-size:14px}
+.s-kpaste{height:42px;display:flex;align-items:center;justify-content:center;gap:8px;background:#1C1C1E;color:#9FC3DD;font-size:14px;font-weight:600;flex:none;border-top:1px solid #2a2a2c}
+.s-outils{height:52px;display:flex;align-items:center;gap:6px;padding:0 8px;border-top:1px solid var(--bd);background:var(--pn);flex:none}
+.s-out{height:40px;min-width:44px;border-radius:10px;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;gap:5px;padding:0 9px;color:var(--t2);font-size:13.5px;font-weight:600;white-space:nowrap}
+.s-out .s-ic{width:17px;height:17px}
+.s-out.ia{color:var(--ia);border-color:var(--ia);background:var(--ia-bg)}
+.s-out.lien{color:var(--lien)}
+/* notes */
+.s-np{padding:2px 16px;font-size:15.5px;line-height:1.6;color:var(--t2)}
+.s-u{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.s-u.trouve{text-decoration-color:var(--trouve)}.s-u.pas{text-decoration-color:var(--pastrouve)}.s-u.att{text-decoration-color:var(--cherche)}.s-u.est{text-decoration-style:dotted;text-decoration-color:var(--t3)}
+.s-curseur{display:inline-block;width:2px;height:19px;background:var(--act);vertical-align:-3px;margin-left:1px}
+.s-jour{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t3);padding:10px 16px 2px}
+.s-jour::after{content:"";flex:1;height:1px;background:var(--bd)}
+.s-flou{opacity:.38}
+.s-vise{position:relative;opacity:1;background:var(--ia-bg);outline:1.5px solid var(--ia);outline-offset:-1.5px;border-radius:10px;margin:0 6px}
+.s-vise::before{display:none}
+.s-saisie{border-top:1px solid var(--bd);background:var(--pn);padding:8px 10px 8px;flex:none}
+.s-dans{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3);margin:0 0 6px 4px;height:30px}
+.s-dans b{display:inline-flex;align-items:center;gap:5px;height:30px;border-radius:15px;background:var(--ia-bg);color:var(--ia);padding:0 10px;font-weight:600}
+.s-dans b .s-ic{width:13px;height:13px}
+.s-dans u{text-decoration:none;margin-left:auto;color:var(--t2);font-weight:600;height:30px;display:flex;align-items:center;padding:0 6px}
+.s-zone{display:flex;align-items:flex-end;gap:8px}
+.s-texte{flex:1;min-height:92px;border-radius:18px;background:var(--su);border:1.5px solid var(--ia);padding:10px 12px 0;font-size:16px;line-height:1.45;color:var(--t1);display:flex;flex-direction:column}
+.s-texte .s-pieds{display:flex;justify-content:flex-end;margin:0 -8px 0 0;color:var(--t2)}
+.s-texte .s-pieds i{width:40px;height:36px;display:flex;align-items:center;justify-content:center}
+.s-texte .s-pieds .s-ic{width:18px;height:18px}</style></head>
+<body><div class="s-planche"><main class="s-tel"><header class="s-app"><span class="s-logo">A</span><b>L'Affinée</b><span class="s-saison">‹ <span>Tout</span> ›</span><span class="s-rond s-faire" aria-label="À faire, 5 tâches"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg><b>5</b></span><span class="s-rond"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></span><span class="s-av" style="margin-left:2px">G</span><span class="s-av">A</span></header>
+<div class="s-sous"><b>Matériel ▾</b><span class="s-sep"></span><span>Parc</span><span>À venir <b>11</b></span><span class="s-on">Carnets 15</span><span>Réalisés <b>5</b></span></div><div class="s-oeil"><span class="s-pil cherche"><b>4</b>je cherche</span><span class="s-pil decide"><b>4</b>décidés</span><span class="s-pil note"><b>5</b>notés</span><span class="s-pil resolu"><b>2</b>résolus</span></div>
+<div class="s-liste"><div class="s-flou"><div class="s-cat"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v4l2 3v11H5V10l2-3z"/><path d="M5 14h14"/></svg>Brasserie<span class="s-n">9</span><span class="s-chev"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div><div class="s-sc"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Brassage <i>2</i></div></div>
+<div class="s-ligne s-vise"><span class="s-tuile"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13h14v4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M9 4c-1 1.5 1 2.5 0 4.5M12 4c-1 1.5 1 2.5 0 4.5M15 4c-1 1.5 1 2.5 0 4.5"/></svg></span><div class="s-lt"><b>Trop de vapeur au brassage</b><span class="s-lm"><span class="s-barre cherche"><i></i><i></i><i></i><i></i></span><em class="s-et cherche">Je cherche</em> · Kegland ou Brewtools ?</span></div><span class="s-quand" style="color:var(--ia)"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M18.5 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span></div>
+<div class="s-flou"><div class="s-ligne"><span class="s-tuile"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h12M12 8l4 4-4 4M20 5v14"/></svg></span><div class="s-lt"><b>Débit faible au transfert</b><span class="s-lm"><span class="s-barre note"><i></i><i></i><i></i><i></i></span><em class="s-et note">Noté</em> · <q>12 L/min, pompe ou tuyau ?</q></span></div></div><div class="s-sc"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Fermentation <i>1</i></div><div class="s-ligne"><span class="s-tuile"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="4"/><circle cx="15.5" cy="15" r="3.5"/><circle cx="16.5" cy="6.5" r="1.5"/></svg></span><div class="s-lt"><b>Levure lente à démarrer</b><span class="s-lm"><span class="s-barre note"><i></i><i></i><i></i><i></i></span><em class="s-et note">Noté</em> · <q>36 h sans bulles</q> · il y a 3 j</span></div></div></div></div>
+<div class="s-saisie"><div class="s-dans">Écrit dans <b><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M18.5 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>Trop de vapeur au brassage</b><u>changer ▾</u></div>
+<div class="s-zone"><div class="s-texte">Condenseur B de nouveau en stock aux États-Unis. Je le prends fin du mois.<span class="s-curseur" style="display:none"></span><div class="s-pieds"><i><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-2.5h5L16 7"/></svg></i><i><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div></div>
+<div class="s-carre act" style="border-radius:22px"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></div></div></div>
+<div class="s-kpaste"><svg class="s-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Coller brewtools.com/…/steam-condenser-2</div>
+<div class="s-kb"><div class="s-kr"><span class="s-k">q</span><span class="s-k">w</span><span class="s-k">e</span><span class="s-k">r</span><span class="s-k">t</span><span class="s-k">z</span><span class="s-k">u</span><span class="s-k">i</span><span class="s-k">o</span><span class="s-k">p</span></div><div class="s-kr"><span class="s-k">a</span><span class="s-k">s</span><span class="s-k">d</span><span class="s-k">f</span><span class="s-k">g</span><span class="s-k">h</span><span class="s-k">j</span><span class="s-k">k</span><span class="s-k">l</span><span class="s-k">é</span></div><div class="s-kr"><span class="s-k g">⇧</span><span class="s-k">y</span><span class="s-k">x</span><span class="s-k">c</span><span class="s-k">v</span><span class="s-k">b</span><span class="s-k">n</span><span class="s-k">m</span><span class="s-k g">⌫</span></div><div class="s-kr" style="margin:0"><span class="s-k g">123</span><span class="s-k w">espace</span><span class="s-k ok">Retour</span></div></div></main>
+<aside class="s-src"><img src="../page/img/v01-04.webp" alt="passe 4 v01, noter vite (rang 2) + M4 « Directement écrit dans le carnet »"><h2>Source : passe 4 v01, noter vite (rang 2) + M4 « Directement écrit dans le carnet »</h2><ul><li>Repris de v01 : on tape dans le champ de la liste, sans fenêtre ; la puce « Coller » du presse-papiers au-dessus du clavier.</li><li>M4 « Directement écrit dans le carnet » : en tapant, l’IA vise le carnet (ligne entourée de violet, « Écrit dans ✦ Trop de vapeur au brassage ») ; un toucher sur « changer ▾ » pour un autre ou un nouveau.</li><li>Plus précis : la ligne visée dit ses 2 options réelles (Kegland ou Brewtools, liens de son carnet) ; le lien à coller est le vrai lien Brewtools du carnet.</li><li>Photo et micro toujours actifs dans le champ ; envoyer en paille sous le pouce.</li></ul></aside></div></body></html>
