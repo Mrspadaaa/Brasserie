@@ -1,4 +1,6 @@
-OK — v7 améliorée : thème de l'app, arbre en 13 lignes, champ ✦ +, Comparer dédié à 6 offres, images, Relire, IA forte
+OK — v7 corrigée (CRITIQUE-AMELIO) : bloquants 5/5, mineurs 27/31, 30/30 gestes, VERITE OK
+
+Première passe (26.11 matin) ci-dessous ; la passe de correction est la dernière section.
 
 ## Fichiers
 - `jouable/m4b-v7.html` : construit par `node cap-amelio/build.mjs` à partir de `cap-amelio/src/base.html` (la v7 publiée, HEAD du 26.11), de `src/amelio.css` et de `src/amelio.js`.
@@ -65,3 +67,45 @@ Prédiction : « Là ça ressemble à l'app et je vois enfin la comparaison ; re
 DÉCISION À PRENDRE : aucune.
 CONNAISSANCE : un jouable se thématise sans toucher son moteur par une couche de fonctions hissées, injectée avant le démarrage dans la même portée (cap-amelio/build.mjs).
 LEÇON PROPOSÉE : jamais `cat > "$VAR/f"` avec une variable possiblement vide dans un appel groupé : le `cat` attend l'entrée standard et bloque tout le lot.
+
+## Passe de correction (26.11, d'après CRITIQUE-AMELIO.md, 5 bloquants et 31 mineurs)
+
+Fichiers : `cap-amelio/src/amelio.js` et `amelio.css` (couche), `m4b-v7.html` reconstruit par `node cap-amelio/build.mjs`, `cap-amelio/banc/banc.mjs` (banc rejoué, contrôle « vérité » ajouté), captures `cap-amelio/apres-*.png` (41).
+
+### Sorties décisives
+- Banc : `node cap-amelio/banc/banc.mjs apres` → 30 gestes sur 30 « ok », 0 erreur de console, escalade `modelTier` complex, Relire écrit `demandes/<id>` `type:"relire"`.
+- Contrôle de vérité (nouveau, dans le banc) : `VERITE OK`. Il recalcule contre la donnée source :
+  - chaque date déduite (« fin du mois », « dans une semaine », « avant décembre », « avant le 15 du mois ») porte « ≈ » ; « avant <mois> » n'est jamais affiché dans le mois nommé ;
+  - le compromis de 600 bouteilles contient 410 et 94, jamais « plus cher » ; après Écarter Verallia, il change et ne la nomme plus ;
+  - « pas en stock » n'est jamais un gain ; la 1re barre est pleine ; une offre hors besoin n'a pas de barre ;
+  - à 6 offres, Bouteilles33 (n° 1) est la 1re colonne, et 5 colonnes tiennent à 390 px.
+- Contre-épreuve sur la version rejetée (`git show 1339697ef:…/m4b-v7.html`, sorties hors du dépôt) : 11 défauts relevés, dont « frigo : « avant décembre » affiché dans le mois nommé : dans 5 j · ma 1.12 », « vap : « pas en stock » présenté comme un gain », « six : premier Verallia, 3 colonnes visibles ».
+- Mots de phrases au repos dans Organisé (noms `[data-nom]` et chiffres non comptés) : eco 19, co2 18, bt 33, citra 29, frigo 28, cave 15, vap 25 (≤ 40).
+- Liste : 13 carnets visibles à 390 × 844 ; aucun débordement horizontal.
+
+### Bloquants (5/5)
+| # | Correction | Preuve |
+|---|---|---|
+| B9 | `lireDate`, `lireDateV7`, `dateV7` remplacées : une date déduite garde `approx` ; « avant décembre » = au plus tard lu 30.11 ; « avant le 15 du mois » = au plus tard di 14.12, ≈ (mois déduit). « ≈ » dans Organisé, la liste et À faire | apres-org-frigo (« ≈ dans 4 j · au plus tard lu 30.11 »), apres-01-liste, apres-03-liste-afaire, apres-50-co2-source (la date et sa ligne côte à côte) |
+| B14 | Compromis calculé par l'app quand il y a un besoin, marqué « calculé » : « Fournisseur B : 410 CHF pour 600, au moins 94 de moins que Verallia. Occasion est moins cher à l'unité, mais 400 seulement. » Recalculé après Écarter. Sans besoin, la phrase de l'IA ne s'affiche que si chacun de ses nombres se retrouve dans les valeurs (« IA, vérifié ») | apres-21, apres-23, apres-34, apres-52 |
+| B15 | Barres classées comme h04-7 : le n° 1 a la barre pleine, puis best/valeur (moins = mieux) ; le n° 1 en vert, les autres en gris ; une offre qui ne couvre pas le besoin est rangée à part, sans barre (trait orange) | apres-org-bt, apres-20, apres-31, apres-org-frigo |
+| B22 | Colonnes du Côte à côte dans l'ordre du classement (n° 1 à gauche), libellés courts (« Total CHF », « /unité »), unités dans le libellé, colonnes de 58 px : 5 colonnes tiennent à 390 px | apres-31, apres-32 |
+| B29 | Une tuile de « Qui gagne quoi » ne montre qu'un avantage vérifié sur les valeurs (≥ 2 valeurs chiffrées, gagnant de l'IA = l'extrême) ; sinon « Rien ne départage encore », chaque offre avec ce qui est noté, et Comparer | apres-org-vap, apres-org-citra |
+
+### Mineurs (27/31)
+- Faits : 1 et 2 (légende : jauge de l'étape et « urgent »), 3, 4, 6, 8 (toast posé au-dessus de la barre d'action), 10 et 11 (tuiles depuis, dernier pas, mesure, prochaine ; pistes → options en arbre ; redites retirées), 12 (« Étape suivante » après Fait), 16 et 23 (en-têtes et libellés collés, colonne opaque), 17 (dessin et initiale par offre), 18, 19, 20, 21, 24, 25, 26 (un ⋯ par lien : Relire, Relire avec l'IA forte, Ouvrir le site), 27, 30, 31, 32, 33, 34, 35, 36.
+- Partiels, non comptés :
+  - 5 : le doublon « Ranger la cave » est retiré ; « Contacter entreprise X » reste, car ce sont les mots de sa note (« Contacter l'entreprise X (exemple) »), marqués « exemple ». En inventer un autre serait une donnée fausse.
+  - 13 : Mes notes ne répète plus le titre, et ses outils portent leur mot (Ranger, Photo, Lien, Case). La barre champ ✦ + n'y est pas reprise : les outils d'écriture (photo, lien, case) y vivent.
+- Non faits :
+  - 7 (trois bandes au pouce, environ 45 % de hauteur) : retirer une bande enlève soit l'action, soit le champ, soit les onglets de l'app. C'est à trancher par lui.
+  - 28 (vraie image) : le code affiche `liens/<id>.image` ; le banc n'a qu'une image simulée. Le pilote remplit les images.
+
+### Captures ouvertes
+Toutes les 41 `apres-*.png`, en planches de quatre (scratchpad, hors dépôt), puis rouvertes après chaque retouche : 10, 30, 44, 50, 51, 52, org-bt, org-cave, org-co2, org-vap.
+
+Prédiction : « Là je lis le gagnant d'un coup d'œil, les barres sont dans le bon sens et les dates disent quand c'est une estimation ; c'est mon Comparer. »
+
+DÉCISION À PRENDRE : m7. Les trois bandes au pouce (action, champ, onglets) restent. Faut-il retirer la barre d'onglets dans un carnet ouvert ? C'est à lui montrer en variantes.
+CONNAISSANCE : un banc qui joue les gestes ne dit pas que l'écran est vrai. Le contrôle « vérité » du banc recalcule les dates, le compromis et le gagnant contre la donnée source, et il échoue sur la version rejetée (11 défauts).
+LEÇON PROPOSÉE : aucune (celle de CRITIQUE-AMELIO est appliquée : le contrôle échoue sur « avant décembre → 1.12 » et sur « pas en stock » présenté comme gain).

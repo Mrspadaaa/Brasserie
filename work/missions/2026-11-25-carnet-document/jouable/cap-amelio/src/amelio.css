@@ -295,3 +295,93 @@ body.am-clav .am-nav{display:none}
 .v7-pile .v7-ab{width:auto!important;min-width:44px;height:44px!important;border-radius:10px!important;flex-direction:row!important;gap:4px!important;padding:0 10px!important;border:1px solid var(--bd2)!important;background:none!important;font-size:14px!important}
 .v7-pile .v7-ab small{font-size:14px!important}
 .v7-pile .v7-ag{height:44px!important;border-radius:10px!important;background:var(--act)!important;color:var(--act-t)!important;font-size:15px!important}
+/* ===== passe de correction 26.11 (CRITIQUE-AMELIO) ===== */
+/* légende : jauge = étape, barre rouge = urgent (m1, m2) */
+.am-oeil{overflow-x:auto;scrollbar-width:none;gap:10px}
+.am-oeil .am-barre{margin-right:2px}
+.am-oeil .prio i{width:3px;height:14px;border-radius:2px;background:var(--bad)}
+/* en-tête : la puce se réduit à l'icône quand le titre ne tient pas (m6) */
+.am-lieu.ico span{display:none}
+.am-lieu.ico{padding:0 8px}
+body.am-vnotes .am-tete h1{visibility:hidden}
+/* dates déduites */
+.am-d.approx b{color:var(--estime)}
+/* tuiles d'en-tête (O-organise-b) */
+.am-g4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}
+.am-t4{display:block;text-align:left;border-radius:12px;background:var(--card);border:1px solid var(--bd2);padding:8px 11px;min-height:58px;color:var(--ink);font-size:13px;line-height:1.3;min-width:0}
+.am-t4 small{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--mut);margin-bottom:2px;white-space:nowrap;overflow:hidden}
+.am-t4 small .am-et{font-size:13px;padding:0;background:none}
+.am-t4>b{font-size:17px;font-weight:700;color:var(--ink)}
+.am-t4 .d{color:var(--mut);font-size:13px}
+.am-t4.bad{border-color:var(--bad)} .am-t4.bad>b{color:var(--bad)} .am-t4.bad small .am-ic{color:var(--bad)}
+.am-t4.pro{grid-column:1/-1;border-color:var(--act);background:var(--s2);padding:10px 12px}
+.am-t4.pro.ia{border-style:dashed;border-color:var(--ia)}
+.am-t4.pro.ok{border-color:var(--resolu-a)}
+.am-t4.pro small{color:var(--act)} .am-t4.pro.ok small{color:var(--resolu)}
+.am-t4.pro .row{display:flex;align-items:center;gap:8px}
+.am-t4.pro .row b{flex:1;min-width:0;font-size:20px;font-weight:700;line-height:1.2}
+.am-t4.pro .row b.barre{text-decoration:line-through;color:var(--mut)}
+.am-t4.pro .am-src{flex:none}
+.am-t4.pro .am-hs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px;font-size:14px;color:var(--t2)}
+/* pistes → options (O-organise-b) */
+.am-arbre{display:grid;grid-template-columns:1fr;gap:8px;position:relative}
+.am-arbre.deux{grid-template-columns:1fr 1fr;padding-top:12px}
+.am-arbre.deux::before{content:"";position:absolute;top:0;left:25%;right:25%;height:12px;border:1.5px solid var(--bd2);border-bottom:0;border-radius:6px 6px 0 0}
+.am-br{display:flex;flex-direction:column;gap:6px;min-width:0}
+.am-pi{display:block;text-align:left;width:100%;border-radius:12px;background:var(--card);border:1px solid var(--bd2);border-top:3px solid var(--bd2);padding:8px 10px;min-height:44px;line-height:1.3}
+.am-pi small{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600}
+.am-pi b{display:block;font-size:16px;color:var(--ink);font-weight:700}
+.am-pi .d{font-size:13px;color:var(--mut)}
+.am-pi.ok{border-top-color:var(--resolu-a)} .am-pi.ok small{color:var(--resolu)}
+.am-pi.non{border-top:3px dashed var(--pastrouve)} .am-pi.non small{color:var(--pastrouve)}
+.am-pi.verif{border-top-color:var(--cherche-a)} .am-pi.verif small{color:var(--cherche)}
+.am-fl2{display:flex;justify-content:center;color:var(--mut);height:14px;align-items:center}
+.am-br .am-opt{margin:0}
+.am-br .am-opt .tw .at{flex-wrap:wrap}
+.am-plus2{margin-top:8px;height:44px;padding:0 12px;border-radius:10px;border:1px dashed var(--bd2);color:var(--t2);font-size:14px;display:inline-flex;align-items:center;gap:6px}
+/* qui gagne quoi : barres classées, n° 1 plein (B15) */
+.am-bh{font-size:14px;font-weight:700;color:var(--ink);margin:8px 0 2px} .am-bh small{font-weight:400;color:var(--mut);font-size:13px}
+.am-bar{display:grid;grid-template-columns:16px minmax(0,1fr) auto;grid-template-rows:auto 6px;column-gap:6px;row-gap:3px;min-height:40px;padding:4px 0}
+.am-bar .i{grid-row:1/3;font-size:13px;font-weight:700;color:var(--mut);align-self:center}
+.am-bar .tr{grid-column:2/4;height:6px}
+.am-bar .tr i{background:#6F6259}
+.am-bar.m .nm,.am-rr.m .nm{color:var(--mut)}
+.am-bar.m .tr,.am-rr.m .tr{background:transparent;border-top:1px dashed var(--or);height:0;margin-top:3px}
+.am-rr .tr i{background:#6F6259}
+.am-rr.w .tr i,.am-bar.w .tr i{background:var(--resolu-a)}
+.am-rr{grid-template-columns:16px minmax(0,1fr) auto}
+.am-rien{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--pastrouve);padding:2px 0 6px;grid-column:1/-1}
+.am-offs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.am-off{display:flex;align-items:center;gap:8px;border-radius:10px;border:1px solid var(--bd2);padding:6px;min-height:52px;text-align:left;min-width:0}
+.am-off .t{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mut)}
+.am-off .t b{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am-mini{display:block;height:4px;width:60px;border-radius:2px;background:var(--bd2);overflow:hidden} .am-mini i{display:block;height:100%;background:var(--cherche-a)}
+.am-fig.bad{border-color:var(--bad)} .am-fig.bad b{color:var(--bad)}
+/* l'objet de chaque offre : dessin propre et initiale (m17) */
+.am-tuile.of{position:relative}
+.am-tuile.of .mono{position:absolute;right:-3px;bottom:-3px;min-width:15px;height:15px;border-radius:8px;background:var(--s2);border:1px solid var(--bd2);font-style:normal;font-size:11px;font-weight:700;line-height:13px;text-align:center;color:var(--t2);padding:0 2px}
+/* côte à côte : colonnes étroites, en-têtes et libellés collés, première colonne opaque (B22, m16, m23) */
+.am-tabw{max-height:62vh;overflow:auto;position:relative;margin:0 -10px;padding:0 0 0 10px}
+.am-cmp{table-layout:auto;min-width:0;width:max-content}
+.am-cmp thead th{position:sticky;top:0;z-index:2;background:var(--bg)}
+.am-cmp th.k,.am-cmp td.k{position:sticky;left:0;z-index:3;background:var(--bg);min-width:66px;max-width:66px;width:66px;padding:4px 6px 4px 0;font-size:13px;box-shadow:6px 0 6px -4px rgba(0,0,0,.55)}
+.am-cmp thead th.k{z-index:4}
+.am-cmp td.k b{font-size:13px;line-height:1.15} .am-cmp td.k small{display:block;font-size:13px;color:var(--mut)}
+.am-cmp .hd{min-width:58px;max-width:62px;align-items:center;text-align:center;padding:4px 2px 6px;font-size:13px;gap:2px}
+.am-cmp .hd .nm{display:block;font-size:12.5px;line-height:1.1;overflow-wrap:anywhere;hyphens:auto}
+.am-cmp .hd small.m{font-size:12px;color:var(--or);font-weight:600}
+.am-cmp .hd .am-tuile{width:30px;height:30px}
+.am-cmp .cv{min-width:58px;max-width:62px;padding:4px 5px;font-size:14px;text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.am-cmp .cv.t{font-size:13px}
+.am-comp .am-tag.calc{background:var(--okbg);color:var(--ok)}
+/* liens : un ⋯ par lien, état de relecture visible (m25, m26, m30) */
+.am-lien.att{border-color:var(--pastrouve)}
+.am-lien .m .dm,.am-lien .m .px{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am-lien .m .px{color:var(--t2)}
+/* liste de la cave : filets en pleine largeur (m35) */
+.am-ls .am-l{width:100%;align-self:stretch}
+/* outils de Mes notes avec leur mot (m13) */
+.m4b-o.am-o{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:56px;min-height:48px}
+.am-om{font-size:12px;color:var(--mut);line-height:1}
+.am-br .am-opt .am-tuile{display:none}
+.am-br .am-opt{padding:8px 10px;min-height:44px}

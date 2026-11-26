@@ -871,6 +871,96 @@ body.am-clav .am-nav{display:none}
 .v7-pile .v7-ab{width:auto!important;min-width:44px;height:44px!important;border-radius:10px!important;flex-direction:row!important;gap:4px!important;padding:0 10px!important;border:1px solid var(--bd2)!important;background:none!important;font-size:14px!important}
 .v7-pile .v7-ab small{font-size:14px!important}
 .v7-pile .v7-ag{height:44px!important;border-radius:10px!important;background:var(--act)!important;color:var(--act-t)!important;font-size:15px!important}
+/* ===== passe de correction 26.11 (CRITIQUE-AMELIO) ===== */
+/* légende : jauge = étape, barre rouge = urgent (m1, m2) */
+.am-oeil{overflow-x:auto;scrollbar-width:none;gap:10px}
+.am-oeil .am-barre{margin-right:2px}
+.am-oeil .prio i{width:3px;height:14px;border-radius:2px;background:var(--bad)}
+/* en-tête : la puce se réduit à l'icône quand le titre ne tient pas (m6) */
+.am-lieu.ico span{display:none}
+.am-lieu.ico{padding:0 8px}
+body.am-vnotes .am-tete h1{visibility:hidden}
+/* dates déduites */
+.am-d.approx b{color:var(--estime)}
+/* tuiles d'en-tête (O-organise-b) */
+.am-g4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}
+.am-t4{display:block;text-align:left;border-radius:12px;background:var(--card);border:1px solid var(--bd2);padding:8px 11px;min-height:58px;color:var(--ink);font-size:13px;line-height:1.3;min-width:0}
+.am-t4 small{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--mut);margin-bottom:2px;white-space:nowrap;overflow:hidden}
+.am-t4 small .am-et{font-size:13px;padding:0;background:none}
+.am-t4>b{font-size:17px;font-weight:700;color:var(--ink)}
+.am-t4 .d{color:var(--mut);font-size:13px}
+.am-t4.bad{border-color:var(--bad)} .am-t4.bad>b{color:var(--bad)} .am-t4.bad small .am-ic{color:var(--bad)}
+.am-t4.pro{grid-column:1/-1;border-color:var(--act);background:var(--s2);padding:10px 12px}
+.am-t4.pro.ia{border-style:dashed;border-color:var(--ia)}
+.am-t4.pro.ok{border-color:var(--resolu-a)}
+.am-t4.pro small{color:var(--act)} .am-t4.pro.ok small{color:var(--resolu)}
+.am-t4.pro .row{display:flex;align-items:center;gap:8px}
+.am-t4.pro .row b{flex:1;min-width:0;font-size:20px;font-weight:700;line-height:1.2}
+.am-t4.pro .row b.barre{text-decoration:line-through;color:var(--mut)}
+.am-t4.pro .am-src{flex:none}
+.am-t4.pro .am-hs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px;font-size:14px;color:var(--t2)}
+/* pistes → options (O-organise-b) */
+.am-arbre{display:grid;grid-template-columns:1fr;gap:8px;position:relative}
+.am-arbre.deux{grid-template-columns:1fr 1fr;padding-top:12px}
+.am-arbre.deux::before{content:"";position:absolute;top:0;left:25%;right:25%;height:12px;border:1.5px solid var(--bd2);border-bottom:0;border-radius:6px 6px 0 0}
+.am-br{display:flex;flex-direction:column;gap:6px;min-width:0}
+.am-pi{display:block;text-align:left;width:100%;border-radius:12px;background:var(--card);border:1px solid var(--bd2);border-top:3px solid var(--bd2);padding:8px 10px;min-height:44px;line-height:1.3}
+.am-pi small{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600}
+.am-pi b{display:block;font-size:16px;color:var(--ink);font-weight:700}
+.am-pi .d{font-size:13px;color:var(--mut)}
+.am-pi.ok{border-top-color:var(--resolu-a)} .am-pi.ok small{color:var(--resolu)}
+.am-pi.non{border-top:3px dashed var(--pastrouve)} .am-pi.non small{color:var(--pastrouve)}
+.am-pi.verif{border-top-color:var(--cherche-a)} .am-pi.verif small{color:var(--cherche)}
+.am-fl2{display:flex;justify-content:center;color:var(--mut);height:14px;align-items:center}
+.am-br .am-opt{margin:0}
+.am-br .am-opt .tw .at{flex-wrap:wrap}
+.am-plus2{margin-top:8px;height:44px;padding:0 12px;border-radius:10px;border:1px dashed var(--bd2);color:var(--t2);font-size:14px;display:inline-flex;align-items:center;gap:6px}
+/* qui gagne quoi : barres classées, n° 1 plein (B15) */
+.am-bh{font-size:14px;font-weight:700;color:var(--ink);margin:8px 0 2px} .am-bh small{font-weight:400;color:var(--mut);font-size:13px}
+.am-bar{display:grid;grid-template-columns:16px minmax(0,1fr) auto;grid-template-rows:auto 6px;column-gap:6px;row-gap:3px;min-height:40px;padding:4px 0}
+.am-bar .i{grid-row:1/3;font-size:13px;font-weight:700;color:var(--mut);align-self:center}
+.am-bar .tr{grid-column:2/4;height:6px}
+.am-bar .tr i{background:#6F6259}
+.am-bar.m .nm,.am-rr.m .nm{color:var(--mut)}
+.am-bar.m .tr,.am-rr.m .tr{background:transparent;border-top:1px dashed var(--or);height:0;margin-top:3px}
+.am-rr .tr i{background:#6F6259}
+.am-rr.w .tr i,.am-bar.w .tr i{background:var(--resolu-a)}
+.am-rr{grid-template-columns:16px minmax(0,1fr) auto}
+.am-rien{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--pastrouve);padding:2px 0 6px;grid-column:1/-1}
+.am-offs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.am-off{display:flex;align-items:center;gap:8px;border-radius:10px;border:1px solid var(--bd2);padding:6px;min-height:52px;text-align:left;min-width:0}
+.am-off .t{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--mut)}
+.am-off .t b{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am-mini{display:block;height:4px;width:60px;border-radius:2px;background:var(--bd2);overflow:hidden} .am-mini i{display:block;height:100%;background:var(--cherche-a)}
+.am-fig.bad{border-color:var(--bad)} .am-fig.bad b{color:var(--bad)}
+/* l'objet de chaque offre : dessin propre et initiale (m17) */
+.am-tuile.of{position:relative}
+.am-tuile.of .mono{position:absolute;right:-3px;bottom:-3px;min-width:15px;height:15px;border-radius:8px;background:var(--s2);border:1px solid var(--bd2);font-style:normal;font-size:11px;font-weight:700;line-height:13px;text-align:center;color:var(--t2);padding:0 2px}
+/* côte à côte : colonnes étroites, en-têtes et libellés collés, première colonne opaque (B22, m16, m23) */
+.am-tabw{max-height:62vh;overflow:auto;position:relative;margin:0 -10px;padding:0 0 0 10px}
+.am-cmp{table-layout:auto;min-width:0;width:max-content}
+.am-cmp thead th{position:sticky;top:0;z-index:2;background:var(--bg)}
+.am-cmp th.k,.am-cmp td.k{position:sticky;left:0;z-index:3;background:var(--bg);min-width:66px;max-width:66px;width:66px;padding:4px 6px 4px 0;font-size:13px;box-shadow:6px 0 6px -4px rgba(0,0,0,.55)}
+.am-cmp thead th.k{z-index:4}
+.am-cmp td.k b{font-size:13px;line-height:1.15} .am-cmp td.k small{display:block;font-size:13px;color:var(--mut)}
+.am-cmp .hd{min-width:58px;max-width:62px;align-items:center;text-align:center;padding:4px 2px 6px;font-size:13px;gap:2px}
+.am-cmp .hd .nm{display:block;font-size:12.5px;line-height:1.1;overflow-wrap:anywhere;hyphens:auto}
+.am-cmp .hd small.m{font-size:12px;color:var(--or);font-weight:600}
+.am-cmp .hd .am-tuile{width:30px;height:30px}
+.am-cmp .cv{min-width:58px;max-width:62px;padding:4px 5px;font-size:14px;text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.am-cmp .cv.t{font-size:13px}
+.am-comp .am-tag.calc{background:var(--okbg);color:var(--ok)}
+/* liens : un ⋯ par lien, état de relecture visible (m25, m26, m30) */
+.am-lien.att{border-color:var(--pastrouve)}
+.am-lien .m .dm,.am-lien .m .px{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am-lien .m .px{color:var(--t2)}
+/* liste de la cave : filets en pleine largeur (m35) */
+.am-ls .am-l{width:100%;align-self:stretch}
+/* outils de Mes notes avec leur mot (m13) */
+.m4b-o.am-o{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:56px;min-height:48px}
+.am-om{font-size:12px;color:var(--mut);line-height:1}
+.am-br .am-opt .am-tuile{display:none}
+.am-br .am-opt{padding:8px 10px;min-height:44px}
 
 </style>
 </head>
@@ -2936,6 +3026,11 @@ var AM_P = {
   fin: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M15 12.5h3M3 9h18"/>',
   brassin: '<path d="M7 4h10l-1 16H8z"/><path d="M17 8h2v6h-2"/>',
   stocks: '<circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/>',
+  recycle: '<path d="M7 19H4l3.5-6M17 19h3l-3.5-6M9.5 5.5 12 2l2.5 3.5M8 19h8M9 8.5 6.5 13M15 8.5l2.5 4.5"/>',
+  palette: '<path d="M3 18h18M5 18v3M12 18v3M19 18v3"/><rect x="4" y="11" width="7" height="7"/><rect x="13" y="11" width="7" height="7"/><rect x="8.5" y="4" width="7" height="7"/>',
+  camion: '<path d="M2 6h12v10H2z M14 10h4l3 3v3h-7z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  magasin: '<path d="M4 9l1.5-5h13L20 9M5 9v11h14V9M4 9h16M10 20v-5h4v5"/>',
+  frigo: '<rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M6 10h12M9 5.5v2M9 13v3"/>',
   clients: '<circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 7M21 20a6 6 0 0 0-4-5.6"/>'
 };
 function IC(n, s) { s = s || 16; return '<svg class="am-ic" viewBox="0 0 24 24" width="' + s + '" height="' + s + '" aria-hidden="true">' + (AM_P[n] || AM_P['case']) + '</svg>'; }
@@ -2968,10 +3063,45 @@ function jcDe(d) { d = new Date(d); return AM_J[d.getDay()] + ' ' + d.getDate() 
 function relJ(n) { return n === 0 ? 'aujourd’hui' : n === 1 ? 'demain' : n > 0 ? 'dans ' + n + ' j' : 'en retard de ' + (-n) + ' j'; }
 function partsCH(t) { var o = {}; try { new Intl.DateTimeFormat('fr-CH', { timeZone: 'Europe/Zurich', weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(t)).forEach(function (p) { o[p.type] = p.value; }); } catch (e) { var d = new Date(t); o = { weekday: AM_J[d.getDay()], day: String(d.getDate()), month: String(d.getMonth() + 1), hour: String(d.getHours()).padStart(2, '0'), minute: String(d.getMinutes()).padStart(2, '0') }; } return o; }
 function quandCH(t, avecJour) { var p = partsCH(t), a = partsCH(Date.now()), hm0 = p.hour + ':' + p.minute; return (!avecJour && p.day === a.day && p.month === a.month) ? hm0 : p.weekday.slice(0, 2) + ' ' + p.day + '.' + p.month + ' ' + hm0; }
+/* passe de correction 26.11 (B9) : une date déduite (« fin du mois », « dans une semaine », « avant décembre », mois sous-entendu)
+   porte « ≈ » partout ; « avant <mois> » = au plus tard le dernier jour du mois d'avant, jamais dans le mois nommé. */
+function lireDate(s, ref) {
+  s = String(s || '').toLowerCase(); var R = ref ? new Date(ref) : new Date(); R.setHours(12, 0, 0, 0); var m, re;
+  function an(mo, j) { var d = new Date(R.getFullYear(), mo, j, 12); if (d - R < -120 * 864e5) d.setFullYear(d.getFullYear() + 1); return d; }
+  if ((m = s.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/))) return { d: new Date(+m[3], +m[2] - 1, +m[1], 12) };
+  re = /(\d{1,2})(?:er)?\s+([a-zéû]+)\.?(?:\s+(\d{4}))?/g;
+  while ((m = re.exec(s))) if (moisDe(m[2]) >= 0) { var d0 = m[3] ? new Date(+m[3], moisDe(m[2]), +m[1], 12) : an(moisDe(m[2]), +m[1]); return /avant\s+le\s+\d/.test(s) ? { d: new Date(+d0 - 864e5), avant: true } : { d: d0 }; }
+  if ((m = s.match(/mi-\s?([a-zéû]+)/)) && moisDe(m[1]) >= 0) return { d: an(moisDe(m[1]), 15), approx: true };
+  if (/fin du mois/.test(s)) return { d: new Date(R.getFullYear(), R.getMonth() + 1, 0, 12), approx: true };
+  if ((m = s.match(/dans (une|un|deux|trois|\d+) (semaine|jour)/))) { var nb = { une: 1, un: 1, deux: 2, trois: 3 }[m[1]] || +m[1]; return { d: new Date(+R + nb * (m[2] === 'semaine' ? 7 : 1) * 864e5), approx: true }; }
+  re = /(avant|en|début|fin)\s+([a-zéû]+)/g;
+  while ((m = re.exec(s))) if (moisDe(m[2]) >= 0) {
+    var d1 = an(moisDe(m[2]), 1);
+    if (m[1] === 'avant') return { d: new Date(d1.getFullYear(), d1.getMonth(), 0, 12), approx: true, avant: true };
+    return { d: an(moisDe(m[2]), m[1] === 'fin' ? 28 : 1), approx: true };
+  }
+  return null;
+}
+function lireDateV7(s, ref) {
+  var t = String(s || '').toLowerCase(), R = new Date(ref || Date.now()), m; R.setHours(12, 0, 0, 0);
+  var d = lireDate(t, ref); if (d) return d;
+  if (/aujourd/.test(t)) return { d: R };
+  if (/(^|\s)demain(\s|$)/.test(t)) return { d: new Date(+R + 864e5) };
+  /* « avant le 15 du mois » : le mois est déduit (≈) ; au plus tard la veille */
+  if ((m = t.match(/(?:^|\s)(avant le|le)\s+(\d{1,2})(?:\s+du mois)?(?:\s|$)/))) { var x = new Date(R.getFullYear(), R.getMonth(), +m[2], 12); if (x < R) x = new Date(R.getFullYear(), R.getMonth() + 1, +m[2], 12);
+    var av = m[1] === 'avant le'; return { d: av ? new Date(+x - 864e5) : x, approx: true, avant: av }; }
+  var js = jourDit(t); if (js >= 0) return { d: new Date(+R + ((js - R.getDay() + 7) % 7 || 7) * 864e5) };
+  return null;
+}
+function dateV7(txt, ref) {
+  if (!txt) return null; var r = lireDateV7(txt, ref); if (!r) return null;
+  var j = joursDe(r.d), js = jourDit(String(txt).toLowerCase()), warn = js >= 0 && /\d{1,2}\s+[a-zéû]/i.test(txt) && r.d.getDay() !== js ? JSEM[r.d.getDay()] : null;
+  return { d: r.d, j: j, txt: (r.approx ? '≈ ' : '') + r.d.getDate() + ' ' + MC[r.d.getMonth()], plein: txt, compte: j < 0 ? 'J+' + (-j) : 'J-' + j, niv: j <= 2 ? 'urg' : j <= 7 ? 'proche' : 'loin', warn: warn, approx: !!r.approx, avant: !!r.avant };
+}
 function dateHtml(dt) {
   if (!dt) return '';
   var cl = dt.j <= 2 ? 'urg' : dt.j <= 7 ? 'proche' : 'loin';
-  return '<span class="am-d ' + cl + '">' + IC('cal', 14) + '<b>' + relJ(dt.j) + '</b> · ' + jcDe(dt.d) + '</span>' +
+  return '<span class="am-d ' + cl + (dt.approx ? ' approx' : '') + '" title="« ' + esc(dt.plein) + ' »' + (dt.approx ? ' : date déduite' : '') + '">' + IC('cal', 14) + '<b>' + (dt.approx ? '≈ ' : '') + relJ(dt.j) + '</b> · ' + (dt.avant ? 'au plus tard ' : '') + jcDe(dt.d) + '</span>' +
     (dt.warn ? '<span class="am-warn">' + IC('alerte', 14) + '« ' + esc(dt.plein) + ' » : le ' + jcDe(dt.d).slice(3) + ' est un ' + dt.warn + '</span>' : '');
 }
 function fmtN(n) { return Math.round(n).toLocaleString('fr-CH'); }
@@ -3001,8 +3131,10 @@ function rendreListe() {
     ap.innerHTML = '<span class="am-logo">A</span><h1>Carnets</h1><span class="n">' + etat.carnets.length + '</span>' +
       '<button type="button" class="am-tog" data-x="tog" aria-pressed="' + !arbre + '"><span class="pil">' + (arbre ? IC('case', 16) + 'À faire <b>' + items.length + '</b>' : IC('liste', 16) + 'Arbre') + '</span></button>';
     var oe = document.querySelector('.am-oeil'), pl = function (k, un, plus) { return n[k] > 1 ? plus : un; };
-    oe.innerHTML = '<span class="cherche"><i></i><b>' + n.cherche + '</b> je cherche</span><span class="decide"><i></i><b>' + n.decide + '</b> ' + pl('decide', 'décidé', 'décidés') + '</span>' +
-      '<span class="note"><i></i><b>' + n.note + '</b> ' + pl('note', 'noté', 'notés') + '</span><span class="resolu"><i></i><b>' + n.resolu + '</b> ' + pl('resolu', 'résolu', 'résolus') + '</span>';
+    var jg = function (k) { return '<span class="am-barre ' + k + '"><i></i><i></i><i></i><i></i></span>'; };
+    oe.innerHTML = '<span class="note">' + jg('note') + '<b>' + n.note + '</b> ' + pl('note', 'noté', 'notés') + '</span><span class="cherche">' + jg('cherche') + '<b>' + n.cherche + '</b> je cherche</span><span class="decide">' + jg('decide') + '<b>' + n.decide + '</b> ' + pl('decide', 'décidé', 'décidés') + '</span>' +
+      '<span class="prio"><i></i>urgent</span>';
+    oe.setAttribute('aria-label', 'Étapes : noté, je cherche, décidé, résolu (tirets remplis) ; barre rouge à gauche : urgent');
   }
   if (arbre) rendreArbre(l); else rendreAFaire(l, items);
   l.appendChild(h('button', { type: 'button', class: 'am-rech', onclick: rechargerExemples }, 'Recharger les exemples'));
@@ -3028,15 +3160,15 @@ function rendreArbre(l) {
   if (!res.length) return;
   var rr = replie('res', true);
   var b = h('button', { type: 'button', class: 'am-res', 'aria-expanded': String(!rr), onclick: function () { replier('res', true); } });
-  b.innerHTML = IC('coche', 16) + '<b>' + res.length + ' résolus</b><span>· ' + esc(res.map(function (c) { return titreCourt(c).split(' ').slice(0, 2).join(' '); }).join(' · ')) + '</span>';
+  b.innerHTML = IC('coche', 16) + '<b>' + res.length + ' résolus</b><span>· ' + esc(res.map(function (c) { var w = titreCourt(c).split(' '); return w.slice(0, 2).join(' ') + (w.length > 2 ? '…' : ''); }).join(' · ')) + '</span>';
   l.appendChild(b);
   if (!rr) res.forEach(function (c) { l.appendChild(ligneCarnet(c, null)); });
 }
 /* une ligne par carnet ; la sous-catégorie se lit au-dessus du titre du premier carnet de son groupe (catégorie › sous-catégorie) */
 function ligneCarnet(c, sous) {
   var p = prioDe(c), lit = estEnLecture(c), pro = !lit && prochaine(c), res = !lit && !pro && resumeDe(c), et = NOM_ETAT[c.etat] || 'Noté';
-  var row = h('button', { type: 'button', class: 'am-r m4j-r ' + p + (sous != null ? ' prem' : ''), 'data-id': c.id, 'aria-label': titreCourt(c) + ' · ' + et + (pro ? ' · ' + relJ(pro.n) : res ? ' · ' + res : '') });
-  var q = lit ? '<span class="q lit"><b>✦ lit…</b></span>' : pro ? '<span class="q ' + (pro.n < 0 ? 'passe' : pro.n <= 7 ? 'proche' : '') + '"><b>' + esc(pro.n < 0 ? 'retard ' + (-pro.n) + ' j' : pro.n === 0 ? 'auj.' : pro.n + ' j') + '</b>' + esc(jcDe(pro.d || Date.now())) + '</span>' : res ? '<span class="q res">' + esc(String(res).replace(/^« |»$/g, '')) + '</span>' : '';
+  var row = h('button', { type: 'button', class: 'am-r m4j-r ' + p + (sous != null ? ' prem' : ''), 'data-id': c.id, 'aria-label': titreCourt(c) + ' · ' + et + (pro ? ' · ' + (pro.approx ? 'environ ' : '') + relJ(pro.n) : res ? ' · ' + res : '') });
+  var q = lit ? '<span class="q lit"><b>✦ lit…</b></span>' : pro ? '<span class="q ' + (pro.n < 0 ? 'passe' : pro.n <= 7 ? 'proche' : '') + '"><b>' + esc((pro.approx ? '≈ ' : '') + (pro.n < 0 ? 'retard ' + (-pro.n) + ' j' : pro.n === 0 ? 'auj.' : pro.n + ' j')) + '</b>' + esc(jcDe(pro.d || Date.now())) + '</span>' : res ? '<span class="q res">' + esc(String(res).replace(/^« |»$/g, '')) + '</span>' : '';
   row.innerHTML = '<span class="ic">' + IC(icCat(c), 16) + '</span><span class="t">' + (sous ? '<span class="sc">' + esc(sous) + '</span>' : '') + '<span class="ti">' + esc(titreCourt(c)) + '</span></span>' +
     '<span class="am-barre ' + c.etat + '" title="' + esc(et) + '"><i></i><i></i><i></i><i></i></span>' + q + (c.orgNeuf ? '<i class="neuf" title="Organisé a du neuf"></i>' : '');
   brancherGlisse(row, c);
@@ -3047,14 +3179,29 @@ function prochaine(c) {
   if (r.echeance) q.push(r.echeance.quand);
   if (r.tache && r.tache.quand && !o.tacheFaite && o.garde.tache !== false) q.push(r.tache.quand);
   q.forEach(function (x) { var d = lireDateV7(x, c.maj); if (d && (!best || d.d < best.d)) best = d; });
-  return best ? { n: joursDe(best.d), d: best.d, txt: dateCourte(best.d) } : null;
+  return best ? { n: joursDe(best.d), d: best.d, txt: dateCourte(best.d), approx: !!best.approx } : null;
+}
+function aFaire() {
+  var it = [], cle = {};
+  etat.carnets.forEach(function (c) {
+    if (c.etat === 'resolu') return;
+    var o = c.org, r = o && o.rep;
+    if (r && r.tache && o.garde.tache !== false && !o.tacheFaite) it.push({ c: c, t: r.tache.titre, q: r.tache.quand });
+    if (r && r.echeance) it.push({ c: c, t: r.echeance.quoi || 'Échéance', q: r.echeance.quand });
+    (c.miens || []).forEach(function (m) { if (m.type === 'tache' && !m.fait) it.push({ c: c, t: m.texte, q: null }); });
+  });
+  it.forEach(function (x) { var d = x.q && lireDateV7(x.q, x.c.maj); x.d = d ? d.d : null; x.approx = !!(d && d.approx); x.avant = !!(d && d.avant); });
+  it = it.filter(function (x) { var k1 = x.c.id + '|' + norm(x.t), k2 = x.d ? x.c.id + '|' + x.d.toDateString() : null;
+    if (cle[k1] || (k2 && cle[k2])) return false; cle[k1] = 1; if (k2) cle[k2] = 1; return true; });
+  return it.sort(function (a, b) { return (a.d ? +a.d : 9e15) - (b.d ? +b.d : 9e15); });
 }
 function rendreAFaire(l, items) {
   if (!items.length) { l.appendChild(h('p', { class: 'm4b-vide' }, 'Rien à faire pour l’instant.')); return; }
   items.forEach(function (x) {
     var n = x.d ? joursDe(x.d) : null, b = h('button', { type: 'button', class: 'am-af', onclick: function () { ouvrir(x.c.id); } });
-    b.innerHTML = '<span class="am-tuile s">' + IC(icVerbe(x.t), 16) + '</span><span class="t"><b>' + esc(x.t) + '</b><small>' + esc(titreCourt(x.c)) + '</small></span>' +
-      (x.d ? '<span class="q ' + (n < 0 ? 'passe' : n <= 7 ? 'proche' : '') + '"><b>' + esc(relJ(n)) + '</b>' + esc(jcDe(x.d)) + '</span>' : '');
+    var memeT = sansAccent(x.t).replace(/[^a-z0-9]+/g, ' ').trim() === sansAccent(titreCourt(x.c)).replace(/[^a-z0-9]+/g, ' ').trim();
+    b.innerHTML = '<span class="am-tuile s">' + IC(icVerbe(x.t), 16) + '</span><span class="t"><b>' + esc(x.t) + '</b>' + (memeT ? '' : '<small>' + esc(titreCourt(x.c)) + '</small>') + '</span>' +
+      (x.d ? '<span class="q ' + (n < 0 ? 'passe' : n <= 7 ? 'proche' : '') + '"><b>' + esc((x.approx ? '≈ ' : '') + relJ(n)) + '</b>' + esc((x.avant ? '≤ ' : '') + jcDe(x.d)) + '</span>' : '');
     l.appendChild(b);
   });
 }
@@ -3073,6 +3220,7 @@ function majTete() {
   var c = courant(); if (!c || !amTitre) return;
   amTitre.textContent = titreCourt(c);
   var k = catDe(c); amLieu.innerHTML = IC(icCat(c), 13) + '<span>' + esc(k.sous || k.nom) + '</span>'; amLieu.setAttribute('aria-label', 'Ranger · ' + k.nom + (k.sous ? ' › ' + k.sous : ''));
+  amLieu.classList.remove('ico'); if (amTitre.scrollWidth > amTitre.clientWidth + 1) amLieu.classList.add('ico');
   var o = c.org; amH.className = 'am-h' + (c.forte ? ' forte' : '');
   amH.innerHTML = o && o.quand ? IC('ia', 14) + (c.forte && new Date(o.quand) >= new Date(c.forte) ? '<b>IA forte</b> ' : '') + esc(quandCH(o.quand)) : '';
   amH.title = o && o.quand ? 'rangé par l’IA ' + quandCH(o.quand, true) : '';
@@ -3095,7 +3243,7 @@ function basculer(v, sansFocus) {
   if (vue === 'org') defilOrg = $('defil').scrollTop;
   vue = v;
   $('t-notes').classList.toggle('on', v === 'notes'); $('t-org').classList.toggle('on', v === 'org'); $('t-org').classList.toggle('ia', v === 'org');
-  $('p-notes').hidden = v !== 'notes'; $('p-org').hidden = v !== 'org';
+  $('p-notes').hidden = v !== 'notes'; $('p-org').hidden = v !== 'org'; document.body.classList.toggle('am-vnotes', v === 'notes');
   $('outils').hidden = v !== 'notes'; $('pied-org').hidden = v !== 'org';
   if (amAct) amAct.hidden = v !== 'org' || !amAct.innerHTML;
   if (v === 'org') {
@@ -3192,153 +3340,258 @@ function gagnant(C, o) {
 function sansPrix(C, o) { return actifs(C, o).filter(function (a) { return !a.total; }).length; }
 function actifs(C, o) { var E = o.ecartes || []; return C.arts.filter(function (a) { return E.indexOf(a.i) < 0; }); }
 function actHeros(D) {
-  var o = D.o, c = D.c, C = D.comp;
+  var o = D.o, c = D.c, C = D.comp, nO = C && !C.vide ? actifs(C, o).length : 0;
   if (D.regle) return D.regle.propose ? B('regle-oui', IC('coche', 18) + 'Réglé', 1) + B('regle-non', 'Pas encore') : B('rouvrir', IC('relire', 16) + 'Rouvrir');
   if (C && !C.vide && !D.tache) {
-    if (o.choisi != null && C.arts[o.choisi]) { var a = C.arts[o.choisi];
-      return o.commande ? B('decommander', 'Pas encore commandé') : B('commander', IC('coche', 18) + 'Commandé chez ' + esc(a.nom), 1) + B('tard', 'Plus tard') + B('rouvrir-choix', IC('relire', 16), 0, ' aria-label="Rouvrir le choix"'); }
+    if (o.choisi != null && C.arts[o.choisi]) return o.commande ? B('decommander', 'Pas encore commandé') : B('commander', IC('coche', 18) + 'Commandé', 1) + B('tard', 'Plus tard') + B('rouvrir-choix', IC('relire', 16) + 'Rouvrir');
     var gw = gagnant(C, o);
-    return gw ? B('prendre', IC('coche', 18) + 'Prendre ' + esc(gw.nom), 1, ' data-i="' + gw.i + '"') + B('comparer', 'Comparer') : B('comparer', IC('balance', 18) + 'Comparer ' + actifs(C, o).length + ' offres', 1);
+    return gw ? B('prendre', IC('coche', 18) + 'Prendre ' + esc(gw.nom), 1, ' data-i="' + gw.i + '"') + B('comparer', 'Comparer') : B('comparer', IC('balance', 18) + 'Comparer ' + nO + ' offres', 1);
   }
   if (!D.tache && D.r.resolu && c.etat !== 'resolu' && o.garde.resolu === false) return B('reregle', IC('coche', 18) + 'Réglé', 1);
-  if (!D.tache) return C && !C.vide ? B('comparer', IC('balance', 18) + 'Comparer ' + actifs(C, o).length + ' offres', 1) : '';
-  if (o.tacheFaite) return B('defait', 'Pas fait');
+  if (!D.tache) return nO ? B('comparer', IC('balance', 18) + 'Comparer ' + nO + ' offres', 1) : '';
+  /* après Fait : la suite d'abord (m12) */
+  if (o.tacheFaite) return B('suite', IC('ia', 18) + 'Étape suivante', 1) + B('defait', 'Pas fait');
   if (o.tard) return B('retour-tard', 'Reprendre');
+  /* une étape « comparer » met Comparer sous le pouce (m31) */
+  if (nO && icVerbe(D.tache.mot) === 'balance') return B('comparer', IC('balance', 18) + 'Comparer ' + nO + ' offres', 1) + B('fait', IC('coche', 18) + 'Fait');
   return B('fait', IC('coche', 18) + 'Fait', 1) + B('tard', 'Plus tard');
+}
+/* « dernier pas » : le résumé de l'IA seulement s'il est écrit dans une de ses lignes ; sinon le dernier fait */
+function dernierPas(D) {
+  var L = lignesDe(D.c), r = D.r, n0 = norm(r.resume || '');
+  if (n0 && n0.split(' ').length <= 5 && !lireDateV7(r.resume, D.c.maj)) for (var i = L.length - 1; i >= 0; i--) if (norm(L[i]).indexOf(n0) >= 0) return { mot: r.resume, ligne: i + 1 };
+  var f = D.faits[D.faits.length - 1]; return f ? { mot: f.mot, ligne: f.ligne, k: f.k } : null;
 }
 function heros(D) {
   var o = D.o, c = D.c, C = D.comp, ic = 'case', mot = '', sub = '', k = 'Prochaine étape', src = null, tag = '', cls = '', x = '';
+  if (D.tache && !D.regle) return tuilesTache(D);
   if (D.regle) { var g = D.regle; src = g; ic = 'coche'; cls = ' ok'; mot = g.mot; k = g.propose ? 'Réglé ?' : 'Réglé'; tag = g.propose ? '<span class="am-tag">' + IC('ia', 13) + 'proposé</span>' : ''; sub = D.date ? dateHtml(D.date) : ''; }
-  else if (C && !C.vide && !D.tache) {
+  else if (C && !C.vide) {
     if (o.choisi != null && C.arts[o.choisi]) { var a = C.arts[o.choisi]; src = a; ic = 'paquet'; k = o.commande ? 'Commandé' : 'Choisi';
       mot = (o.commande ? 'Commandé chez ' : 'Commander chez ') + a.nom; cls = o.commande ? ' ok' : '';
-      sub = '<span class="am-pas">' + IC('coche', 13) + 'comparé › ' + IC('coche', 13) + 'choisi › ' + (o.commande ? IC('coche', 13) + '<b>commandé</b>' : '<b>à commander</b>') + '</span>' + (a.total ? '<span>' + fmtN(a.total.chf) + ' CHF pour ' + a.total.q + '</span>' : '') + dateHtml(D.date); }
+      sub = (a.total ? '<span>' + fmtN(a.total.chf) + ' CHF pour ' + a.total.q + '</span>' : '') + dateHtml(D.date); }
     else { var gw = gagnant(C, o), A = actifs(C, o); ic = 'balance'; k = 'À choisir';
       mot = gw ? gw.nom + ' gagne' : 'Choisir parmi ' + A.length + ' offres';
-      sub = (gw ? '<span>moins cher pour ' + C.besoin + ' livrées · <b>' + fmtN(gw.total.chf) + ' CHF</b>' + (sansPrix(C, o) ? ' · ' + sansPrix(C, o) + ' sans prix' : '') + '</span>' : '<span>' + A.length + ' offres, rien ne départage encore</span>') + dateHtml(D.date); src = gw; }
-  } else if (!D.tache && D.r.resolu && c.etat !== 'resolu' && o.garde.resolu === false) { k = 'Rouvert'; ic = 'relire'; mot = D.r.resolu.question; src = { k: 'rv', ligne: D.r.resolu.ligne }; }
-  else { var t = D.tache;
-    if (!t) { ic = icCat(c); k = 'En bref'; mot = D.r.resume || 'Rien n’attend'; }
-    else { ic = icVerbe(t.mot); mot = t.mot; src = t; k = o.tacheFaite ? 'Fait' : o.tard ? 'Plus tard' : 'Prochaine étape'; cls = o.tacheFaite ? ' ok' : '';
-      tag = t.ia ? '<span class="am-tag">' + IC('ia', 13) + 'proposé</span><button class="am-x" data-act="refus" data-k="tache" aria-label="Refuser la tâche proposée par l’IA">' + IC('x', 16) + '</button>' : '';
-      sub = dateHtml(D.date) + (D.dateObjet ? '<span>' + esc(D.dateObjet) + '</span>' : '') + exHtml(c, t.ligne); }
-  }
+      sub = (gw ? '<span>moins cher pour ' + C.besoin + ' livrées · <b>' + fmtN(gw.total.chf) + ' CHF</b>' + (sansPrix(C, o) ? ' · ' + sansPrix(C, o) + ' sans prix' : '') + '</span>' : '') + dateHtml(D.date); src = gw; }
+  } else if (D.r.resolu && c.etat !== 'resolu' && o.garde.resolu === false) { k = 'Rouvert'; ic = 'relire'; mot = D.r.resolu.question; src = { k: 'rv', ligne: D.r.resolu.ligne }; }
+  else { ic = icCat(c); k = 'En bref'; mot = D.r.resume || 'Rien n’attend'; }
   x = '<section class="am-hero' + cls + '" data-utile data-booster="heros"><div class="am-k"><span class="am-et ' + c.etat + '">' + esc(NOM_ETAT[c.etat] || 'Noté') + '</span><span>· ' + esc(k) + '</span>' + tag + '</div>' +
-    '<div class="am-hb"><span class="am-tuile">' + IC(ic, 20) + '</span><div class="am-hm"><b class="am-hv' + (o.tacheFaite && D.tache ? ' barre' : '') + '">' + esc(mot) + '</b>' + (sub ? '<span class="am-hs">' + sub + '</span>' : '') + '</div>' +
+    '<div class="am-hb"><span class="am-tuile">' + IC(ic, 20) + '</span><div class="am-hm"><b class="am-hv" data-nom>' + esc(mot) + '</b>' + (sub ? '<span class="am-hs">' + sub + '</span>' : '') + '</div>' +
     (src && src.k && (src.ligne || src.ligneTxt) ? '<button class="am-src" data-k="' + src.k + '" aria-label="Sa ligne dans Mes notes">l. ' + (src.ligne || '＋') + IC('retour', 14) + '</button>' : '') + '</div></section>';
   return x;
 }
+/* en tête d'un carnet à étape : des tuiles (O-organise-b) — depuis, dernier pas, une mesure, puis la prochaine étape en large */
+function tuilesTache(D) {
+  var o = D.o, c = D.c, t = D.tache, T = [], j = joursDe(c.cree), dp = dernierPas(D);
+  T.push('<div class="am-t4" data-booster="coupdoeil"><small>' + IC('cal', 13) + '<span class="am-et ' + c.etat + '">' + esc((NOM_ETAT[c.etat] || 'Noté').toLowerCase()) + '</span> depuis</small><b>' + (j < 0 ? -j : 0) + ' j</b> <span class="d">' + jcDe(c.cree) + '</span></div>');
+  if (dp) T.push('<button class="am-t4" ' + (dp.k ? 'data-k="' + dp.k + '"' : 'data-n="' + dp.ligne + '"') + '><small>' + IC('retour', 13) + 'dernier pas</small><b data-nom>' + esc(dp.mot) + '</b> <span class="d">l. ' + dp.ligne + '</span></button>');
+  var f = D.paire ? null : D.chiffres[0];
+  if (f) { var al = alerteDe(f); T.push('<button class="am-t4' + (al ? ' bad' : '') + '" data-k="' + f.k + '"><small>' + IC(al ? 'alerte' : 'liste', 13) + esc(f.label || 'mesure') + '</small><b>' + (estEstime(c, f.ligne, f.mot) ? '≈ ' : '') + esc(f.mot) + '</b> <span class="d">l. ' + f.ligne + '</span></button>'); }
+  var meme = norm(t.mot) === norm(titreCourt(c)), fait = o.tacheFaite;
+  var pro = '<div class="am-t4 pro' + (fait ? ' ok' : '') + (t.ia ? ' ia' : '') + '" data-utile data-booster="heros"><small>' + IC(fait ? 'coche' : icVerbe(t.mot), 13) + (fait ? 'fait' : o.tard ? 'plus tard' : 'prochaine') + (t.ia ? '<span class="am-tag">' + IC('ia', 12) + 'proposé</span>' : '') + '</small>' +
+    '<span class="row"><b class="' + (fait ? 'barre' : '') + '" data-nom>' + esc(meme && D.date ? 'Prévu' : t.mot) + '</b>' + (t.ligne ? '<button class="am-src" data-k="tache" aria-label="Sa ligne dans Mes notes">l. ' + t.ligne + IC('retour', 14) + '</button>' : '') +
+    (t.ia ? '<button class="am-x" data-act="refus" data-k="tache" aria-label="Refuser la tâche proposée par l’IA">' + IC('x', 16) + '</button>' : '') + '</span>' +
+    (D.date || D.dateObjet || exHtml(c, t.ligne) ? '<span class="am-hs">' + dateHtml(D.date) + (D.dateObjet ? '<span>' + esc(D.dateObjet) + '</span>' : '') + exHtml(c, t.ligne) + '</span>' : '') + '</div>';
+  return '<section class="am-g4">' + T.join('') + pro + '</section>';
+}
+/* une mesure loin de sa visée (« 14 °C · visé 2 °C ») se lit en alerte (m33) */
+function alerteDe(f) { var m = String(f.label || '').match(/vis[ée]e?\s*([-\d,.]+)/i); return m && Math.abs(NUM(f.mot) - NUM(m[1])) > 1; }
 function sec(ic, titre, inner, droite) { return '<section class="am-sec"><h3>' + IC(ic, 14) + esc(titre) + (droite ? '<span class="r">' + droite + '</span>' : '') + '</h3>' + inner + '</section>'; }
 function secRetenir(D) { return sec('epingle', 'À retenir', '<div class="am-wrap v7-wrap">' + D.retenir.map(function (x) { return '<button class="am-chip" data-k="' + x.k + '">' + (x.ic ? '<span class="e">' + esc(x.ic) + '</span>' : '') + esc(x.mot) + '</button>'; }).join('') + '</div>'); }
+function carteOption(c, op, R) {
+  var ret = op.mien ? false : R.indexOf(op.io) >= 0;
+  var at = valHtml(c, op.ligne, op.inconnu ? null : op.cout) + exHtml(c, op.ligne) + (op.conseil ? '<span class="am-tag">' + IC('ia', 13) + 'conseillé</span>' : '') + (op.ia ? '<span class="am-tag">' + IC('ia', 13) + 'proposé</span>' : '') + (op.mien ? '<span class="am-ex">ajouté par toi</span>' : '') + (ret ? '<span class="am-et decide">retenu</span>' : '');
+  return '<div class="am-opt' + (op.ia ? ' ia' : '') + (ret ? ' ret' : '') + '" role="button" tabindex="0" data-k="' + op.k + '">' + tuile(c, op.ligne, icVerbe(op.mot) === 'case' ? 'cle' : icVerbe(op.mot)) + '<span class="tw"><span class="t" data-nom>' + esc(op.mot) + '</span><span class="at">' + at + '</span></span>' +
+    (op.ia ? '<button class="am-x" style="margin:0" data-act="refus" data-k="' + op.k + '" aria-label="Refuser la proposition de l’IA">' + IC('x', 18) + '</button>' : '') + '</div>';
+}
+/* pistes → options (O-organise-b) : une option se range sous la piste dont elle partage un mot ; sinon elle reste dans Options */
+var AM_STOP = ['avec', 'pour', 'dans', 'sans', 'plus', 'mais', 'trouve', 'trouvee', 'apres', 'chaque', 'entre', 'sous', 'cette', 'faire', 'avant', 'exemple', 'piste', 'pistes'];
+function motsCles(s) { return sansAccent(s || '').split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 4 && AM_STOP.indexOf(w) < 0; }); }
+function arbrePistes(D, libres) {
+  var c = D.c, R = retenus(D.o), pris = {};
+  var nT = D.pistes.filter(function (p) { return p.ok === 'trouve'; }).length, nN = D.pistes.filter(function (p) { return p.ok === 'non'; }).length;
+  var br = D.pistes.map(function (p) {
+    var mp = motsCles(p.mot + ' ' + (p.cit || '')), ops = D.options.filter(function (op) { if (pris[op.k]) return false; var ok = motsCles(op.mot).some(function (w) { return mp.indexOf(w) >= 0; }); if (ok) pris[op.k] = 1; return ok; });
+    var st = p.ok === 'trouve' ? ['ok', 'coche', 'Trouvé'] : p.ok === 'non' ? ['non', 'alerte', 'Pas trouvé'] : ['verif', 'loupe', 'À vérifier'];
+    return '<div class="am-br"><button class="am-pi ' + st[0] + (p.ia ? ' ia' : '') + '" data-k="' + p.k + '"><small>' + IC(st[1], 13) + st[2] + (p.ia ? ' <span class="am-tag">' + IC('ia', 12) + '</span>' : '') + '</small><b data-nom>' + esc(String(p.mot).replace(/\s*\?\s*$/, '')) + '</b>' + (p.ligne ? '<span class="d">l. ' + p.ligne + '</span>' : '') + '</button>' +
+      (ops.length ? '<span class="am-fl2">' + IC('bas', 16) + '</span>' + ops.map(function (op) { return carteOption(c, op, R); }).join('') : '') + '</div>';
+  });
+  D.options.forEach(function (op) { if (!pris[op.k]) libres.push(op); });
+  return sec('loupe', 'Pistes', '<div class="am-arbre' + (D.pistes.length > 1 ? ' deux' : '') + '">' + br.join('') + '</div><button class="am-plus2" data-act="plus-piste">' + IC('plus', 16) + 'Piste</button>',
+    '<span class="am-jg">' + anneau({ ok: nT, q: D.pistes.length - nT - nN, non: nN }) + '<b>' + nT + '/' + D.pistes.length + '</b></span>');
+}
 function rangees(D) {
-  var o = D.o, c = D.c, x = '';
+  var o = D.o, c = D.c, x = '', libres = [];
   if (D.comp) x += resumeCmp(D);
-  if (D.pistes.length) {
-    var nT = D.pistes.filter(function (p) { return p.ok === 'trouve'; }).length, nN = D.pistes.filter(function (p) { return p.ok === 'non'; }).length;
-    x += sec('loupe', 'Pistes', '<div class="am-wrap v7-wrap">' + D.pistes.map(function (q) {
-      var m = q.ok === 'trouve' ? '<i class="am-mt">✓</i>' : q.ok === 'non' ? '<i class="am-mp">?</i>' : '<i class="am-mv">?</i>', w = q.ok === 'trouve' ? 'trouvé' : q.ok === 'non' ? 'pas trouvé' : 'à vérifier';
-      return '<button class="am-chip ' + (q.ok === 'trouve' ? 'ok' : q.ok === 'non' ? 'non' : 'verif') + (q.ia ? ' ia' : '') + '" data-k="' + q.k + '">' + m + esc(String(q.mot).replace(/\s*\?\s*$/, '')) + ' <small>' + w + '</small>' + (q.ia ? '<span class="am-tag">' + IC('ia', 13) + '</span>' : '') + '</button>'; }).join('') +
-      '<button class="am-plus" data-act="plus-piste" aria-label="Ajouter une piste">' + IC('plus', 18) + '</button></div>',
-      '<span class="am-jg">' + anneau({ ok: nT, q: D.pistes.length - nT - nN, non: nN }) + '<b>' + nT + '/' + D.pistes.length + '</b> trouvé' + (nT > 1 ? 's' : '') + '</span>');
-  }
-  if (D.faits.length) x += sec('coche', 'Fait', '<div class="am-wrap v7-wrap">' + D.faits.map(function (f) { return '<button class="am-chip fait" data-k="' + f.k + '"><i class="am-mt">✓</i>' + esc(f.mot) + '</button>'; }).join('') + '</div>');
-  if (D.options.length) { var R = retenus(o);
-    x += sec(D.genre === 'idee' ? 'ia' : 'cle', D.genre === 'idee' ? 'Idées' : 'Options', '<div class="am-opts v7-opts">' + D.options.map(function (op) {
-      var ret = op.mien ? false : R.indexOf(op.io) >= 0;
-      var at = valHtml(c, op.ligne, op.inconnu ? null : op.cout) + exHtml(c, op.ligne) + (op.conseil ? '<span class="am-tag">' + IC('ia', 13) + 'conseillé</span>' : '') + (op.ia ? '<span class="am-tag">' + IC('ia', 13) + 'proposé</span>' : '') + (op.mien ? '<span class="am-ex">ajouté par toi</span>' : '') + (ret ? '<span class="am-et decide">retenu</span>' : '');
-      return '<div class="am-opt' + (op.ia ? ' ia' : '') + (ret ? ' ret' : '') + '" role="button" tabindex="0" data-k="' + op.k + '">' + tuile(c, op.ligne, icVerbe(op.mot) === 'case' ? 'cle' : icVerbe(op.mot)) + '<span class="tw"><span class="t">' + esc(op.mot) + '</span><span class="at">' + at + '</span></span>' +
-        (op.ia ? '<button class="am-x" style="margin:0" data-act="refus" data-k="' + op.k + '" aria-label="Refuser la proposition de l’IA">' + IC('x', 18) + '</button>' : '') + '</div>'; }).join('') + '</div>');
-  }
+  /* une option qui est déjà une offre comparée (même ligne) n'est pas répétée (m24) */
+  var lA = D.comp ? D.comp.arts.map(function (a) { return a.ligne; }).filter(Boolean) : [];
+  D.options = D.options.filter(function (op) { return !op.ligne || lA.indexOf(op.ligne) < 0; });
+  if (D.pistes.length) x += arbrePistes(D, libres); else libres = D.options.slice();
+  var dp0 = D.tache ? dernierPas(D) : null, FF = D.faits.filter(function (f) { return !dp0 || norm(f.mot) !== norm(dp0.mot); });
+  if (FF.length) x += sec('coche', 'Fait', '<div class="am-wrap v7-wrap">' + FF.map(function (f) { return '<button class="am-chip fait" data-k="' + f.k + '"><i class="am-mt">✓</i>' + esc(f.mot) + '</button>'; }).join('') + '</div>');
+  if (libres.length) { var R = retenus(o); x += sec(D.genre === 'idee' ? 'ia' : 'cle', D.genre === 'idee' ? 'Idées' : 'Options', '<div class="am-opts v7-opts">' + libres.map(function (op) { return carteOption(c, op, R); }).join('') + '</div>'); }
   if (D.taches.length) x += sec('case', 'À faire', '<div class="am-ls v7-ls">' + D.taches.map(function (t) { return '<div class="am-l v7-l' + (t.fait ? ' fait' : '') + '"><button class="q" data-act="cochem" data-m="' + t.mi + '" aria-label="' + (t.fait ? 'Décocher ' : 'Cocher ') + esc(t.mot) + '"><i>' + (t.fait ? '✓' : '') + '</i></button><button class="tx" data-k="' + t.k + '">' + esc(t.mot) + (t.ia ? ' <span class="am-tag">' + IC('ia', 13) + 'proposé</span>' : '') + '</button></div>'; }).join('') + '</div>');
   if (D.liste.length) { var nf = D.liste.filter(function (l) { return l.fait; }).length;
-    x += sec('liste', 'Liste', '<div class="am-ls v7-ls">' + D.liste.map(function (l) { return '<div class="am-l v7-l' + (l.fait ? ' fait' : '') + '"><button class="q" data-act="coche" data-i="' + l.i + '" aria-label="' + (l.fait ? 'Décocher ' : 'Cocher ') + esc(l.mot) + '"><i>' + (l.fait ? '✓' : '') + '</i></button><button class="tx" data-k="' + l.k + '">' + esc(l.mot) + '</button></div>'; }).join('') + '</div>',
+    x += sec('liste', 'Liste', '<div class="am-ls v7-ls">' + D.liste.map(function (l) { return '<div class="am-l v7-l' + (l.fait ? ' fait' : '') + '"><button class="q" data-act="coche" data-i="' + l.i + '" aria-label="' + (l.fait ? 'Décocher ' : 'Cocher ') + esc(l.mot) + '"><i>' + (l.fait ? '✓' : '') + '</i></button><button class="tx" data-k="' + l.k + '" data-nom>' + esc(l.mot) + '</button></div>'; }).join('') + '</div>',
       '<span class="am-jauge"><i style="width:' + Math.round(nf / D.liste.length * 100) + '%"></i></span><b>' + nf + '/' + D.liste.length + '</b>'); }
-  if (D.paire || D.chiffres.length) { var F = D.paire ? null : D.chiffres.slice(0, 4);
-    x += sec('liste', 'Chiffres', '<div class="am-figs">' + (D.paire ? '<button class="am-fig pair" data-k="' + D.paire.a.k + '"><span><b>' + esc(D.paire.a.mot) + '</b><small>' + esc(D.paire.a.label) + '</small></span><span class="fl">' + (D.paire.baisse ? '↘' : '↗') + '</span><span><b class="' + (D.paire.baisse ? 'bas' : '') + '">' + esc(D.paire.b.mot) + '</b><small>' + esc(D.paire.b.label) + '</small></span></button>' :
-      F.map(function (f) { var e = estEstime(c, f.ligne, f.mot); return '<button class="am-fig" data-k="' + f.k + '"><b>' + (e ? '<span class="am-est">≈ ' + esc(f.mot) + '</span>' : esc(f.mot)) + '</b><small>' + esc(f.label || '') + (e ? ' · estimé' : '') + '</small>' + exHtml(c, f.ligne) + '</button>'; }).join('')) + '</div>'); }
-  if (D.echRow || (D.ech && !D.tache)) x += sec('cal', 'Échéance', '<div class="am-wrap v7-wrap"><button class="am-chip" data-k="ech">' + esc(D.ech.quoi || 'Échéance') + ' · ' + (D.ech.date ? dateHtml(D.ech.date) : esc(D.ech.mot)) + '</button></div>');
+  /* chiffres : la première mesure est déjà en tuile quand il y a une étape */
+  var F = D.paire ? null : D.chiffres.slice(D.tache ? 1 : 0, 4);
+  if (D.paire || F.length) x += sec('liste', 'Chiffres', '<div class="am-figs">' + (D.paire ? '<button class="am-fig pair" data-k="' + D.paire.a.k + '"><span><b>' + esc(D.paire.a.mot) + '</b><small>' + esc(D.paire.a.label) + '</small></span><span class="fl">' + (D.paire.baisse ? '↘' : '↗') + '</span><span><b class="' + (D.paire.baisse ? 'bas' : '') + '">' + esc(D.paire.b.mot) + '</b><small>' + esc(D.paire.b.label) + '</small></span></button>' :
+      F.map(function (f) { var e = estEstime(c, f.ligne, f.mot), al = alerteDe(f); return '<button class="am-fig' + (al ? ' bad' : '') + '" data-k="' + f.k + '"><b>' + (e ? '<span class="am-est">≈ ' + esc(f.mot) + '</span>' : esc(f.mot)) + '</b><small>' + esc(f.label || '') + (e ? ' · estimé' : '') + '</small>' + exHtml(c, f.ligne) + '</button>'; }).join('')) + '</div>');
+  /* l'échéance seulement si elle n'est pas déjà la date du haut (m11) */
+  if (D.ech && D.ech.date && D.date && D.ech.date.d - D.date.d !== 0) x += sec('cal', 'Échéance', '<div class="am-wrap v7-wrap"><button class="am-chip" data-k="ech">' + esc(D.ech.quoi || 'Échéance') + ' · ' + dateHtml(D.ech.date) + '</button></div>');
+  else if (D.ech && !D.ech.date) x += sec('cal', 'Échéance', '<div class="am-wrap v7-wrap"><button class="am-chip" data-k="ech">' + esc(D.ech.quoi || 'Échéance') + ' · ' + esc(D.ech.mot) + '</button></div>');
   if (D.periode) { var a0 = lireDate(D.periode.du, c.maj), b0 = lireDate(D.periode.au, c.maj);
     if (a0 && b0 && b0.d > a0.d) { var t0 = Math.min(Date.now(), +a0.d), t1 = Math.max(+b0.d, Date.now()), sp = t1 - t0 || 1;
       x += sec('cal', 'Période', '<button class="am-per" data-act="periode"><span class="bar"><b style="left:' + ((+a0.d - t0) / sp * 100) + '%;right:' + ((t1 - +b0.d) / sp * 100) + '%"></b><u style="left:' + ((Date.now() - t0) / sp * 100) + '%"></u></span><span class="bt"><span>' + jcDe(a0.d) + '.' + a0.d.getFullYear() + '</span><span>' + relJ(joursDe(a0.d)) + '</span><span>' + jcDe(b0.d) + '.' + b0.d.getFullYear() + '</span></span></button>'); } }
   if (D.retenir.length) x += secRetenir(D);
   return x;
 }
-/* qui gagne quoi, à quantité égale (prix par unité livrée) ; le détail est dans Comparer */
+/* qui gagne quoi, à quantité égale (prix par unité livrée) ; le détail est dans Comparer.
+   Passe de correction : une tuile ne montre qu'un avantage vérifié sur les valeurs (B29) ; barres classées comme h04-7 : le n° 1 a la barre pleine (B15). */
+function numDe(v) { return /^[≥≤~≈+]?\s?\d/.test(String(v)) ? NUM(v) : null; }
+function prixLike(nom) { return /prix|chf|co[uû]t|d[ée]lai|livraison|ppb|\/(bt|kg|g|l)\b|\d+\s?kg\b/i.test(nom); }
+/* un critère départage-t-il vraiment ? ≥ 2 valeurs chiffrées ; le gagnant de l'IA doit être l'extrême ; sinon seul un prix se lit « moins = mieux » */
+function critVerifie(C, A, j) {
+  var K = A.filter(function (a) { return numDe(a.vals[j]) != null; }); if (K.length < 2) return null;
+  var vs = K.map(function (a) { return numDe(a.vals[j]); }), mn = Math.min.apply(null, vs), mx = Math.max.apply(null, vs); if (mn === mx) return null;
+  var g = C.crit[j].g, ga = g != null ? K.filter(function (a) { return a.i === g; })[0] : null, dir = null;
+  if (ga) dir = numDe(ga.vals[j]) === mn ? 'moins' : numDe(ga.vals[j]) === mx ? 'plus' : null;
+  else if (prixLike(C.crit[j].nom)) dir = 'moins';
+  if (!dir) return null;
+  var best = K.filter(function (a) { return numDe(a.vals[j]) === (dir === 'moins' ? mn : mx); });
+  return best.length === 1 ? { j: j, dir: dir, w: best[0], K: K } : null;
+}
+/* barres classées : items {a, v, m (ne couvre pas), lab, e} ; n° 1 plein, puis best/v (moins) ou v/best (plus) ; hors besoin à part, sans barre */
+function barresRang(items, dir, wi, cls) {
+  var K = items.filter(function (x) { return x.v != null && !x.m; }).sort(function (x, y) { return dir === 'moins' ? x.v - y.v : y.v - x.v; });
+  var M = items.filter(function (x) { return x.m; }), U = items.filter(function (x) { return x.v == null && !x.m; }), best = K.length ? K[0].v : null;
+  var row = function (x, rang) {
+    var w = rang === 1 && wi != null && x.a.i === wi, pct = x.v != null && !x.m && best != null ? Math.max(8, Math.round((dir === 'moins' ? (x.v ? best / x.v : 1) : best ? x.v / best : 0) * 100)) : 0;
+    var cl = x.m ? 'm' : x.v == null ? 'u' : w ? 'w' : x.e ? 'e' : '';
+    return '<button class="' + cls + ' ' + cl + '" data-ci="' + x.a.i + '"' + (x.r ? ' data-r="' + x.r + '"' : '') + ' data-k="' + x.a.k + '"><span class="i">' + (rang || (x.m ? '–' : '')) + '</span><span class="nm" data-nom>' + esc(x.a.nom) + '</span><span class="vl">' + x.lab + '</span>' +
+      '<span class="tr">' + (pct ? '<i style="width:' + pct + '%"></i>' : '') + '</span></button>';
+  };
+  return K.map(function (x, i) { return row(x, i + 1); }).join('') + M.map(function (x) { return row(x, 0); }).join('') + U.map(function (x) { return row(x, 0); }).join('');
+}
 function resumeCmp(D) {
-  var C = D.comp, o = D.o, c = D.c, A = actifs(C, o), T = [], bars = '';
-  if (C.vide) return sec('balance', 'Offres', '<div class="am-opts v7-opts">' + A.map(function (a) { return '<div class="am-opt" role="button" tabindex="0" data-k="' + a.k + '">' + tuile(c, a.ligne) + '<span class="tw"><span class="t">' + esc(a.nom) + '</span><span class="at"><span class="am-pn"><i class="am-mv">?</i> prix pas noté</span>' + (a.attente ? '<span class="am-lk">' + esc(a.attente) + '</span>' : '') + '</span></span></div>'; }).join('') + '</div>');
+  var C = D.comp, o = D.o, c = D.c, A = actifs(C, o), T = [], bars = '', vide = false;
+  if (C.vide) return sec('balance', 'Offres', '<div class="am-opts v7-opts">' + A.map(function (a) { return '<div class="am-opt" role="button" tabindex="0" data-k="' + a.k + '">' + tuileOffre(c, a, C) + '<span class="tw"><span class="t" data-nom>' + esc(a.nom) + '</span><span class="at"><span class="am-pn"><i class="am-mv">?</i> prix pas noté</span>' + (a.attente ? '<span class="am-lk">' + esc(a.attente) + '</span>' : '') + '</span></span></div>'; }).join('') + '</div>');
   if (C.besoin) {
-    var cov = A.filter(function (a) { return a.total && !a.manque; }).sort(function (a, b) { return a.total.chf - b.total.chf; });
-    if (cov[0]) T.push('<div class="am-tile"><small>Moins cher · ' + C.besoin + ' livrées</small><b>' + esc(cov[0].nom) + '</b><span class="v w">' + (cov[0].total.livInconnue ? '≥ ' : '') + fmtN(cov[0].total.chf) + ' CHF</span><small>' + fmt2(cov[0].total.chf / C.besoin) + ' par unité utile</small></div>');
-    var u = A.filter(function (a) { return a.offre && a.offre.prix && !isNaN(NUM(a.offre.prix)); }).sort(function (a, b) { return NUM(a.offre.prix) - NUM(b.offre.prix); })[0];
-    if (u && u !== cov[0]) T.push('<div class="am-tile"><small>Prix affiché le plus bas</small><b>' + esc(u.nom) + '</b><span class="v' + (u.manque ? ' m' : '') + '">' + esc(u.offre.prix) + '</span><small>' + (u.manque ? 'ne couvre pas ' + C.besoin + ' (' + u.total.q + ')' : u.total && u.total.q > C.besoin ? 'minimum ' + u.total.q : '') + '</small></div>');
-    var sorted = A.slice().sort(function (a, b) { return (a.total && !a.manque ? a.total.chf : 9e9) - (b.total && !b.manque ? b.total.chf : 9e9); }).slice(0, 3);
-    var mx = Math.max.apply(null, A.filter(function (a) { return a.total; }).map(function (a) { return a.total.chf; }).concat([1]));
-    bars = '<div class="am-bars">' + sorted.map(function (a) { var t = a.total, cl = !t ? 'u' : a.manque ? 'm' : a === cov[0] ? 'w' : '';
-      return '<button class="am-bar ' + cl + '" data-k="' + a.k + '"><span class="nm">' + esc(a.nom) + exHtml(c, a.ligne) + '</span><span class="tr"><i style="width:' + (t ? Math.max(6, Math.round(t.chf / mx * 100)) : 0) + '%"></i></span><span class="vl">' + (t ? (t.livInconnue ? '≥ ' : '') + fmtN(t.chf) + (a.manque ? ' · ' + t.q + ' seul.' : '') : '? pas noté') + '</span></button>'; }).join('') + '</div>';
+    var gw = gagnant(C, o), u = A.filter(function (a) { return a.offre && a.offre.prix && !isNaN(NUM(a.offre.prix)); }).sort(function (a, b) { return NUM(a.offre.prix) - NUM(b.offre.prix); })[0];
+    if (u && u !== gw && u.manque) T.push('<div class="am-tile"><small>Moins cher à l’unité</small><b data-nom>' + esc(u.nom) + '</b><span class="v m">' + esc(u.offre.prix) + '</span><small>ne couvre pas ' + C.besoin + ' (' + u.total.q + ')</small></div>');
+    bars = '<div class="am-bh">Total pour ' + C.besoin + ' livrées <small>CHF · moins = mieux</small></div><div class="am-bars">' +
+      barresRang(A.map(function (a) { var t = a.total; return { a: a, v: t ? t.chf : null, m: !!a.manque, lab: t ? (t.livInconnue ? '≥ ' : '') + fmtN(t.chf) + (a.manque ? ' · ' + t.q + ' seul.' : '') : '<i class="am-mv">?</i>' }; }), 'moins', gw ? gw.i : null, 'am-bar') + '</div>';
   } else {
-    C.crit.forEach(function (cr, j) { var w = cr.g != null ? C.arts[cr.g] : null; if (!w || A.indexOf(w) < 0) return;
-      T.push('<div class="am-tile"><small>' + esc(critNom(cr.nom)) + '</small><b>' + esc(w.nom) + '</b><span class="v w">' + esc(w.vals[j]) + '</span></div>'); });
-    if (!T.length) A.forEach(function (a) { var j = a.vals.findIndex(function (v) { return v !== '?'; });
-      T.push('<div class="am-tile"><small>' + (j >= 0 ? esc(critNom(C.crit[j].nom)) : 'prix') + '</small><b>' + esc(a.nom) + '</b>' + (j >= 0 ? '<span class="v">' + esc(a.vals[j]) + '</span>' : '<span class="am-pn"><i class="am-mv">?</i> pas noté</span>') + (a.srcs && a.srcs.indexOf('lien') >= 0 ? '<span class="am-lk">' + IC('lien', 13) + ' lu sur son lien</span>' : a.attente ? '<span class="am-lk">' + esc(a.attente) + '</span>' : '') + '</div>'); });
+    var V = C.crit.map(function (cr, j) { return critVerifie(C, A, j); }).filter(Boolean);
+    if (V.length) { var v0 = V[0];
+      bars = '<div class="am-bh">' + esc(critNom(C.crit[v0.j].nom)) + ' <small>' + (v0.dir === 'moins' ? 'moins = mieux' : 'plus = mieux') + '</small></div><div class="am-bars">' +
+        barresRang(A.map(function (a) { var v = numDe(a.vals[v0.j]), e = v != null && estEstime(c, a.ligne, a.vals[v0.j]); return { a: a, v: v, e: e, lab: v == null ? '<i class="am-mv">?</i>' : (e ? '≈ ' : '') + esc(a.vals[v0.j]) }; }), v0.dir, v0.w.i, 'am-bar') + '</div>';
+      V.slice(1, 3).forEach(function (v) { T.push('<div class="am-tile"><small>' + esc(critNom(C.crit[v.j].nom)) + '</small><b data-nom>' + esc(v.w.nom) + '</b><span class="v w">' + esc(v.w.vals[v.j]) + '</span></div>'); });
+    } else { vide = true;
+      T.push('<div class="am-rien">' + IC('balance', 16) + '<span>Rien ne départage encore</span></div>');
+      bars = '<div class="am-offs">' + A.map(function (a) { var n = a.vals.filter(function (x) { return x !== '?'; }).length;
+        return '<button class="am-off" data-k="' + a.k + '">' + tuileOffre(c, a, C) + '<span class="t"><b data-nom>' + esc(a.nom) + '</b><span class="am-mini"><i style="width:' + Math.round(n / (a.vals.length || 1) * 100) + '%"></i></span><small>' + n + '/' + a.vals.length + ' noté' + (n > 1 ? 's' : '') + '</small></span></button>'; }).join('') + '</div>';
+    }
   }
-  return sec('balance', 'Qui gagne quoi', '<div class="am-qg" data-booster="comparer"><div class="am-tiles">' + T.slice(0, 3).join('') + '</div>' + bars +
-    '<button class="am-cbtn" data-act="comparer">' + IC('balance', 16) + 'Comparer ' + A.length + ' offres · ' + (C.crit.length + (C.besoin ? 1 : 0)) + ' caractéristiques' + IC('droite', 16) + '</button></div>');
+  return sec('balance', vide ? 'Offres' : 'Qui gagne quoi', '<div class="am-qg" data-booster="comparer">' + (T.length ? '<div class="am-tiles">' + T.slice(0, 3).join('') + '</div>' : '') + bars +
+    '<button class="am-cbtn" data-act="comparer">' + IC('balance', 16) + 'Comparer ' + A.length + ' · ' + nCarac(D) + ' caractéristiques' + IC('droite', 16) + '</button></div>');
 }
 function critNom(n) { return String(n).replace(/^\S+\s+(?=\S)/, function (m) { return /[A-Za-zÀ-ÿ0-9]/.test(m) ? m : ''; }); }
+function nCarac(D) { return lignesCmp(D).filter(function (r) { return !(D.comp.besoin && r.j != null && r.j === D.comp.iq); }).length; }
+/* l'objet de chaque offre : l'image de son lien, sinon un dessin propre à l'offre et son initiale (m17) */
+function icOffre(a, c) {
+  var t = sansAccent(a.nom + ' ' + (a.cit || '') + ' ' + a.vals.join(' ') + ' ' + (a.offre ? JSON.stringify(a.offre) : ''));
+  if (/occasion|annonce|laver|usag/.test(t)) return 'recycle';
+  if (/repar/.test(t)) return 'cle';
+  if (/frigo|neuf/.test(t)) return 'frigo';
+  if (/palette|\bmin\b|1200/.test(t)) return 'palette';
+  if (/offert|gratuit/.test(t)) return 'camion';
+  if (/kegland|brewtools|shop|hops|brau|land\b|pack|33/.test(t)) return 'magasin';
+  return icCat(c);
+}
+function tuileOffre(c, a, C) { var im = imgDe(c, a.ligne); return '<span class="am-tuile of">' + (im ? '<img src="' + esc(im) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : IC(icOffre(a, c), 20)) + '<i class="mono">' + esc(a.nom.replace(/^[^A-Za-zÀ-ÿ0-9]+/, '').charAt(0).toUpperCase()) + '</i></span>'; }
+/* valeur courte pour une colonne étroite (le texte entier reste au toucher) */
+function abrV(v) { var s = String(v), m;
+  if ((m = s.match(/^(\d[\d’' ]*)\s*min\b/i))) return '≥ ' + m[1].trim();
+  if ((m = s.match(/^(\d[\d’' ]*)\s*seul/i))) return '≤ ' + m[1].trim();
+  if ((m = s.match(/^par\s+(\d[\d’' ]*)$/i))) return m[1].trim();
+  return s; }
+function uniteDe(vals) { var U = null, ok = true;
+  vals.forEach(function (v) { if (numDe(v) == null) return; var s = String(v).replace(/^[≥≤~≈+]?\s?[\d’' .,]+\s*/, '').trim(); if (!s || s.length > 5) { ok = false; return; } if (U == null) U = s; else if (U !== s) ok = false; });
+  return ok && U ? U : null; }
 
 /* ====================================================================== Comparer : la vue dédiée (son choix du 17.11 : h04-7, v03-4, g05-8, g01-8, h06-7) */
 function lignesCmp(D) {
   var C = D.comp, o = D.o, R = [];
   if (C.besoin) {
-    R.push({ id: 'tot', nom: 'Total ' + C.besoin + ' livrées', unit: 'CHF', dir: 'moins', vals: C.arts.map(function (a) { return a.total ? (a.total.livInconnue ? '≥ ' : '') + fmtN(a.total.chf) : '?'; }), num: C.arts.map(function (a) { return a.total && !a.manque ? a.total.chf : null; }), m: C.arts.map(function (a) { return !!a.manque; }), g: 'calc' });
-    R.push({ id: 'pu', nom: 'Par unité, pour ' + C.besoin, unit: 'CHF', dir: 'moins', vals: C.arts.map(function (a) { return a.total ? (a.total.livInconnue ? '≥ ' : '') + fmt2(a.total.chf / (a.manque ? a.total.q : C.besoin)) : '?'; }), num: C.arts.map(function (a) { return a.total && !a.manque ? a.total.chf / C.besoin : null; }), m: C.arts.map(function (a) { return !!a.manque; }), g: 'calc' });
+    R.push({ id: 'tot', nom: 'Total ' + C.besoin, court: 'Total', unit: 'CHF', dir: 'moins', vals: C.arts.map(function (a) { return a.total ? (a.total.livInconnue ? '≥ ' : '') + fmtN(a.total.chf) : '?'; }), num: C.arts.map(function (a) { return a.total ? a.total.chf : null; }), m: C.arts.map(function (a) { return !!a.manque; }), g: 'calc' });
+    R.push({ id: 'pu', nom: 'Par unité', court: '/unité', unit: 'CHF', dir: 'moins', vals: C.arts.map(function (a) { return a.total ? (a.total.livInconnue ? '≥ ' : '') + fmt2(a.total.chf / (a.manque ? a.total.q : C.besoin)) : '?'; }), num: C.arts.map(function (a) { return a.total ? a.total.chf / (a.manque ? a.total.q : C.besoin) : null; }), m: C.arts.map(function (a) { return !!a.manque; }), g: 'calc' });
   }
   C.crit.forEach(function (cr, j) {
-    var nom = critNom(cr.nom), vals = C.arts.map(function (a) { return a.vals[j]; }), num = vals.map(function (v) { return /^[≥~≈+]?\s?\d/.test(String(v)) ? NUM(v) : null; });
+    var nom = critNom(cr.nom), vals = C.arts.map(function (a) { return a.vals[j]; }), num = vals.map(numDe), un = uniteDe(vals);
     var dir = 'moins';
     if (cr.g != null && num[cr.g] != null) { var autres = num.filter(function (v, i) { return v != null && i !== cr.g; }); dir = autres.every(function (v) { return num[cr.g] <= v; }) ? 'moins' : 'plus'; }
-    else if (!/prix|chf|co[uû]t|d[ée]lai|livraison|ppb|\/(bt|kg|g|l)\b/i.test(nom)) dir = 'plus';
-    R.push({ id: 'c' + j, j: j, nom: nom, dir: dir, vals: vals, num: num, g: cr.g, txt: num.every(function (v, i) { return v == null || vals[i] === '?'; }) });
+    else if (!prixLike(nom)) dir = 'plus';
+    R.push({ id: 'c' + j, j: j, nom: nom, court: nom, unit: un, dir: dir, vals: vals, num: num, g: cr.g, m: C.besoin ? C.arts.map(function (a) { return !!a.manque; }) : null, txt: num.every(function (v, i) { return v == null || vals[i] === '?'; }) });
   });
-  (o.critsPlus || []).forEach(function (n, i) { R.push({ id: 'p' + i, nom: n.nom, ia: n.ia, vals: C.arts.map(function () { return '?'; }), num: C.arts.map(function () { return null; }), txt: true, plus: true }); });
+  (o.critsPlus || []).forEach(function (n, i) { R.push({ id: 'p' + i, nom: n.nom, court: n.nom, ia: n.ia, vals: C.arts.map(function () { return '?'; }), num: C.arts.map(function () { return null; }), txt: true, plus: true }); });
   return R;
 }
 function meilleurDe(r, A) {
   if (r.g === 'calc') { var gw = gagnant(org.__D.comp, org.__D.o); return gw ? gw.i : null; }
-  return r.g != null && A.some(function (a) { return a.i === r.g; }) ? r.g : null;
+  if (r.j == null) return null;
+  var v = critVerifie(org.__D.comp, A.filter(function (a) { return !(r.m && r.m[a.i]); }), r.j); return v ? v.w.i : null;
+}
+/* compromis : calculé par l'app quand il y a un besoin (B14), recalculé après Écarter ; sinon la phrase de l'IA seulement si chaque nombre se retrouve dans les valeurs */
+function compromisDe(D) {
+  var C = D.comp, o = D.o, A = actifs(C, o);
+  if (C.besoin) {
+    var gw = gagnant(C, o); if (!gw) return null;
+    var cov = A.filter(function (a) { return a.total && !a.manque && a !== gw; }).sort(function (a, b) { return a.total.chf - b.total.chf; }), s2 = cov[0];
+    var u = A.filter(function (a) { return a.manque && a.total && a.offre && NUM(a.offre.prix) < NUM(gw.offre.prix); }).sort(function (a, b) { return NUM(a.offre.prix) - NUM(b.offre.prix); })[0];
+    var t = gw.nom + ' : ' + fmtN(gw.total.chf) + ' CHF pour ' + C.besoin;
+    if (s2) t += ', ' + (s2.total.livInconnue ? 'au moins ' : '') + fmtN(s2.total.chf - gw.total.chf) + ' de moins que ' + s2.nom;
+    t += '.';
+    if (u) t += ' ' + u.nom + ' est moins cher à l’unité, mais ' + u.total.q + ' seulement.';
+    return { t: t, calc: true };
+  }
+  if (!C.compromis) return null;
+  var N = [];
+  A.forEach(function (a) { a.vals.forEach(function (v) { var n = numDe(v); if (n != null) N.push(n); }); });
+  var ok = (String(C.compromis).match(/\d[\d’' ]*(?:[.,]\d+)?/g) || []).every(function (s) { var n = NUM(s); return N.some(function (x) { return x === n; }) || N.some(function (x) { return N.some(function (y) { return Math.abs(Math.abs(x - y) - n) < 0.01; }); }); });
+  return ok ? { t: C.compromis, calc: false } : null;
 }
 function vueComparer(D) {
   var C = D.comp, o = D.o, c = D.c, A = actifs(C, o), R = lignesCmp(D);
   var classables = R.filter(function (r) { return !r.txt && !(C.besoin && r.j != null && r.j === C.iq) && r.num.filter(function (v) { return v != null; }).length >= 2; });
-  var sel = classables.filter(function (r) { return r.id === critSel[c.id]; })[0] || classables[0];
-  var x = '<div class="am-cmpv"><div class="am-ch"><button class="am-b44" data-act="cmp-retour" aria-label="Retour à Organisé">' + IC('gauche', 22) + '</button><div><h2>Comparer</h2><small>' + A.length + ' offres' + (C.besoin ? ' · ramenées à ' + C.besoin + ' livrées' : '') + ' · ' + R.length + ' caractéristiques</small></div></div>';
+  var sel = classables.filter(function (r) { return r.id === critSel[c.id]; })[0] || classables[0], ordre = A.slice();
+  var x = '<div class="am-cmpv"><div class="am-ch"><button class="am-b44" data-act="cmp-retour" aria-label="Retour à Organisé">' + IC('gauche', 22) + '</button><div><h2>Comparer</h2><small>' + A.length + ' offres' + (C.besoin ? ' · pour ' + C.besoin + ' livrées' : '') + ' · ' + nCarac(D) + ' caractéristiques</small></div></div>';
   if (sel) {
     x += '<div class="am-crits" role="tablist">' + classables.map(function (r) { return '<button role="tab" data-act="cmp-crit" data-id="' + r.id + '" class="' + (r === sel ? 'on' : '') + '">' + esc(r.nom) + '</button>'; }).join('') + '</div>';
-    var w = meilleurDe(sel, A), known = A.filter(function (a) { return sel.num[a.i] != null || (sel.m && sel.m[a.i]); }), unk = A.filter(function (a) { return known.indexOf(a) < 0; });
-    var val = function (a) { return sel.num[a.i] != null ? sel.num[a.i] : (C.arts[a.i].total ? C.arts[a.i].total.chf : 0); };
-    known.sort(function (a, b) { if (sel.m && sel.m[a.i] !== sel.m[b.i]) return sel.m[a.i] ? 1 : -1; return sel.dir === 'moins' ? val(a) - val(b) : val(b) - val(a); });
-    var mx = Math.max.apply(null, known.map(val).concat([1]));
-    x += '<div class="am-rk" data-booster="jauge"><div class="hd">' + esc(sel.nom) + (sel.unit ? ' <small>' + sel.unit + '</small>' : '') + ' <small>· ' + (sel.dir === 'moins' ? 'moins = mieux' : 'plus = mieux') + '</small>' + (w != null ? '<span class="r">' + IC('coche', 13) + ' ' + esc(C.arts[w].nom) + '</span>' : '') + '</div>' +
-      known.concat(unk).map(function (a, i) { var u = unk.indexOf(a) >= 0, m = sel.m && sel.m[a.i], e = !u && sel.j != null && estEstime(c, a.ligne, a.vals[sel.j]);
-        var cl = u ? 'u' : m ? 'm' : a.i === w ? 'w' : e ? 'e' : '';
-        return '<button class="am-rr ' + cl + '" data-ci="' + a.i + '" data-r="' + sel.id + '"><span class="i">' + (u ? '' : i + 1) + '</span><span class="nm">' + esc(a.nom) + exHtml(c, a.ligne) + '</span><span class="vl">' + (u ? '<i class="am-mv">?</i> pas noté' : (e ? '≈ ' : '') + esc(sel.vals[a.i]) + (m ? ' · ne couvre pas' : '')) + '</span>' +
-          '<span class="tr"><i style="width:' + (u ? 0 : Math.max(5, Math.round(val(a) / mx * 100))) + '%"></i></span></button>'; }).join('') + '</div>';
-  }
-  /* côte à côte : toutes les caractéristiques, le meilleur en vert */
-  x += '<div class="am-h3">Côte à côte <small>le meilleur en vert</small></div><div class="am-tabw"><table class="am-cmp" data-booster="comparer"><thead><tr><th class="k"></th>' + A.map(function (a) {
-    return '<th><button class="hd' + (o.choisi === a.i ? ' sel' : '') + '" data-ci="' + a.i + '" data-r="hd">' + tuile(c, a.ligne) + '<span>' + esc(a.nom) + '</span>' + exHtml(c, a.ligne) + (o.choisi === a.i ? '<span class="am-et decide">choisi</span>' : '') + '</button></th>'; }).join('') + '</tr></thead><tbody>';
+    var w = meilleurDe(sel, A);
+    var items = A.map(function (a) { var v = sel.num[a.i], m = !!(sel.m && sel.m[a.i]), e = v != null && sel.j != null && estEstime(c, a.ligne, a.vals[sel.j]);
+      return { a: a, v: v, m: m, e: e, r: sel.id, lab: v == null ? '<i class="am-mv">?</i> pas noté' : (e ? '≈ ' : '') + esc(sel.vals[a.i]) + (m ? ' · ne couvre pas ' + C.besoin : '') }; });
+    var K = items.filter(function (x) { return x.v != null && !x.m; }).sort(function (x, y) { return sel.dir === 'moins' ? x.v - y.v : y.v - x.v; });
+    ordre = K.concat(items.filter(function (x) { return x.m; }), items.filter(function (x) { return x.v == null && !x.m; })).map(function (x) { return x.a; });
+    x += '<div class="am-rk" data-booster="jauge"><div class="hd">' + esc(sel.nom) + (sel.unit ? ' <small>' + esc(sel.unit) + '</small>' : '') + ' <small>· ' + (sel.dir === 'moins' ? 'moins = mieux' : 'plus = mieux') + '</small>' + (w != null ? '<span class="r">' + IC('coche', 13) + ' n° 1</span>' : '') + '</div>' +
+      barresRang(items, sel.dir, w, 'am-rr') + '</div>';
+  } else { var g0 = gagnant(C, o); if (g0) ordre = [g0].concat(A.filter(function (a) { return a !== g0; })); }
+  /* côte à côte : colonnes dans l'ordre du classement, n° 1 à gauche ; en-têtes et libellés collés au défilement */
+  x += '<div class="am-h3">Côte à côte <small>le meilleur en vert</small></div><div class="am-tabw"><table class="am-cmp" data-booster="comparer"><thead><tr><th class="k"></th>' + ordre.map(function (a) {
+    return '<th><button class="hd' + (o.choisi === a.i ? ' sel' : '') + '" data-ci="' + a.i + '" data-r="hd">' + tuileOffre(c, a, C) + '<span class="nm" data-nom>' + esc(a.nom) + '</span>' + (a.manque && a.total ? '<small class="m">' + a.total.q + ' seul.</small>' : '') + exHtml(c, a.ligne) + (o.choisi === a.i ? '<span class="am-et decide">choisi</span>' : '') + '</button></th>'; }).join('') + '</tr></thead><tbody>';
   R.forEach(function (r) {
     var w = meilleurDe(r, A);
-    x += '<tr><td class="k"><b>' + esc(r.nom) + '</b>' + (r.unit ? r.unit : '') + (r.ia ? ' <span class="am-tag">' + IC('ia', 12) + 'à remplir</span>' : r.plus ? ' <small>à remplir</small>' : '') + '</td>' + A.map(function (a) {
+    x += '<tr><td class="k"><b>' + esc(r.court) + '</b>' + (r.unit && r.court.slice(-r.unit.length) !== r.unit ? '<small>' + esc(r.unit) + '</small>' : '') + (r.ia ? ' <span class="am-tag">' + IC('ia', 12) + '</span>' : r.plus ? ' <small>à remplir</small>' : '') + '</td>' + ordre.map(function (a) {
       var v = r.vals[a.i], u = v === '?' || v == null, srcL = r.j != null && a.srcs && a.srcs[r.j] === 'lien', e = !u && r.j != null && estEstime(c, a.ligne, v), m = r.m && r.m[a.i];
-      var cl = u ? 'u' : a.i === w ? 'w' : m ? 'm' : r.txt ? 't' : '';
-      return '<td><button class="cv ' + cl + '" data-ci="' + a.i + '" data-r="' + r.id + '">' + (u ? '<i class="am-mv">?</i>' : (e ? '≈ ' : '') + esc(v)) + (srcL ? ' ' + IC('lien', 12) : '') + (m ? '<small>' + a.total.q + ' seul.</small>' : '') + '</button></td>'; }).join('') + '</tr>';
+      var cl = u ? 'u' : a.i === w ? 'w' : m ? 'm' : r.txt ? 't' : '', aff = u ? '' : r.unit ? String(v).split(r.unit).join('').trim() : abrV(v);
+      return '<td><button class="cv ' + cl + '" data-ci="' + a.i + '" data-r="' + r.id + '" title="' + esc(u ? 'pas noté' : v) + '">' + (u ? '<i class="am-mv">?</i>' : (e ? '≈ ' : '') + esc(aff)) + (srcL ? ' ' + IC('lien', 12) : '') + '</button></td>'; }).join('') + '</tr>';
   });
   x += '</tbody></table></div>';
-  if (C.compromis) x += '<div class="am-comp"><b>Compromis</b> <span class="am-tag">' + IC('ia', 12) + 'IA</span><br>' + esc(C.compromis) + '</div>';
+  var cp = compromisDe(D);
+  if (cp) x += '<div class="am-comp"><b>Compromis</b> <span class="am-tag' + (cp.calc ? ' calc' : '') + '">' + (cp.calc ? 'calculé' : IC('ia', 12) + 'IA, vérifié') + '</span><br>' + esc(cp.t) + '</div>';
   var E = (o.ecartes || []).map(function (i) { return C.arts[i]; }).filter(Boolean);
-  if (E.length) x += '<div class="am-h3">Écartés · ' + E.length + '</div>' + E.map(function (a) { return '<div class="am-ec">' + tuile(c, a.ligne, null, 's') + '<span class="t"><b>' + esc(a.nom) + '</b>écarté par toi' + (o.ecartesLe && o.ecartesLe[a.i] ? ' · ' + esc(quandCH(o.ecartesLe[a.i], true)) : '') + '</span><button class="am-b2" data-act="reprendre" data-i="' + a.i + '">Reprendre</button></div>'; }).join('');
+  if (E.length) x += '<div class="am-h3">Écartés · ' + E.length + '</div>' + E.map(function (a) { return '<div class="am-ec">' + tuileOffre(c, a, C) + '<span class="t"><b>' + esc(a.nom) + '</b>écarté par toi' + (o.ecartesLe && o.ecartesLe[a.i] ? ' · ' + esc(quandCH(o.ecartesLe[a.i], true)) : '') + '</span><button class="am-b2" data-act="reprendre" data-i="' + a.i + '">Reprendre</button></div>'; }).join('');
   x += '<div class="am-cact"><button data-act="crit-ajout">' + IC('plus', 16) + 'Ajouter une caractéristique</button><button class="ia" data-act="crit-proposer"' + (o.critsEnCours ? ' disabled' : '') + '>' + IC('ia', 16) + (o.critsEnCours ? 'L’IA cherche…' : 'Proposer') + '</button></div>';
   if (ajoutCrit) x += '<form class="am-addc"><input id="am-crit" type="text" placeholder="Ex. délai, garantie, poids" enterkeyhint="done" autocomplete="off"><button type="submit">Ajouter</button></form>';
   x += '<div class="am-leg"><span><span class="am-est">≈</span> estimé</span><span><i class="am-mv">?</i> pas noté</span><span class="am-lk">' + IC('lien', 12) + ' lu sur son lien</span><span>touche une valeur : sa ligne</span></div></div>';
@@ -3346,9 +3599,11 @@ function vueComparer(D) {
 }
 function actCmp(D) {
   var C = D.comp, o = D.o, gw = gagnant(C, o);
-  if (o.choisi != null && C.arts[o.choisi]) return B('cmp-retour', IC('coche', 18) + 'Choisi : ' + esc(C.arts[o.choisi].nom) + ' · Organisé', 1);
+  if (o.choisi != null && C.arts[o.choisi]) return B('cmp-retour', IC('coche', 18) + 'Choisi : ' + esc(C.arts[o.choisi].nom), 1);
   return (gw ? B('prendre', IC('coche', 18) + 'Prendre ' + esc(gw.nom), 1, ' data-i="' + gw.i + '"') : '') + B('cmp-retour', 'Organisé');
 }
+/* deux caractéristiques qui partagent un mot de 4 lettres ou plus sont une même caractéristique (m19) */
+function memeCrit(a, b) { var m = function (s) { return sansAccent(s).split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 4; }); }, A = m(a), Bm = m(b); return A.some(function (w) { return Bm.indexOf(w) >= 0; }); }
 function bulleCmp(el) {
   org.querySelectorAll('.am-bub,.v7-bub').forEach(function (n) { n.remove(); });
   var c = courant(), D = org.__D, a = D.comp.arts[+el.dataset.ci], n = a.ligne, L = n ? ligneDe(c, n) : '', b = document.createElement('div'); b.className = 'am-bub';
@@ -3364,7 +3619,7 @@ function proposerCrit(c) {
   var p = 'Propose des caractéristiques à comparer.\nCarnet : ' + titreDe(c) + '\nOffres : ' + D.comp.arts.map(function (a) { return a.nom; }).join(', ') + '\nDéjà comparé : ' + lignesCmp(D).map(function (r) { return r.nom; }).join(', ') +
     '\nSes notes :\n' + lignesDe(c).map(function (l, i) { return (i + 1) + '. ' + l; }).join('\n') + '\nRéponds en JSON {"caracteristiques":[string]} : 4 au plus, noms courts (2 à 4 mots) qui aident à choisir pour un brasseur, sans valeurs inventées.';
   capSample.then(function (s) { if (!s) throw { code: 'indisponible' }; return s.json(p); }).then(function (r) {
-    var deja = lignesCmp(D).map(function (x) { return sansAccent(x.nom); }), L = (r && Array.isArray(r.caracteristiques) ? r.caracteristiques : []).map(function (x) { return String(x).trim(); }).filter(function (x) { return x && deja.indexOf(sansAccent(x)) < 0; }).slice(0, 4);
+    var deja = lignesCmp(D).map(function (x) { return sansAccent(x.nom); }), L = (r && Array.isArray(r.caracteristiques) ? r.caracteristiques : []).map(function (x) { return String(x).trim(); }).filter(function (x) { return x && !lignesCmp(D).some(function (r) { return memeCrit(r.nom, x); }); }).slice(0, 4);
     o.critsPlus = (o.critsPlus || []).concat(L.map(function (n) { return { nom: n, ia: true }; })); geste('proposer des caractéristiques', L.join(', '));
     toast(L.length ? '✦ ' + L.length + ' caractéristiques proposées · à remplir' : '✦ Rien de plus à proposer');
   }).catch(function () { toast('✦ Proposer : IA absente, réessaie plus tard'); }).then(function () { o.critsEnCours = false; sauver(); if (courant() === c) rendreOrg(); });
@@ -3374,13 +3629,23 @@ function proposerCrit(c) {
 function enRelecture(id) { var r = etat.relire && etat.relire[id]; if (!r) return null; var d = lienLu(id); return d && d.lu && new Date(d.lu) > new Date(r.quand) ? null : r; }
 function liensHtml(c, D) {
   var L = liensDe(urlsParLigne(c)); if (!L.length) return '';
+  var arts = D.comp ? D.comp.arts : [];
   return sec('lien', 'Liens · ' + L.length, '<div class="am-liens">' + L.map(function (x) {
     var d = lienLu(x.id), r = enRelecture(x.id), dom = x.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0], im = d && typeof d.image === 'string' && /^https:\/\//.test(d.image) ? d.image : null;
     var px = d && d.prix && d.prix[0] ? esc((typeof d.prix[0].prix === 'number' ? d.prix[0].prix.toFixed(2) : chaineLien(d.prix[0].prix)) + ' ' + chaineLien(d.prix[0].devise) + ' / ' + chaineLien(d.prix[0].quantite) + ' ' + chaineLien(d.prix[0].unite)) : '';
-    var st = r ? '<span class="st att">' + IC('relire', 13) + 'en lecture' + (r.forte ? ' · IA forte' : '') + '</span>' : d ? '<span class="st">' + IC('lien', 13) + 'lu ' + esc(quandCH(luLe(d) === '1' ? Date.now() : luLe(d), true)) + '</span>' : '<span class="st att">' + IC('lien', 13) + (liensEtat === 'sans' ? 'non lu' : 'en lecture') + '</span>';
-    return '<div class="am-lien"><button class="tl" data-n="' + x.ligne + '" aria-label="Sa ligne ' + x.ligne + '"><span class="am-tuile">' + (im ? '<img src="' + esc(im) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : IC(icCat(c), 22)) + '</span></button>' +
-      '<span class="m"><b>' + esc(d && d.titre ? d.titre : dom) + '</b>' + esc(dom) + (px ? ' · ' + px : '') + (d && d.dispo ? ' · ' + esc(d.dispo) : '') + st + '</span>' +
-      '<button class="bt" data-act="relire-lien" data-id="' + x.id + '" data-u="' + esc(x.url) + '">' + IC('relire', 14) + 'Relire</button><button class="bt ia" data-act="forte-lien" data-id="' + x.id + '" data-u="' + esc(x.url) + '" aria-label="Escalader à l’IA forte">' + IC('ia', 14) + 'IA forte</button></div>'; }).join('') + '</div>');
+    var st = r ? '<span class="st att">' + IC('relire', 13) + (r.forte ? 'IA forte · ' : '') + 'relecture demandée ' + esc(quandCH(r.quand)) + '</span>' : d ? '<span class="st">' + IC('coche', 13) + 'lu ' + esc(quandCH(luLe(d) === '1' ? Date.now() : luLe(d), true)) + '</span>' : '<span class="st att">' + IC('lien', 13) + (liensEtat === 'sans' ? 'non lu' : 'en lecture') + '</span>';
+    var a = arts.filter(function (y) { return y.ligne === x.ligne; })[0];
+    return '<div class="am-lien' + (r ? ' att' : '') + '"><button class="tl" data-n="' + x.ligne + '" aria-label="Sa ligne ' + x.ligne + '"><span class="am-tuile">' + (im ? '<img src="' + esc(im) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : IC(a ? icOffre(a, c) : 'lien', 22)) + '</span></button>' +
+      '<span class="m"><b data-nom>' + esc(d && d.titre ? d.titre : dom) + '</b>' + (d && d.titre ? '<span class="dm">' + esc(dom) + '</span>' : '') + (px ? '<span class="px">' + px + (d && d.dispo ? ' · ' + esc(d.dispo) : '') + '</span>' : '') + st + '</span>' +
+      '<button class="am-b44" data-act="lien-menu" data-id="' + x.id + '" data-u="' + esc(x.url) + '" aria-label="Relire ce lien">' + IC('plush', 20) + '</button></div>'; }).join('') + '</div>');
+}
+function menuLien(c, id, url) {
+  var dom = url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+  feuilleAm('<h2>' + IC('lien', 18) + ' ' + esc(dom) + '</h2>' +
+    '<button class="am-fl" data-x="relire">' + IC('relire', 18) + '<span class="t">Relire<small>le prix et la dispo ont pu changer</small></span></button>' +
+    '<button class="am-fl ia" data-x="forte">' + IC('ia', 18) + '<span class="t">Relire avec l’IA forte<small>lecture plus poussée, plus lente</small></span></button>' +
+    '<a class="am-fl" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + IC('droite', 18) + '<span class="t">Ouvrir le site</span></a>',
+    function (x) { fermerAm(); if (x === 'relire' || x === 'forte') relireLien(c, id, url, x === 'forte'); });
 }
 function relireLien(c, id, url, forte) {
   etat.relire = etat.relire || {}; var dm = { url: url, carnet: titreDe(c), quand: new Date().toISOString(), type: 'relire' }; if (forte) dm.ia = 'forte';
@@ -3407,6 +3672,8 @@ function agirAm(a, b) {
   var c = courant(); if (!c) return false; var o = c.org;
   if (a === 'meta') { feuilleMeta(c); return true; }
   if (a === 'relire-lien' || a === 'forte-lien') { relireLien(c, b.dataset.id, b.dataset.u, a === 'forte-lien'); return true; }
+  if (a === 'lien-menu') { menuLien(c, b.dataset.id, b.dataset.u); return true; }
+  if (a === 'suite') { geste('étape suivante', ''); ouvrirAide(); return true; }
   if (!o) return false;
   if (a === 'comparer') { cmpOuvert[c.id] = true; ajoutCrit = false; geste('ouvrir Comparer', ''); rendreOrg(); $('defil').scrollTop = 0; return true; }
   if (a === 'cmp-retour') { cmpOuvert[c.id] = false; rendreOrg(); $('defil').scrollTop = 0; return true; }
@@ -3464,6 +3731,23 @@ var amAct = null, amTitre = null, amLieu = null, amH = null, amPouceOrg = null, 
     c.org.critsPlus = (c.org.critsPlus || []).concat([{ nom: n }]); ajoutCrit = false; sauver(); geste('ajouter une caractéristique', n); rendreOrg();
   });
 })();
+
+/* ====================================================================== passe de correction 26.11 : toast, outils */
+/* le toast se pose au-dessus de la barre d'action et du pouce, jamais dessus (m8) */
+function toast(t, action, f) {
+  var old = document.querySelector('.m4b-toast'); if (old) old.remove();
+  var el = h('div', { class: 'm4b-toast', role: 'status' }, h('span', null, t), action ? h('button', { type: 'button', class: 'm4b-toast-a', onclick: function () { el.remove(); f(); } }, action) : null); $('app').appendChild(el);
+  var app = $('app').getBoundingClientRect(), haut = app.bottom;
+  ['.vue.on .am-act:not([hidden])', '.vue.on #pied-org:not([hidden])', '.vue.on #outils:not([hidden])', '.vue.on .m4b-pied', '.am-nav'].forEach(function (q) { var n = document.querySelector(q); if (n && n.offsetParent !== null) { var b = n.getBoundingClientRect(); if (b.height && b.top < haut) haut = b.top; } });
+  el.style.bottom = Math.max(8, Math.round(app.bottom - haut + 8)) + 'px';
+  clearTimeout(minuteurToast); minuteurToast = setTimeout(function () { el.remove(); }, action ? 5000 : 2600);
+}
+/* outils de Mes notes : chaque icône porte son mot (m13) */
+function btnOutil(icone, nom, f, cls) { var mot = { 'b-iapen': 'Ranger', 'b-image': 'Photo', 'b-lien': 'Lien', 'b-case': 'Case', 'b-micro': 'Dicter' }[icone] || nom.split(' ')[0];
+  return h('button', { type: 'button', class: 'm4b-o am-o' + (cls ? ' ' + cls : ''), 'aria-label': nom, title: nom, onclick: f }, ico(icone), h('span', { class: 'am-om' }, mot)); }
+
+/* une bulle de ligne ouverte dans une tuile ou une branche se pose sous le bloc, en pleine largeur */
+new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType !== 1 || !/bub/.test(n.className)) return; var box = n.parentElement && n.parentElement.closest('.am-g4,.am-arbre'); if (box && box !== n.parentElement) { n.classList.remove('in'); box.after(n); } else if (box) box.after(n); }); }); }).observe(org, { childList: true, subtree: true });
 
 /* ====================================================================== démarrage */
 if (etat.courant && courant()) { rendreListe(); ouvrir(etat.courant); } else { etat.courant = null; rendreListe(); }

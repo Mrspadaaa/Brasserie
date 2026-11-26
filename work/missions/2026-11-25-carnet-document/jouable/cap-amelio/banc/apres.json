@@ -2,7 +2,8 @@
  "mode": "apres",
  "ecrans": {
   "01-liste": {
-   "mots": 141,
+   "mots": 140,
+   "phrases": 0,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -14,13 +15,12 @@
    "utileY": null
   },
   "org-eco": {
-   "mots": 49,
+   "mots": 63,
+   "phrases": 19,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -31,36 +31,34 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "org-co2": {
-   "mots": 53,
-   "minFont": 11,
+   "mots": 65,
+   "phrases": 18,
+   "minFont": 12,
    "petits": [
-    "11px « ✓ »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ✓ »",
     "12px « 1 »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "org-bt": {
-   "mots": 85,
+   "mots": 73,
+   "phrases": 33,
    "minFont": 12,
    "petits": [
     "12px « 1 »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -70,11 +68,14 @@
    "utileY": 100
   },
   "org-citra": {
-   "mots": 83,
-   "minFont": 11,
+   "mots": 66,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ? »",
-    "11px « ? »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
     "141×30 Ranger · Brasserie › Mat",
@@ -87,11 +88,10 @@
    "utileY": 100
   },
   "org-frigo": {
-   "mots": 54,
-   "minFont": 11,
+   "mots": 76,
+   "phrases": 28,
+   "minFont": 12,
    "petits": [
-    "11px « ✓ »",
-    "11px « ✓ »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -102,10 +102,11 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 240
   },
   "org-cave": {
-   "mots": 45,
+   "mots": 47,
+   "phrases": 15,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -116,28 +117,39 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "org-vap": {
-   "mots": 70,
-   "minFont": 11,
+   "mots": 60,
+   "phrases": 25,
+   "minFont": 10.8333,
    "petits": [
+    "11px « K »",
+    "10.8333px « 1/3 noté »",
+    "11px « B »",
+    "10.8333px « 1/3 noté »",
     "11px « ? »"
    ],
    "cibles44": [
-    "86×30 Ranger · Brasserie › Bra",
+    "31×30 Ranger · Brasserie › Bra",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "notes-eco": {
-   "mots": 62,
-   "minFont": 13,
-   "petits": [],
+   "mots": 63,
+   "phrases": 0,
+   "minFont": 12,
+   "petits": [
+    "12px « Ranger »",
+    "12px « Photo »",
+    "12px « Lien »",
+    "12px « Case »"
+   ],
    "cibles44": [
     "57×30 Ranger · Local › Eau",
     "153×34 Mes notes",
@@ -148,7 +160,8 @@
    "utileY": null
   },
   "02-liste-bas": {
-   "mots": 127,
+   "mots": 126,
+   "phrases": 0,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -160,7 +173,8 @@
    "utileY": null
   },
   "03-liste-afaire": {
-   "mots": 171,
+   "mots": 175,
+   "phrases": 0,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -172,7 +186,8 @@
    "utileY": null
   },
   "04-liste-champ": {
-   "mots": 141,
+   "mots": 140,
+   "phrases": 0,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -184,7 +199,8 @@
    "utileY": null
   },
   "05-liste-suggestions": {
-   "mots": 141,
+   "mots": 140,
+   "phrases": 0,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -196,13 +212,12 @@
    "utileY": null
   },
   "10-eco-ligne-option": {
-   "mots": 57,
+   "mots": 76,
+   "phrases": 32,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -213,16 +228,15 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "11-eco-fait": {
-   "mots": 47,
+   "mots": 64,
+   "phrases": 19,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -233,16 +247,15 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "12-eco-champ": {
-   "mots": 47,
+   "mots": 64,
+   "phrases": 19,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -253,16 +266,15 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "13-eco-ajoute": {
-   "mots": 47,
+   "mots": 64,
+   "phrases": 19,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 1 »"
    ],
    "cibles44": [
@@ -273,16 +285,15 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "14-eco-aide": {
-   "mots": 62,
+   "mots": 79,
+   "phrases": 19,
    "minFont": 11,
    "petits": [
-    "11px « ✓ »",
     "11px « ? »",
     "11.6667px « estimé »",
-    "11px « ? »",
     "12px « 4 »"
    ],
    "cibles44": [
@@ -293,20 +304,22 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   },
   "20-bt-comparer": {
-   "mots": 108,
+   "mots": 110,
+   "phrases": 58,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "12px « 1 »"
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « V »",
+    "12.5px « Verallia »",
+    "11px « O »",
+    "12.5px « Occasion »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -316,18 +329,19 @@
    "utileY": null
   },
   "21-bt-comparer-cote": {
-   "mots": 92,
+   "mots": 99,
+   "phrases": 48,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "12px « 1 »"
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « V »",
+    "12.5px « Verallia »",
+    "11px « O »",
+    "12.5px « Occasion »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -337,18 +351,19 @@
    "utileY": null
   },
   "22-bt-cellule": {
-   "mots": 104,
+   "mots": 111,
+   "phrases": 56,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "12px « 1 »"
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « V »",
+    "12.5px « Verallia »",
+    "11px « O »",
+    "12.5px « Occasion »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -358,16 +373,19 @@
    "utileY": null
   },
   "23-bt-ecarter": {
-   "mots": 90,
+   "mots": 91,
+   "phrases": 46,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "12px « 1 »"
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « O »",
+    "12.5px « Occasion »",
+    "12px « 400 seul. »",
+    "11px « ? »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -377,18 +395,19 @@
    "utileY": null
   },
   "24-bt-ajout-crit": {
-   "mots": 86,
+   "mots": 87,
+   "phrases": 42,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11.6667px « à remplir »",
-    "11px « ? »",
-    "11px « ? »",
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « O »",
+    "12.5px « Occasion »",
+    "12px « 400 seul. »",
     "11px « ? »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -398,18 +417,19 @@
    "utileY": null
   },
   "25-bt-proposer": {
-   "mots": 103,
+   "mots": 97,
+   "phrases": 52,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11.6667px « à remplir »",
-    "11px « ? »",
-    "11px « ? »",
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « O »",
+    "12.5px « Occasion »",
+    "12px « 400 seul. »",
     "11px « ? »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -419,18 +439,19 @@
    "utileY": null
   },
   "26-bt-crit-prix": {
-   "mots": 96,
+   "mots": 97,
+   "phrases": 56,
    "minFont": 11,
    "petits": [
-    "11px « ? »",
-    "11px « ? »",
-    "11.6667px « à remplir »",
-    "11px « ? »",
-    "11px « ? »",
+    "11px « F »",
+    "12.5px « Fournisseur B »",
+    "11px « O »",
+    "12.5px « Occasion »",
+    "12px « 400 seul. »",
     "11px « ? »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -440,13 +461,14 @@
    "utileY": null
   },
   "27-bt-prendre": {
-   "mots": 85,
+   "mots": 66,
+   "phrases": 28,
    "minFont": 12,
    "petits": [
     "12px « 1 »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -456,13 +478,14 @@
    "utileY": 100
   },
   "28-bt-commande": {
-   "mots": 81,
+   "mots": 65,
+   "phrases": 28,
    "minFont": 12,
    "petits": [
     "12px « 1 »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -472,11 +495,14 @@
    "utileY": 100
   },
   "30-six-org": {
-   "mots": 73,
-   "minFont": 13,
-   "petits": [],
+   "mots": 72,
+   "phrases": 30,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »"
+   ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -486,18 +512,19 @@
    "utileY": 100
   },
   "31-six-comparer": {
-   "mots": 115,
+   "mots": 108,
+   "phrases": 46,
    "minFont": 11,
    "petits": [
     "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »"
+    "11px « B »",
+    "12.5px « Bouteilles33 »",
+    "11px « B »",
+    "12.5px « Brouwland »",
+    "11px « F »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -507,18 +534,19 @@
    "utileY": null
   },
   "32-six-cote": {
-   "mots": 110,
+   "mots": 111,
+   "phrases": 50,
    "minFont": 11,
    "petits": [
     "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »"
+    "11px « B »",
+    "12.5px « Bouteilles33 »",
+    "11px « B »",
+    "12.5px « Brouwland »",
+    "11px « F »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -528,18 +556,19 @@
    "utileY": null
   },
   "33-six-cote-droite": {
-   "mots": 110,
+   "mots": 111,
+   "phrases": 50,
    "minFont": 11,
    "petits": [
     "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »"
+    "11px « B »",
+    "12.5px « Bouteilles33 »",
+    "11px « B »",
+    "12.5px « Brouwland »",
+    "11px « F »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -549,18 +578,19 @@
    "utileY": null
   },
   "34-six-bas": {
-   "mots": 101,
+   "mots": 105,
+   "phrases": 47,
    "minFont": 11,
    "petits": [
     "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ? »"
+    "11px « B »",
+    "12.5px « Bouteilles33 »",
+    "11px « B »",
+    "12.5px « Brouwland »",
+    "11px « F »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
+    "31×30 Ranger · Brasserie › Con",
     "153×34 Mes notes",
     "153×34 Organisé",
     "166×42 Ajouter à tes notes"
@@ -570,11 +600,14 @@
    "utileY": null
   },
   "40-citra-liens": {
-   "mots": 83,
-   "minFont": 11,
+   "mots": 66,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ? »",
-    "11px « ? »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
     "141×30 Ranger · Brasserie › Mat",
@@ -584,14 +617,17 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 42
+   "utileY": -6
   },
-  "41-citra-relire": {
-   "mots": 83,
-   "minFont": 11,
+  "41-citra-lien-menu": {
+   "mots": 66,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ? »",
-    "11px « ? »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
     "141×30 Ranger · Brasserie › Mat",
@@ -601,14 +637,37 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 42
+   "utileY": -6
+  },
+  "41b-citra-relire": {
+   "mots": 65,
+   "phrases": 29,
+   "minFont": 10.8333,
+   "petits": [
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": -6
   },
   "42-citra-meta": {
-   "mots": 83,
-   "minFont": 11,
+   "mots": 65,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ? »",
-    "11px « ? »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
     "141×30 Ranger · Brasserie › Mat",
@@ -618,14 +677,17 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 42
+   "utileY": -6
   },
   "43-citra-escalader": {
-   "mots": 85,
-   "minFont": 11,
+   "mots": 67,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ? »",
-    "11px « ? »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
     "141×30 Ranger · Brasserie › Mat",
@@ -637,28 +699,68 @@
    "debord": false,
    "utileY": 100
   },
-  "50-co2-tete": {
-   "mots": 53,
-   "minFont": 11,
+  "44-citra-changes": {
+   "mots": 103,
+   "phrases": 29,
+   "minFont": 10.8333,
    "petits": [
-    "11px « ✓ »",
-    "11px « ? »",
-    "11px « ? »",
-    "11px « ✓ »",
-    "12px « 1 »"
+    "11px « M »",
+    "10.8333px « 0/5 noté »",
+    "11px « B »",
+    "10.8333px « 5/5 notés »"
    ],
    "cibles44": [
-    "133×30 Ranger · Brasserie › Con",
-    "153×34 Mes notes",
-    "153×34 Organisé",
+    "141×30 Ranger · Brasserie › Mat",
+    "130×34 Mes notes",
+    "130×34 Organisé",
     "166×42 Ajouter à tes notes"
    ],
    "nCibles": 4,
    "debord": false,
    "utileY": 100
   },
+  "50-co2-source": {
+   "mots": 76,
+   "phrases": 28,
+   "minFont": 12,
+   "petits": [
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "31×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 173
+  },
+  "52-frigo-comparer": {
+   "mots": 80,
+   "phrases": 36,
+   "minFont": 11,
+   "petits": [
+    "11px « R »",
+    "12.5px « Réparer »",
+    "11px « F »",
+    "12.5px « Frigo neuf »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "65×30 Ranger · Brasserie › Fro",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
   "51-cave-date": {
-   "mots": 45,
+   "mots": 47,
+   "phrases": 15,
    "minFont": 13,
    "petits": [],
    "cibles44": [
@@ -669,7 +771,7 @@
    ],
    "nCibles": 4,
    "debord": false,
-   "utileY": 100
+   "utileY": 173
   }
  },
  "gestes": {
@@ -695,11 +797,22 @@
   "33-six-cote-droite": "ok",
   "34-six-bas": "ok",
   "40-citra-liens": "ok",
-  "41-citra-relire": "ok",
+  "41-citra-lien-menu": "ok",
+  "41b-citra-relire": "ok",
   "42-citra-meta": "ok",
   "43-citra-escalader": "ok",
-  "50-co2-tete": "ok",
+  "44-citra-changes": "ok",
+  "50-co2-source": "ok",
+  "52-frigo-comparer": "ok",
   "51-cave-date": "ok"
+ },
+ "sixSections": [
+  "Qui gagne quoi"
+ ],
+ "sixCols": {
+  "premier": "BBouteilles33",
+  "visibles": 5,
+  "comp": "Compromis calculéBouteilles33 : 372 CHF pour 600, 21 de moins que Brouwland. Occasion est moins cher à l’unité, mais 400 seulement."
  },
  "six": {
   "offres": 6,
@@ -716,23 +829,104 @@
    "uce7abb45": {
     "url": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
     "carnet": "ZZ TEST — inspection électrique, fusible",
-    "quand": "2026-11-26T09:44:32.334Z"
+    "quand": "2026-11-26T10:18:55.165Z"
    },
    "ufd52fd65": {
     "url": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
     "carnet": "ZZ TEST — trop de vapeur au brassage",
-    "quand": "2026-11-26T09:44:32.592Z"
+    "quand": "2026-11-26T10:18:55.426Z"
    },
    "ue1a163c7": {
     "url": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling",
     "carnet": "ZZ TEST — trop de vapeur au brassage",
-    "quand": "2026-11-26T09:44:32.592Z"
+    "quand": "2026-11-26T10:18:55.426Z"
    },
    "u288565ec": {
     "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
     "carnet": "ZZ TEST — Houblons citra",
-    "quand": "2026-11-26T09:45:37.513Z",
+    "quand": "2026-11-26T10:18:55.512Z"
+   },
+   "u81a946a2": {
+    "url": "https://www.brauundrauchshop.ch/citra-136-2",
+    "carnet": "ZZ TEST — Houblons citra",
+    "quand": "2026-11-26T10:20:00.281Z",
     "type": "relire"
+   }
+  }
+ },
+ "verite": {
+  "defauts": [],
+  "eco": {
+   "quand": null,
+   "dates": [],
+   "qg": "",
+   "bars": []
+  },
+  "co2": {
+   "quand": "dans une semaine",
+   "dates": [
+    "≈ dans 5 j · ma 1.12"
+   ],
+   "qg": "",
+   "bars": []
+  },
+  "bt": {
+   "quand": "avant le 15 du mois",
+   "dates": [
+    "≈ dans 18 j · au plus tard lu 14.12"
+   ],
+   "qg": "Moins cher à l’unitéOccasion0.20/btne couvre pas 600 (400)Total pour 600 livrées CHF · moins = mieux1Fournisseur B410–Occasion≥ 80 · 400 seul.Comparer 2 · 7 caractéristiques",
+   "bars": [
+    {
+     "cl": "am-bar w",
+     "w": "100%"
+    },
+    {
+     "cl": "am-bar m",
+     "w": null
+    }
+   ]
+  },
+  "frigo": {
+   "quand": "avant décembre",
+   "dates": [
+    "≈ dans 4 j · au plus tard lu 30.11"
+   ],
+   "qg": "Prix moins = mieux1Réparer480 CHF2Frigo neuf1 200 CHFComparer 2 · 2 caractéristiques",
+   "bars": [
+    {
+     "cl": "am-bar w",
+     "w": "100%"
+    },
+    {
+     "cl": "am-bar ",
+     "w": "40%"
+    }
+   ]
+  },
+  "cave": {
+   "quand": "samedi 6 déc. au matin",
+   "dates": [
+    "dans 10 j · di 6.12"
+   ],
+   "qg": "",
+   "bars": []
+  },
+  "vap": {
+   "quand": "fin du mois",
+   "dates": [
+    "≈ dans 4 j · lu 30.11"
+   ],
+   "qg": "Rien ne départage encoreKKegLand1/3 notéBBrewtools1/3 notéComparer 2 · 3 caractéristiques",
+   "bars": []
+  },
+  "cp": {
+   "cp1": "Compromis calculéFournisseur B : 410 CHF pour 600, au moins 94 de moins que Verallia. Occasion est moins cher à l’unité, mais 400 seulement.",
+   "cp2": "Compromis calculéFournisseur B : 410 CHF pour 600. Occasion est moins cher à l’unité, mais 400 seulement.",
+   "six": {
+    "premier": "BBouteilles33",
+    "visibles": 5,
+    "comp": "Compromis calculéBouteilles33 : 372 CHF pour 600, 21 de moins que Brouwland. Occasion est moins cher à l’unité, mais 400 seulement."
    }
   }
  },

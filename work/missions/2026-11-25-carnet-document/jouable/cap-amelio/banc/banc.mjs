@@ -7,7 +7,8 @@ const RACINE = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/';
 const puppeteer = createRequire(RACINE + 'package.json')('puppeteer-core');
 const M = RACINE + 'work/missions/2026-11-25-carnet-document/jouable/', CAP = M + 'cap-amelio/';
 const MODE = process.argv[2] || 'apres';
-const FICHIER = MODE === 'avant' ? CAP + 'src/base.html' : M + 'm4b-v7.html';
+const FICHIER = process.env.BANC_FICHIER || (MODE === 'avant' ? CAP + 'src/base.html' : M + 'm4b-v7.html');
+const OUT = process.env.BANC_SORTIE || CAP; // contre-épreuve : la version rejetée, sorties hors du dépôt
 const attendre = ms => new Promise(r => setTimeout(r, ms));
 function idLien(url) { let x = 5381; for (let i = 0; i < url.length; i++) x = (Math.imul(x, 33) + url.charCodeAt(i)) >>> 0; return 'u' + x.toString(16); }
 const BRAU = 'https://www.brauundrauchshop.ch/citra-136-2';
@@ -97,9 +98,14 @@ try {
     const lb = document.getElementById('liste').getBoundingClientRect();
     const rows = [...document.querySelectorAll('#liste .m4j-r')].filter(r => { const b = r.getBoundingClientRect(); return b.height && b.top >= lb.top - 1 && b.bottom <= lb.bottom + 1; }).length;
     const u = document.querySelector('#p-org [data-utile]');
-    return { mots: words.length, minFont: minF, petits: petits.slice(0, 6), cibles44: cibles.slice(0, 8), nCibles: cibles.length, debord, carnetsVisibles: vue.id === 'v-liste' ? rows : undefined, utileY: u && !u.closest('[hidden]') ? Math.round(u.getBoundingClientRect().top) : null };
+    const po = document.getElementById('p-org'); let phr = 0;
+    if (po && !po.hidden) { const tw2 = document.createTreeWalker(po, NodeFilter.SHOW_TEXT); let n2;
+      while ((n2 = tw2.nextNode())) { const el = n2.parentElement; if (!n2.textContent.trim() || el.closest('[hidden],[data-nom],.am-tag,.am-leg')) continue;
+        const r2 = document.createRange(); r2.selectNodeContents(n2); if (![...r2.getClientRects()].some(x => x.width > 0 && x.bottom > 0 && x.top < H)) continue;
+        phr += n2.textContent.split(/\s+/).filter(w => /\p{L}/u.test(w) && !/\d/.test(w) && !/^(l|j)\.?$/i.test(w)).length; } }
+    return { mots: words.length, phrases: phr, minFont: minF, petits: petits.slice(0, 6), cibles44: cibles.slice(0, 8), nCibles: cibles.length, debord, carnetsVisibles: vue.id === 'v-liste' ? rows : undefined, utileY: u && !u.closest('[hidden]') ? Math.round(u.getBoundingClientRect().top) : null };
   });
-  const cap = async (nom, garder) => { await attendre(300); if (!garder) await page.evaluate(() => document.querySelectorAll('.m4b-toast').forEach(x => x.remove())); await page.screenshot({ path: CAP + MODE + '-' + nom + '.png' }); res.ecrans[nom] = await mesure(); return nom; };
+  const cap = async (nom, garder) => { await attendre(300); if (!garder) await page.evaluate(() => document.querySelectorAll('.m4b-toast').forEach(x => x.remove())); await page.screenshot({ path: OUT + MODE + '-' + nom + '.png' }); res.ecrans[nom] = await mesure(); return nom; };
   const idDe = t => page.evaluate(t => (__m4b.etat().carnets.filter(c => c.titre === t)[0] || {}).id, t);
   const ouvrir = async t => { await page.evaluate(i => __m4b.ouvrir(i), await idDe(t)); await attendre(250); };
   const fermer = () => page.evaluate(() => __m4b.fermer());
@@ -129,7 +135,7 @@ try {
     await ouvrir(T.bt);
     await g('20-bt-comparer', () => clic('[data-act="comparer"]'));
     await g('21-bt-comparer-cote', () => defiler(330));
-    await g('22-bt-cellule', async () => { await clic('.am-cmp .cv[data-r="pu"]'); });
+    await g('22-bt-cellule', async () => { await clic('.am-cmp .cv[data-r="pu"][data-ci="0"]'); });
     await g('23-bt-ecarter', async () => { await clic('.am-bub [data-act="ecarter"]'); await defiler(2000); });
     await g('24-bt-ajout-crit', async () => { await clic('[data-act="crit-ajout"]'); await page.keyboard.type('Délai'); await page.keyboard.press('Enter'); await attendre(200); await defiler(2000); });
     await g('25-bt-proposer', async () => { await clic('[data-act="crit-proposer"]'); await attendre(400); await defiler(330); });
@@ -140,8 +146,9 @@ try {
     // 6 offres
     await page.evaluate((t, L) => __m4b.ajouter(t, L), SIX_T, SIX_L);
     for (let i = 0; i < 50; i++) { const ok = await page.evaluate(t => { const c = __m4b.etat().carnets.filter(c => c.titre === t)[0]; return c && (c.org || c.orgErreur); }, SIX_T); if (ok) break; await attendre(100); }
-    await ouvrir(SIX_T); await cap('30-six-org');
+    await ouvrir(SIX_T); await cap('30-six-org'); res.sixSections = await page.evaluate(() => [...document.querySelectorAll('#p-org .am-sec h3')].map(h => h.textContent.trim()));
     await g('31-six-comparer', () => clic('[data-act="comparer"]'));
+    res.sixCols = await page.evaluate(() => { const th = [...document.querySelectorAll('.am-cmp thead th')].slice(1); return { premier: th[0] && th[0].textContent.trim(), visibles: th.filter(x => x.getBoundingClientRect().right <= innerWidth + 1).length, comp: (document.querySelector('.am-comp') || {}).textContent || '' }; });
     await g('32-six-cote', () => defiler(380));
     await g('33-six-cote-droite', () => page.evaluate(() => { document.querySelector('.am-tabw').scrollLeft = 400; }));
     await g('34-six-bas', () => defiler(3000));
@@ -150,19 +157,54 @@ try {
     // citra : image du lien, Relire, IA forte ; ⋯ du carnet
     await ouvrir(CITRA);
     await g('40-citra-liens', () => defiler(2000));
-    await g('41-citra-relire', () => clic('[data-act="relire-lien"]'), true);
+    await g('41-citra-lien-menu', async () => { const b = await page.$$('[data-act="lien-menu"]'); await b[b.length - 1].click(); await attendre(200); });
+    await g('41b-citra-relire', () => clic('.am-feuille [data-x="relire"]'));
     await g('42-citra-meta', () => clic('.am-tete .am-b44'));
     await g('43-citra-escalader', async () => { await clic('.am-feuille [data-x="forte"]'); await attendre(900); await defiler(0); }, true);
     res.escalade = await page.evaluate(() => ({ opts: window.__opts.slice(-3), demandes: window.__store.demandes }));
+    await g('44-citra-changes', async () => { await attendre(600); await clic('.am-tete .am-b44'); await clic('.am-feuille [data-x="chg"]'); });
+    await page.evaluate(() => document.querySelectorAll('.m4b-voile, .am-voile').forEach(x => x.click())); await attendre(150);
     await fermer();
     // CO2 : en-tête utile, date ; cave : jour contredit
-    await ouvrir(T.co2); await g('50-co2-tete', () => defiler(0)); await fermer();
+    await ouvrir(T.co2); await g('50-co2-source', () => clic('.am-t4.pro .am-src')); await fermer();
+    await ouvrir(T.frigo); await g('52-frigo-comparer', () => clic('.am-act .p')); await fermer();
     await ouvrir(T.cave); await g('51-cave-date', () => defiler(0)); await fermer();
+  }
+  if (MODE === 'apres') {
+    const V = []; res.verite = { defauts: V };
+    for (const [k, t] of Object.entries({ eco: T.eco, co2: T.co2, bt: T.bt, frigo: T.frigo, cave: T.cave, vap: T.vap })) {
+      await ouvrir(t);
+      const r = await page.evaluate(() => { const c = __m4b.courant ? __m4b.courant() : null; const D = __m4b.modele(); const r = D.r;
+        return { quand: (r.tache && r.tache.quand) || (r.echeance && r.echeance.quand) || null, dates: [...document.querySelectorAll('#p-org .am-d')].map(x => x.textContent.trim()), qg: (document.querySelector('#p-org .am-qg') || {}).textContent || '',
+          bars: [...document.querySelectorAll('#p-org .am-bar')].map(b => ({ cl: b.className, w: (b.querySelector('.tr i') || {}).style ? b.querySelector('.tr i').style.width : null })) }; });
+      await fermer();
+      const q = String(r.quand || '').toLowerCase(), deduit = q && !/\d{1,2}\s+[a-zéû]+|\d\.\d|aujourd|demain/.test(q) || /avant le \d+ du mois/.test(q);
+      if (deduit && r.dates.length && !r.dates.every(d => d.includes('≈'))) V.push(k + ' : date déduite sans ≈ (« ' + q + ' » → ' + r.dates.join(' | ') + ')');
+      const mm = q.match(/avant\s+(janv|f[ée]v|mars|avr|mai|juin|juil|ao[uû]|sept|oct|nov|d[ée]c)/); if (mm) { const mo = ['janv','fév','mars','avr','mai','juin','juil','aoû','sept','oct','nov','déc'].findIndex(x => mm[1].normalize('NFD').replace(/[\u0300-\u036f]/g,'').startsWith(x.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) + 1;
+        if (r.dates.some(d => new RegExp('\\b\\d{1,2}\\.' + mo + '\\b').test(d))) V.push(k + ' : « ' + q + ' » affiché dans le mois nommé : ' + r.dates.join(' | ')); }
+      if (/pas en stock/.test(r.qg) && !/Rien ne départage/.test(r.qg)) V.push(k + ' : « pas en stock » présenté comme un gain');
+      if (r.bars.length) { const b0 = r.bars[0]; if (b0.w !== '100%') V.push(k + ' : la 1re barre n’est pas pleine (' + b0.w + ')'); if (r.bars.some(b => / m\b/.test(b.cl) && b.w)) V.push(k + ' : une offre hors besoin a une barre'); }
+      res.verite = res.verite || {}; res.verite[k] = r;
+    }
+    let cp1 = '', cp2 = ''; try {
+    await ouvrir(T.bt); await page.evaluate(() => { const o = __m4b.modele().o; o.ecartes = []; }); await fermer(); await ouvrir(T.bt); await clic('[data-act="comparer"]');
+    cp1 = await page.evaluate(() => (document.querySelector('.am-comp') || {}).textContent || '');
+    await clic('.am-cmp .cv[data-r="pu"][data-ci="0"]'); await clic('.am-bub [data-act="ecarter"]');
+    cp2 = await page.evaluate(() => (document.querySelector('.am-comp') || {}).textContent || '');
+    await page.evaluate(() => { const o = __m4b.modele().o; o.ecartes = []; }); await fermer(); } catch (e) { V.push('bt : ' + e.message); await fermer(); }
+    if (/plus cher/.test(cp1) || !/410/.test(cp1) || !/94/.test(cp1)) V.push('bt : compromis faux : ' + cp1);
+    if (/Verallia/.test(cp2) || cp1 === cp2) V.push('bt : compromis non recalculé après Écarter : ' + cp2);
+    await ouvrir(SIX_T); await clic('#p-org [data-act="comparer"]'); await attendre(300);
+    const sixVieux = await page.evaluate(() => { const th = [...document.querySelectorAll('.am-cmp thead th')].slice(1); return { premier: th[0] && th[0].textContent.trim(), visibles: th.filter(x => x.getBoundingClientRect().right <= innerWidth + 1).length, comp: (document.querySelector('.am-comp') || {}).textContent || '' }; });
+    await fermer(); const six = res.sixCols;
+    if (!/Bouteilles33/.test(six.premier) || six.visibles < 5) V.push('six : gagnant pas en 1re colonne ou < 5 colonnes visibles : ' + JSON.stringify(six));
+    res.verite.cp = { cp1, cp2, six }; res.verite.defauts = V;
   }
   res.erreurs = erreurs;
 } finally {
-  fs.writeFileSync(CAP + 'banc/' + MODE + '.json', JSON.stringify(res, null, 1));
+  fs.writeFileSync(OUT + (OUT === CAP ? 'banc/' : '') + MODE + '.json', JSON.stringify(res, null, 1));
   await page.close(); browser.disconnect();
 }
 console.log(JSON.stringify({ gestes: res.gestes, erreurs, six: res.six, esc: res.escalade && res.escalade.opts }, null, 0));
-for (const [k, m] of Object.entries(res.ecrans)) console.log(k, 'mots', m.mots, 'minF', m.minFont, 'cibles<44', m.nCibles, m.cibles44.slice(0, 3).join(' | '), 'debord', m.debord, m.carnetsVisibles != null ? 'visibles ' + m.carnetsVisibles : '', 'utileY', m.utileY);
+if (res.verite) console.log('VERITE', res.verite.defauts.length ? 'KO ' + JSON.stringify(res.verite.defauts) : 'OK', JSON.stringify(res.verite.cp));
+for (const [k, m] of Object.entries(res.ecrans)) console.log(k, 'mots', m.mots, 'phrases', m.phrases, 'minF', m.minFont, 'cibles<44', m.nCibles, m.cibles44.slice(0, 3).join(' | '), 'debord', m.debord, m.carnetsVisibles != null ? 'visibles ' + m.carnetsVisibles : '', 'utileY', m.utileY);
