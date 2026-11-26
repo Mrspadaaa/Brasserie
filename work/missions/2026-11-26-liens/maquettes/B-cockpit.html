@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<title>B2 — Cockpit de brassage (instruments sobres)</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* B2 « cockpit » : chiffres grands, jauges fines, voyants d'état nets ; gris partout, couleur = état ou IA */
+:root{--bg:#0F0F0E;--p:#171716;--p2:#1E1E1D;--ln:#2B2A29;--t1:#ECEAE7;--t2:#ADA9A4;--t3:#88837E;
+--ok:#9CC47F;--av:#E3B55D;--ur:#F29289;--ia:#B9A6EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;font-family:"Source Sans 3",system-ui,sans-serif;color:var(--t1);font-size:14px;line-height:1.3}
+.scr{display:none;width:390px;height:844px;background:var(--bg);flex-direction:column;overflow:hidden}
+body[data-e="1"] #e1,body[data-e="2"] #e2,body[data-e="3"] #e3,body[data-e="4"] #e4{display:flex}
+.m{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.big{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:500;line-height:1.05;letter-spacing:-.02em}
+.lb{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);font-weight:600}
+.s{font-size:12px;color:var(--t2)}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ok{color:var(--ok)}.av{color:var(--av)}.ur{color:var(--ur)}.ia{color:var(--ia)}.t3{color:var(--t3)}.t2{color:var(--t2)}
+.body{flex:1;overflow:hidden;padding:0 10px;display:flex;flex-direction:column;gap:8px}
+.top{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 10px}
+.top a{display:flex;align-items:center;gap:4px;color:var(--t2);text-decoration:none}
+.seg{display:flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden}
+.seg span{font-size:12px;padding:4px 10px;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.seg span.on{background:var(--p2);color:var(--t1)}
+/* panneau d'instrument */
+.pn{background:var(--p);border:1px solid var(--ln);border-radius:6px;padding:8px 10px}
+.pn .lb{display:flex;justify-content:space-between;margin-bottom:4px}
+.grid{display:grid;gap:6px}
+.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1fr 1fr}
+.cell{background:var(--p);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;min-width:0}
+.cell .s{display:block;margin-top:2px}
+.cell.ur{border-top:2px solid var(--ur)}.cell.av{border-top:2px solid var(--av)}
+/* voyants (annonciateurs) */
+.ann{border:1px solid var(--ln);border-radius:4px;padding:6px 8px;text-align:left}
+.ann b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.ann span{font-size:12px}
+.ann.lit-ok{border-color:var(--ok);background:rgba(156,196,127,.08)}.ann.lit-ok b,.ann.lit-ok span{color:var(--ok)}
+.ann.dim b,.ann.dim span{color:var(--t3)}
+.ann.lit-av{border-color:var(--av);background:rgba(227,181,93,.08)}.ann.lit-av b,.ann.lit-av span{color:var(--av)}
+/* table des carnets */
+.tb{width:100%;border-collapse:collapse}
+.tb td{height:26px;border-bottom:1px solid var(--ln);padding:0 4px;white-space:nowrap}
+.tb td.n{max-width:220px;overflow:hidden;text-overflow:ellipsis;padding-left:8px}
+.tb td.e{font-size:12px;color:var(--t3);width:56px}
+.tb td.q{font-size:12px;color:var(--t2);text-align:right;width:76px;font-variant-numeric:tabular-nums}
+.tb tr.g td{height:24px;border-bottom:1px solid #3A3936;padding-top:6px}
+.tb tr.g td .lb{color:var(--t2)}
+.tb tr.su td.n{box-shadow:inset 2px 0 0 var(--ur)}.tb tr.sv td.n{box-shadow:inset 2px 0 0 var(--av)}
+/* check-list numérotée */
+.ck{display:flex;align-items:center;gap:8px;min-height:30px;border-top:1px solid var(--ln)}
+.ck:first-of-type{border-top:0}
+.ck .no{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--t3);width:18px}
+.ck .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ln);border-radius:4px;padding:4px 8px;color:var(--t1);background:var(--p2)}
+.box{width:16px;height:16px;border:1.5px solid var(--t3);border-radius:3px;flex:none}
+/* journal */
+.jr div{display:flex;gap:8px;font-size:12px;color:var(--t2);min-height:20px;align-items:center}
+.jr .m{color:var(--t3);font-size:12px;width:38px;flex:none}
+.jr .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jr .to{color:var(--t3);flex:none}
+/* jauge fine */
+.gauge{position:relative;height:4px;background:var(--ln);border-radius:2px;margin:10px 0 4px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--t2);border-radius:2px}
+.gauge u{position:absolute;top:-4px;width:2px;height:12px;background:var(--t1)}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--t3)}
+/* échelle de prix */
+.scale{position:relative;height:34px;margin:4px 6px 0}
+.scale .ax{position:absolute;left:0;right:0;top:20px;height:1px;background:var(--t3)}
+.scale .tk{position:absolute;top:14px;width:1px;height:13px;background:var(--t1)}
+.scale .tl{position:absolute;top:0;font-size:12px;transform:translateX(-50%);white-space:nowrap}
+.scale .tl.ok{color:var(--ok)}
+.offer.win{border-color:var(--ok)}
+.offer .big{margin:2px 0}
+.cmp{width:100%;border-collapse:collapse;font-size:14px}
+.cmp td,.cmp th{height:28px;border-bottom:1px solid var(--ln);text-align:right;padding:0 6px}
+.cmp th{font-size:12px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.cmp td:first-child,.cmp th:first-child{text-align:left;padding-left:0;font-size:12px;color:var(--t2)}
+.cmp td.win{box-shadow:inset 0 0 0 1px var(--ok);border-radius:3px;color:var(--ok)}
+/* IA */
+.iapn{border:1px solid rgba(185,166,234,.5);background:rgba(185,166,234,.07);border-radius:6px;padding:6px 10px}
+.iapn .lb{color:var(--ia)}
+.iapn .ck{border-color:rgba(185,166,234,.2)}
+.iapn .bt{border-color:rgba(185,166,234,.5);color:var(--ia);background:transparent}
+/* champ */
+.field{display:flex;align-items:center;gap:6px;padding:8px 10px 20px;border-top:1px solid var(--ln)}
+.field .in{flex:1;height:36px;border-radius:6px;background:var(--p);border:1px solid var(--ln);display:flex;align-items:center;padding:0 10px;color:var(--t3);font-size:16px}
+.btn{width:36px;height:36px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--ln);background:var(--p);color:var(--t1);font-size:16px}
+.btn.spark{color:var(--ia)}.btn.spark.on{background:var(--ia);color:#0F0F0E;border-color:var(--ia)}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="back" viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></symbol>
+<symbol id="right" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></symbol>
+<symbol id="plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+<symbol id="pb" viewBox="0 0 16 16"><path d="M8 2.5 14.5 13.5h-13z"/><path d="M8 6.5v3.2M8 11.6v.2"/></symbol>
+<symbol id="cart" viewBox="0 0 16 16"><path d="M1.5 2.5h2l1.6 7.5h7.4l1.5-5.5H4.3"/><circle cx="6.3" cy="13" r=".9"/><circle cx="11.8" cy="13" r=".9"/></symbol>
+<symbol id="cal" viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/></symbol>
+<symbol id="idea" viewBox="0 0 16 16"><path d="M6 12.5h4M6.6 14.5h2.8M8 1.8a4.2 4.2 0 0 0-2.6 7.5c.4.4.6.8.6 1.4v.3h4v-.3c0-.6.2-1 .6-1.4A4.2 4.2 0 0 0 8 1.8z"/></symbol>
+<symbol id="chkc" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M5.3 8.2l1.9 1.9 3.6-4"/></symbol>
+</defs></svg>
+
+<!-- ============ 1. LISTE ============ -->
+<section class="scr" id="e1">
+  <div class="top"><span class="lb" style="color:var(--t1);font-size:14px">Carnets</span><span class="s m">jeu. 26.11</span></div>
+  <div class="body">
+    <div class="grid g3">
+      <div class="cell ur"><div class="lb">Urgent</div><div class="big ur">1</div><span class="s">Chaudière, demain 7h</span></div>
+      <div class="cell av"><div class="lb">À vérifier</div><div class="big av">1</div><span class="s">Soufre, prévu le 23 nov.</span></div>
+      <div class="cell"><div class="lb">Ouverts</div><div class="big">14</div><span class="s">dont 7 problèmes</span></div>
+    </div>
+    <table class="tb">
+      <tr class="g"><td class="n" colspan="2"><span class="lb"><svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#pb"/></svg> Problèmes · 7</span></td><td class="q lb">Quand</td></tr>
+      <tr class="su"><td class="n">Chaudière en panne jour de brassage</td><td class="e ur">cherche</td><td class="q ur">demain 7h</td></tr>
+      <tr><td class="n">Écoulement qui fuit</td><td class="e">cherche</td><td class="q">devis att.</td></tr>
+      <tr><td class="n">Frigo de garde en panne</td><td class="e">cherche</td><td class="q">av. déc.</td></tr>
+      <tr><td class="n">CO2 qui baisse vite dans un fût</td><td class="e">décide</td><td class="q">dans 1 sem.</td></tr>
+      <tr class="sv"><td class="n">Odeur de soufre dans un lot</td><td class="e">décide</td><td class="q av">23 nov.</td></tr>
+      <tr><td class="n">Trop de vapeur au brassage</td><td class="e">décide</td><td class="q t3">—</td></tr>
+      <tr><td class="n">Inspection électrique, fusible</td><td class="e">—</td><td class="q t3">—</td></tr>
+      <tr class="g"><td class="n" colspan="3"><span class="lb"><svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#cart"/></svg> Achats · 1</span></td></tr>
+      <tr><td class="n">600 bouteilles 33 cl</td><td class="e">3 offres</td><td class="q">av. le 15</td></tr>
+      <tr class="g"><td class="n" colspan="3"><span class="lb"><svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#cal"/></svg> Échéances et listes · 4</span></td></tr>
+      <tr><td class="n">Assurance à renouveler</td><td class="e">0 / 3</td><td class="q">31 déc.</td></tr>
+      <tr><td class="n">Ranger la cave</td><td class="e">—</td><td class="q">sam. 6 déc.</td></tr>
+      <tr><td class="n">Bar du Centre veut nos bières</td><td class="e">—</td><td class="q">lundi</td></tr>
+      <tr><td class="n">Levure récoltée à tester</td><td class="e">—</td><td class="q t3">—</td></tr>
+      <tr class="g"><td class="n" colspan="3"><span class="lb"><svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#idea"/></svg> Idées · 2</span></td></tr>
+      <tr><td class="n">Fête de la bière en juin</td><td class="e">—</td><td class="q">av. mars</td></tr>
+      <tr><td class="n">Bière au sureau</td><td class="e">—</td><td class="q t3">—</td></tr>
+      <tr class="g"><td class="n" colspan="3"><span class="lb"><svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#chkc"/></svg> Réglés · 3</span></td></tr><tr><td class="n t3">Levure lente à démarrer</td><td class="e ok">réglé</td><td class="q t3">—</td></tr><tr><td class="n t3">Malt pilsner en rupture</td><td class="e ok">réglé</td><td class="q t3">—</td></tr><tr><td class="n t3">Pompe qui chauffe</td><td class="e ok">réglé</td><td class="q t3">—</td></tr>
+    </table>
+  </div>
+  <div class="field"><div class="in">Nouvelle note…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
+</section>
+
+<!-- ============ 2. PROBLÈME ============ -->
+<section class="scr" id="e2">
+  <div class="top"><a><svg class="i"><use href="#back"/></svg><span class="lb" style="color:var(--t2)">Carnets</span></a><div class="seg"><span class="on">Organisé</span><span>Mes notes 6</span></div></div>
+  <div class="body">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div style="min-width:0"><div style="font-weight:700;font-size:14px">Écoulement qui fuit</div><div class="s">Problème · local · sol de la salle</div></div>
+      <div class="ann lit-av" style="flex:none"><b>On cherche</b></div>
+    </div>
+    <div class="grid g2">
+      <div class="cell"><div class="lb">Estimation</div><div class="big">150 <span style="font-size:14px">CHF</span></div><span class="s">sanitaire, entreprise X</span></div>
+      <div class="cell av" style="border-top:2px solid var(--av)"><div class="lb">Devis</div><div class="big av" style="font-family:'Source Sans 3';font-weight:700">attendu</div><span class="s">entreprise X (exemple)</span></div>
+    </div>
+    <div class="pn">
+      <div class="lb"><span>Pistes</span><span>1 trouvée · 1 écartée</span></div>
+      <div class="grid g2">
+        <div class="ann lit-ok"><b>Joint du siphon</b><span>trouvé usé</span></div>
+        <div class="ann dim"><b>Sous la dalle</b><span>pas trouvée</span></div>
+      </div>
+    </div>
+    <div class="iapn ia-only">
+      <div class="lb"><span>✦ Suggestions de l’IA · 2</span></div>
+      <div class="ck"><span class="no ia">✦</span><span class="tx">Changer le joint du siphon <span class="t3 m" style="font-size:12px">— CHF</span></span><span class="bt">Garder</span></div>
+      <div class="ck"><span class="no ia">✦</span><span class="tx">Demander si le joint suffit, avant le devis</span><span class="bt">Garder</span></div>
+    </div>
+    <div class="pn">
+      <div class="lb"><span>Check-list</span><span>0 / 2</span></div>
+      <div class="ck"><span class="no">01</span><span class="box"></span><span class="tx">Contacter l’entreprise X</span><span class="bt">Fait</span></div>
+      <div class="ck"><span class="no">02</span><span class="box"></span><span class="tx">Devis attendu</span><span class="s av">en attente</span></div>
+    </div>
+    <div class="pn jr">
+      <div class="lb"><span>Journal · 24.11</span><span>6 lignes</span></div>
+      <div><span class="m">20:18</span><span class="tx">Écoulement qui fuit</span><span class="to">titre</span></div>
+      <div><span class="m">20:26</span><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque…</span><span class="to">constat</span></div>
+      <div><span class="m">20:26</span><span class="tx">Pistes : joint du siphon trouvé usé</span><span class="to">pistes</span></div>
+      <div><span class="m">20:26</span><span class="tx">fuite sous la dalle, pas trouvée.</span><span class="to">pistes</span></div>
+      <div><span class="m">20:26</span><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span><span class="to">01</span></div>
+      <div><span class="m">20:26</span><span class="tx">Devis attendu.</span><span class="to">02</span></div>
+      <div><span class="m">20:26</span><span class="tx">Estimation 150 CHF (exemple).</span><span class="to">estim.</span></div>
+    </div>
+  </div>
+  <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
+</section>
+
+<!-- ============ 3. ACHAT ============ -->
+<section class="scr" id="e3">
+  <div class="top"><a><svg class="i"><use href="#back"/></svg><span class="lb" style="color:var(--t2)">Carnets</span></a><div class="seg"><span class="on">Organisé</span><span>Mes notes 4</span></div></div>
+  <div class="body">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div><div style="font-weight:700;font-size:14px">600 bouteilles 33 cl</div><div class="s">Achat · 3 offres</div></div>
+      <div class="ann lit-av"><b>Avant le 15</b></div>
+    </div>
+    <div class="pn">
+      <div class="lb"><span>Prix par bouteille</span><span>CHF</span></div>
+      <div class="grid g3">
+        <div class="cell offer"><div class="lb">Verallia</div><div class="big">0.42</div><span class="s">≥ 1200 bt</span></div>
+        <div class="cell offer"><div class="lb">Fourn. B</div><div class="big">0.55</div><span class="s">par 600</span></div>
+        <div class="cell offer win"><div class="lb ok">Occasion</div><div class="big ok">0.20</div><span class="s">400 max</span></div>
+      </div>
+      <div class="scale">
+        <div class="ax"></div>
+        <div class="tk" style="left:0"></div><div class="tl t3" style="left:0;transform:none">0</div>
+        <div class="tk" style="left:33.3%;background:var(--ok)"></div><div class="tl ok" style="left:33.3%">Occ.</div>
+        <div class="tk" style="left:70%"></div><div class="tl t2" style="left:70%">Ver.</div>
+        <div class="tk" style="left:91.7%"></div><div class="tl t2" style="left:91.7%">B</div>
+        <div class="tl t3" style="left:100%;top:22px;transform:translateX(-100%)">0.60</div>
+      </div>
+    </div>
+    <div class="pn">
+      <div class="lb"><span>Qui gagne quoi</span></div>
+      <table class="cmp">
+        <tr><th></th><th>Verallia</th><th>Fourn. B</th><th>Occasion</th></tr>
+        <tr><td>Prix / bt</td><td class="m">0.42</td><td class="m">0.55</td><td class="m win">0.20</td></tr>
+        <tr><td>Quantité</td><td class="m">≥ 1200</td><td class="m win">600</td><td class="m">400 max</td></tr>
+        <tr><td>Livraison</td><td class="m">—</td><td class="m">80 CHF</td><td class="m">—</td></tr>
+        <tr><td>État</td><td>—</td><td>—</td><td class="av">à laver</td></tr>
+        <tr><td><span class="ia">✦</span> Total</td><td class="m">504<span class="t3" style="font-size:12px"> /1200</span></td><td class="m win">410</td><td class="m t3">—</td></tr>
+      </table>
+    </div>
+    <div class="iapn" style="display:flex;align-items:center;gap:8px">
+      <span class="ia">✦</span><span style="flex:1">600 pile, le moins cher : <b>Fournisseur B</b></span><span class="big" style="font-size:28px">410</span><span class="s">CHF</span>
+    </div>
+    <div class="pn jr">
+      <div class="lb"><span>Tes notes</span><span>4 lignes</span></div>
+      <div><span class="tx">Verallia : 0.42/bt, palette de 1200 min</span><span class="to">Verallia</span></div>
+      <div><span class="tx">Fournisseur B : 0.55/bt par 600, livraison 80 CHF</span><span class="to">B</span></div>
+      <div><span class="tx">Occasion sur annonce : 0.20/bt, à laver, 400 seulement</span><span class="to">Occ.</span></div>
+      <div><span class="tx">Besoin avant le 15 du mois</span><span class="to">délai</span></div>
+    </div>
+  </div>
+  <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
+</section>
+
+<!-- ============ 4. ÉCHÉANCE ============ -->
+<section class="scr" id="e4">
+  <div class="top"><a><svg class="i"><use href="#back"/></svg><span class="lb" style="color:var(--t2)">Carnets</span></a><div class="seg"><span class="on">Organisé</span><span>Mes notes 4</span></div></div>
+  <div class="body">
+    <div><div style="font-weight:700;font-size:14px">Assurance à renouveler</div><div class="s">Échéance · administratif</div></div>
+    <div class="pn">
+      <div class="lb"><span>Échéance · 31 déc.</span><span>2 j écoulés sur 37</span></div>
+      <div style="display:flex;align-items:baseline;gap:8px"><span class="big">J-35</span><span class="s">renouveler avant le 31 déc.</span></div>
+      <div class="gauge"><i style="width:5.4%"></i><u style="left:5.4%"></u></div>
+      <div class="ticks"><span>ouvert le 24.11</span><span>31.12</span></div>
+    </div>
+    
+    <div class="pn">
+      <div class="lb"><span>Pièces à réunir</span><span>0 / 3</span></div>
+      <div class="ck"><span class="no">01</span><span class="box"></span><span class="tx">Police actuelle</span></div>
+      <div class="ck"><span class="no">02</span><span class="box"></span><span class="tx">Inventaire du matériel</span></div>
+      <div class="ck"><span class="no">03</span><span class="box"></span><span class="tx">Chiffre d’affaires 2026</span></div>
+    </div>
+    <div class="pn">
+      <div class="lb"><span>Check-list</span><span>0 / 2</span></div>
+      <div class="ck"><span class="no">01</span><span class="box"></span><span class="tx">Demander une offre à un 2e assureur</span><span class="bt">Fait</span></div>
+      <div class="ck"><span class="no">02</span><span class="box"></span><span class="tx">Renouveler l’assurance <span class="ia">✦</span></span><span class="s">av. 31 déc.</span></div>
+    </div>
+    <div class="pn jr">
+      <div class="lb"><span>Journal</span><span>4 lignes</span></div>
+      <div><span class="m">24.11</span><span class="tx">Échéance le 31 déc.</span><span class="to">échéance</span></div>
+      <div><span class="m">24.11</span><span class="tx">Pièces : police actuelle, inventaire du matériel, chiffre…</span><span class="to">pièces</span></div>
+      <div><span class="m">24.11</span><span class="tx">Demander une offre à un 2e assureur.</span><span class="to">01</span></div>
+      <div><span class="m">25.11</span><span class="tx">Renouveler l’assurance avant le 31 déc.</span><span class="to">02 ✦</span></div>
+    </div>
+  </div>
+  <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
+</section>
+
+<script>
+const q=new URLSearchParams(location.search);document.body.dataset.e=q.get('e')||'1';
+const ia=q.get('ia')==='1';
+document.querySelectorAll('.ia-only').forEach(n=>n.style.display=ia?'':'none');
+if(ia)document.querySelectorAll('#e'+document.body.dataset.e+' .btn.spark').forEach(b=>b.classList.add('on'));
+</script>
+</body></html>
