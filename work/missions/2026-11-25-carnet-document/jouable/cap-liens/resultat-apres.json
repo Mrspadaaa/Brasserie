@@ -1,0 +1,175 @@
+{
+ "mode": "apres",
+ "ids": {
+  "ID_BRAU": "u81a946a2",
+  "ID_MOTLER": "u288565ec",
+  "ID_NEUF": "u75d1ade1"
+ },
+ "m4b-v7.html": {
+  "liste": {
+   "n": 12,
+   "total": 16,
+   "deuxEtages": 0
+  },
+  "A": {
+   "appels": 1,
+   "promptLiens": true,
+   "prompt245": true,
+   "promptDispo": true,
+   "promptMotlerAttente": true,
+   "promptQuestion": true,
+   "brau": [
+    "245.70 CHF/lien",
+    "782.15 CHF/lien",
+    "0.1044/lien",
+    "66 am Lager/lien",
+    "13.6 %/lien"
+   ],
+   "fausses": 0,
+   "erreurs": [],
+   "demandes": [
+    "uce7abb45",
+    "ufd52fd65",
+    "ue1a163c7",
+    "u288565ec"
+   ],
+   "demandeMotler": {
+    "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "carnet": "ZZ TEST — Houblons citra",
+    "quand": "2026-11-26T06:32:31.419Z"
+   },
+   "demandeBrau": false,
+   "dom": {
+    "enLecture": 1,
+    "marques": 5,
+    "txt245": true,
+    "dispo": true
+   }
+  },
+  "pouce": {},
+  "pouceExemples": 19,
+  "champ": {
+   "n": 20,
+   "titre": "Fûts 20 L",
+   "titreIA": true,
+   "cat": {
+    "nom": "Brasserie",
+    "sous": "Conditionnement"
+   },
+   "demande": {
+    "url": "https://www.example.ch/fut-20l",
+    "carnet": "example.ch/fut-20l",
+    "quand": "2026-11-26T06:33:01.331Z"
+   },
+   "champVide": true
+  },
+  "B": {
+   "appels": 1,
+   "demandes": [
+    true,
+    true
+   ],
+   "domAvant": 2,
+   "apres": 2,
+   "apres2": 2,
+   "dom": {
+    "enLecture": 1,
+    "marques": 5
+   }
+  },
+  "C": {
+   "premier": {
+    "texte": "?",
+    "source": "ia"
+   },
+   "fausses": 1,
+   "erreurs": [
+    "valeur « 199 CHF » de « Brau und Rauchshop » : absente du lien lu (retirée)"
+   ]
+  }
+ },
+ "m4b.html": {
+  "liste": {
+   "n": 10,
+   "total": 11,
+   "deuxEtages": 0
+  },
+  "A": {
+   "appels": 1,
+   "promptLiens": true,
+   "prompt245": true,
+   "promptDispo": true,
+   "promptMotlerAttente": true,
+   "promptQuestion": true,
+   "brau": [
+    "245.70 CHF/lien",
+    "782.15 CHF/lien",
+    "0.1044/lien",
+    "66 am Lager/lien",
+    "13.6 %/lien"
+   ],
+   "fausses": 0,
+   "erreurs": [],
+   "demandes": [
+    "uce7abb45",
+    "ufd52fd65",
+    "ue1a163c7",
+    "u288565ec"
+   ],
+   "demandeMotler": {
+    "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "carnet": "ZZ TEST — Houblons citra",
+    "quand": "2026-11-26T06:33:11.023Z"
+   },
+   "demandeBrau": false,
+   "dom": {
+    "enLecture": 1,
+    "marques": 5,
+    "txt245": true,
+    "dispo": true
+   }
+  },
+  "pouce": {},
+  "pouceExemples": 14,
+  "champ": {
+   "n": 15,
+   "titre": "Fûts 20 L",
+   "titreIA": true,
+   "cat": {
+    "nom": "Brasserie",
+    "sous": "Conditionnement"
+   },
+   "demande": {
+    "url": "https://www.example.ch/fut-20l",
+    "carnet": "example.ch/fut-20l",
+    "quand": "2026-11-26T06:33:33.040Z"
+   },
+   "champVide": true
+  },
+  "B": {
+   "appels": 1,
+   "demandes": [
+    true,
+    true
+   ],
+   "domAvant": 2,
+   "apres": 2,
+   "apres2": 2,
+   "dom": {
+    "enLecture": 1,
+    "marques": 5
+   }
+  },
+  "C": {
+   "premier": {
+    "texte": "?",
+    "source": "ia"
+   },
+   "fausses": 1,
+   "erreurs": [
+    "valeur « 199 CHF » de « Brau und Rauchshop » : absente du lien lu (retirée)"
+   ]
+  }
+ },
+ "erreurs": []
+}

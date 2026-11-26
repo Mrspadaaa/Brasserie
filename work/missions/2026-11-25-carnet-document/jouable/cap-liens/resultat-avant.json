@@ -1,0 +1,23 @@
+{
+ "mode": "avant",
+ "ids": {
+  "ID_BRAU": "u81a946a2",
+  "ID_MOTLER": "u288565ec",
+  "ID_NEUF": "u75d1ade1"
+ },
+ "m4b-v7.html": {
+  "liste": {
+   "n": 6,
+   "total": 16,
+   "deuxEtages": 16
+  }
+ },
+ "m4b.html": {
+  "liste": {
+   "n": 5,
+   "total": 11,
+   "deuxEtages": 11
+  }
+ },
+ "erreurs": []
+}

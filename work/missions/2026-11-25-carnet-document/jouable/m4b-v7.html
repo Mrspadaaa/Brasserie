@@ -6,7 +6,8 @@
 <title>Carnets · M4 b jouable · Organisé v7</title>
 <!-- Jouable M4 b (25.11 soir). Base : maquettes/m4b-note.html (son choix M4 · Deux vues, « Mes notes » en vraie note).
      Capacités à déclarer à la publication : capabilities: { sample: {}, dictation: {},
-       db: { rules: [ { path: "journal", read: "admin", write: "interact" } ] } }
+       db: { rules: [ {path:"journal",read:"admin",write:"admin"}, {path:"liens",read:"view",write:"admin"}, {path:"demandes",read:"admin",write:"admin"} ] } }
+     Liens lus par Claude (26.11) : la page lit liens/<id>, écrit demandes/<id> ; voir work/missions/2026-11-26-liens/LIENS.md.
      L'IA = Claude via sample (aucune clé, aucun Gemini). ?demo : réponse fixe, pour les captures hors claude.ai seulement. -->
 <style>
 :root{color-scheme:dark;--bg:#000;--card:#1c1c1f;--s2:#2a2a2e;--line:#424248;--mut:#a3a3aa;--ink:#f1f1f3;--ia:#b9a3ff;--ok:#8fd17e;--bad:#ff8f80;--att:#e8bd5a;--fin:#7db8f5;--im:#aab3c0;--car:#8ab4f8;
@@ -538,6 +539,40 @@ body.edite .hors-edition{display:none}
 .v7-cr{font-size:.8em}
 .v7-l.ia{grid-column:1/-1}
 
+
+/* 26.11 : liste en arbre compacte (densité de p4 : une ligne par carnet, en-têtes fins, tuiles réduites) */
+#v-liste{position:relative}
+#v-liste .m4j-tete{padding:calc(8px + env(safe-area-inset-top)) 14px 6px;font-size:18px}
+#v-liste .m4j-sous{position:absolute;top:calc(13px + env(safe-area-inset-top));right:14px;left:110px;text-align:right;padding:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#v-liste .m4j-liste{padding:0 10px 10px}
+#v-liste .m4j-oeil{gap:5px;padding:0 0 5px}
+#v-liste .m4j-oeil div{min-height:0;padding:3px 8px;border-radius:8px;display:flex;align-items:baseline;gap:5px;white-space:nowrap;overflow:hidden}
+#v-liste .m4j-oeil b{display:inline;font-size:15px}
+#v-liste .m4j-oeil span{font-size:12px}
+#v-liste .m4j-puces{padding:0}
+#v-liste .m4j-puce{height:32px;font-size:14px;padding:0 12px}
+#v-liste .m4j-aide{font-size:11px}
+#v-liste .m4j-dn{min-height:32px;margin-top:4px;font-size:15px;padding:0 10px;border-radius:8px}
+#v-liste .m4j-sd{min-height:22px;font-size:12.5px;padding:0 8px 0 10px}
+#v-liste .m4j-r1{min-height:38px;padding:0 6px;gap:8px;border-bottom:1px solid var(--s2);border-radius:0}
+#v-liste .m4j-r1 .ic{width:22px;height:auto;background:none;font-size:17px;border-radius:0}
+#v-liste .m4j-r1 .ti{flex:1;min-width:0;font-size:15px;font-weight:600}
+#v-liste .m4j-r1.basse .ti{font-weight:500}
+#v-liste .m4j-r1 .rp{display:flex;align-items:center;gap:5px;flex:none;max-width:42%;font-size:13px;font-weight:700;white-space:nowrap}
+#v-liste .m4j-r1 .pt{width:8px;height:8px;border-radius:50%;flex:none}
+#v-liste .m4j-r1 .rp .res{overflow:hidden;text-overflow:ellipsis;min-width:0;color:var(--ink)}
+#v-liste .m4j-r1 .dt.proche{color:var(--att)}
+#v-liste .m4j-r1 .dt.passe{color:var(--bad)}
+#v-liste .m4j-recharger{margin:12px auto 0}
+.m4j-saisie{display:flex;gap:8px;flex:1;min-width:0}
+.m4j-saisie input{flex:1;min-width:0;height:44px;border-radius:22px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px;padding:0 14px;outline:none}
+.m4j-saisie input:focus{border-color:var(--ia)}
+.m4j-plus{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--sur-plein);font-size:26px;font-weight:600;display:grid;place-items:center;flex:none}
+/* liens lus par Claude : 🔗 après une valeur venue d'un lien ; « 🔗 en lecture » sur l'article dont le lien attend */
+.lk{font-size:10px;margin-left:2px;font-weight:400}
+.lk-at{display:block;font-size:11px;font-weight:600;color:var(--fin);white-space:nowrap}
+.v7-cmp .hd .hc.lk-at{color:var(--fin);font-size:11px}
+.v7-p .lk-at{display:inline;margin-left:6px}
 </style>
 </head>
 <body>
@@ -582,7 +617,7 @@ body.edite .hors-edition{display:none}
     <div class="m4j-tete">Carnets</div>
     <div class="m4j-sous" id="liste-sous"></div>
     <div class="m4j-liste" id="liste"></div>
-    <div class="m4b-pied"><button class="m4b-btn plein" id="nouveau" type="button">+ Nouveau carnet</button></div>
+    <div class="m4b-pied"><div class="m4j-saisie"><input id="noter" type="text" placeholder="Noter, coller un lien…" enterkeyhint="send" autocomplete="off" aria-label="Noter dans un nouveau carnet"><button class="m4j-plus" id="nouveau" type="button" aria-label="Nouveau carnet">+</button></div></div>
   </section>
 
   <!-- ===== un carnet : Mes notes / Organisé ===== -->
@@ -925,16 +960,13 @@ function rendreArbre(l) {
   else res.forEach(function (c) { l.appendChild(ligneCarnet(c)); });
 }
 function ligneCarnet(c) {
-  var p = prioDe(c), dots = h('span', { class: 'm4j-jg' }), i;
-  for (i = 0; i < 4; i++) dots.appendChild(h('i', { style: i <= (RANG[c.etat] || 0) ? 'background:' + COUL_ETAT[c.etat] : null }));
-  var lit = estEnLecture(c), pro = !lit && prochaine(c), res = !lit && resumeDe(c);
-  var row = h('button', { type: 'button', class: 'm4j-r ' + p, 'data-id': c.id },
+  /* une ligne par carnet (26.11, « pas assez compact ») : emoji, titre, à droite un point d'état et un repère */
+  var p = prioDe(c), lit = estEnLecture(c), pro = !lit && prochaine(c), res = !lit && !pro && resumeDe(c), et = NOM_ETAT[c.etat] || 'Noté';
+  var row = h('button', { type: 'button', class: 'm4j-r m4j-r1 ' + p, 'data-id': c.id, 'aria-label': titreCourt(c) + ' · ' + et + (pro ? ' · ' + pro.txt + ', ' + texteJours(pro.n) : res ? ' · ' + res : '') },
     h('span', { class: 'ic' }, emojiDe(c)),
-    h('span', { class: 't' }, h('span', { class: 'ti' }, titreCourt(c)),
-      h('span', { class: 'sub' }, dots, h('span', { class: 'et', style: 'color:' + COUL_ETAT[c.etat] }, NOM_ETAT[c.etat] || 'Noté'),
-        lit ? [' · ', h('span', { class: 'lit' }, '✦ l’IA lit…')] : null,
-        res ? [' · ', h('span', { class: 'res' }, res)] : null)),
-    pro ? h('span', { class: 'dt' + (pro.n < 0 ? ' passe' : '') }, '⏳ ' + pro.txt, h('small', null, texteJours(pro.n))) : null,
+    h('span', { class: 'ti' }, titreCourt(c)),
+    h('span', { class: 'rp' }, h('i', { class: 'pt', title: et, style: 'background:' + COUL_ETAT[c.etat] }),
+      lit ? h('span', { class: 'lit' }, '✦ lit…') : pro ? h('span', { class: 'dt' + (pro.n < 0 ? ' passe' : pro.n <= 7 ? ' proche' : '') }, pro.txt) : res ? h('span', { class: 'res' }, res) : null),
     c.orgNeuf ? h('i', { class: 'neuf', title: 'Organisé a du neuf' }) : null);
   brancherGlisse(row, c);
   return row;
@@ -1050,9 +1082,16 @@ function feuilleRanger(c) {
     h('div', { class: 'm4b-actions' }, bouton('Fermer', '', fermerFeuille), dansListe ? bouton('Ouvrir', '', function () { fermerFeuille(); ouvrir(c.id); }) : null)]);
 }
 function reRendre() { if (courant() && vue === 'org') rendreOrg(); rendreListe(); }
+/* le champ de la liste (26.11, « un champ texte, une action en moins ») : ce qu'il tape crée un carnet, l'IA le range et le titre */
 $('nouveau').addEventListener('click', function () {
-  var c = nouveauCarnet('', [''], null); etat.carnets.push(c); sauver(); geste('nouveau carnet', c.id); ouvrir(c.id);
+  var t = $('noter').value.trim();
+  if (!t) { var c = nouveauCarnet('', [''], null); etat.carnets.push(c); sauver(); geste('nouveau carnet', c.id); ouvrir(c.id); return; }
+  var c2 = nouveauCarnet('', [t], null); etat.carnets.push(c2); $('noter').value = ''; sauver(); geste('noter depuis la liste', t);
+  if (navigator.onLine) enFile(c2); else c2.attente = true;
+  sauver(); rendreListe();
+  toast('Noté · l’IA le range', 'Ouvrir', function () { ouvrir(c2.id); });
 });
+$('noter').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('nouveau').click(); } });
 
 /* ====================================================================== ouvrir un carnet */
 var vue = 'notes';
@@ -1452,6 +1491,121 @@ function ouvrirMenu() {
 function fermerMenu() { if (menu) { menu.forEach(function (n) { n.remove(); }); menu = null; rendreOutils(); } }
 
 /* ====================================================================== l'IA : Claude via sample */
+/* ====================================================================== liens lus par Claude (26.11, work/missions/2026-11-26-liens/LIENS.md)
+   liens/<id> : écrit par la session pilote (faits d'une page lue) ; la page le lit et le donne à l'IA.
+   demandes/<id> : écrit ici pour chaque lien https de ses notes sans liens/<id> ; la session le traite.
+   id = "u" + djb2 de l'URL exacte (le href de la note) : h = 5381 ; h = h * 33 + code UTF-16, sur 32 bits non signés ; en hexa.
+   Ses valeurs passent par textContent ou escL(). PAS-DE-HARCELEMENT : aucune question au pouce ; un manque est un « ? » à sa place. */
+function idLien(url) { var x = 5381; for (var i = 0; i < url.length; i++) x = (Math.imul(x, 33) + url.charCodeAt(i)) >>> 0; return 'u' + x.toString(16); }
+var RE_URL = /https:\/\/[^\s<>"«»]+/g;
+function urlsDe(t) { return (String(t || '').match(RE_URL) || []).map(function (u) { return u.replace(/[).,;:!?’'»]+$/, ''); }); }
+/* les liens d'une ligne : le href exact de ses <a> (la ligne n'en montre que l'hôte), puis les https écrits en clair */
+function urlsBloc(el) {
+  var U = []; if (!el || el.nodeType !== 1) return U;
+  Array.prototype.forEach.call(el.querySelectorAll('a[href]'), function (a) { var u = a.getAttribute('href'); if (/^https:\/\//.test(u) && U.indexOf(u) < 0) U.push(u); });
+  urlsDe(el.textContent).forEach(function (u) { if (U.indexOf(u) < 0) U.push(u); });
+  return U;
+}
+function urlsParLigne(c) {
+  var els; if (doc && etat && etat.courant === c.id) els = blocs(); else { var d = document.createElement('div'); d.innerHTML = c.html || ''; els = Array.prototype.slice.call(d.children); }
+  return els.map(urlsBloc);
+}
+/* UL : les liens de chaque ligne (urlsParLigne) */
+function liensDe(UL) { var L = []; (UL || []).forEach(function (l, i) { (l || []).forEach(function (u) { L.push({ ligne: i + 1, url: u, id: idLien(u) }); }); }); return L; }
+var liensValider = [];
+var liensLus = {}, liensEtat = 'attente'; /* attente, lent (rien après 1,5 s), lu (instantané reçu), sans (pas de base) */
+var liensPrets = new Promise(function (ok) {
+  function fini(e) { if (liensEtat === 'attente') liensEtat = e; ok(); }
+  setTimeout(function () { fini('lent'); }, 1500);
+  capDb.then(function (db) {
+    if (!db) { fini('sans'); return; }
+    try {
+      db.collection('liens').onSnapshot(function (snap) {
+        var n = {}; snap.docs.forEach(function (d) { if (!d.exists) return; var x = d.data(); if (x && typeof x === 'object') n[d.id] = x; });
+        liensLus = n; liensEtat = 'lu'; ok(); surLiens();
+      }, function () { fini('sans'); });
+    } catch (e) { fini('sans'); }
+  });
+});
+function lienLu(id) { var d = liensLus[id]; return d && typeof d === 'object' ? d : null; }
+function luLe(d) { return String(d.lu || '1'); }
+/* la marque d'un article dont le lien n'est pas encore lu : jamais un « ? » muet (LIENS-NON-LUS) */
+function marqueLien(UL, ligne) {
+  var n = Number(ligne); if (!UL || !(n >= 1 && n <= UL.length)) return '';
+  var U = UL[n - 1] || []; if (!U.length) return '';
+  if (U.some(function (u) { return lienLu(idLien(u)); })) return '';
+  return liensEtat === 'sans' ? '🔗 non lu' : '🔗 en lecture';
+}
+function chaineLien(x) { return x == null ? '' : String(x); }
+function prixLien(y) { y = y || {}; return [chaineLien(y.quantite), chaineLien(y.unite)].join(' ').trim() + ' = ' + [chaineLien(y.prix), chaineLien(y.devise)].join(' ').trim() + (y.note ? ' (' + chaineLien(y.note) + ')' : ''); }
+function texteLiens(UL) {
+  var L = liensDe(UL); if (!L.length) return '';
+  var dern = L.map(function (x) { var d = lienLu(x.id); return d && d.lu ? String(d.lu) : ''; }).filter(Boolean).sort().pop();
+  var out = ['', 'Ce que disent ses liens' + (dern ? ' (lus par Claude le ' + jour(dern) + ')' : '') + ' :'];
+  L.forEach(function (x) {
+    var d = lienLu(x.id);
+    if (!d) { out.push('- ligne ' + x.ligne + ' (' + x.url + ') : pas encore lu. Ses valeurs valent "?" (l’app le marque « 🔗 en lecture »).'); return; }
+    var p = [];
+    if (d.titre) p.push('« ' + chaineLien(d.titre) + ' »');
+    var pr = Array.isArray(d.prix) ? d.prix : []; if (pr.length) p.push('prix : ' + pr.map(prixLien).join(' ; '));
+    if (d.dispo) p.push('dispo : ' + chaineLien(d.dispo));
+    if (d.livraison) p.push('livraison : ' + chaineLien(d.livraison));
+    var f = Array.isArray(d.faits) ? d.faits : []; if (f.length) p.push('faits : ' + f.map(function (y) { return chaineLien(y && y.label) + ' : ' + chaineLien(y && y.valeur); }).join(' ; '));
+    out.push('- ligne ' + x.ligne + ' (' + x.url + ', lu le ' + (d.lu ? jour(d.lu) : '?') + ') : ' + p.join(' — '));
+  });
+  return out.join('\n');
+}
+/* validation côté page : une valeur "lien" doit exister dans liens/<id> du lien de sa ligne */
+function nombresLien(t) { return (String(t).replace(/(\d)[ ’'](?=\d{3})/g, '$1').match(/\d+(?:[.,]\d+)?/g) || []).map(function (n) { return parseFloat(n.replace(',', '.')); }); }
+function normLien(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+function texteDuLien(d) {
+  var t = [d.titre, d.dispo, d.livraison];
+  (Array.isArray(d.prix) ? d.prix : []).forEach(function (y) { y = y || {}; t.push(y.quantite, y.unite, y.prix, y.devise, y.note); });
+  (Array.isArray(d.faits) ? d.faits : []).forEach(function (y) { y = y || {}; t.push(y.label, y.valeur); });
+  return t.filter(function (x) { return x != null; }).map(String).join(' | ');
+}
+function valeurDuLien(tx, UL, nl) {
+  var U = UL && nl >= 1 && nl <= UL.length ? UL[nl - 1] || [] : [];
+  return U.some(function (u) {
+    var d = lienLu(idLien(u)); if (!d) return false;
+    var src = texteDuLien(d), ns = nombresLien(src), nv = nombresLien(tx);
+    return nv.length ? nv.every(function (n) { return ns.indexOf(n) >= 0; }) : !!normLien(tx) && normLien(src).indexOf(normLien(tx)) >= 0;
+  });
+}
+function liensVus(UL) { var v = {}; liensDe(UL).forEach(function (x) { var d = lienLu(x.id); if (d) v[x.id] = luLe(d); }); return v; }
+/* au rangement : une demande par lien https sans liens/<id>, une seule fois */
+function demanderLiens(c, UL) {
+  if (liensEtat !== 'lu') return;
+  etat.demandes = etat.demandes || {};
+  liensDe(UL).forEach(function (x) {
+    if (lienLu(x.id) || etat.demandes[x.id]) return;
+    var dm = { url: x.url, carnet: titreDe(c), quand: new Date().toISOString() };
+    etat.demandes[x.id] = dm.quand; sauver();
+    capDb.then(function (db) {
+      if (!db) return;
+      try { Promise.resolve(db.collection('demandes').doc(x.id).set(dm)).catch(function () { delete etat.demandes[x.id]; sauver(); }); } catch (e) {}
+    });
+  });
+}
+function escL(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x]; }); }
+function lkHtml(a, j) { return a.srcs && a.srcs[j] === 'lien' ? '<small class="lk" title="lu sur son lien">🔗</small>' : ''; }
+function attenteHtml(a) { return a.attente ? '<span class="hc lk-at">' + escL(a.attente) + '</span>' : ''; }
+/* un lien vient d'être lu : la lecture IA du carnet repart, une fois par lien et par lecture du lien */
+function verifierLiens(c) {
+  if (!c || !c.org || estEnLecture(c)) return;
+  var vus = c.org.liens || {}, neufs = [];
+  c.liensRelus = c.liensRelus || {};
+  liensDe(urlsParLigne(c)).forEach(function (x) { var d = lienLu(x.id); if (!d) return; var cle = x.id + '@' + luLe(d); if (vus[x.id] !== luLe(d) && !c.liensRelus[cle] && neufs.indexOf(cle) < 0) neufs.push(cle); });
+  if (!neufs.length) return;
+  neufs.forEach(function (k) { c.liensRelus[k] = true; });
+  journal({ quand: new Date().toISOString(), geste: 'lien lu : relecture', quoi: neufs.join(' '), carnetTitre: titreDe(c) });
+  if (!navigator.onLine) { c.attente = true; sauver(); return; }
+  sauver(); enFile(c);
+}
+function surLiens() {
+  etat.carnets.forEach(verifierLiens);
+  var c = courant(); if (c && vue === 'org') rendreOrg();
+}
 function consigne(c, lignes) {
   var prec = c.org ? JSON.stringify(c.org.rep) : 'aucun';
   var refus = c.refus.length ? c.refus.map(function (r) { return '- ' + r; }).join('\n') : 'aucun';
@@ -1472,7 +1626,8 @@ function consigne(c, lignes) {
     ' "conseil":string?, "resolu":{"question":string,"ligne":number,"citation":string}?,',
     ' "faits":[{"emoji":string,"texte":string,"ligne":number,"citation":string}],',
     ' "lectures":[{"ligne":number,"mot":string,"type":"montant"|"pas_trouve"|"contacte"|"piste"|"devis"|"date"}],',
-    ' "comparaison":{"criteres":[string],"articles":[{"nom":string,"ligne":number?,"citation":string?,"valeurs":[{"texte":string,"source":"notes"|"ia"}],"offre":{"prix":string?,"min":string?,"max":string?,"livraison":string?}?}],"gagnant":[number|null],"compromis":string?,"besoin":{"quantite":number,"ligne":number,"citation":string}?}|null,',
+    ' "comparaison":{"criteres":[string],"articles":[{"nom":string,"ligne":number?,"citation":string?,"valeurs":[{"texte":string,"source":"notes"|"ia"|"lien","lien":number?}],"offre":{"prix":string?,"min":string?,"max":string?,"livraison":string?}?}],"gagnant":[number|null],"compromis":string?,"besoin":{"quantite":number,"ligne":number,"citation":string}?}|null,',
+    ' "titre":string?,',
     ' "genre":"probleme"|"achat"|"memo"|"idee"|"planning"}',
     'Règles :',
     '1. Ne réécris jamais son texte. Il est TDAH et visuel : "texte" et "titre" font 3 mots au plus, "cout" 3 mots au plus (un nombre si possible), "emoji" est UN emoji parlant ; tutoiement.',
@@ -1489,7 +1644,7 @@ function consigne(c, lignes) {
     '9. Dès que ses notes parlent de 2 articles, offres ou fournisseurs ou plus (prix, liens, quantités, frais d’envoi…), remplis "comparaison" ; sinon null.',
     '   "criteres" : 1 à 2 mots, précédés d’un emoji ; ce qui compte pour choisir (prix, prix au kg ou au litre, frais d’envoi, quantité, délai…), d’abord ceux de ses notes, 6 au plus.',
     '   "valeurs" : une par critère, dans l’ordre des critères ; "?" quand ni ses notes ni un calcul simple ne le disent. Un prix ramené au kg est un calcul : "source":"ia".',
-    '   Tu ne peux pas ouvrir les liens : ce qui n’est que derrière un lien vaut "?".',
+    '   Tu ne peux pas ouvrir les liens. Claude en a lu : leurs faits sont plus bas (« Ce que disent ses liens »). Une valeur prise là porte "source":"lien" et "lien" : le numéro de la ligne du lien ; copie-la telle quelle (nombre et unité), jamais inventée. Un lien pas encore lu : "?" (l’app le marque « 🔗 en lecture »).',
     '   "gagnant" : pour chaque critère, l’indice (0, 1…) de l’article qui gagne, ou null si on ne sait pas ou égalité.',
     '   "compromis" : 12 mots au plus, ce qu’on gagne et ce qu’on perd avec le meilleur choix.',
     '10. "emoji" (en tête) : UN emoji pour le sujet du carnet. "categorie.nom" : Brasserie, Local, Administratif, Événements, ou "Sans catégorie" si rien ne va. "sous" : pour Brasserie, Brassage, Fermentation, Conditionnement, Matières premières ou Froid ; pour Local, Eau, Électricité ou Rangement ; sinon omis.',
@@ -1504,11 +1659,14 @@ function consigne(c, lignes) {
     '19. "faits" : ce qu’il a déjà fait (ses notes le disent au passé : « changé », « commandé », « déplacés »), 3 mots au plus, citation exacte. Un fait n’est jamais aussi une piste ni une option. Sinon [].',
     '20. "resolu" : "question" = ce qui l’a réglé, 5 mots au plus ; "ligne" et "citation" : la ligne qui dit que c’est réglé, extrait exact.',
     '21. Coût total d’une comparaison (l’app le calcule, pas toi) : "besoin" = la quantité voulue, écrite dans le titre ("ligne": 0) ou dans une ligne, avec sa "citation" exacte. Pour chaque article, "offre" : des extraits EXACTS de SA ligne : "prix" (prix à l’unité), "min" (quantité minimale), "max" (quantité disponible, « seulement »), "livraison" (frais d’envoi). Omets ce qui n’est pas écrit.',
+    'Jamais de question : ne lui demande rien, ne lui demande pas de noter une donnée ; ce qui manque vaut "?" à sa place.',
+    'Titre : ' + (c.titre && c.titre.trim() ? 'posé par lui ; omets "titre".' : 'aucun ; propose "titre" : 2 à 5 mots, le sujet du carnet (ex. « Houblons citra »).'),
     '',
     'Carnet : ' + titreDe(c),
     'État actuel : ' + c.etat + (c.etatPar ? ' (posé par lui le ' + jour(c.etatPar.le) + ')' : ''),
     'Ses notes, lignes numérotées :',
     lignes.map(function (l, i) { return (i + 1) + ': ' + l; }).join('\n'),
+    texteLiens(urlsParLigne(c)),
     '',
     'Organisé précédent (JSON) : ' + prec,
     'Ajouté par lui dans Organisé :',
@@ -1633,17 +1791,20 @@ function lancerLecture(c) {
   lecture = { ctl: ctl, carnetId: c.id };
   rendreOutils(); rendrePoint(); if (vue === 'org') rendreOrg();
   var t0 = performance.now();
-  capSample.then(function (sample) {
+  var UL = [], vus = {};
+  liensPrets.then(function () { if (ctl.signal.aborted) throw { code: 'cancelled' }; UL = urlsParLigne(c); vus = liensVus(UL); demanderLiens(c, UL); return capSample; }).then(function (sample) {
     if (!sample) throw { code: 'indisponible' };
     if (DEMO) return attendre(DEMO_MS, ctl.signal).then(function () { if (!/coulement/i.test(titreDe(c))) throw { code: 'indisponible' }; return demoReponse(lignes); });
     return sample.json(consigne(c, lignes), { signal: ctl.signal });
   }).then(function (brut) {
-    var v = valider(brut, lignes, titreDe(c));
+    liensValider = UL; var v = valider(brut, lignes, titreDe(c));
     var ms = Math.round(performance.now() - t0);
     journal({ quand: new Date().toISOString(), carnetTitre: titreDe(c), lignes: lignes, reponse: JSON.stringify(brut), msTemps: ms, erreurs: v.erreurs, citationsFausses: v.fausses, refus: c.refus.slice() });
     if (!v.rep) throw { code: 'format' };
     c.orgPrec = c.org;
     c.org = { quand: new Date().toISOString(), rep: v.rep, lignes: lignes, etatDe: c.etat, garde: {}, retenu: null, retenus: [], retenuLe: null, tacheFaite: false, coches: {}, lecturesOff: [], fausses: v.fausses, erreurs: v.erreurs };
+    c.org.liens = vus; c.org.urls = UL;
+    if (!(c.titre && c.titre.trim()) && v.rep.titreIA) { c.titre = v.rep.titreIA; c.titreIA = true; if (courant() === c && $('titre')) $('titre').textContent = c.titre; }
     reporter(c.orgPrec, c.org);
     /* l'état avance seul (jamais Résolu) ; il le remet depuis « Changé par l'IA » */
     var ep = v.rep.etatPropose;
@@ -1660,7 +1821,7 @@ function lancerLecture(c) {
   }).then(function () {
     if (lecture && lecture.ctl === ctl) lecture = null;
     if (courant() === c) { rendreOutils(); rendrePoint(); if (vue === 'org') rendreOrg(); else { rendreMeta(); calcLectures(); } }
-    rendreListe(); suivant();
+    rendreListe(); suivant(); setTimeout(function () { verifierLiens(c); }, 0);
   });
 }
 /* une relecture garde ce qu'il a déjà fait : options retenues, tâche gardée ou cochée, liste cochée */
@@ -1724,6 +1885,7 @@ function valider(brut, lignes, titre) {
     if (!l) return null; var v = verifier('lecture', l.ligne, l.mot);
     return v ? { ligne: v.ligne, mot: v.citation, type: NOM_LECTURE.hasOwnProperty(l.type) ? l.type : 'piste' } : null;
   }).filter(Boolean);
+  rep.titreIA = typeof brut.titre === 'string' && brut.titre.trim() && brut.titre.trim().length <= 48 ? brut.titre.trim() : null;
   rep.comparaison = null;
   var cp = brut.comparaison;
   if (cp && typeof cp === 'object' && Array.isArray(cp.criteres) && Array.isArray(cp.articles)) {
@@ -1734,6 +1896,9 @@ function valider(brut, lignes, titre) {
       var vals = crit.map(function (_, k) {
         var x = Array.isArray(a.valeurs) ? a.valeurs[k] : null;
         var tx = x && typeof x === 'object' ? str(x.texte) : str(x);
+        if (x && x.source === 'lien' && tx && tx !== '?') { var nlv = Number(x.lien) || (va ? va.ligne : Number(a.ligne));
+          if (valeurDuLien(tx, liensValider, nlv)) return { texte: tx, source: 'lien', lien: nlv };
+          fausses++; erreurs.push('valeur « ' + tx + ' » de « ' + a.nom + ' » : absente du lien lu (retirée)'); return { texte: '?', source: 'ia' }; }
         return { texte: tx || '?', source: x && x.source === 'notes' ? 'notes' : 'ia' };
       });
       /* v7 : les extraits de l'offre sont vérifiés contre SA ligne ; le total est calculé par la page */
@@ -1923,7 +2088,7 @@ function comparaisonDe(c, add) {
   var arts = cp.articles.map(function (a, i) {
     var op = r.options.filter(function (x) { return norm(x.titre) === norm(a.nom); })[0] || r.options.filter(function (x) { return x.ligne && x.ligne === a.ligne; })[0];
     return add(L[i], { i: i, nom: a.nom, ic: op ? op.emoji : '', ligne: a.ligne, cit: a.citation, vals: a.valeurs.map(function (v) { return v.texte; }),
-      conseil: !!(op && op.conseille) && !o.sansConseil, io: op ? r.options.indexOf(op) : -1, offre: a.offre || null, art: true });
+      conseil: !!(op && op.conseille) && !o.sansConseil, io: op ? r.options.indexOf(op) : -1, offre: a.offre || null, art: true, srcs: a.valeurs.map(function (v) { return v.source; }), attente: marqueLien(o.urls || urlsParLigne(c), a.ligne) });
   });
   var crit = cp.criteres.map(function (x, j) { var e = emoDe(x); return { ic: e[0] || '•', nom: e[1], g: cp.gagnant[j] }; });
   var C = { arts: arts, crit: crit, compromis: cp.compromis, vide: arts.every(function (a) { return a.vals.every(function (v) { return v === '?'; }); }), totalG: null, besoin: null };
@@ -2029,8 +2194,8 @@ function comparaisonHtml(D) {
         '<span class="vl mono ' + cl + '">' + (t ? (t.livInconnue ? '≥' : '') + t.chf + (t.manque ? ' ⚠' : '') : '?') + (C.totalG === a.i ? ' 👑' : '') + '</span></button>'; }).join('') + '</div>';
   }
   h += '<div class="v7-cmp' + (ch >= 0 ? ' choix' : '') + '" style="grid-template-columns:44px repeat(' + n + ',minmax(0,1fr))" data-booster="comparer"><span></span>';
-  h += A.map(function (a) { return '<div class="hd' + col(a.i) + '" role="button" tabindex="0" data-k="' + a.k + '">' + (a.ic ? '<span class="e">' + esc(a.ic) + '</span>' : '') + '<span>' + esc(a.nom) + '</span>' + (a.conseil && C.totalG == null ? tagConseil(a.k) : '') + qch(a) +
-    sous.filter(function (j) { return a.vals[j] !== '?'; }).map(function (j) { return '<span class="hc">' + C.crit[j].ic + ' ' + esc(a.vals[j]) + '</span>'; }).join('') + '</div>'; }).join('');
+  h += A.map(function (a) { return '<div class="hd' + col(a.i) + '" role="button" tabindex="0" data-k="' + a.k + '">' + (a.ic ? '<span class="e">' + esc(a.ic) + '</span>' : '') + '<span>' + esc(a.nom) + '</span>' + (a.conseil && C.totalG == null ? tagConseil(a.k) : '') + qch(a) + attenteHtml(a) +
+    sous.filter(function (j) { return a.vals[j] !== '?'; }).map(function (j) { return '<span class="hc">' + C.crit[j].ic + ' ' + esc(a.vals[j]) + lkHtml(a, j) + '</span>'; }).join('') + '</div>'; }).join('');
   if (tot && !horiz) {
     var mx2 = Math.max.apply(null, A.filter(function (a) { return a.total; }).map(function (a) { return a.total.chf; }));
     h += '<span class="k" title="coût total pour ' + C.besoin + '">🧾<small>total</small><small>CHF</small></span>' + A.map(function (a) {
@@ -2040,13 +2205,13 @@ function comparaisonHtml(D) {
   }
   rangs.forEach(function (j) { var cr = C.crit[j], unit = (cr.nom.match(/\/\S+/) || [''])[0];
     if (!unit) { var con = A.map(function (a) { return a.vals[j]; }).filter(function (v) { return v !== '?'; }); if (con.length && con.every(function (v) { return / CHF$/.test(v); })) unit = ' CHF'; }
-    h += '<span class="k" title="' + esc(cr.nom) + '">' + cr.ic + (unit ? '<small>' + esc(unit.trim()) + '</small>' : '') + '</span>';
+    h += '<span class="k" title="' + esc(cr.nom) + '">' + cr.ic + (/\d/.test(cr.nom) ? '<small>' + esc(cr.nom.replace(/\/\S+/, '').trim()) + '</small>' : '') + (unit ? '<small>' + esc(unit.trim()) + '</small>' : '') + '</span>';
     h += A.map(function (a) { var v = a.vals[j]; if (v === '?') { hach = true; return '<span class="v u' + col(a.i) + '" aria-label="inconnu"></span>'; }
       if (unit) v = v.replace(unit, '');
       if (j === C.iq) { if (a.manque) return '<span class="v m mono' + col(a.i) + '">⚠ ' + esc(String(a.total.q)) + '<small>/' + C.besoin + '</small></span>'; v = v.replace(/^(\d+)\s*min$/, '≥$1').replace(/^par\s+/, ''); }
       /* un seul vert : avec un coût total, seul 👑 est vert ; sans coût total, le gagnant de chaque critère */
       var w = !tot && cr.g === a.i;
-      return '<span class="v' + (w ? ' w' : '') + ' mono' + col(a.i) + '">' + esc(v) + '</span>'; }).join(''); });
+      return '<span class="v' + (w ? ' w' : '') + ' mono' + col(a.i) + '">' + esc(v) + lkHtml(a, j) + '</span>'; }).join(''); });
   if (hach) h += '<span class="leg" aria-label="hachuré : inconnu"><span class="sw"></span>?</span>';
   return h + '</div>';
 }
@@ -2054,7 +2219,7 @@ function comparaisonHtml(D) {
 function rangees(D) {
   var o = D.o, h = '';
   var row = function (gi, inner, nom) { return '<div class="v7-row" data-row="' + nom + '"><span class="v7-gi" aria-hidden="true">' + gi + '</span>' + inner + '</div>'; };
-  if (D.comp) { if (D.comp.vide) h += row('🛒', '<div class="v7-wrap">' + D.comp.arts.map(function (a) { return '<button class="v7-p" data-k="' + a.k + '">' + (a.ic && a.ic !== '🛒' ? '<span class="e">' + esc(a.ic) + '</span>' : '') + '<b>' + esc(a.nom) + '</b><span class="e s">🔗</span></button>'; }).join('') + '</div>', 'offres');
+  if (D.comp) { if (D.comp.vide) h += row('🛒', '<div class="v7-wrap">' + D.comp.arts.map(function (a) { return '<button class="v7-p" data-k="' + a.k + '">' + (a.ic && a.ic !== '🛒' ? '<span class="e">' + esc(a.ic) + '</span>' : '') + '<b>' + esc(a.nom) + '</b>' + (a.attente ? '<span class="lk-at">' + esc(a.attente) + '</span>' : '<span class="e s">🔗</span>') + '</button>'; }).join('') + '</div>', 'offres');
     else h += '<div class="v7-row bloc" data-row="cmp">' + comparaisonHtml(D) + '</div>'; }
   if (D.pistes.length) { var nT = D.pistes.filter(function (p) { return p.ok === 'trouve'; }).length;
     var tr = nT ? '<span class="v7-tr" data-booster="trouve" aria-label="' + nT + ' trouvé sur ' + D.pistes.length + '">' + anneau({ ok: nT, q: D.pistes.filter(function (p) { return p.ok === 'verif'; }).length, non: D.pistes.filter(function (p) { return p.ok === 'non'; }).length }) + '<b class="mono">' + nT + '/' + D.pistes.length + '</b></span>' : '';
