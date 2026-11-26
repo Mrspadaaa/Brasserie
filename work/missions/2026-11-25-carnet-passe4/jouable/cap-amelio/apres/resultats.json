@@ -1,0 +1,138 @@
+{
+ "mode": "apres",
+ "gestes": [
+  {
+   "nom": "Liste : ✦ ce que l’IA propose (sans appel)",
+   "ok": true,
+   "detail": "12 lignes"
+  },
+  {
+   "nom": "Liste : replier la sous-catégorie Conditionnement puis la déplier",
+   "ok": true,
+   "detail": "16 → 13 lignes"
+  },
+  {
+   "nom": "600 bouteilles : Comparer, vue dédiée",
+   "ok": true,
+   "detail": "gagnants [\"Verallia\",\"Fournisseur B\",null,\"Fournisseur B\"]"
+  },
+  {
+   "nom": "Comparer : classer par « Prix / bt » d’un toucher sur sa ligne, puis revenir",
+   "ok": true,
+   "detail": "critère 0 (Prix / bt)"
+  },
+  {
+   "nom": "Comparer : écarter Verallia → Écartés · 1, Reprendre",
+   "ok": true,
+   "detail": "Écartés · 1 puis repris"
+  },
+  {
+   "nom": "Comparer : ✦ Proposer une caractéristique (IA simulée)",
+   "ok": true,
+   "detail": "2 suggestions"
+  },
+  {
+   "nom": "Citra : Comparer (2 offres, images liens/<id>.image)",
+   "ok": true,
+   "detail": "2 images chargées"
+  },
+  {
+   "nom": "Citra : Relire un lien → demandes/<id> type relire, « 🔗 en lecture »",
+   "ok": true,
+   "detail": "demande u288565ec relire · en lecture"
+  },
+  {
+   "nom": "Frigo : + vide → feuille d’ajout (piste, option, à faire, lien)",
+   "ok": true,
+   "detail": "4 choix · Ta piste…"
+  },
+  {
+   "nom": "Écoulement : Escalader à l’IA → sample modelTier complex, « IA forte »",
+   "ok": true,
+   "detail": "tier complex · IA forte"
+  },
+  {
+   "nom": "600 bouteilles : 3 offres tapées dans le champ du pouce → relu → 6 offres",
+   "ok": true,
+   "detail": "6 lignes, sans défilement horizontal · gagnants [\"Verallia\",null,null,\"Fournisseur B\"]"
+  }
+ ],
+ "mesures": {
+  "liste": {
+   "lignesVisibles": 13,
+   "hauteurMin": 44,
+   "sousCategories": [
+    "Brassage",
+    "Fermentation",
+    "Conditionnement",
+    "Matières premières",
+    "Froid",
+    "Eau",
+    "Électricité",
+    "Rangement"
+   ]
+  },
+  "10-ecoulement": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "12-bouteilles": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "modele600": {
+   "crit": 3,
+   "kT": 3,
+   "besoin": 600,
+   "gagnants": [
+    "Verallia",
+    "Fournisseur B",
+    null,
+    "Fournisseur B"
+   ]
+  },
+  "15-citra": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "17-vapeur": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "18-frigo": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "19-assurance": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "29-fete": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "30-co2": {
+   "utile": 61,
+   "emojiGrands": 0,
+   "petites": []
+  },
+  "six": {
+   "n": 6,
+   "w": true,
+   "g": [
+    "Verallia",
+    null,
+    null,
+    "Fournisseur B"
+   ]
+  }
+ },
+ "erreursPage": []
+}

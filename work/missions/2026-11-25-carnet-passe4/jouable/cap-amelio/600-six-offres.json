@@ -1,0 +1,205 @@
+{
+ "pistes": [],
+ "options": [],
+ "tache": {
+  "emoji": "📅",
+  "titre": "Choisir",
+  "quand": "le 15",
+  "ligne": 4,
+  "citation": "Besoin avant le 15 du mois"
+ },
+ "echeance": null,
+ "periode": null,
+ "chiffres": [],
+ "liste": [],
+ "retenir": [],
+ "manque": [],
+ "attention": [
+  {
+   "emoji": "🧽",
+   "texte": "Occasion à laver",
+   "ligne": 3,
+   "citation": "à laver"
+  }
+ ],
+ "relecture": null,
+ "lectures": [
+  {
+   "ligne": 2,
+   "mot": "80 CHF",
+   "type": "montant"
+  },
+  {
+   "ligne": 4,
+   "mot": "avant le 15 du mois",
+   "type": "date"
+  }
+ ],
+ "comparaison": {
+  "criteres": [
+   "💰 Prix / bt",
+   "📦 Minimum",
+   "🚚 Livraison",
+   "🧮 Pour 600"
+  ],
+  "articles": [
+   {
+    "nom": "Verallia",
+    "ligne": 1,
+    "citation": "Verallia",
+    "valeurs": [
+     {
+      "texte": "0.42/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "≥ 1200",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "504 CHF",
+      "source": "ia",
+      "detail": "1200 × 0.42"
+     }
+    ]
+   },
+   {
+    "nom": "Fournisseur B",
+    "ligne": 2,
+    "citation": "Fournisseur B",
+    "valeurs": [
+     {
+      "texte": "0.55/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "× 600",
+      "source": "notes"
+     },
+     {
+      "texte": "80 CHF",
+      "source": "notes"
+     },
+     {
+      "texte": "410 CHF",
+      "source": "ia",
+      "detail": "600 × 0.55 + 80"
+     }
+    ]
+   },
+   {
+    "nom": "Occasion",
+    "ligne": 3,
+    "citation": "Occasion sur annonce",
+    "valeurs": [
+     {
+      "texte": "0.20/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "≤ 400",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Bouteilles33.ch",
+    "ligne": "auto",
+    "citation": "Bouteilles33.ch",
+    "valeurs": [
+     {
+      "texte": "0.70/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "× 600",
+      "source": "notes"
+     },
+     {
+      "texte": "incluse",
+      "source": "notes"
+     },
+     {
+      "texte": "420 CHF",
+      "source": "ia",
+      "detail": "600 × 0,70"
+     }
+    ]
+   },
+   {
+    "nom": "Brouwland (BE)",
+    "ligne": "auto",
+    "citation": "Brouwland",
+    "valeurs": [
+     {
+      "texte": "0.65/bt ?",
+      "source": "notes"
+     },
+     {
+      "texte": "× 600",
+      "source": "notes"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     },
+     {
+      "texte": "?",
+      "source": "ia"
+     }
+    ]
+   },
+   {
+    "nom": "Vetropack",
+    "ligne": "auto",
+    "citation": "Vetropack",
+    "valeurs": [
+     {
+      "texte": "0.62/bt",
+      "source": "notes"
+     },
+     {
+      "texte": "× 600",
+      "source": "notes"
+     },
+     {
+      "texte": "60 CHF",
+      "source": "notes"
+     },
+     {
+      "texte": "432 CHF",
+      "source": "ia",
+      "detail": "600 × 0,62 + 60"
+     }
+    ]
+   }
+  ],
+  "gagnant": [
+   2,
+   null,
+   null,
+   1
+  ]
+ },
+ "emoji": "🍾",
+ "categorie": {
+  "nom": "Brasserie",
+  "sous": "Conditionnement"
+ },
+ "priorite": "haute",
+ "resume": "Choisir fournisseur",
+ "etatPropose": "cherche",
+ "genre": "achat"
+}

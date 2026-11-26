@@ -1,0 +1,73 @@
+{
+ "mode": "avant",
+ "gestes": [],
+ "mesures": {
+  "liste": {
+   "lignesVisibles": 14,
+   "hauteurMin": 40,
+   "sousCategories": [
+    "Brassage",
+    "Fermentation",
+    "Conditionnement",
+    "Matières premières",
+    "Froid",
+    "Eau",
+    "Électricité",
+    "Rangement"
+   ]
+  },
+  "10-ecoulement": {
+   "utile": 63,
+   "emojiGrands": 5,
+   "petites": [
+    "État Je cherche, toucher 106×30"
+   ]
+  },
+  "12-bouteilles": {
+   "utile": 63,
+   "emojiGrands": 4,
+   "petites": [
+    "Achat : comparé (comparé 124×30"
+   ]
+  },
+  "15-citra": {
+   "utile": 63,
+   "emojiGrands": 3,
+   "petites": [
+    "Achat : comparé (comparé 124×30"
+   ]
+  },
+  "17-vapeur": {
+   "utile": 63,
+   "emojiGrands": 4,
+   "petites": [
+    "Achat : comparé (comparé 124×30"
+   ]
+  },
+  "18-frigo": {
+   "utile": 52,
+   "emojiGrands": 5,
+   "petites": [
+    "État Je cherche, toucher 106×30"
+   ]
+  },
+  "19-assurance": {
+   "utile": 66,
+   "emojiGrands": 1,
+   "petites": []
+  },
+  "29-fete": {
+   "utile": 60,
+   "emojiGrands": 3,
+   "petites": []
+  },
+  "30-co2": {
+   "utile": 339,
+   "emojiGrands": 6,
+   "petites": [
+    "État Décidé, toucher pou 81×30"
+   ]
+  }
+ },
+ "erreursPage": []
+}
