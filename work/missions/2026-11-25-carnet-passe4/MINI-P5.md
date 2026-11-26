@@ -83,3 +83,9 @@ Captures :
 - ouvre chaque capture et juge-la : pratique ? précise ? enfantine ? fidèle à sa version ?
 
 Commit local de tes seuls chemins. Rends une ligne : écrans faits, commit.
+
+## Ajout 26.11 : comparer toutes les caractéristiques
+« Par exemple, pour les chambres froides, je veux quand même pouvoir comparer toutes leur caractéristiques ». Écran Comparer : une 3e maquette
+O-comparer-caracteristiques sur la chambre froide (tests/fixtures/c54/chambre-froide.json, c52/caracteristiques.json, c55/comparer.json) :
+TOUTES les caractéristiques des offres, en tableau adapté au téléphone (1re colonne figée, écarts mis en avant, unités, gagnant par ligne
+visible, inconnu « — » ou « 🔗 en lecture »), le résumé « qui gagne quoi » au-dessus.
