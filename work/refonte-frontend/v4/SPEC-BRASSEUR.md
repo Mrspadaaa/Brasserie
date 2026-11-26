@@ -2984,3 +2984,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 (même classement, Organisé : écoulement qui fuit) : « base : Pas encore ça mais mieux »
 - 26.11 (même classement, Options et Comparer) : « v02 : Fonctionne mal du on en a vraiment beaucoup... »
 - 26.11 (même classement, Relecture des mois plus tard) : « v03 : Bof »
+- 26.11 ~08:10 (page des 6 styles adultes, 1VbLXXPhZimDE4d4PbYQpP) : « Pas de sous catégories, réponds peut aux besoins. C'est plus pro mais moins claire... »

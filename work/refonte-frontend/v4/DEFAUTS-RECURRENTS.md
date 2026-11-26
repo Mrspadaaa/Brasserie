@@ -624,3 +624,10 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - Ses mots : « v02 : Fonctionne mal du on en a vraiment beaucoup... » (Options et Comparer, rang 3).
 - Contrôle : Comparer tient avec 6 options ou plus à 390 px : les options en lignes défilantes (pas en colonnes qui s'écrasent), le gagnant
   de chaque critère lisible sans défilement horizontal ; essai sur une fixture à 6 offres.
+
+## PRO-MAIS-PAS-CLAIR (26.11, page des 6 styles)
+- Ses mots : « Pas de sous catégories, réponds peut aux besoins. C'est plus pro mais moins claire... »
+- Contrôle : la liste en arbre garde catégorie › sous-catégorie (ex. Brasserie › Conditionnement) comme ses versions aimées (passe 4 v02,
+  passe 3 v01) ; chaque écran répond en 3 s à sa question (liste : qu'est-ce qui est ouvert et où ; problème : trouvé / pas trouvé / quoi
+  faire ; achat : qui gagne quoi ; échéance : quand et ce qu'il manque) ; adulte ne veut pas dire austère : symboles muets, tableaux de
+  propriétés et filets seuls sont refusés s'ils rendent l'écran moins clair que la passe 4.
