@@ -488,6 +488,11 @@ export const PageShell: React.FC<PageShellProps> = ({
       const target = event.target as HTMLElement;
       if (event.key === 'Escape') {
         if (!page.contains(target) && pageOverlays().some(overlay => overlay.contains(target))) return;
+        // NUIT-8 (26.11, banc des gestes) : Échap dans un champ quittait tout l'éditeur (retour au Bord). Méthode standard : Échap quitte d'abord le champ ;
+        // un second Échap, hors champ, ferme la page.
+        if (target instanceof HTMLElement && target.matches('input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select, [contenteditable]:not([contenteditable="false"])')) {
+          event.preventDefault(); target.blur(); return;
+        }
         event.preventDefault(); closeRef.current(); return;
       }
       if (event.key !== 'Tab') return;

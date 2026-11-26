@@ -233,3 +233,16 @@
 }
 
 
+
+/* NUIT-4 (26.11) : à moins de 380 px (téléphone de 360), la carte d'un sel coupait son nom (« G… », « Ca… », « Bi… ») : l'icône ⓘ s'efface, le nom reste
+   un bouton qui ouvre la fiche du sel. De 380 px et plus, rien ne change. */
+@media (max-width: 379px) {
+  .water-salt-name > svg { display: none; }
+}
+
+/* NUIT-4 (suite) : sous 380 px, la rangée d'acide (produit | empâtage | rinçage) coupait les doses (« 5, » pour 5,9 mL) : le produit passe au-dessus,
+   l'empâtage et le rinçage se partagent la largeur. */
+@media (max-width: 379px) {
+  .water-workshop .water-acid-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .water-workshop .water-acid-row .water-acid-product { grid-column: 1 / -1; justify-self: start; }
+}

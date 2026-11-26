@@ -643,7 +643,6 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
                     value={h.weightG}
                     onValue={(v) => patchHop(index, { weightG: v })}
                     unit="g"
-                    integer
                     min={0}
                     refuser
                   />
