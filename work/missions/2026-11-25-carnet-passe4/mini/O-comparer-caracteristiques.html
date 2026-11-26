@@ -1,20 +1,9 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O · Comparer toutes les caractéristiques, chambre froide</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+<title>O · Comparer, chambre froide (reprise h04-7 et v03-4)</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0B0908}
 body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15px;line-height:1.25;display:flex;gap:28px;align-items:flex-start;padding:0 0 0 0;width:max-content}
 .o-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:#12100E;display:flex;flex-direction:column;flex:none}
-.o-hd{height:48px;display:flex;align-items:center;gap:4px;padding:0 4px;flex:none}
-.o-bt{width:44px;height:44px;display:grid;place-items:center;color:#D8CEC5;flex:none}
-.o-hd h1{font-size:18px;font-weight:700;color:#F5F0EA;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.o-chip{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;font-size:14px;color:#D8CEC5;white-space:nowrap;flex:none}
-.o-seg{height:46px;display:flex;align-items:center;gap:8px;padding:0 10px 4px;flex:none;border-bottom:1px solid #2C2521}
-.o-tabs{flex:1;display:flex;height:40px;background:#1A1613;border-radius:11px;padding:3px}
-.o-tabs>span{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:15px;color:#9A8A7E}
-.o-tabs>.on{background:#3D342E;color:#F5F0EA;font-weight:600}
-.o-tabs .n{font-size:14px;color:#9A8A7E;font-weight:400}
-.o-rg{height:40px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;display:flex;align-items:center;gap:5px;font-size:14px;color:#BCA5E8;flex:none}
-.o-main{flex:1;min-height:0;overflow:hidden;padding:10px 12px 0;position:relative}
 .o-pouce{height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none;background:#12100E;border-top:1px solid #2C2521;position:relative;z-index:6}
 .o-champ{flex:1;height:44px;border-radius:22px;background:#221D19;border:1px solid #3D342E;display:flex;align-items:center;padding:0 4px 0 16px;color:#9A8A7E;font-size:15px;min-width:0}
 .o-champ .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -25,116 +14,101 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15
 .o-barre{height:56px;display:flex;flex:none;border-top:1px solid #2C2521;background:#1A1613;position:relative;z-index:6}
 .o-barre span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:#9A8A7E}
 .o-barre .on{color:#F5F0EA;font-weight:600}
-.o-lab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600}
-.o-s{color:#9A8A7E}
-.o-v{color:#F5F0EA}
-.o-b{font-weight:700}
-.o-sb{font-weight:600}
-.o-d{display:flex;align-items:center}
-.o-e{flex:1;min-width:0}
-.o-nw{white-space:nowrap}
-.o-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .o-iat{color:#BCA5E8}
-.o-pt{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
-.o-ok{color:#A3C97A;background:rgba(110,155,91,.16)}
-.o-am{color:#E3B55D;background:rgba(227,181,93,.13)}
-.o-bl{color:#8FBEDB;background:rgba(91,138,166,.18)}
-.o-vi{color:#BCA5E8;background:rgba(188,165,232,.13)}
-.o-gr{color:#D8CEC5;background:#2C2521}
-.o-dec{color:#F2C14E;background:rgba(224,160,46,.15)}
-.o-carte{background:#1A1613;border:1px solid #2C2521;border-radius:12px}
-.o-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;font-weight:600;border:1px solid #3D342E;color:#F5F0EA;background:#221D19;white-space:nowrap}
-.o-btn.p{background:#F2C14E;color:#12100E;border-color:#F2C14E}
-.o-btn.ia{border-color:rgba(188,165,232,.5);color:#BCA5E8;background:rgba(188,165,232,.08)}
-.o-q{font-style:normal;color:#D8CEC5}
-.o-src{width:390px;flex:none;color:#D8CEC5;font-size:14px;line-height:1.4;padding-top:0}
-.o-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
-.o-src h2{font-size:15px;color:#F5F0EA;margin:10px 0 4px}
-.o-src p{margin:0 0 6px;color:#D8CEC5}
-.o-src ul{margin:0 0 6px 18px}
-
-.ob-crumb{height:44px;display:flex;align-items:center;gap:4px;padding:0 6px 0 2px;color:#D8CEC5;font-size:15px;flex:none}
-.ob-tit{padding:0 14px 6px;flex:none}
-.ob-tit h1{font-size:24px;font-weight:800;color:#F5F0EA}
-.ob-ia{border-radius:12px;background:rgba(188,165,232,.07);border:1px solid rgba(188,165,232,.35);padding:8px 8px 8px 12px;display:flex;align-items:center;gap:8px}
-.ob-chips{display:flex;gap:6px;margin-top:8px;overflow:hidden}
-.ob-chips span{height:36px;border-radius:10px;border:1px solid #3D342E;padding:0 11px;display:flex;align-items:center;gap:5px;font-size:14px;white-space:nowrap;color:#D8CEC5}
-.ob-chips .on{border-color:#E0A02E;color:#F2C14E}
-.ob-tab{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;font-size:15px;table-layout:fixed}
-.ob-tab th,.ob-tab td{height:48px;border-bottom:1px solid #2C2521;padding:0 6px;text-align:right;white-space:nowrap}
-.ob-tab thead th{height:30px;font-size:13px;color:#9A8A7E;font-weight:600;text-align:right;border-bottom:1px solid #3D342E}
-.ob-tab thead th:first-child,.ob-tab tbody th{text-align:left}
-.ob-tab tbody th{font-weight:700;color:#F5F0EA;font-size:15px;white-space:normal;line-height:1.15;padding-top:5px;padding-bottom:5px}
-.ob-tab tbody th small{display:flex;align-items:center;gap:3px;font-weight:400;font-size:13px;color:#9A8A7E}
-.ob-tab td{color:#D8CEC5;font-weight:600}
-.ob-tab td small{display:block;font-size:13px;font-weight:400;color:#9A8A7E}
-.ob-tab td.w{color:#A3C97A;background:rgba(110,155,91,.12)}
-.ob-tab td.e{color:#8FBEDB}
-.ob-tab td.n{color:#9A8A7E;font-weight:400}
-.ob-blk{margin-top:12px;border-radius:12px;border:1px solid #E0A02E;padding:9px 11px}
-.ob-r{display:flex;align-items:center;gap:8px;height:30px;font-size:15px}
-.ob-r .bar{flex:1;height:7px;border-radius:4px;background:#2C2521;overflow:hidden}
-
-.ok-qg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.ok-qg div{background:#1A1613;border:1px solid #2C2521;border-radius:10px;padding:5px 9px;height:54px;display:flex;flex-direction:column;justify-content:center}
-.ok-qg .k{font-size:13px;color:#9A8A7E}
-.ok-qg .n{font-size:14.5px;color:#F5F0EA;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ok-qg .n b{color:#A3C97A;font-weight:700}
-.ok-tab{width:100%;border-collapse:separate;border-spacing:0;margin-top:8px;table-layout:fixed}
-.ok-tab col.c0{width:98px}
-.ok-tab thead th{position:sticky;top:0;background:#12100E;vertical-align:top;padding:4px 4px 6px;text-align:left;border-bottom:1px solid #3D342E}
-.ok-tab thead th .vg{width:34px;height:34px;border-radius:9px;background:#2C2521;display:grid;place-items:center;margin-bottom:3px}
-.ok-tab thead th .nm{font-size:14px;font-weight:700;color:#F5F0EA;line-height:1.15}
-.ok-tab thead th .vd{font-size:13px;color:#9A8A7E;font-weight:400}
-.ok-tab tbody th{position:sticky;left:0;background:#12100E;text-align:left;font-size:14px;font-weight:600;color:#D8CEC5;padding:5px 4px 5px 0;border-bottom:1px solid #2C2521;line-height:1.15;box-shadow:1px 0 0 #3D342E}
-.ok-tab tbody th small{display:block;font-size:13px;color:#9A8A7E;font-weight:400}
-.ok-tab td{font-size:14.5px;color:#D8CEC5;padding:5px 4px;border-bottom:1px solid #2C2521;text-align:right;line-height:1.15;font-weight:600}
-.ok-tab td.w{color:#A3C97A;background:rgba(110,155,91,.12)}
-.ok-tab td.w::before{content:"▲ ";font-size:10px}
-.ok-tab td.n{color:#574A42;font-weight:400}
-.ok-tab td.p{color:#9A8A7E;font-weight:400}
-.ok-tab td small{display:block;font-size:13px;color:#9A8A7E;font-weight:400}
-.ok-tab tr.g th{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;padding-top:9px;border-bottom:0;box-shadow:none}
-.ok-tab tr.g td{border-bottom:0}
-
-.o-ex{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:7px;border:1px dashed #574A42;color:#9A8A7E;font-size:13px;font-weight:600;white-space:nowrap;vertical-align:middle;line-height:1}
-.o-est{color:#8FBEDB}
-
-.oq-main{scrollbar-width:none}.oq-main::-webkit-scrollbar{display:none}
-.oq-qg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0 8px}
-.oq-qg>div{background:#1A1613;border:1px solid #2C2521;border-radius:10px;padding:5px 9px;min-height:50px}
-.oq-qg .k{display:block;font-size:13px;color:#9A8A7E}
-.oq-qg .n{display:block;font-size:15px;color:#D8CEC5;white-space:nowrap}
-.oq-qg .n b{color:#A3C97A}
-.oq-tab{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:14px}
-.oq-tab col.c0{width:140px}
-.oq-tab thead th{position:sticky;top:0;z-index:2;background:#12100E;border-bottom:1px solid #3D342E;padding:6px 4px;text-align:left;vertical-align:bottom}
-.oq-tab thead .nm{font-size:16px;font-weight:700;color:#F5F0EA}
-.oq-tab thead .vd{font-size:13px;color:#86B9E6;display:flex;align-items:center;gap:3px}
-.oq-tab tbody th{font-weight:400;color:#D8CEC5;text-align:left;padding:5px 4px 5px 0;line-height:1.15;font-size:14px}
-.oq-tab tbody th small{display:inline;color:#9A8A7E;font-size:13px;margin-left:4px;white-space:nowrap}
-.oq-tab td{padding:5px 4px;color:#F5F0EA;border-top:1px solid #221D19;line-height:1.2;vertical-align:top}
-.oq-tab tbody th{border-top:1px solid #221D19;vertical-align:top}
-.oq-tab td.w{color:#A3C97A;font-weight:700}
-.oq-tab td.w::before{content:"▲ ";font-size:11px}
-.oq-tab td.eq{color:#9A8A7E;text-align:center}
-.oq-tab td.eq b{color:#D8CEC5;font-weight:400}
-.oq-tab td.n{color:#574A42}
-.oq-tab td small{display:block;color:#9A8A7E;font-size:13px;font-weight:400}
-.oq-tab tr.g th{padding:12px 0 4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600;border-top:0}
-.oq-plus{margin:8px 0 14px;border:1px dashed #3D342E;border-radius:10px;padding:8px 10px;font-size:14px;color:#9A8A7E}
-.oq-plus b{color:#D8CEC5;font-weight:600}
-</style></head><body><section class="o-ecran" data-cap="O-comparer-caracteristiques"><div class="ob-crumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Chambre froide<span style="color:#9A8A7E;margin-left:6px">· Brasserie › Froid</span></div><div class="ob-tit" style="display:flex;align-items:baseline;gap:8px"><h1>Comparer</h1><span class="o-s" style="font-size:14px">2 articles · 32 lignes</span><span class="o-chip" style="margin-left:auto;align-self:center;border-color:#E0A02E;color:#F2C14E"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>Prix</span></div><div class="o-main oq-main" data-scroll style="padding-top:0;overflow-y:auto">
-  <div class="oq-qg">
-    <div><span class="k">Moins cher</span><span class="n">2,6 m³ · <b>−289,77 CHF</b></span></div>
-    <div><span class="k">Moins cher au m³</span><span class="n">4,06 m³ · <b>736 CHF</b></span></div>
-    <div><span class="k">Plus grand</span><span class="n">4,06 m³ · <b>+56 %</b></span></div>
-    <div><span class="k">Pareil sur</span><span class="n">froid, porte, courant</span></div>
-  </div>
-  <table class="oq-tab"><colgroup><col class="c0"><col><col></colgroup>
-  <thead><tr><th style="font-size:13px;color:#9A8A7E;font-weight:400">▲ gagne la ligne<br>grisé : pareil</th>
-   <th><div class="nm">2,6 m³</div><div class="vd"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86B9E6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>lu · en stock</div></th>
-   <th><div class="nm">4,06 m³</div><div class="vd"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86B9E6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>lu · en stock</div></th></tr></thead>
-  <tbody><tr class="g"><th colspan="3">Prix et dispo</th></tr><tr><th>Prix<small>CHF TTC</small></th><td class="w">2 697,74<small>−289,77</small></td><td class="">2 987,51</td></tr><tr><th>Prix au m³<small>CHF/m³</small></th><td class="">1 038</td><td class="w">736<small>−29 %</small></td></tr><tr><th>Dispo</th><td colspan="2" class="eq"><b>en stock</b> · les deux</td></tr><tr><th>Garantie<small>mois</small></th><td class="">24</td><td class="n">—</td></tr><tr class="g"><th colspan="3">Taille</th></tr><tr><th>Volume<small>m³</small></th><td class="">2,6</td><td class="w">4,06<small>+56 %</small></td></tr><tr><th>Dimensions du produit<small>L × P × H, mm</small></th><td class="">1500 × 1200 × 2010</td><td class="">1800 × 1500 × 2010</td></tr><tr><th>Dimensions intérieures<small>L × P × H, mm</small></th><td class="">1340 × 1040 × 1850</td><td class="">1640 × 1340 × 1850</td></tr><tr><th>Largeur de l’unité<small>mm</small></th><td colspan="2" class="eq"><b>450</b> · les deux</td></tr><tr><th>Hauteur de l’unité<small>mm</small></th><td class="n">—</td><td class="">2010</td></tr><tr><th>Profondeur utile<small>mm</small></th><td class="n">—</td><td class="">1340</td></tr><tr class="g"><th colspan="3">Porte</th></tr><tr><th>Hauteur de la porte<small>mm</small></th><td colspan="2" class="eq"><b>1845</b> · les deux</td></tr><tr><th>Largeur de la porte<small>mm</small></th><td colspan="2" class="eq"><b>700</b> · les deux</td></tr><tr><th>Type de porte</th><td class="">battante</td><td class="n">—</td></tr><tr><th>Charnières</th><td colspan="2" class="eq"><b>à droite</b> · les deux</td></tr><tr class="g"><th colspan="3">Froid</th></tr><tr><th>Température<small>°C</small></th><td colspan="2" class="eq"><b>0 à 8</b> · les deux</td></tr><tr><th>Performance<small>W</small></th><td colspan="2" class="eq"><b>550</b> · les deux</td></tr><tr><th>Type de refroidissement</th><td colspan="2" class="eq"><b>Air pulsé</b> · les deux</td></tr><tr><th>Fluide frigorigène<small>type</small></th><td colspan="2" class="eq"><b>R290</b> · les deux</td></tr><tr><th>Quantité de frigorigène<small>kg</small></th><td colspan="2" class="eq"><b>0,13</b> · les deux</td></tr><tr><th>Exécution / équipement</th><td colspan="2" class="eq"><b>avec groupe frigorifique</b> · les deux</td></tr><tr class="g"><th colspan="3">Électricité</th></tr><tr><th>Tension<small>V</small></th><td colspan="2" class="eq"><b>230</b> · les deux</td></tr><tr><th>Branchement</th><td colspan="2" class="eq"><b>1N~/PE</b> · les deux</td></tr><tr><th>Phases d’alimentation</th><td class="n">—</td><td class="">monophasé</td></tr><tr><th>Mode de fonctionnement</th><td colspan="2" class="eq"><b>Électricité</b> · les deux</td></tr><tr><th>Consommation annuelle<small>kWh/an</small></th><td class="n">—</td><td class="">1 450</td></tr><tr><th>Éclairage</th><td colspan="2" class="eq"><b>LED</b> · les deux</td></tr><tr class="g"><th colspan="3">Isolation et matériau</th></tr><tr><th>Épaisseur de l’isolation<small>mm</small></th><td colspan="2" class="eq"><b>80</b> · les deux</td></tr><tr><th>Densité d’isolation<small>kg/m³</small></th><td colspan="2" class="eq"><b>42</b> · les deux</td></tr><tr><th>Épaisseur du matériel<small>mm</small></th><td colspan="2" class="eq"><b>0,5</b> · les deux</td></tr><tr><th>Matériau du produit</th><td colspan="2" class="eq"><b>Tôle d’acier galvanisée, peinte en plastique</b> · les deux</td></tr><tr><th>Sol</th><td class="">plancher isolé</td><td class="n">—</td></tr><tr><th>Couleur<small>RAL</small></th><td colspan="2" class="eq"><b>9002</b> · les deux</td></tr></tbody></table>
-  <div class="oq-plus"><b>+ 4 lignes sans valeur</b> pour ces deux chambres : classe énergétique, niveau sonore, dégivrage, poids net. <span class="o-s">Valeurs annoncées par les vendeurs.</span></div>
-  </div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à Chambre froide…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><aside class="o-src"><img src="../../2026-11-23-reprise-soir/voies/critique-55/cap/A-comparer-0.png" alt="source"><h2>Sa source : la vue Comparer d’origine de l’app (tour 55)</h2><p>« Pour les chambres froides, je veux quand même pouvoir comparer toutes leur caractéristiques » ; « peut être une vue spécifique comme il y avait au début ». C’est cette vue, reprise : articles en colonnes, caractéristiques en lignes, 1re colonne figée, classé par Prix.</p><ul><li>Passe 5 corrigée : SES deux articles, comme la vue d’origine (tour 55) : 2,6 m³ à 2 697,74 CHF TTC et 4,06 m³ à 2 987,51 CHF TTC ; les 3 offres d’épreuve (dont 2 prix fictifs de c55) retirées.</li><li>Toutes les lignes : les 21 de la vue d’origine, plus celles de c52 et c54 (garantie, hauteur de l’unité, profondeur utile, type de porte, charnières, phases, consommation annuelle, éclairage, sol) : 32 lignes ; les noms vus seulement sur un réfrigérateur (c52 ks240l) repliés en « + 4 lignes sans valeur ». Là où c52 diffère de la vue d’origine (densité 40, porte 1 900 mm, RAL 9010), la vue d’origine prime.</li><li>Quantité de frigorigène (kg) et fluide (R290) en deux lignes ; unité dans le libellé, valeur seule dans la case ; ligne pareille grisée sur les deux colonnes, ▲ vert pour le gagnant de la ligne.</li><li>En-tête collant sans étiquette orpheline, pas de barre de défilement ; capture du milieu et du bas.</li></ul></aside></body></html>
+.cq-main{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 0 16px}
+.cq-main::-webkit-scrollbar{display:none}
+.cq-crumb{height:44px;display:flex;align-items:center;gap:2px;padding:0 10px 0 6px;font-size:16px;color:#D8CEC5}
+.cq-h1{font-size:30px;font-weight:800;color:#F5F0EA;padding:0 16px;line-height:1.15}
+.cq-sub{padding:3px 16px 12px;font-size:16px;color:#9A8A7E}
+.cq-sub b{color:#F5F0EA;font-weight:700}
+.cq-crit{margin:0 14px;border:1px solid #3D342E;border-radius:12px;background:#1A1613;padding:10px 14px 12px}
+.cq-ch{display:flex;align-items:baseline;gap:6px;font-size:15px;color:#9A8A7E}
+.cq-ch b{font-size:17px;color:#F5F0EA;font-weight:700}
+.cq-ch .tag{margin-left:auto;color:#A3C97A;font-weight:600;white-space:nowrap}
+.cq-ch .tag.ia{color:#BCA5E8}
+.cq-br{padding-top:8px}
+.cq-bl{display:flex;align-items:baseline;gap:6px;font-size:16px;color:#D8CEC5}
+.cq-bl .r{font-weight:800;color:#F5F0EA;width:12px;flex:none}
+.cq-bl .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cq-bl .v{font-weight:700;font-size:18px;color:#F5F0EA;white-space:nowrap}
+.cq-bl .v.g{color:#A3C97A}.cq-bl .v.am{color:#E3B55D;font-size:15px}.cq-bl .v.bl{color:#8FBEDB}
+.cq-tr{height:8px;border-radius:4px;background:#2C2521;margin-top:4px;overflow:hidden}
+.cq-fi{height:100%;border-radius:4px;background:#6B5E55}
+.cq-fi.g{background:#6E9B5B}
+.cq-fi.bl{background:repeating-linear-gradient(90deg,#5B8AA6 0 9px,transparent 9px 12px)}
+.cq-tr.vide{background:none;border:1px dashed #574A42}
+.cq-h2{display:flex;align-items:baseline;gap:8px;padding:18px 16px 4px}
+.cq-h2 b{font-size:20px;font-weight:800;color:#F5F0EA}
+.cq-h2 span{font-size:15px;color:#9A8A7E}
+.cq-t{width:calc(100% - 16px);margin:0 8px;border-collapse:collapse;table-layout:fixed}
+.cq-t th{vertical-align:top;padding:4px 2px 8px;font-weight:400;border-bottom:1px solid #3D342E}
+.cq-t td{border-bottom:1px solid #2C2521;padding:7px 3px;text-align:center;font-size:18px;font-weight:700;color:#F5F0EA;line-height:1.2}
+.cq-t td.l{text-align:left;font-size:15px;font-weight:400;color:#D8CEC5;padding-left:6px;line-height:1.2}
+.cq-t td.l .u{display:block;font-size:14px;color:#9A8A7E}
+.cq-t td.tx{font-size:15px;font-weight:600;line-height:1.25}
+.cq-t td .s{display:block;font-size:13px;font-weight:400;color:#9A8A7E;margin-top:1px}
+.cq-t td.best{background:rgba(110,155,91,.22);color:#A3C97A}
+.cq-t td.am{color:#E3B55D}
+.cq-t td.bl{color:#8FBEDB}
+.cq-t td.nul{color:#574A42}
+.cq-t tr.crit td{background:rgba(110,155,91,.08)}
+.cq-t tr.crit td.best{background:rgba(110,155,91,.28)}
+.cq-t tr.crit td.l{color:#A3C97A;font-weight:600}
+.cq-t tr.crit td.l .u{color:#A3C97A;font-weight:400}
+.cq-t tr.ia td{background:rgba(188,165,232,.07)}
+.cq-t tr.ia td.best{background:rgba(110,155,91,.22)}
+.cq-t tr.ia td.l{color:#BCA5E8;font-weight:600}
+.cq-t tr.ia td.l .u{color:#BCA5E8;font-weight:400}
+.cq-t.c5 .cq-im{width:54px;height:48px}.cq-t.c5 .cq-im svg{width:50px;height:43px}.cq-t.c5 .cq-an{height:36px;display:flex;align-items:center;justify-content:center}
+.cq-ch span{white-space:nowrap}
+.cq-art{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.cq-im{position:relative;width:62px;height:54px;border-radius:10px;background:#221D19;display:grid;place-items:center}
+.cq-im.ex{border:1.5px dashed #574A42}
+.cq-rk{position:absolute;top:-7px;left:-7px;width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:800;background:#12100E;border:1.5px solid #9A8A7E;color:#F5F0EA}
+.cq-rk.g{background:#6E9B5B;border-color:#6E9B5B;color:#12100E}
+.cq-rk.am{border-color:#E3B55D;color:#E3B55D}
+.cq-an{font-size:16px;font-weight:700;color:#F5F0EA;line-height:1.15}
+.cq-an.p{font-size:14px}
+.cq-as{font-size:13px;color:#9A8A7E;line-height:1.2;display:flex;align-items:center;gap:3px;justify-content:center}
+.cq-as.lk{color:#86B9E6}
+.cq-ex{display:inline-flex;align-items:center;height:20px;padding:0 4px;border:1px dashed #574A42;border-radius:6px;font-size:13px;color:#9A8A7E;white-space:nowrap}
+.cq-note{padding:8px 16px 0;font-size:14px;color:#9A8A7E;line-height:1.35}
+.cq-acts{display:flex;gap:8px;padding:10px 14px 0}
+.cq-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 13px;font-size:15px;font-weight:600;border:1px solid #574A42;color:#F5F0EA;background:#1A1613;white-space:nowrap}
+.cq-btn.ia{border-color:rgba(188,165,232,.55);color:#BCA5E8;background:rgba(188,165,232,.08)}
+.cq-comp{margin:14px 14px 0;background:#221D19;border-radius:12px;padding:11px 14px;font-size:16px;line-height:1.4;color:#D8CEC5;display:flex;gap:10px}
+.cq-comp svg{flex:none;margin-top:2px;color:#A3C97A}
+.cq-comp b{color:#F5F0EA}
+.cq-ec{margin:16px 14px 0;border-top:1px solid #3D342E}
+.cq-ec h3{font-size:19px;font-weight:800;color:#F5F0EA;padding:10px 0 4px}
+.cq-er{border-top:1px solid #2C2521;padding:8px 0;font-size:15px;color:#9A8A7E;line-height:1.35}
+.cq-er b{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:700;color:#C9BCB1}
+.cq-er a{color:#86B9E6;text-decoration:none;font-weight:600}
+.cq-pied{padding:12px 16px 0;font-size:14px;color:#9A8A7E}
+.cq-src{width:820px;flex:none;color:#D8CEC5;font-size:15px;line-height:1.4;padding:6px 0 0}
+.cq-src .imgs{display:flex;gap:16px}
+.cq-src figure{width:390px}
+.cq-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
+.cq-src figcaption{font-size:14px;color:#9A8A7E;margin-top:4px}
+.cq-src h2{font-size:17px;color:#F5F0EA;margin:0 0 6px}
+.cq-src ul{margin:8px 0 0 18px}
+.cq-src li{margin:2px 0}
+.cq-lab{color:#9A8A7E;font-size:14px;margin:0 0 6px}
+</style></head><body style="gap:28px;padding:0"><div class="o-ecran" id="e"><div class="cq-main">
+<div class="cq-crumb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Chambre froide</span></div>
+<div class="cq-h1">Comparer</div>
+<div class="cq-sub">2 articles · Classé par <b>Prix</b></div>
+<div class="cq-crit"><div class="cq-ch"><b>Prix</b><span>CHF TTC · moins = mieux</span><span class="tag">critère</span></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">1</span><span class="n">2,6 m³</span><span class="v g">2 697,74</span></div><div class="cq-tr"><div class="cq-fi g" style="width:100%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">2</span><span class="n">4,06 m³</span><span class="v ">2 987,51</span></div><div class="cq-tr"><div class="cq-fi " style="width:90%"></div></div></div>
+</div>
+<div class="cq-h2"><b>Côte à côte</b><span>le meilleur en vert</span></div>
+<table class="cq-t"><colgroup><col style="width:136px"><col><col></colgroup>
+<thead><tr><th></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk g">1</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><rect x="20" y="6" width="24" height="8" rx="1" fill="#6E7881"/><path d="M24 8.5v4M28 8.5v4M32 8.5v4M36 8.5v4" stroke="#C3CAD0" stroke-width="1.2"/><rect x="16" y="14" width="32" height="36" rx="1.5" fill="#B7BFC6"/><rect x="20" y="18" width="15" height="32" fill="#DCE1E5" stroke="#8E979F"/><rect x="31" y="31" width="2" height="7" rx="1" fill="#4A5259"/><circle cx="43" cy="19" r="1.6" fill="#7EC4E8"/></svg></div><span class="cq-an">2,6 m³ ›</span><span class="cq-as">ggmgastro.com</span><span class="cq-as lk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> lu · port offert</span></div></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk">2</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><rect x="13" y="6" width="38" height="8" rx="1" fill="#6E7881"/><path d="M17 8.5v4M21 8.5v4M25 8.5v4M29 8.5v4" stroke="#C3CAD0" stroke-width="1.2"/><rect x="9" y="14" width="46" height="36" rx="1.5" fill="#B7BFC6"/><rect x="13" y="18" width="15" height="32" fill="#DCE1E5" stroke="#8E979F"/><rect x="24" y="31" width="2" height="7" rx="1" fill="#4A5259"/><path d="M33 18v32M44 18v32" stroke="#A3ABB2" stroke-width="1"/><circle cx="50" cy="19" r="1.6" fill="#7EC4E8"/></svg></div><span class="cq-an">4,06 m³ ›</span><span class="cq-as">ggmgastro.com</span><span class="cq-as lk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> lu · port offert</span></div></th></tr></thead>
+<tbody><tr class="crit"><td class="l">Prix<span class="u">CHF TTC · critère</span></td><td class="best">2 697,74</td><td>2 987,51</td></tr><tr class=""><td class="l">Volume<span class="u">m³</span></td><td>2,6</td><td class="best">4,06</td></tr><tr class=""><td class="l">Dimensions du produit<span class="u">L × P × H, mm</span></td><td class="tx best">1500 × 1200 × 2010</td><td class="tx">1800 × 1500 × 2010</td></tr><tr class=""><td class="l">Largeur de l’unité<span class="u">mm</span></td><td>450</td><td>450</td></tr><tr class=""><td class="l">Dimensions intérieures<span class="u">L × P × H, mm</span></td><td class="tx">1340 × 1040 × 1850</td><td class="tx best">1640 × 1340 × 1850</td></tr><tr class=""><td class="l">Hauteur de la porte<span class="u">mm</span></td><td>1 845</td><td>1 845</td></tr><tr class=""><td class="l">Largeur de la porte<span class="u">mm</span></td><td>700</td><td>700</td></tr><tr class=""><td class="l">Dispo</td><td class="tx">en stock</td><td class="tx">en stock</td></tr><tr class=""><td class="l">Température<span class="u">°C</span></td><td>0 à 8</td><td>0 à 8</td></tr><tr class=""><td class="l">Performance<span class="u">W</span></td><td>550</td><td>550</td></tr><tr class=""><td class="l">Branchement</td><td class="tx">1N~/PE</td><td class="tx">1N~/PE</td></tr><tr class=""><td class="l">Tension<span class="u">V</span></td><td>230</td><td>230</td></tr><tr class=""><td class="l">Type de refroidissement</td><td class="tx">Air pulsé</td><td class="tx">Air pulsé</td></tr><tr class=""><td class="l">Fluide frigorigène</td><td class="tx">R290</td><td class="tx">R290</td></tr><tr class=""><td class="l">Quantité de frigorigène<span class="u">kg</span></td><td>0,13</td><td>0,13</td></tr><tr class=""><td class="l">Mode de fonctionnement</td><td class="tx">Électricité</td><td class="tx">Électricité</td></tr><tr class=""><td class="l">Matériau du produit</td><td class="tx">Tôle d’acier galvanisée, peinte en plastique</td><td class="tx">Tôle d’acier galvanisée, peinte en plastique</td></tr><tr class=""><td class="l">Exécution, équipement</td><td class="tx">avec groupe frigorifique</td><td class="tx">avec groupe frigorifique</td></tr><tr class=""><td class="l">Épaisseur de l’isolation<span class="u">mm</span></td><td>80</td><td>80</td></tr><tr class=""><td class="l">Épaisseur du matériel<span class="u">mm</span></td><td>0,5</td><td>0,5</td></tr><tr class=""><td class="l">Densité d’isolation<span class="u">kg/m³</span></td><td>42</td><td>42</td></tr><tr class=""><td class="l">Couleur</td><td class="tx">RAL 9002</td><td class="tx">RAL 9002</td></tr><tr class="ia"><td class="l">✦ Prix au m³<span class="u">CHF/m³ · proposé</span></td><td>1 038</td><td class="best">736</td></tr></tbody></table>
+<div class="cq-note">22 caractéristiques lues sur tes 2 liens, port offert pour les deux. ✦ Prix au m³ : proposé par l’IA, calculé sur les prix et volumes.</div>
+<div class="cq-acts"><span class="cq-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter une caractéristique</span><span class="cq-btn ia">✦ Proposer</span></div>
+<div class="cq-comp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M7 20h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg><div><b>Compromis :</b> la 2e, <b>4,06</b> m³ pour <b>2 987,51</b> CHF, soit <b>289,77</b> CHF de plus que la 1re pour <b>1,46</b> m³ de plus (+56 %).</div></div>
+<div class="cq-ec"><h3>Écartés · 0</h3><div class="cq-er">Aucun article écarté.</div></div>
+<div class="cq-pied">Valeurs annoncées par le vendeur</div>
+</div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à Chambre froide…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></div><aside class="cq-src"><h2>Comparer · chambre froide : reprise de son choix</h2><p class="cq-lab">Son choix figé du 17.11 (maquettes.json › carnet › figes.comparer : g01-8, v03-4, g05-8, h04-7, h06-7), « le reste c'est top ». Reprise telle quelle ; seules les données changent.</p><div class="imgs"><figure><img src="../../2026-11-17-carnet-retouches/maquettes/page2/img/h04-7.webp" alt="h04-7"><figcaption>h04-7 : en-tête, barres du critère classées, Côte à côte avec l'image de chaque article, meilleur en vert, Compromis, Écartés</figcaption></figure><figure><img src="../../2026-11-17-carnet-retouches/maquettes/page2/img/v03-4.webp" alt="v03-4"><figcaption>v03-4 : la table complète, ligne du critère en tête, unité sous le libellé, « + Ajouter une caractéristique » et « ✦ Proposer »</figcaption></figure></div><ul><li>Repris de h04-7 : ‹ retour au carnet, titre « Comparer », « n articles · Classé par … », carte du critère (nom, unité, moins = mieux, « critère », barres classées 1, 2, la 1re en vert), « Côte à côte · le meilleur en vert » avec l’image de chaque article en tête de colonne, Compromis, « Écartés · n », « Valeurs annoncées par le vendeur ».</li><li>Repris de v03-4 : toutes les caractéristiques en table, la ligne du critère en tête et teintée, l’unité sous le libellé, « + Ajouter une caractéristique » et « ✦ Proposer ».</li><li>Données : ses 2 articles de la vue d’origine (captures A-comparer-0 à 3 et A-articles-0, tour 55) : 22 lignes, dans l’ordre de sa vue, rien d’ajouté ; fluide et quantité séparés. Seule ligne en plus : ✦ Prix au m³, proposé par l’IA et calculé (2 697,74 / 2,6 ; 2 987,51 / 4,06).</li><li>Écartés · 0 : il n’a écarté aucun article ; la section reste, vide.</li></ul></aside></body></html>

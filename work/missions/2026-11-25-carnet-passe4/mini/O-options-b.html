@@ -1,20 +1,9 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O · Comparer b (reprise v06), 3 et 6 offres</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+<title>O · Comparer, 600 bouteilles, 3 et 6 offres (reprise h04-7 et v03-4)</title><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#0B0908}
 body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15px;line-height:1.25;display:flex;gap:28px;align-items:flex-start;padding:0 0 0 0;width:max-content}
 .o-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:#12100E;display:flex;flex-direction:column;flex:none}
-.o-hd{height:48px;display:flex;align-items:center;gap:4px;padding:0 4px;flex:none}
-.o-bt{width:44px;height:44px;display:grid;place-items:center;color:#D8CEC5;flex:none}
-.o-hd h1{font-size:18px;font-weight:700;color:#F5F0EA;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.o-chip{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;font-size:14px;color:#D8CEC5;white-space:nowrap;flex:none}
-.o-seg{height:46px;display:flex;align-items:center;gap:8px;padding:0 10px 4px;flex:none;border-bottom:1px solid #2C2521}
-.o-tabs{flex:1;display:flex;height:40px;background:#1A1613;border-radius:11px;padding:3px}
-.o-tabs>span{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-size:15px;color:#9A8A7E}
-.o-tabs>.on{background:#3D342E;color:#F5F0EA;font-weight:600}
-.o-tabs .n{font-size:14px;color:#9A8A7E;font-weight:400}
-.o-rg{height:40px;padding:0 10px;border-radius:10px;border:1px solid #3D342E;display:flex;align-items:center;gap:5px;font-size:14px;color:#BCA5E8;flex:none}
-.o-main{flex:1;min-height:0;overflow:hidden;padding:10px 12px 0;position:relative}
 .o-pouce{height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;flex:none;background:#12100E;border-top:1px solid #2C2521;position:relative;z-index:6}
 .o-champ{flex:1;height:44px;border-radius:22px;background:#221D19;border:1px solid #3D342E;display:flex;align-items:center;padding:0 4px 0 16px;color:#9A8A7E;font-size:15px;min-width:0}
 .o-champ .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -25,167 +14,134 @@ body{font-family:"Source Sans 3",system-ui,sans-serif;color:#D8CEC5;font-size:15
 .o-barre{height:56px;display:flex;flex:none;border-top:1px solid #2C2521;background:#1A1613;position:relative;z-index:6}
 .o-barre span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;color:#9A8A7E}
 .o-barre .on{color:#F5F0EA;font-weight:600}
-.o-lab{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#9A8A7E;font-weight:600}
-.o-s{color:#9A8A7E}
-.o-v{color:#F5F0EA}
-.o-b{font-weight:700}
-.o-sb{font-weight:600}
-.o-d{display:flex;align-items:center}
-.o-e{flex:1;min-width:0}
-.o-nw{white-space:nowrap}
-.o-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .o-iat{color:#BCA5E8}
-.o-pt{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 9px;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap}
-.o-ok{color:#A3C97A;background:rgba(110,155,91,.16)}
-.o-am{color:#E3B55D;background:rgba(227,181,93,.13)}
-.o-bl{color:#8FBEDB;background:rgba(91,138,166,.18)}
-.o-vi{color:#BCA5E8;background:rgba(188,165,232,.13)}
-.o-gr{color:#D8CEC5;background:#2C2521}
-.o-dec{color:#F2C14E;background:rgba(224,160,46,.15)}
-.o-carte{background:#1A1613;border:1px solid #2C2521;border-radius:12px}
-.o-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;font-weight:600;border:1px solid #3D342E;color:#F5F0EA;background:#221D19;white-space:nowrap}
-.o-btn.p{background:#F2C14E;color:#12100E;border-color:#F2C14E}
-.o-btn.ia{border-color:rgba(188,165,232,.5);color:#BCA5E8;background:rgba(188,165,232,.08)}
-.o-q{font-style:normal;color:#D8CEC5}
-.o-src{width:390px;flex:none;color:#D8CEC5;font-size:14px;line-height:1.4;padding-top:0}
-.o-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
-.o-src h2{font-size:15px;color:#F5F0EA;margin:10px 0 4px}
-.o-src p{margin:0 0 6px;color:#D8CEC5}
-.o-src ul{margin:0 0 6px 18px}
-
-.op-besoin{display:flex;align-items:center;gap:8px;height:30px;font-size:15px}
-.op-crit{display:flex;align-items:center;gap:8px;height:36px;font-size:15px;border-top:1px solid #2C2521;border-bottom:1px solid #2C2521;margin-top:4px}
-.op-qg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.op-qg>div{background:#1A1613;border:1px solid #2C2521;border-radius:10px;padding:6px 8px;min-height:62px;display:flex;flex-direction:column;gap:1px;min-width:0}
-.op-qg .k{font-size:13px;color:#9A8A7E;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.op-qg .n{font-size:14px;font-weight:700;color:#F5F0EA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.op-qg .v{font-size:14px;color:#A3C97A;font-weight:600}
-.op-t{border-radius:12px;background:#1A1613;border:1px solid #2C2521;padding:8px 11px;margin-top:7px}
-.op-t.c{padding:6px 11px;margin-top:6px}
-.op-t.c .tot b{font-size:17px}
-.op-t.g{border-color:rgba(110,155,91,.55)}
-.op-t .l1{display:flex;align-items:center;gap:9px}
-.op-t .nm{font-size:16px;font-weight:700;color:#F5F0EA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.op-t .sm{font-size:13.5px;color:#9A8A7E;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
-.op-t .tot{margin-left:auto;text-align:right;flex:none}
-.op-t .tot b{font-size:18px;color:#F5F0EA;font-weight:700;display:block;line-height:1.1}
-.op-t .tot span{font-size:13px;color:#9A8A7E}
-.op-t .det{font-size:14px;color:#9A8A7E;margin:3px 0 0 45px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.op-t .l3{display:flex;align-items:center;gap:10px;margin:6px 0 0 45px}
-.op-bar{flex:1;height:7px;border-radius:4px;background:#2C2521;overflow:hidden}
-.op-bar b{display:block;height:100%;border-radius:4px}
-.op-g{display:flex;gap:2px;flex:none;align-items:center}
-.op-g i{width:9px;height:12px;border-radius:2px;display:block}
-.op-g em{font-style:normal;font-size:13px;color:#9A8A7E;margin-left:4px;white-space:nowrap}
-.op-ico{width:36px;height:36px;border-radius:10px;background:#2C2521;display:grid;place-items:center;flex:none}
-.op-pied{display:flex;align-items:center;gap:10px;margin-top:10px}
-
-.ob-crumb{height:44px;display:flex;align-items:center;gap:4px;padding:0 6px 0 2px;color:#D8CEC5;font-size:15px;flex:none}
-.ob-tit{padding:0 14px 6px;flex:none}
-.ob-tit h1{font-size:24px;font-weight:800;color:#F5F0EA}
-.ob-ia{border-radius:12px;background:rgba(188,165,232,.07);border:1px solid rgba(188,165,232,.35);padding:8px 8px 8px 12px;display:flex;align-items:center;gap:8px}
-.ob-chips{display:flex;gap:6px;margin-top:8px;overflow:hidden}
-.ob-chips span{height:36px;border-radius:10px;border:1px solid #3D342E;padding:0 11px;display:flex;align-items:center;gap:5px;font-size:14px;white-space:nowrap;color:#D8CEC5}
-.ob-chips .on{border-color:#E0A02E;color:#F2C14E}
-.ob-tab{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;font-size:15px;table-layout:fixed}
-.ob-tab th,.ob-tab td{height:48px;border-bottom:1px solid #2C2521;padding:0 6px;text-align:right;white-space:nowrap}
-.ob-tab thead th{height:30px;font-size:13px;color:#9A8A7E;font-weight:600;text-align:right;border-bottom:1px solid #3D342E}
-.ob-tab thead th:first-child,.ob-tab tbody th{text-align:left}
-.ob-tab tbody th{font-weight:700;color:#F5F0EA;font-size:15px;white-space:normal;line-height:1.15;padding-top:5px;padding-bottom:5px}
-.ob-tab tbody th small{display:flex;align-items:center;gap:3px;font-weight:400;font-size:13px;color:#9A8A7E}
-.ob-tab td{color:#D8CEC5;font-weight:600}
-.ob-tab td small{display:block;font-size:13px;font-weight:400;color:#9A8A7E}
-.ob-tab td.w{color:#A3C97A;background:rgba(110,155,91,.12)}
-.ob-tab td.e{color:#8FBEDB}
-.ob-tab td.n{color:#9A8A7E;font-weight:400}
-.ob-blk{margin-top:12px;border-radius:12px;border:1px solid #E0A02E;padding:9px 11px}
-.ob-r{display:flex;align-items:center;gap:8px;height:30px;font-size:15px}
-.ob-r .bar{flex:1;height:7px;border-radius:4px;background:#2C2521;overflow:hidden}
-
-.o-ex{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:7px;border:1px dashed #574A42;color:#9A8A7E;font-size:13px;font-weight:600;white-space:nowrap;vertical-align:middle;line-height:1}
-.o-est{color:#8FBEDB}
-
-.oa-main{scrollbar-width:none}.oa-main::-webkit-scrollbar{display:none}
-.oa-l{display:flex;align-items:center;gap:8px;min-height:40px;border-bottom:1px solid #2C2521;font-size:15px}
-.oa-l b{color:#F5F0EA}
-.oa-qg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0}
-.oa-qg>div{background:#1A1613;border:1px solid #2C2521;border-radius:10px;padding:5px 8px;min-height:60px}
-.oa-qg .k{display:block;font-size:13px;color:#9A8A7E;line-height:1.15}
-.oa-qg .n{display:block;font-size:15px;font-weight:700;color:#F5F0EA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.oa-qg .v{display:block;font-size:14px;color:#A3C97A;font-weight:600;white-space:nowrap}
-.oa-qg .v.am{color:#E3B55D}
-.oa-c{background:#1A1613;border:1px solid #2C2521;border-radius:12px;padding:8px 10px 6px;margin-top:6px}
-.oa-c.w{border-color:rgba(110,155,91,.6)}
-.oa-h{display:flex;align-items:center;gap:9px;margin-bottom:3px}
-.oa-h .n{font-size:16px;font-weight:700;color:#F5F0EA}
-.oa-h .s{font-size:14px;color:#9A8A7E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.oa-ic{width:34px;height:34px;border-radius:9px;background:#221D19;display:grid;place-items:center;flex:none}
-.oa-b{display:grid;grid-template-columns:62px 1fr 86px;align-items:center;gap:8px;height:21px;font-size:14px}
-.oa-b .l{color:#9A8A7E}
-.oa-b .t{height:7px;border-radius:4px;background:#2C2521;overflow:hidden;display:flex}
-.oa-b .t b{display:block;height:100%;border-radius:4px}
-.oa-b .t.dash{background:repeating-linear-gradient(90deg,#3D342E 0 4px,transparent 4px 8px)}
-.oa-b .v{text-align:right;color:#F5F0EA;font-weight:600;white-space:nowrap}
-.oa-b .v.g{color:#9A8A7E;font-weight:400}
-.oa-b .v.am{color:#E3B55D}
-.oa-bas{display:flex;gap:8px;margin-top:8px}
-.oa-r{display:flex;align-items:center;gap:8px;height:48px;border-top:1px solid #2C2521}
-.oa-r .n{font-size:15px;font-weight:700;color:#F5F0EA;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.oa-r .s{font-size:14px;color:#9A8A7E;white-space:nowrap}
-.oa-r .p{width:70px;text-align:right;font-size:16px;font-weight:700;color:#F5F0EA;flex:none}
-.oa-r .p small{display:block;font-size:13px;font-weight:400;color:#9A8A7E}
-.oa-r.w .p{color:#A3C97A}
-.oa-r.x{opacity:.8}
-.oa-j{display:flex;gap:2px;flex:none}
-.oa-j i{width:7px;height:12px;border-radius:2px;background:#6E9B5B}
-.oa-j i.v{background:transparent;border:1px solid #E3B55D}
-.oa-j i.a{background:#E3B55D}
-.oa-j i.n{background:#3D342E}
-.ov-t{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px;margin-top:4px}
-.ov-t th{font-weight:400;color:#9A8A7E;text-align:right;padding:4px 4px;font-size:13px}
-.ov-t th:first-child{text-align:left}
-.ov-t td{border-top:1px solid #2C2521;padding:5px 4px;text-align:right;vertical-align:middle;color:#F5F0EA}
-.ov-t td:first-child{text-align:left}
-.ov-t td .n{font-weight:700;font-size:15px;display:flex;align-items:center;gap:5px;white-space:nowrap}
-.ov-t td .s{font-size:13px;color:#9A8A7E;display:flex;align-items:center;gap:3px}
-.ov-t td b{font-size:16px}
-.ov-t td small{display:block;font-size:13px;color:#9A8A7E}
-.ov-t td.w{background:rgba(110,155,91,.12)}.ov-t td.w b{color:#A3C97A}
-.ov-t td.am b{color:#E3B55D}
-.ov-t td.est b{color:#8FBEDB}
-.ov-blk{margin-top:10px;border:1px solid #3D342E;border-radius:12px;padding:8px 10px}
-.ov-blk .h{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:#F5F0EA;margin-bottom:4px}
-.ov-blk .h span{font-weight:400;font-size:13px;color:#9A8A7E}
-.ov-br{display:grid;grid-template-columns:118px 1fr 74px;align-items:center;gap:8px;height:26px;font-size:14px}
-.ov-br .nm{color:#D8CEC5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ov-br .t{height:8px;border-radius:4px;background:#2C2521;display:flex}
-.ov-br .t b{display:block;height:100%;border-radius:4px;background:#574A42}
-.ov-br .v{text-align:right;color:#D8CEC5;white-space:nowrap}
-.ov-br.w .nm,.ov-br.w .v{color:#A3C97A;font-weight:700}.ov-br.w .t b{background:#6E9B5B}
-.ov-br.am .v{color:#E3B55D}.ov-br.am .t b{background:#E3B55D}
-.ov-br.est .v{color:#8FBEDB}.ov-br.est .t b{background:repeating-linear-gradient(90deg,#5B8AA6 0 6px,transparent 6px 9px)}
-</style></head><body><section class="o-ecran" data-cap="O-options-b-3"><div class="ob-crumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>600 bouteilles 33 cl</div><div class="ob-tit"><h1>Comparer</h1><div class="o-s" style="font-size:14px">Brasserie › Conditionnement · 3 offres ramenées à 600 livrées</div></div><div class="o-main" style="padding-top:0">
-  <div class="oa-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0A02E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg><span class="o-s">critère</span><b>prix pour 600 livrées</b><span class="o-s" style="margin-left:auto;font-size:13px">gardé dans Organisé</span></div><div class="oa-qg">
-  <div><span class="k">Moins cher · 600 livrées</span><span class="n">Fournisseur B</span><span class="v">410 CHF</span></div>
-  <div><span class="k">Moins cher /bt livrée</span><span class="n">Occasion</span><span class="v am">0,20 · 400 seul.</span></div>
-  <div><span class="k">Plus rapide</span><span class="n" style="color:#9A8A7E;font-weight:400">pas noté</span><span class="v" style="color:#9A8A7E;font-weight:400">aucun délai lu</span></div></div>
-  <table class="ov-t"><colgroup><col><col style="width:96px"><col style="width:96px"></colgroup><thead><tr><th>3 offres</th><th>CHF · 600</th><th>quantité</th></tr></thead><tbody><tr><td><div class="n">Fournisseur B</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class="w"><b>410</b><small>0,68/bt livrée</small></td><td class=""><b>600</b><small>pile</small></td></tr><tr><td><div class="n">Verallia</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class=""><b>504</b><small>0,84/bt utile</small></td><td class="am"><b>1 200</b><small>600 en trop</small></td></tr><tr><td><div class="n">Occasion sur annonce</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class="am"><b>80</b><small>pour 400</small></td><td class="am"><b>400</b><small>manque 200</small></td></tr></tbody></table>
-  <div class="o-s" style="font-size:14px;margin-top:6px">▲ vert gagne · orange : ne couvre pas 600</div><div class="oa-l" style="border:0;min-height:36px"><b>Délai : aucun noté</b><span class="o-s">pour les 3</span><span class="o-pt o-vi" style="margin-left:auto">✦ demander</span></div>
-  <div class="ov-blk"><div class="h">Pour 600 livrées<span>CHF · moins = mieux</span></div><div class="ov-br w"><span class="nm">▲ Fournisseur B</span><span class="t"><b style="width:81%"></b></span><span class="v">410</span></div><div class="ov-br "><span class="nm">Verallia</span><span class="t"><b style="width:100%"></b></span><span class="v">504</span></div><div class="ov-br am"><span class="nm">Occasion</span><span class="t"><b style="width:16%"></b></span><span class="v">80 · 400</span></div></div><div class="ov-blk"><div class="h">Par bouteille livrée<span>CHF/bt · à quantité égale</span></div>
-  <div class="ov-br w"><span class="nm">▲ Fournisseur B</span><span class="t"><b style="width:81%"></b></span><span class="v">0,68</span></div><div class="ov-br "><span class="nm">Verallia</span><span class="t"><b style="width:100%"></b></span><span class="v">0,84 utile</span></div><div class="ov-br am"><span class="nm">Occasion</span><span class="t"><b style="width:24%"></b></span><span class="v">0,20 · 400</span></div></div>
-  </div><div class="o-pouce"><div class="o-champ"><span class="t">Écrire, ou coller un lien…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><section class="o-ecran" data-cap="O-options-b-6"><div class="ob-crumb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>600 bouteilles 33 cl</div><div class="ob-tit"><h1>Comparer</h1><div class="o-s" style="font-size:14px">Brasserie › Conditionnement · 6 offres ramenées à 600 livrées</div></div><div class="o-main oa-main" data-scroll style="padding-top:0;overflow-y:auto">
-  <div class="oa-l"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0A02E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg><span class="o-s">critère</span><b>prix pour 600 livrées</b><span class="o-s" style="margin-left:auto;font-size:13px">gardé dans Organisé</span></div><div class="oa-qg">
-  <div><span class="k">Moins cher · 600 livrées</span><span class="n">Fournisseur B</span><span class="v">410 CHF</span></div>
-  <div><span class="k">Moins cher /bt livrée</span><span class="n">Occasion</span><span class="v am">0,20 · 400 seul.</span></div>
-  <div><span class="k">Plus rapide</span><span class="n" style="color:#9A8A7E;font-weight:400">pas noté</span><span class="v" style="color:#9A8A7E;font-weight:400">aucun délai lu</span></div></div>
-  <table class="ov-t"><colgroup><col><col style="width:96px"><col style="width:96px"></colgroup><thead><tr><th>6 offres</th><th>CHF · 600</th><th>quantité</th></tr></thead><tbody><tr><td><div class="n">Fournisseur B</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class="w"><b>410</b><small>0,68/bt livrée</small></td><td class=""><b>600</b><small>pile</small></td></tr><tr><td><div class="n">Bouteilles33.ch<span class="o-ex">exemple</span></div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86B9E6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> lu</div></td><td class=""><b>417</b><small>0,70/bt livrée</small></td><td class=""><b>600</b><small>pile</small></td></tr><tr><td><div class="n">Brouwland (BE)<span class="o-ex">exemple</span></div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86B9E6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> lu</div></td><td class="est"><b>≈ 430</b><small>estimé</small></td><td class=""><b>600</b><small>pile</small></td></tr><tr><td><div class="n">Verallia</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class=""><b>504</b><small>0,84/bt utile</small></td><td class="am"><b>1 200</b><small>600 en trop</small></td></tr><tr><td><div class="n">Occasion sur annonce</div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A8A7E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4.5L16 4.5l3.5 3.5L8.5 19z"/></svg> ta note</div></td><td class="am"><b>80</b><small>pour 400</small></td><td class="am"><b>400</b><small>manque 200</small></td></tr><tr><td><div class="n">Vetropack<span class="o-ex">exemple</span></div><div class="s"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86B9E6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg> en lecture</div></td><td class=""><b>—</b><small></small></td><td class=""><b>—</b><small></small></td></tr></tbody></table>
-  <div class="o-s" style="font-size:14px;margin-top:6px">▲ vert gagne · ≈ estimé · orange : ne couvre pas 600 · <b style="color:#D8CEC5;font-weight:600">Délai : aucun noté</b></div>
-  <div class="ov-blk"><div class="h">Pour 600 livrées<span>CHF · moins = mieux</span></div>
-  <div class="ov-br w"><span class="nm">▲ Fournisseur B</span><span class="t"><b style="width:81%"></b></span><span class="v">410</span></div><div class="ov-br "><span class="nm">Bouteilles33.ch</span><span class="t"><b style="width:83%"></b></span><span class="v">417</span></div><div class="ov-br est"><span class="nm">Brouwland (BE)</span><span class="t"><b style="width:85%"></b></span><span class="v">≈ 430</span></div><div class="ov-br "><span class="nm">Verallia</span><span class="t"><b style="width:100%"></b></span><span class="v">504</span></div><div class="ov-br am"><span class="nm">Occasion</span><span class="t"><b style="width:16%"></b></span><span class="v">80 · 400</span></div></div>
-  <div class="ov-blk"><div class="h">Par bouteille livrée<span>CHF/bt · à quantité égale</span></div>
-  <div class="ov-br w"><span class="nm">▲ Fournisseur B</span><span class="t"><b style="width:81%"></b></span><span class="v">0,68</span></div><div class="ov-br "><span class="nm">Verallia</span><span class="t"><b style="width:100%"></b></span><span class="v">0,84 utile</span></div><div class="ov-br am"><span class="nm">Occasion</span><span class="t"><b style="width:24%"></b></span><span class="v">0,20 · 400</span></div></div>
-  <div style="height:12px"></div>
-  </div><div class="o-pouce"><div class="o-champ"><span class="t">Écrire, ou coller un lien…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></section><aside class="o-src"><img src="../page/img/v06-19.webp" alt="source"><h2>Sa version : v06, Comparer (rang 3)</h2><p>Gardé : la vue Comparer dédiée, le critère proposé par l’IA (Garder / Autre), les puces de caractéristiques, le bloc du critère en barres classées.</p><ul><li>Passe 5 corrigée : résumé « qui gagne quoi » en tête ; colonne délai masquée (vide partout) → « Délai : aucun noté » sous le tableau ; gagnant marqué ▲ dans « Par bouteille livrée » (à quantité égale ; Verallia 0,84 par bouteille utile) ; le critère n’est plus reproposé (gardé dans Organisé).</li><li>À 6 offres : les 3 d’épreuve marquées « exemple », aucune ne gagne ; Fournisseur B, de ses notes, reste en tête.</li>
-<li>Un tableau adapté (« les tableaux sont un bon outil … mais il doit être adapté ») : une ligne par offre, 3 colonnes seulement (prix pour 600, quantité, délai), le gagnant de chaque colonne en vert, unités dans l’en-tête. 6 offres ou plus : les lignes défilent, jamais de colonnes écrasées ni de défilement horizontal.</li>
-<li>Précis : chaque prix ramené à 600 livrées, avec le prix par bouteille dessous ; « — » pour l’inconnu ; « ≈ … estimé » en bleu ; 🔗 lu / en lecture.</li>
-<li>Pratique : Garder sous le pouce dans la carte du critère ; légende des couleurs en une ligne.</li></ul></aside></body></html>
+.cq-main{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 0 16px}
+.cq-main::-webkit-scrollbar{display:none}
+.cq-crumb{height:44px;display:flex;align-items:center;gap:2px;padding:0 10px 0 6px;font-size:16px;color:#D8CEC5}
+.cq-h1{font-size:30px;font-weight:800;color:#F5F0EA;padding:0 16px;line-height:1.15}
+.cq-sub{padding:3px 16px 12px;font-size:16px;color:#9A8A7E}
+.cq-sub b{color:#F5F0EA;font-weight:700}
+.cq-crit{margin:0 14px;border:1px solid #3D342E;border-radius:12px;background:#1A1613;padding:10px 14px 12px}
+.cq-ch{display:flex;align-items:baseline;gap:6px;font-size:15px;color:#9A8A7E}
+.cq-ch b{font-size:17px;color:#F5F0EA;font-weight:700}
+.cq-ch .tag{margin-left:auto;color:#A3C97A;font-weight:600;white-space:nowrap}
+.cq-ch .tag.ia{color:#BCA5E8}
+.cq-br{padding-top:8px}
+.cq-bl{display:flex;align-items:baseline;gap:6px;font-size:16px;color:#D8CEC5}
+.cq-bl .r{font-weight:800;color:#F5F0EA;width:12px;flex:none}
+.cq-bl .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cq-bl .v{font-weight:700;font-size:18px;color:#F5F0EA;white-space:nowrap}
+.cq-bl .v.g{color:#A3C97A}.cq-bl .v.am{color:#E3B55D;font-size:15px}.cq-bl .v.bl{color:#8FBEDB}
+.cq-tr{height:8px;border-radius:4px;background:#2C2521;margin-top:4px;overflow:hidden}
+.cq-fi{height:100%;border-radius:4px;background:#6B5E55}
+.cq-fi.g{background:#6E9B5B}
+.cq-fi.bl{background:repeating-linear-gradient(90deg,#5B8AA6 0 9px,transparent 9px 12px)}
+.cq-tr.vide{background:none;border:1px dashed #574A42}
+.cq-h2{display:flex;align-items:baseline;gap:8px;padding:18px 16px 4px}
+.cq-h2 b{font-size:20px;font-weight:800;color:#F5F0EA}
+.cq-h2 span{font-size:15px;color:#9A8A7E}
+.cq-t{width:calc(100% - 16px);margin:0 8px;border-collapse:collapse;table-layout:fixed}
+.cq-t th{vertical-align:top;padding:4px 2px 8px;font-weight:400;border-bottom:1px solid #3D342E}
+.cq-t td{border-bottom:1px solid #2C2521;padding:7px 3px;text-align:center;font-size:18px;font-weight:700;color:#F5F0EA;line-height:1.2}
+.cq-t td.l{text-align:left;font-size:15px;font-weight:400;color:#D8CEC5;padding-left:6px;line-height:1.2}
+.cq-t td.l .u{display:block;font-size:14px;color:#9A8A7E}
+.cq-t td.tx{font-size:15px;font-weight:600;line-height:1.25}
+.cq-t td .s{display:block;font-size:13px;font-weight:400;color:#9A8A7E;margin-top:1px}
+.cq-t td.best{background:rgba(110,155,91,.22);color:#A3C97A}
+.cq-t td.am{color:#E3B55D}
+.cq-t td.bl{color:#8FBEDB}
+.cq-t td.nul{color:#574A42}
+.cq-t tr.crit td{background:rgba(110,155,91,.08)}
+.cq-t tr.crit td.best{background:rgba(110,155,91,.28)}
+.cq-t tr.crit td.l{color:#A3C97A;font-weight:600}
+.cq-t tr.crit td.l .u{color:#A3C97A;font-weight:400}
+.cq-t tr.ia td{background:rgba(188,165,232,.07)}
+.cq-t tr.ia td.best{background:rgba(110,155,91,.22)}
+.cq-t tr.ia td.l{color:#BCA5E8;font-weight:600}
+.cq-t tr.ia td.l .u{color:#BCA5E8;font-weight:400}
+.cq-t.c5 .cq-im{width:54px;height:48px}.cq-t.c5 .cq-im svg{width:50px;height:43px}.cq-t.c5 .cq-an{height:36px;display:flex;align-items:center;justify-content:center}
+.cq-ch span{white-space:nowrap}
+.cq-art{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.cq-im{position:relative;width:62px;height:54px;border-radius:10px;background:#221D19;display:grid;place-items:center}
+.cq-im.ex{border:1.5px dashed #574A42}
+.cq-rk{position:absolute;top:-7px;left:-7px;width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:800;background:#12100E;border:1.5px solid #9A8A7E;color:#F5F0EA}
+.cq-rk.g{background:#6E9B5B;border-color:#6E9B5B;color:#12100E}
+.cq-rk.am{border-color:#E3B55D;color:#E3B55D}
+.cq-an{font-size:16px;font-weight:700;color:#F5F0EA;line-height:1.15}
+.cq-an.p{font-size:14px}
+.cq-as{font-size:13px;color:#9A8A7E;line-height:1.2;display:flex;align-items:center;gap:3px;justify-content:center}
+.cq-as.lk{color:#86B9E6}
+.cq-ex{display:inline-flex;align-items:center;height:20px;padding:0 4px;border:1px dashed #574A42;border-radius:6px;font-size:13px;color:#9A8A7E;white-space:nowrap}
+.cq-note{padding:8px 16px 0;font-size:14px;color:#9A8A7E;line-height:1.35}
+.cq-acts{display:flex;gap:8px;padding:10px 14px 0}
+.cq-btn{height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 13px;font-size:15px;font-weight:600;border:1px solid #574A42;color:#F5F0EA;background:#1A1613;white-space:nowrap}
+.cq-btn.ia{border-color:rgba(188,165,232,.55);color:#BCA5E8;background:rgba(188,165,232,.08)}
+.cq-comp{margin:14px 14px 0;background:#221D19;border-radius:12px;padding:11px 14px;font-size:16px;line-height:1.4;color:#D8CEC5;display:flex;gap:10px}
+.cq-comp svg{flex:none;margin-top:2px;color:#A3C97A}
+.cq-comp b{color:#F5F0EA}
+.cq-ec{margin:16px 14px 0;border-top:1px solid #3D342E}
+.cq-ec h3{font-size:19px;font-weight:800;color:#F5F0EA;padding:10px 0 4px}
+.cq-er{border-top:1px solid #2C2521;padding:8px 0;font-size:15px;color:#9A8A7E;line-height:1.35}
+.cq-er b{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:700;color:#C9BCB1}
+.cq-er a{color:#86B9E6;text-decoration:none;font-weight:600}
+.cq-pied{padding:12px 16px 0;font-size:14px;color:#9A8A7E}
+.cq-src{width:820px;flex:none;color:#D8CEC5;font-size:15px;line-height:1.4;padding:6px 0 0}
+.cq-src .imgs{display:flex;gap:16px}
+.cq-src figure{width:390px}
+.cq-src img{width:390px;display:block;border-radius:6px;border:1px solid #3D342E}
+.cq-src figcaption{font-size:14px;color:#9A8A7E;margin-top:4px}
+.cq-src h2{font-size:17px;color:#F5F0EA;margin:0 0 6px}
+.cq-src ul{margin:8px 0 0 18px}
+.cq-src li{margin:2px 0}
+.cq-lab{color:#9A8A7E;font-size:14px;margin:0 0 6px}
+</style></head><body style="gap:28px;padding:0"><div class="o-ecran" id="e3"><div class="cq-main">
+<div class="cq-crumb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>600 bouteilles 33 cl</span></div>
+<div class="cq-h1">Comparer</div>
+<div class="cq-sub">3 offres · Classé par <b>prix pour 600</b> · besoin avant le 15</div>
+<div class="cq-crit"><div class="cq-ch"><b>Prix pour 600</b><span>CHF · moins = mieux</span><span class="tag ia">✦ critère</span></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">1</span><span class="n">Fournisseur B · 600</span><span class="v g">410</span></div><div class="cq-tr"><div class="cq-fi g" style="width:100%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">2</span><span class="n">Verallia · palette 1 200</span><span class="v ">504</span></div><div class="cq-tr"><div class="cq-fi " style="width:81%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">–</span><span class="n">Occasion · 400 seulement</span><span class="v am">ne couvre pas 600</span></div><div class="cq-tr vide"></div></div>
+</div>
+<div class="cq-h2"><b>Côte à côte</b><span>le meilleur en vert</span></div>
+<table class="cq-t"><colgroup><col style="width:104px"><col><col><col></colgroup>
+<thead><tr><th></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk g">1</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M18 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M27 6h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M36 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="12" y="24" width="40" height="26" rx="1.5" fill="#A9784A"/><path d="M12 24l6-6h28l6 6" fill="none" stroke="#A9784A" stroke-width="2"/><path d="M28 30h8" stroke="#6A4628" stroke-width="2" stroke-linecap="round"/></svg></div><span class="cq-an p">Fourn. B</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk ">2</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><rect x="8" y="44" width="48" height="4" fill="#9C7A4E"/><path d="M12 48v2M32 48v2M52 48v2" stroke="#9C7A4E" stroke-width="3"/><rect x="9" y="12" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="45" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="16.8" r="2.2" fill="#5E3818"/><rect x="9" y="22.5" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="45" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="27.3" r="2.2" fill="#5E3818"/><rect x="9" y="33" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="45" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="37.8" r="2.2" fill="#5E3818"/><rect x="9" y="12" width="46" height="32" fill="none" stroke="#C9D0D6" stroke-width="1"/></svg></div><span class="cq-an p">Verallia</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk am">–</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M16 10h3v4c2 1 3 2.5 3 5v11a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-11c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M25 12h3v4c2 1 3 2.5 3 5v9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-9c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M34 10h3v4c2 1 3 2.5 3 5v11a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-11c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="10" y="28" width="38" height="22" rx="2" fill="#5D6A73"/><path d="M10 35h38M10 42h38" stroke="#3E474E" stroke-width="1.5"/><path d="M54 14c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z" fill="#7EC4E8"/></svg></div><span class="cq-an p">Occasion</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th></tr></thead><tbody>
+<tr class="crit"><td class="l">Pour 600 livrées<span class="u">CHF · ✦ critère</span></td><td class="best">410</td><td class="">504<span class="s">pour 1 200</span></td><td class="am">80<span class="s">pour 400</span></td></tr>
+<tr class=""><td class="l">Prix<span class="u">CHF/bt</span></td><td>0,55</td><td>0,42</td><td class="best">0,20</td></tr>
+<tr class=""><td class="l">Livraison<span class="u">CHF</span></td><td>80</td><td class="nul">—</td><td class="nul">—</td></tr>
+<tr class=""><td class="l">Vendu par<span class="u">bt</span></td><td class="best">600</td><td class="am">1 200<span class="s">palette min.</span></td><td class="am">400<span class="s">seulement</span></td></tr>
+<tr class=""><td class="l">État</td><td class="nul">—</td><td class="nul">—</td><td class="tx am">à laver</td></tr>
+<tr class=""><td class="l">Délai<span class="u">besoin avant le 15</span></td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td></tr>
+</tbody></table>
+<div class="cq-note">Tes 3 notes. — : pas noté.</div>
+<div class="cq-acts"><span class="cq-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter une caractéristique</span><span class="cq-btn ia">✦ Proposer</span></div>
+<div class="cq-comp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M7 20h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg><div><b>Compromis :</b> Verallia, <b>0,42</b> CHF la bouteille au lieu de <b>0,55</b>, mais palette de <b>1 200</b> : <b>504</b> CHF, soit <b>94</b> CHF de plus que Fournisseur B pour 600 bouteilles en trop (livraison pas notée).</div></div>
+<div class="cq-ec"><h3>Écartés · 0</h3><div class="cq-er">Aucune offre écartée.</div></div>
+<div class="cq-pied">Prix de tes notes</div>
+</div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à 600 bouteilles…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></div><div class="o-ecran" id="e6"><div class="cq-main">
+<div class="cq-crumb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>600 bouteilles 33 cl</span></div>
+<div class="cq-h1">Comparer</div>
+<div class="cq-sub">6 offres · Classé par <b>prix pour 600</b> · besoin avant le 15</div>
+<div class="cq-crit"><div class="cq-ch"><b>Prix pour 600</b><span>CHF · moins = mieux</span><span class="tag ia">✦ critère</span></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">1</span><span class="n">Fournisseur B · 600</span><span class="v g">410</span></div><div class="cq-tr"><div class="cq-fi g" style="width:100%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">2</span><span class="n">Bouteilles33.ch <span class="cq-ex">exemple</span></span><span class="v ">417</span></div><div class="cq-tr"><div class="cq-fi " style="width:98%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">3</span><span class="n">Brouwland (BE) <span class="cq-ex">exemple</span></span><span class="v bl">≈ 430</span></div><div class="cq-tr"><div class="cq-fi bl" style="width:95%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">4</span><span class="n">Verallia · palette 1 200</span><span class="v ">504</span></div><div class="cq-tr"><div class="cq-fi " style="width:81%"></div></div></div>
+<div class="cq-br"><div class="cq-bl"><span class="r">–</span><span class="n">Occasion · 400 seulement</span><span class="v am">ne couvre pas 600</span></div><div class="cq-tr vide"></div></div>
+</div>
+<div class="cq-h2"><b>Côte à côte</b><span>le meilleur en vert</span></div>
+<table class="cq-t c5"><colgroup><col style="width:76px"><col><col><col><col><col></colgroup>
+<thead><tr><th></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk g">1</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M18 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M27 6h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M36 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="12" y="24" width="40" height="26" rx="1.5" fill="#A9784A"/><path d="M12 24l6-6h28l6 6" fill="none" stroke="#A9784A" stroke-width="2"/><path d="M28 30h8" stroke="#6A4628" stroke-width="2" stroke-linecap="round"/></svg></div><span class="cq-an p">Fourn. B</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th><th><div class="cq-art"><div class="cq-im ex"><span class="cq-rk ">2</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M18 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M27 6h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M36 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="12" y="24" width="40" height="26" rx="1.5" fill="#8E6A48"/><path d="M12 24l6-6h28l6 6" fill="none" stroke="#8E6A48" stroke-width="2"/><path d="M28 30h8" stroke="#6A4628" stroke-width="2" stroke-linecap="round"/></svg></div><span class="cq-an p">Bouteil­les33</span><span class="cq-ex">exemple</span></div></th><th><div class="cq-art"><div class="cq-im ex"><span class="cq-rk ">3</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M18 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M27 6h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M36 8h3v4c2 1 3 2.5 3 5v7a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="12" y="24" width="40" height="26" rx="1.5" fill="#7F7060"/><path d="M12 24l6-6h28l6 6" fill="none" stroke="#7F7060" stroke-width="2"/><path d="M28 30h8" stroke="#6A4628" stroke-width="2" stroke-linecap="round"/></svg></div><span class="cq-an p">Brouw­land</span><span class="cq-ex">exemple</span></div></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk ">4</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><rect x="8" y="44" width="48" height="4" fill="#9C7A4E"/><path d="M12 48v2M32 48v2M52 48v2" stroke="#9C7A4E" stroke-width="3"/><rect x="9" y="12" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="45" cy="16.8" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="16.8" r="2.2" fill="#5E3818"/><rect x="9" y="22.5" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="45" cy="27.3" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="27.3" r="2.2" fill="#5E3818"/><rect x="9" y="33" width="46" height="9.5" rx="1" fill="#8C939A"/><circle cx="13" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="19.4" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="25.8" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="32.2" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="38.6" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="45" cy="37.8" r="2.2" fill="#5E3818"/><circle cx="51.400000000000006" cy="37.8" r="2.2" fill="#5E3818"/><rect x="9" y="12" width="46" height="32" fill="none" stroke="#C9D0D6" stroke-width="1"/></svg></div><span class="cq-an p">Verallia</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th><th><div class="cq-art"><div class="cq-im"><span class="cq-rk am">–</span><svg width="58" height="50" viewBox="0 0 64 54" aria-hidden="true"><path d="M4 50h56" stroke="#574A42" stroke-width="2"/><path d="M16 10h3v4c2 1 3 2.5 3 5v11a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-11c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M25 12h3v4c2 1 3 2.5 3 5v9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-9c0-2.5 1-4 3-5z" fill="#7A4A22"/><path d="M34 10h3v4c2 1 3 2.5 3 5v11a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-11c0-2.5 1-4 3-5z" fill="#7A4A22"/><rect x="10" y="28" width="38" height="22" rx="2" fill="#5D6A73"/><path d="M10 35h38M10 42h38" stroke="#3E474E" stroke-width="1.5"/><path d="M54 14c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z" fill="#7EC4E8"/></svg></div><span class="cq-an p">Occasion</span><span class="cq-as"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg> note</span></div></th></tr></thead><tbody>
+<tr class="crit"><td class="l">Pour 600<span class="u">CHF · ✦</span></td><td class="best">410</td><td>417</td><td class="bl">≈ 430</td><td class="">504<span class="s">1 200 bt</span></td><td class="am">80<span class="s">400 bt</span></td></tr>
+<tr class=""><td class="l">Prix<span class="u">CHF/bt</span></td><td>0,55</td><td class="">0,70<span class="s">livrée</span></td><td class="bl">≈ 0,72<span class="s">livrée</span></td><td>0,42</td><td class="best">0,20</td></tr>
+<tr class=""><td class="l">Livraison<span class="u">CHF</span></td><td>80</td><td class="tx">incl.</td><td class="tx bl">≈ incl.<span class="s">douane</span></td><td class="nul">—</td><td class="nul">—</td></tr>
+<tr class=""><td class="l">Vendu par<span class="u">bt</span></td><td class="best">600</td><td>600</td><td>600</td><td class="am">1 200</td><td class="am">400</td></tr>
+<tr class=""><td class="l">État</td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td><td class="tx am">à laver</td></tr>
+<tr class=""><td class="l">Délai<span class="u">avant le 15</span></td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td><td class="nul">—</td></tr>
+</tbody></table>
+<div class="cq-note">Tes 3 notes, et 3 offres d’épreuve marquées « exemple » : jamais en vert. — : pas noté ; ≈ : estimé.</div>
+<div class="cq-acts"><span class="cq-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter une caractéristique</span><span class="cq-btn ia">✦ Proposer</span></div>
+<div class="cq-comp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M7 20h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></svg><div><b>Compromis :</b> Verallia, <b>0,42</b> CHF la bouteille au lieu de <b>0,55</b>, mais palette de <b>1 200</b> : <b>504</b> CHF, soit <b>94</b> CHF de plus que Fournisseur B pour 600 bouteilles en trop (livraison pas notée).</div></div>
+<div class="cq-ec"><h3>Écartés · 1</h3><div class="cq-er"><b>Vetropack <span class="cq-ex">exemple</span></b>aucun prix lu, lien en lecture. <a>Reprendre</a></div></div>
+<div class="cq-pied">Prix de tes notes · offres d’épreuve : exemple</div>
+</div><div class="o-pouce"><div class="o-champ"><span class="t">Ajouter à 600 bouteilles…</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.3"/></svg></i><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></i></div><span class="o-ia">✦</span><span class="o-plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12100E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="o-barre"><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="13" rx="2"/><path d="M3.5 10h17M15 14.5h2.5"/></svg>Finances</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Calendrier</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h10v16H6zM16 8h2.5a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H16"/></svg>Brassins</span><span class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks</span><span class=""><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.5 3.5 0 0 1 0 7M17 14.5a6 6 0 0 1 4 5.5"/></svg>Clients</span></div></div><aside class="cq-src"><h2>Comparer · 600 bouteilles : même structure que son choix</h2><p class="cq-lab">Son choix figé du 17.11 (maquettes.json › carnet › figes.comparer : g01-8, v03-4, g05-8, h04-7, h06-7), « le reste c'est top ». Reprise telle quelle ; seules les données changent.</p><div class="imgs"><figure><img src="../../2026-11-17-carnet-retouches/maquettes/page2/img/h04-7.webp" alt="h04-7"><figcaption>h04-7 : en-tête, barres du critère classées, Côte à côte avec l'image de chaque article, meilleur en vert, Compromis, Écartés</figcaption></figure><figure><img src="../../2026-11-17-carnet-retouches/maquettes/page2/img/v03-4.webp" alt="v03-4"><figcaption>v03-4 : la table complète, ligne du critère en tête, unité sous le libellé, « + Ajouter une caractéristique » et « ✦ Proposer »</figcaption></figure></div><ul><li>Même ordre que h04-7 : ‹ carnet, « Comparer », « n offres · Classé par … », carte du critère en barres classées (1re en vert, estimé en tirets bleus, qui ne couvre pas 600 en orange sans barre), « Côte à côte · le meilleur en vert » avec l’image de chaque offre, Compromis, « Écartés · n ».</li><li>Table de v03-4 : ligne du critère en tête et teintée, unité sous le libellé, « + Ajouter une caractéristique » et « ✦ Proposer ».</li><li>Données : ses notes (cas fictif « 600 bouteilles 33 cl ») : Verallia 0,42/bt palette de 1 200, Fournisseur B 0,55/bt par 600 + 80 CHF de livraison, Occasion 0,20/bt à laver 400 seulement, besoin avant le 15. Le critère « prix pour 600 livrées » est proposé par l’IA (✦).</li><li>À 6 offres : Bouteilles33.ch, Brouwland (BE) et Vetropack sont des offres d’épreuve, marquées « exemple » dans l’écran, jamais en vert ; Vetropack (aucun prix lu) montre la section Écartés.</li></ul></aside></body></html>
