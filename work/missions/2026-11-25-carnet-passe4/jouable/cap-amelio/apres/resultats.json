@@ -14,7 +14,7 @@
   {
    "nom": "600 bouteilles : Comparer, vue dédiée",
    "ok": true,
-   "detail": "gagnants [\"Verallia\",\"Fournisseur B\",null,\"Fournisseur B\"]"
+   "detail": "gagnants [\"Verallia\",null,null,\"Fournisseur B\"]"
   },
   {
    "nom": "Comparer : classer par « Prix / bt » d’un toucher sur sa ligne, puis revenir",
@@ -27,9 +27,14 @@
    "detail": "Écartés · 1 puis repris"
   },
   {
+   "nom": "Comparer : choisir Fournisseur B depuis sa colonne → « ✓ choisi » (Comparer et Organisé)",
+   "ok": true,
+   "detail": "choisi dans Comparer et Organisé"
+  },
+  {
    "nom": "Comparer : ✦ Proposer une caractéristique (IA simulée)",
    "ok": true,
-   "detail": "2 suggestions"
+   "detail": "1 suggestion(s), sans doublon de Livraison"
   },
   {
    "nom": "Citra : Comparer (2 offres, images liens/<id>.image)",
@@ -88,7 +93,7 @@
    "besoin": 600,
    "gagnants": [
     "Verallia",
-    "Fournisseur B",
+    null,
     null,
     "Fournisseur B"
    ]
@@ -134,5 +139,157 @@
    ]
   }
  },
- "erreursPage": []
+ "erreursPage": [],
+ "controles": {
+  "01-liste": {
+   "petites": [
+    "▾Brasserie13 259×30",
+    "3 résolus 105×30",
+    "▾Local3 372×30",
+    "▾Administratif1 372×30",
+    "▾Événements1 372×30"
+   ],
+   "coupes": []
+  },
+  "02-liste-bas": {
+   "petites": [
+    "▾Brasserie13 259×30",
+    "3 résolus 105×30",
+    "▾Local3 372×30",
+    "▾Administratif1 372×30",
+    "▾Événements1 372×30",
+    "▾À ranger1 372×30"
+   ],
+   "coupes": []
+  },
+  "03-liste-sugg": {
+   "petites": [
+    "▾Brasserie13 259×30",
+    "3 résolus 105×30",
+    "▾Local3 372×30",
+    "▾Administratif1 372×30",
+    "▾Événements1 372×30"
+   ],
+   "coupes": []
+  },
+  "04-liste-sous-repliee": {
+   "petites": [
+    "▾Brasserie13 259×30",
+    "3 résolus 105×30",
+    "▾Local3 372×30",
+    "▾Administratif1 372×30",
+    "▾Événements1 372×30",
+    "▾À ranger1 372×30"
+   ],
+   "coupes": []
+  },
+  "10-ecoulement": {
+   "petites": [],
+   "coupes": []
+  },
+  "11-ecoulement-bas": {
+   "petites": [],
+   "coupes": []
+  },
+  "12-bouteilles": {
+   "petites": [],
+   "coupes": []
+  },
+  "13-comparer": {
+   "petites": [],
+   "coupes": []
+  },
+  "14-comparer-milieu": {
+   "petites": [],
+   "coupes": []
+  },
+  "14b-comparer-bas": {
+   "petites": [],
+   "coupes": []
+  },
+  "14c-comparer-prix-bt": {
+   "petites": [],
+   "coupes": []
+  },
+  "14d-comparer-ecarte": {
+   "petites": [],
+   "coupes": []
+  },
+  "14f-offre-feuille": {
+   "petites": [],
+   "coupes": []
+  },
+  "14g-choisi-organise": {
+   "petites": [],
+   "coupes": []
+  },
+  "14e-comparer-proposer": {
+   "petites": [],
+   "coupes": []
+  },
+  "15-citra": {
+   "petites": [],
+   "coupes": []
+  },
+  "15b-citra-liens": {
+   "petites": [],
+   "coupes": []
+  },
+  "16-citra-comparer": {
+   "petites": [],
+   "coupes": []
+  },
+  "27a-lien-menu": {
+   "petites": [],
+   "coupes": []
+  },
+  "27-citra-relire": {
+   "petites": [],
+   "coupes": []
+  },
+  "17-vapeur": {
+   "petites": [],
+   "coupes": []
+  },
+  "18-frigo": {
+   "petites": [],
+   "coupes": []
+  },
+  "20-plus": {
+   "petites": [],
+   "coupes": []
+  },
+  "19-assurance": {
+   "petites": [],
+   "coupes": []
+  },
+  "29-fete": {
+   "petites": [],
+   "coupes": []
+  },
+  "30-co2": {
+   "petites": [],
+   "coupes": []
+  },
+  "26-escalader": {
+   "petites": [],
+   "coupes": []
+  },
+  "22-six-organise": {
+   "petites": [],
+   "coupes": []
+  },
+  "23-six-comparer": {
+   "petites": [],
+   "coupes": []
+  },
+  "24-six-cote-a-cote": {
+   "petites": [],
+   "coupes": []
+  },
+  "28-mes-notes": {
+   "petites": [],
+   "coupes": []
+  }
+ }
 }

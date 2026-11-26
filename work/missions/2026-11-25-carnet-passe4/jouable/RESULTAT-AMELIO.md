@@ -62,3 +62,56 @@ DÉCISION À PRENDRE : aucune.
 CONNAISSANCE : une couche d'amélioration se pose sur un jouable par redéclaration de fonctions dans la même portée (la dernière gagne), assemblée depuis la référence git par un script à remplacements uniques ; la validation du moteur plafonnait Comparer à 4 articles.
 
 LEÇON PROPOSÉE : sous Git Bash, un heredoc passé à `node -` perd des barres obliques inverses ; écrire le script de remplacement avec Write, jamais en ligne.
+
+## Passe de correction (26.11 après-midi) — CRITIQUE-AMELIO, « À corriger » 1 à 14
+
+OK — bloquants 7/7, mineurs 25/26 (cibles : en-têtes de catégorie à 30 px, arbitré), gestes 12/12, 0 erreur de page.
+
+Sources modifiées : `cap-amelio/src/amelio.js` (19 fonctions remplacées sur place, bloc « correction du 26.11 » ajouté), `cap-amelio/src/amelio.css`
+(bloc ajouté), `cap-amelio/src/appliquer.mjs` (en-tête L'Affinée de Comparer), `cap-amelio/cap.mjs` (banc). `p4.html` réassemblé depuis 8277769ac.
+
+| # (critique) | Défaut | Fait | Preuve |
+|---|---|---|---|
+| 20 · bloquant | barres inversées | le 1er a la barre pleine, les suivants = meilleur / valeur (h04-7) ; 410 = 100 %, ≥ 504 = 81 % | 13, 22, 23 |
+| 21 · bloquant | ligne du critère ni en tête ni teintée, pas d'unité | ligne (ou colonne à 6 offres) du critère en tête, teintée, « critère » ; unité sous chaque libellé (CHF, livrées · CHF / bt · bouteilles · CHF / 100 g) | 13, 14c, 23, 24 |
+| 22 · bloquant | 504 CHF ferme sans livraison | « ≥ 504 » + « + livraison ? », barre tiretée ; ne gagne pas, ne nourrit pas le Compromis | 12, 13, 22 |
+| 23 · bloquant | Verallia écarté : plus de vert | « ne couvre pas 600 » n'est plus un manque ; Fournisseur B reste vert ; Compromis : « la seule offre qui couvre 600 » | 14d |
+| 24 · bloquant | « 3,72 € ? » sans quantité | « 3,72 € / 100 g ≈ 3,50 CHF » (taux ≈ 0,94, estimé, noté sous la vue) ; classé en CHF / 100 g | 15, 15b, 16 |
+| 1 · bloquant | noms tronqués dans la liste | sous-catégorie en colonne étroite (68 px, coupée en syllabes), titre sur 2 lignes ; banc : « TEXTES COUPÉS : aucun » ; 13 lignes visibles | 01, 02 |
+| 15 · bloquant | action et titres tronqués | titre du carnet sur 2 lignes, catégorie dessous (puce retirée de l'en-tête) ; action du pouce sur 2 lignes, date dessous ; dernier pas entier (3 lignes) | 10, 17, 19, 30 |
+| 2, 3, 4 | liste muette | icône au trait par carnet, teintée par l'état ; valeur avec son sens (« dans 4 j / ≈ lu 30.11 », « fusible / 5×20 mm », « 2 options / 480–1 200 CHF ») ; liseré rose retiré | 01 |
+| 5, 14 | champ coupé, pas de micro | « Nouveau carnet… », « Écrire… » ; photo et micro dans chaque champ ; cibles 44 | 01, 10 |
+| 6, 10 | feuille ✦, dates | « d'après tes notes » ; doublon retiré ; « avant mars » → di 28.2, « avant décembre » → ≈ dans 4 j · lu 30.11 | 03, 18, 29 |
+| 7 | barre de défilement | masquée | 01, 02 |
+| 8 | Relire/Escalader ×6, + ✦ ×3 | Relire / Escalader / Sa ligne au ⋯ du lien ; une paire visible (lecture du carnet) ; + ✦ des sections retirés (restent au pouce) | 15b, 27a |
+| 9, 11 | libellés muets | « ✦ 2 à garder » ; « 9 valeurs lues · 3 manquent » ; « température 14 °C · au lieu de 2 °C », « quantité 6 fûts », « montant 1 500 CHF » | 12, 18, 29 |
+| 12 | vide d'Organisé | 600 bouteilles : barres à quantité égale dans « Qui gagne quoi » ; Assurance : environ 70 px | 12, 19 |
+| 13 | « Décidé » / « pas encore » | « décidé · Acheter le condenser » ; « il manque : prix » | 17 |
+| 14 | frigo | échéance comptée sous le pouce ; « 720 CHF d'écart · calcul de l'app » visible | 18 |
+| 16 | emoji en couleur | remplacés par les icônes au trait (16 px) hors Mes notes ; un emoji sans icône est retiré | toutes |
+| 17 | toasts au milieu, IA forte | toasts au-dessus de la barre du pouce ; « IA forte » sur la ligne « lu … » après la relecture | 26 |
+| 18, 19 | « le 22 », exemple | « le 22 nov. » ; « Contacter l'entreprise X · exemple » | 30, 10 |
+| 25 | « × 600 » vert | « par 600 » ; un minimum ne gagne jamais | 13 |
+| 26 | faux compromis | modèle h04-7 : 14c « Fournisseur B (2e), 0,55 CHF / bt pour 410 CHF, soit au moins 94 CHF de moins que la 1re… » ; sinon « aucun » + pourquoi | 14b, 14c |
+| 27 | « Classé par » répété | pastille retirée ; « 3 offres · Classé par … » puis la carte (« critère › » change le critère) | 13 |
+| 28 | « Frais de port » | ne s'affiche plus quand « Livraison » existe | 14e |
+| 29 | Brouwland | « prix en € ? · livraison ? » ; cellule « 0,65 € ? · en €, à vérifier » | 23, 24 |
+| 30 | « Choisir » rogné | le nom de l'offre ouvre une feuille Choisir / Écarter / Sa ligne (v03-4 : « nom › ») ; « Bouteilles33.ch » entier | 14f, 24 |
+| 31 | icônes identiques, rangs | image seulement si une offre en a ; « 1re / 2e » retirés ; en-têtes alignés en haut | 13, 16 |
+| 32 | pas d'en-tête L'Affinée | logo et « L'Affinée », puis « ← 600 bouteilles 33 cl » | 13 |
+| 33 · partiel | banc à 36 px | banc à 44 px sur chaque capture, et textes coupés mesurés. Reste : en-têtes de catégorie de la liste (30 px), gardés pour tenir 13 carnets visibles (contrat point 2) | sortie ci-dessous |
+
+Corrigé en passant : les feuilles ouvertes dans Comparer (critère, offre) s'ouvraient dans la liste cachée ; elles s'ouvrent maintenant dans la vue affichée.
+
+Sorties (`node cap-amelio/cap.mjs p4.html apres`) :
+- GESTES 12/12 · ERREURS PAGE 0. Nouveaux gestes : Choisir Fournisseur B depuis sa colonne (« ✓ choisi » dans Comparer et Organisé, pouce « Commander · Fournisseur B ») ; le ⋯ du lien → Relire.
+- liste : lignesVisibles 13, hauteurMin 44 ; TEXTES COUPÉS : aucun.
+- CIBLES < 44 : seulement les en-têtes de catégorie (« ▾ Brasserie 13 », « ✓ 3 résolus ») à 30 px.
+- gagnants 600 : [Verallia (Prix / bt), –, –, Fournisseur B (Pour 600)] ; Verallia écarté : Fournisseur B vert.
+
+Captures : `cap-amelio/apres/` (33 et 11 planches), toutes ouvertes. Avant = version 0c99fc9a0, jugée dans CRITIQUE-AMELIO.md.
+Limites : thème clair non retravaillé ; 1280 px non capturé ; images de banc (SVG) à la place des vraies ; le taux € → CHF est une estimation fixe (0,94), marquée ≈.
+
+Prédiction : « Là, Comparer c'est mon choix : le meilleur a la barre pleine, et je vois tout de suite que Verallia, c'est au moins 504 sans la livraison. »
+
+LEÇON PROPOSÉE : une feuille ou une fenêtre ouverte depuis une vue ajoutée se teste dans cette vue ; ici, `ouvrirFeuille` visait la liste cachée, et ni le banc ni le critique ne l'avaient vu, faute de geste qui ouvre une feuille dans Comparer.
