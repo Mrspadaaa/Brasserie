@@ -640,3 +640,7 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
   « + Ajouter une caractéristique » et « ✦ Proposer » (v03-4).
 - Contrôle : toute maquette Comparer se pose côte à côte avec h04-7 et v03-4 ; il en manque un de ces éléments → échec. Échoue sur
   mini/cap/O-comparer-caracteristiques.png du 26.11.
+
+## JOUABLE-HORS-THEME (26.11, jouables v7 et passe 4)
+- Ses mots : « Le problème de ces 2 maquettes c'est quelle sont pas dans le thème de l'application aussi. Contrairement au mini maquettes non jouable. » ; « il manque les vrai images. Et certaines actions type relecture, escaler à l'ia ».
+- Contrôle : un jouable reprend le thème de l'app (en-tête L'Affinée, onglets du bas, jetons de mini/COMMUN.md) ; un article ou lien montre son image réelle quand on l'a (icône au trait sinon) ; chaque lien a Relire et Escalader. Échoue sur m4b-v7.html et p4.html du 26.11 matin.
