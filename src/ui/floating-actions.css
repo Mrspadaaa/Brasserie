@@ -74,6 +74,11 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
   padding-bottom: 4.5rem;
 }
 
+/* NUIT-5 (26.11) : un pied qui accueille le « + » (Ma bière › Récap) garde sa case à droite, 88 px comme la rangée Retour / Suivant. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] [data-pied-avec-plus] > div { padding-right: 5.5rem; }
+}
+
 /* NUIT-3 (26.11) : l'avis de synchronisation (en bas à gauche, au-dessus de la barre) s'arrête avant le + flottant : « Actualiser » restait dessous. */
 @media (max-width: 1023px) {
   :root body[data-has-fab-floating] [data-bandeau-persistance] { max-width: calc(100% - var(--plus-cote, 56px) - 1.75rem); }

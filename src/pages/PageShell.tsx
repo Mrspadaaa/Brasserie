@@ -306,6 +306,11 @@ interface PageShellProps {
   /** Barre collée en bas — validation, étape suivante. */
   footer?: React.ReactNode;
   /**
+   * NUIT-5 (26.11, BOUTON-FLOTTANT-COUVRE) : le pied garde la case du « + » à sa droite et le « + » s'y pose, à la hauteur de ses boutons, comme sur
+   * la rangée Retour / Suivant des autres étapes. Sans cela il flottait au-dessus du pied et couvrait, au repos, la dernière ligne lue (Récap : « 175–300 »).
+   */
+  piedAvecPlus?: boolean;
+  /**
    * Actions de fin de contenu (Retour, Suivant du wizard), non collées : la dernière rangée de la page.
    *
    * ⚠️ Le lanceur flottant (#114) se posait sur « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170).
@@ -342,6 +347,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   actions,
   progress,
   footer,
+  piedAvecPlus = false,
   endActions,
   endActionsCollant,
   mobileHeader,
@@ -583,7 +589,9 @@ export const PageShell: React.FC<PageShellProps> = ({
       return restore;
     }
     const publishHeight = () => {
-      const height = `${element.getBoundingClientRect().height}px`;
+      // Pied qui accueille le « + » (40 px de haut, posé à 1 rem + cette valeur du bas) : centré sur la rangée du pied.
+      const h = element.getBoundingClientRect().height;
+      const height = piedAvecPlus ? `${Math.round((h - 40) / 2 - 16)}px` : `${h}px`;
       if (root.style.getPropertyValue(property) !== height) root.style.setProperty(property, height);
     };
     publishHeight();
@@ -593,7 +601,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       observer.disconnect();
       restore();
     };
-  }, [footerShown]);
+  }, [footerShown, piedAvecPlus]);
 
   // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste en bas de la page, hors de la zone qui défile (B1 n° 15 : sortie de
   // l'écran dès qu'une étape dépassait la page). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon), sauf si l'hôte la veut fixe (`endActionsCollant`, Levure).
@@ -754,6 +762,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       {footerShown && (
         <footer
           ref={footerRef}
+          {...(piedAvecPlus ? { 'data-pied-avec-plus': '' } : {})}
           className={`shrink-0 border-t border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
             // Clavier ouvert, le clavier couvre déjà la zone sûre du bas.
             tight ? '' : 'pb-safe'

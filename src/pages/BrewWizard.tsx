@@ -2499,6 +2499,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       progress={
         <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels compactLabels />
       }
+      piedAvecPlus={step === 'recap'}
       footer={
         step === 'recap' ? (
           <div className="flex justify-end gap-2">
@@ -2509,7 +2510,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
                          text-sm font-semibold transition-colors hover:brightness-105"
             >
-              {saving ? 'Enregistrement…' : 'Enregistrer la recette'}
+              {saving ? 'Enregistrement…' : <><span className="sm:hidden">Enregistrer</span><span className="hidden sm:inline">Enregistrer la recette</span></>}
             </button>
             <button
               type="button"
@@ -2517,7 +2518,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               disabled={saving || draftReadOnly}
               className="min-h-touch px-3 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
             >
-              Enregistrer et préparer un brassin
+              <span className="sm:hidden" aria-hidden="true">Préparer un brassin</span><span className="sr-only sm:not-sr-only">Enregistrer et préparer un brassin</span>
             </button>
           </div>
         ) : undefined
