@@ -100,7 +100,11 @@
 .pv-bouton svg { width: 18px; height: 18px; }
 .pv-bouton:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .pv-pouce { transition: none; } }
+/* NUIT-1 (26.11, BOUTON-FLOTTANT-COUVRE) : au téléphone le + flotte à 12 px du bord, 56 px, au-dessus de la barre : le panneau du volume cible
+   lui laisse sa place à droite (6 px d'air), le champ et le curseur s'arrêtent avant lui. */
+body[data-has-fab-floating] .pv-bot { padding-right: calc(var(--plus-cote, 56px) + 18px); }
 @media (min-width: 900px) {
+  body[data-has-fab-floating] .pv-bot { padding-right: 16px; }
   .pv-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding-bottom: 24px; align-items: start; }
   .pv-rail { display: none; }
   /* g3, k3 n° 1 : le volume cible quitte le bas d'écran et se pose dans la tête, à côté d'« À peser pour … » ; rien ne couvre le dry hop. */

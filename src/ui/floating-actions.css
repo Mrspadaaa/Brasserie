@@ -74,6 +74,11 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
   padding-bottom: 4.5rem;
 }
 
+/* NUIT-3 (26.11) : l'avis de synchronisation (en bas à gauche, au-dessus de la barre) s'arrête avant le + flottant : « Actualiser » restait dessous. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] [data-bandeau-persistance] { max-width: calc(100% - var(--plus-cote, 56px) - 1.75rem); }
+}
+
 /* Une feuille ou une modale possède l'interaction : le bouton s'efface plutôt
    que de flotter au-dessus d'un formulaire qu'il ne peut pas servir. Sa case
    reste réservée : la page ne saute pas à l'ouverture de la feuille. C'est la

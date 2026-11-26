@@ -917,7 +917,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       )}
 
       {subTab === 'materiel' && (segMateriel === 'avenir' || segMateriel === 'realises') && (
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto pb-[4.5rem]" data-reserve-plus="">
           {segMateriel === 'realises' && <ResolusRealises resolus={resolusReal} onOuvrir={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now() }); }} />}
           <UpgradeWorkspace vue={segMateriel === 'avenir' ? 'future' : 'completed'} onVue={(v) => setSegMateriel(v === 'future' ? 'avenir' : 'realises')}
             createRequest={besoinDemande} onCreateRequestHandled={() => setBesoinDemande(null)}
