@@ -1,0 +1,1025 @@
+{
+ "gestes": [
+  {
+   "nom": "id djb2 de la page = celui du banc",
+   "ok": true,
+   "detail": "u81a946a2 u288565ec"
+  },
+  {
+   "nom": "A · citra rangé : valeurs 🔗 Brau, « 🔗 en lecture » MotlerHops, valeur inventée retirée",
+   "ok": true,
+   "detail": {
+    "ok": true,
+    "html": "<span class=\"p4-c\" title=\"245.70 CHF\"><span class=\"lk\" aria-label=\"lu sur son lien\">🔗</span><b>245,70 CHF</b></span>",
+    "brau": "🔗🔗245,70 CHF | 🔗🔗782,15 CHF | 🔗🔗0,1044 CHF/g | 🔗🔗✅ 66 am Lager | 🔗🔗13,6 %",
+    "motler": "?(lect) ?(lect) ?(lect) ?(lect) ?(lect)",
+    "arts": [
+     {
+      "nom": "MotlerHops",
+      "lect": true
+     },
+     {
+      "nom": "Brau- und Rauchshop",
+      "lect": false
+     }
+    ],
+    "erreurs": [
+     "valeur « 3.72 € » absente de liens/ (retirée)"
+    ]
+   }
+  },
+  {
+   "nom": "A · consigne : « Ce que disent ses liens » avec Brau, MotlerHops en lecture",
+   "ok": true,
+   "detail": "Ligne 2 · Citra 13,6 % — Brau- und Rauchshop (lu le 26 nov.) — prix : 5 kg = 245.70 CHF ; 20 kg = 782.15 CHF | dispo : 66 am Lager | Alpha : 13.6 % | Prix au gramme : 0.1044 CHF/g // Ligne 1 · motlerhops.fr — pas encore lu (🔗 en lecture) : ses valeurs valent \"?\""
+  },
+  {
+   "nom": "A · demande écrite pour MotlerHops seul",
+   "ok": true,
+   "detail": "{\"uce7abb45\":{\"url\":\"https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow\",\"carnet\":\"ZZ TEST — inspection électrique, fusible\",\"quand\":\"2026-11-26T06:32:40.271Z\"},\"ufd52fd65\":{\"url\":\"https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set\",\"carnet\":\"ZZ TEST — trop de vapeur au brassage\",\"quand\":\"2026-11-26T06:32:40.530Z\"},\"ue1a163c7\":{\"url\":\"https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling\",\"carnet\":\"ZZ TEST — trop de vapeur au brassage\",\"quand\":\"2026-11-26T06:32:40.530Z\"},\"u288565ec\":{\"url\":\"https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us\",\"carnet\":\"ZZ TEST — Houblons citra\",\"quand\":\"2026-11-26T06:32:40.616Z\"}}"
+  },
+  {
+   "nom": "A · une seule lecture citra (aucune relance inutile)",
+   "ok": true,
+   "detail": "appels 1"
+  },
+  {
+   "nom": "A · toucher « ? » en lecture : toast, pas de question au pouce",
+   "ok": true,
+   "detail": "🔗 Claude lit cette page ; la case se remplira seule"
+  },
+  {
+   "nom": "C · 19 exemples : aucune question au pouce, aucun « Noter » de manque, aucun « toi », pas deux fois la même comparaison, rien de répété",
+   "ok": true,
+   "detail": "19/19 · pouce : 🤝Demander une 2e offre → ✓Réglé | 🔁Revérifier le raccord≈ 1 d → ✓Réglé | 📞Contacter l’entreprise X → ✓Réglé | 🎟️Réserver le stand → ✓Réglé | Retenir · ⏳ avant décembre🔧 | 🔍Acheter un testeur → ✓Réglé | ↺Rouvrir | ↺Rouvrir | 👃Sentir à nouveau≈ 9 déc. → ✓Réglé | ↺Rouvrir | 🧹Ranger la cave6 déc. → ✓Réglé | 🛒Acheter le condenser≈ 30 n → ✓Réglé | ∅ | 🛒Commander chez Brau- und R → ✓Réglé | 📞Appeler le technicien → ✓Réglé | 🍺Goûter chez la voisine → ✓Réglé | 📅Choisirle 15 → ✓Réglé | 📞Rappeler le gérantlundi → ✓Réglé | 🧪Faire un starter → ✓Réglé"
+  },
+  {
+   "nom": "C · phrases ≤ 30 mots (noms et chiffres non comptés)",
+   "ok": true,
+   "detail": "assurance- 17, co2-qui-ba 11, ecoulement 15, fete-de-la 16, frigo-de-g 18, inspection 17, levure-len 20, malt-pilsn 21, odeur-de-s 14, pompe-qui- 17, ranger-la- 15, trop-de-va 15, embouteill 14, houblons-c 23, chaudiere- 15, idee-biere 15, 600-boutei 16, bar-du-cen 15, levure-rec 16"
+  },
+  {
+   "nom": "D · ✦ piste : suggestions en place, ✦ IA, noms réels, rien au pouce",
+   "ok": true,
+   "detail": "✦ IA🧽 Siphon encrassé✕ | ✦ IA🔩 Bonde mal serrée✕ · en cours vu 1 · pouce inchangé « 📞Contacter l’entreprise X »"
+  },
+  {
+   "nom": "D · ✦ option : suggestions en place, ✦ IA, noms réels, rien au pouce",
+   "ok": true,
+   "detail": "✦ IA🧰 Poser un siphon neuf✕ · en cours vu 1 · pouce inchangé « 📞Contacter l’entreprise X »"
+  },
+  {
+   "nom": "D · ✦ tache : suggestions en place, ✦ IA, noms réels, rien au pouce",
+   "ok": true,
+   "detail": "✦ IA📸 Photographier le joint usé✕ | ✦ IA🛒 Acheter un joint de rechange✕ · en cours vu 1 · pouce inchangé « ✓Réglé »"
+  },
+  {
+   "nom": "D · garder une piste (jeton ✦), écarter une autre (refus)",
+   "ok": true,
+   "detail": "{\"miens\":[\"piste:Siphon encrassé:ia\"],\"refus\":[\"suggestion : Bonde mal serrée\"],\"jetons\":[\"Siphon encrassé\"],\"restent\":0}"
+  },
+  {
+   "nom": "B · avant le lien : 1 lecture, demandes pour les deux liens, tout « 🔗 en lecture », pouce sans question",
+   "ok": true,
+   "detail": "appels 1 · demandes uce7abb45,ufd52fd65,ue1a163c7,u288565ec,u81a946a2 · pouce « 🔎Comparer les deux sites »"
+  },
+  {
+   "nom": "B · liens/ arrive : relecture une fois, valeurs 🔗 Brau",
+   "ok": true,
+   "detail": "appels 2 · Brau 🔗245,70 CHF | 🔗782,15 CHF | 🔗0,1044 CHF/g | 🔗✅ 66 am Lager | 🔗13,6 %"
+  },
+  {
+   "nom": "B · Brau relu et autre lien : pas de deuxième relance",
+   "ok": true,
+   "detail": "appels 2"
+  },
+  {
+   "nom": "B · journal : « lien lu, relecture » une fois",
+   "ok": true,
+   "detail": "une fois"
+  }
+ ],
+ "cas": [
+  {
+   "titre": "ZZ TEST — assurance à renouveler",
+   "avant": {
+    "zone": "🤝Demander une 2e offre",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 17,
+    "vus": [
+     "⏳ Échéance",
+     "35 j",
+     "avant le 31 déc.",
+     "ligne 1",
+     "📜 Police actuelle",
+     "🧰 Inventaire du matériel",
+     "📈 Chiffre d’affaires 2026",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 24,
+    "vus": [
+     "⏳ Échéance",
+     "35 j",
+     "avant le 31 déc.",
+     "ligne 1",
+     "📜 Police actuelle",
+     "🧰 Inventaire du matériel",
+     "📈 Chiffre d’affaires 2026",
+     "☐ À faire",
+     "Demander une 2e offre",
+     "ta ligne 3",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — CO2 qui baisse vite dans un fût",
+   "avant": {
+    "zone": "🔁Revérifier le raccord≈ 1 déc.",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 11,
+    "vus": [
+     "Décidé",
+     "🛢️ 1,2 bar",
+     "le 15 nov.",
+     "📉 0,4 bar",
+     "le 22",
+     "≈ 1 déc.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 18,
+    "vus": [
+     "Décidé",
+     "🛢️ 1,2 bar",
+     "le 15 nov.",
+     "📉 0,4 bar",
+     "le 22",
+     "☐ À faire",
+     "Revérifier le raccord",
+     "⏳ dans une semaine",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — écoulement qui fuit",
+   "avant": {
+    "zone": "📞Contacter l’entreprise X",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Changer le joint",
+     "Le sanitaire"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 15,
+    "vus": [
+     "Je cherche",
+     "sanitaire X",
+     "coût",
+     "150 CHF",
+     "estimé",
+     "attente",
+     "devis",
+     "retenir",
+     "retenir",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Changer le joint",
+     "Le sanitaire"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 22,
+    "vus": [
+     "Je cherche",
+     "sanitaire X",
+     "coût",
+     "150 CHF",
+     "estimé",
+     "attente",
+     "devis",
+     "retenir",
+     "retenir",
+     "☐ À faire",
+     "Contacter l’entreprise X",
+     "ta ligne 3",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — fête de la bière en juin",
+   "avant": {
+    "zone": "🎟️Réserver le stand",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 16,
+    "vus": [
+     "💡 Idée",
+     "≈95 j",
+     "avant mars",
+     "ligne 3",
+     "1 500 CHF",
+     "3 bières",
+     "pression",
+     "🚰 Tireuse",
+     "⛺ 2 tonnelles",
+     "🥤 Gobelets",
+     "🛢️ 10 fûts",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 23,
+    "vus": [
+     "💡 Idée",
+     "≈95 j",
+     "avant mars",
+     "ligne 3",
+     "1 500 CHF",
+     "3 bières",
+     "pression",
+     "🚰 Tireuse",
+     "⛺ 2 tonnelles",
+     "🥤 Gobelets",
+     "🛢️ 10 fûts",
+     "☐ À faire",
+     "Réserver le stand",
+     "⏳ avant mars",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — frigo de garde en panne",
+   "avant": {
+    "zone": "Retenir · ⏳ avant décembre🔧Réparer❄️Neuf",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 18,
+    "vus": [
+     "Je cherche",
+     "14 °C",
+     "au lieu de 2",
+     "6 fûts",
+     "480 CHF",
+     "1 200 CHF",
+     "720 CHF",
+     "d’écart",
+     "Retenir · ⏳ avant décembre",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — inspection électrique, fusible",
+   "avant": {
+    "zone": "🔍Acheter un testeur",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [
+     "💰prix du fusible?"
+    ],
+    "phrases": 17,
+    "vus": [
+     "Je cherche",
+     "5×20 mm",
+     "fusible",
+     "6,3 A",
+     "calibre",
+     "prix du fusible",
+     "🔍 Teste la tension d’abord.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [
+     "💰prix du fusible?"
+    ],
+    "phrases": 24,
+    "vus": [
+     "Je cherche",
+     "5×20 mm",
+     "fusible",
+     "6,3 A",
+     "calibre",
+     "prix du fusible",
+     "🔍 Teste la tension d’abord.",
+     "☐ À faire",
+     "Acheter un testeur",
+     "ta ligne 3",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — levure lente à démarrer",
+   "avant": {
+    "zone": "↺Rouvrir",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 20,
+    "vus": [
+     "Résolu",
+     "pourquoi",
+     "🌡️ Monter à 19 °C",
+     "36 h",
+     "16 °C",
+     "Démarre le lendemain",
+     "📌 À retenir",
+     "💧 Réhydrater",
+     "🌡️ Ensemencer à 18 °C",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — malt pilsner en rupture chez le fournisseur",
+   "avant": {
+    "zone": "↺Rouvrir",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 21,
+    "vus": [
+     "Résolu",
+     "pourquoi",
+     "🚚 Autre fournisseur",
+     "Rupture → mi‑décembre",
+     "Brassin 3 déc.",
+     "Autre en stock",
+     "2 sacs commandés",
+     "Brassin maintenu",
+     "+8 CHF",
+     "🧮 2 × 4 CHF",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — odeur de soufre dans un lot",
+   "avant": {
+    "zone": "👃Sentir à nouveau≈ 9 déc.",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 14,
+    "vus": [
+     "Décidé",
+     "odeur",
+     "⏳ Souvent normal : ça part pendant la garde.",
+     "≈ 9 déc.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 20,
+    "vus": [
+     "Décidé",
+     "odeur",
+     "⏳ Souvent normal : ça part pendant la garde.",
+     "☐ À faire",
+     "Sentir à nouveau",
+     "⏳ dans 2 semaines",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — pompe qui chauffe",
+   "avant": {
+    "zone": "↺Rouvrir",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 17,
+    "vus": [
+     "Résolu",
+     "pourquoi",
+     "🚰 Régler à la sortie",
+     "Brûlante après 30 min",
+     "Vanne mi‑fermée",
+     "Débit réglé",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — ranger la cave",
+   "avant": {
+    "zone": "🧹Ranger la cave6 déc.",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 15,
+    "vus": [
+     "📌 Mémo",
+     "📦 Trier les cartons",
+     "🪜 Monter une étagère",
+     "🗑️ Jeter les seaux",
+     "6 déc.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 21,
+    "vus": [
+     "📌 Mémo",
+     "📦 Trier les cartons",
+     "🪜 Monter une étagère",
+     "🗑️ Jeter les seaux",
+     "☐ À faire",
+     "Ranger la cave",
+     "⏳ samedi 6 déc.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — trop de vapeur au brassage",
+   "avant": {
+    "zone": "🛒Acheter le condenser≈ 30 nov.",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 15,
+    "vus": [
+     "comparé",
+     "🔗 en lecture",
+     "🔗 en lecture",
+     "Dispo",
+     "pas en stock",
+     "Prix",
+     "≈ 30 nov.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 22,
+    "vus": [
+     "comparé",
+     "🔗 en lecture",
+     "🔗 en lecture",
+     "Dispo",
+     "pas en stock",
+     "Prix",
+     "☐ À faire",
+     "Acheter le condenser",
+     "⏳ fin du mois",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Embouteillage — station complète (2027)",
+   "avant": {
+    "zone": "",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 14,
+    "vus": [
+     "📅 Planning",
+     "📅 Début dans 156 j",
+     "févr.",
+     "avr.",
+     "juin",
+     "auj.",
+     "2 500 CHF",
+     "budget",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Houblons citra",
+   "avant": {
+    "zone": "🛒Commander chez Brau- und Rauchshop",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 23,
+    "vus": [
+     "comparé",
+     "« dur à obtenir »",
+     "ligne 3 ↩",
+     "🔗 en lecture",
+     "5 kg",
+     "245,70 CHF",
+     "20 kg",
+     "782,15 CHF",
+     "Au gramme",
+     "0,1044 CHF/g",
+     "Dispo",
+     "✅ 66 am Lager",
+     "α",
+     "Alpha",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 32,
+    "vus": [
+     "comparé",
+     "« dur à obtenir »",
+     "ligne 3 ↩",
+     "🔗 en lecture",
+     "5 kg",
+     "245,70 CHF",
+     "20 kg",
+     "782,15 CHF",
+     "Au gramme",
+     "0,1044 CHF/g",
+     "Dispo",
+     "✅ 66 am Lager",
+     "α",
+     "Alpha",
+     "☐ À faire",
+     "Commander chez Brau- und Rauchshop",
+     "ta ligne 2",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Chaudière en panne jour de brassage",
+   "avant": {
+    "zone": "📞Appeler le technicien",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Technicien",
+     "Décaler au jeudi"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 15,
+    "vus": [
+     "Décidé",
+     "« Brassage IPA prévu demain 7h »",
+     "ligne 2 ↩",
+     "10 min",
+     "puis recoupe",
+     "retenir",
+     "retenir",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Technicien",
+     "Décaler au jeudi"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 22,
+    "vus": [
+     "Décidé",
+     "« Brassage IPA prévu demain 7h »",
+     "ligne 2 ↩",
+     "10 min",
+     "puis recoupe",
+     "retenir",
+     "retenir",
+     "☐ À faire",
+     "Appeler le technicien",
+     "ta ligne 4",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Idée bière au sureau",
+   "avant": {
+    "zone": "🍺Goûter chez la voisine",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Fin d’ébullition",
+     "À froid"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 15,
+    "vus": [
+     "💡 Idée",
+     "blonde légère",
+     "fin mai",
+     "en fleur",
+     "à chaud",
+     "retenir",
+     "retenir",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [
+     "Fin d’ébullition",
+     "À froid"
+    ],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 23,
+    "vus": [
+     "💡 Idée",
+     "blonde légère",
+     "fin mai",
+     "en fleur",
+     "à chaud",
+     "retenir",
+     "retenir",
+     "☐ À faire",
+     "Goûter chez la voisine",
+     "ta ligne 4",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — 600 bouteilles 33 cl",
+   "avant": {
+    "zone": "📅Choisirle 15",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 16,
+    "vus": [
+     "comparé",
+     "🧽 à laver",
+     "Prix / bt",
+     "Minimum",
+     "Livraison",
+     "80 CHF",
+     "Pour 600",
+     "504 CHF",
+     "410 CHF",
+     "le 15",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 19,
+    "vus": [
+     "comparé",
+     "🧽 à laver",
+     "Prix / bt",
+     "Minimum",
+     "Livraison",
+     "80 CHF",
+     "Pour 600",
+     "504 CHF",
+     "410 CHF",
+     "☐ À faire",
+     "Choisir",
+     "⏳ le 15",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Bar du Centre veut nos bières",
+   "avant": {
+    "zone": "📞Rappeler le gérantlundi",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [
+     "💰prix pro?",
+     "🛢️assez de fûts?"
+    ],
+    "phrases": 15,
+    "vus": [
+     "📌 Mémo",
+     "2 fûts par mois",
+     "demande",
+     "prix pro",
+     "assez de fûts",
+     "lundi",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [
+     "💰prix pro?",
+     "🛢️assez de fûts?"
+    ],
+    "phrases": 20,
+    "vus": [
+     "📌 Mémo",
+     "2 fûts par mois",
+     "demande",
+     "prix pro",
+     "assez de fûts",
+     "☐ À faire",
+     "Rappeler le gérant",
+     "⏳ lundi",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  },
+  {
+   "titre": "ZZ TEST — Levure récoltée à tester",
+   "avant": {
+    "zone": "🧪Faire un starter",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 16,
+    "vus": [
+     "Noté",
+     "3e génération",
+     "12 jours",
+     "au frigo",
+     "🧪 Le starter dira si elle repart bien.",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "apres": {
+    "zone": "✓Réglé",
+    "question": false,
+    "noter": 0,
+    "qui": [],
+    "toi": 0,
+    "double": false,
+    "incs": [],
+    "phrases": 23,
+    "vus": [
+     "Noté",
+     "3e génération",
+     "12 jours",
+     "au frigo",
+     "🧪 Le starter dira si elle repart bien.",
+     "☐ À faire",
+     "Faire un starter",
+     "ta ligne 3",
+     "Aide",
+     "✏️ Mes notes",
+     "▦ Organisé"
+    ],
+    "texte": ""
+   },
+   "repete": []
+  }
+ ],
+ "erreursPage": []
+}
