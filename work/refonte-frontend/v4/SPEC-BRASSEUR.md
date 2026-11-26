@@ -2986,3 +2986,5 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 (même classement, Relecture des mois plus tard) : « v03 : Bof »
 - 26.11 ~08:10 (page des 6 styles adultes, 1VbLXXPhZimDE4d4PbYQpP) : « Pas de sous catégories, réponds peut aux besoins. C'est plus pro mais moins claire... »
 - 26.11 ~08:15 : « Mais tu as jamais fait comme demandé un carnets jouable en partant ces des choix Carnet passe 4, classement par écran (25.11) » (suivi du classement complet, voir CLASSEMENT-4.md)
+- 26.11 ~08:20 : « Mais je pense que pour l'arbre et tout, ça doit être règle. » (lu : réglé)
+- 26.11 ~08:20 : « Prends mes choix et adapte les au maquettes jouable. Rend les plus pratique, plus précis et moins enfentin. Et reprends toutes mes remarques et ça devrait être bon, fait des mini maquettes de ça »
