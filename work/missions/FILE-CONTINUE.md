@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-26T10:45:00Z
+pause:
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -89,7 +89,7 @@ pause: 2026-11-26T10:45:00Z
 - [attente] Style tour 2 (arrêté 26.11 : priorité au jouable de ses choix) (sa parole 26.11 « Pas de sous catégories… plus pro mais moins claire ») : C1 C2 D1 D2, critique, page de choix neuve
 - [x] Comparer refait depuis ses écrans figés (h04-7, v03-4…), puis republier 6ds7soVDsMyA9xgo4CZAvm — FAIT 26.11 (16/16, page v2)
 - [attente] son accord pour télécharger les images produit de ses liens (Brau, Brewtools ×2, ggmgastro ×2) et les poser en assets des jouables
-- [ ] Améliorer v7 et p4 (AMELIORER-JOUABLES.md, 2 concepteurs, 9 points) puis republier aux mêmes liens
+- [x] Améliorer v7 et p4 (AMELIORER-JOUABLES.md, 2 concepteurs, 9 points) puis republier aux mêmes liens — FAIT 26.11 : critiques 6,5 et 6/10 → corrigés (v7 5/5 bloquants, p4 7/7), republiés MkVwvZtuysD48vgaJiiejS v4 et 7osEWid1m3qPbSZG2wnRRR v4 ; [attente] décision barre d’onglets dans un carnet ouvert (variantes)
 - [x] Jouable p5 (lancé 26.11 09:10, JOUABLE-P5.md § Mise à jour) : vérifier, critique en test d’écran, corrections, artefact neuf — FAIT 26.11 : 6/10 → corrigé 14/14 bloquants, publié https://claude.ai/artifact/VPRxKjC6xoqYqGN9QcYfY2, liens écrits
 - [attente] son regard sur https://claude.ai/artifact/6ds7soVDsMyA9xgo4CZAvm (mini faites, critiquées, corrigées 26.11) avant le jouable — Mini maquettes p5 (MINI-P5.md, ses choix adaptés : S liste+saisie, O organisé+décision) → critique → corrections → page neuve ; PUIS jouable p5 (JOUABLE-P5.md) sur ces maquettes : concepteur, puis critique en test d’écran, corrections, artefact neuf — Son classement passe 4 (CLASSEMENT-4.md) : rangs 1 (v01 glisser, v04 Mes notes on écrit) et 2 à greffer dans le jouable suivant, avec le style qu’il choisira ; contrôle COMPARER-BEAUCOUP-D-OPTIONS
 - [x] Mini maquettes style adulte (sa demande 26.11 7:25) : 6 genres (A1–A3, B1–B3) sur 4 écrans ; puis critique + personas ; puis page de choix (artefact neuf) ; le jouable attend son choix — FAIT 26.11 : 6 genres corrigés, critique + 3 personas, page de choix https://claude.ai/artifact/1VbLXXPhZimDE4d4PbYQpP ; [attente] son choix de style
