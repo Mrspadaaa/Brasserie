@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-26T08:00:00Z
+pause: 2026-11-26T08:15:00Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -83,7 +83,7 @@ pause: 2026-11-26T08:00:00Z
 - [x] Journal IA réel relu (15 appels, 2 à 6 s, 0 citation fausse) ; consigne corrigée (règles 1c, 1d) dans les 3 jouables, republiés
 - [x] Récapitulatif du matin : liens, notes des juges, ce qui reste — FAIT 26.11 ~08:05 (liens, page de choix, classement passe 4)
 - [x] Veilleur créé (tâche planifiée veilleur-nuit, toutes les 30 min, 21 h–7 h ; son « Oui »)
-- [ ] Session [Paliers](#local_ce55c549-73da-4c70-ae44-1587a81f12fe) (rc on) : relire son récap (déploiement = son accord)
+- [attente] Session [Paliers](#local_ce55c549-73da-4c70-ae44-1587a81f12fe) (rc on) : relire son récap (déploiement = son accord) — 26.11 : commit 727f25086 sur claude/awesome-payne-7bc713, contrôle Chrome 9/9, build vert ; déploiement = son accord
 - [attente] Build : vite build rejoué après npm install (paquets du lock) ; tsc rouge PRÉEXISTANT hors voie depuis 875751dcb (seedData.ts GanttTask, atelierModel.ts never) — à corriger dans une voie à part, avec son accord (gel des correctifs)
 - [x] Liens (26.11, « Aucune comparaison ?? », « Pas fan de l'harcellement ») : 2 agents (v7+m4b, p4) branchent liens/ et demandes/ ; puis publier avec les règles db, écrire liens/ (Brau, Brewtools ×2 lus ; MotlerHops, Kegland en 429 : réessayer), vérifier — FAIT 26.11 : 3 jouables publiés (db journal/liens/demandes), liens Brau + Brewtools ×2 écrits ; MotlerHops et Kegland en 429, restent « 🔗 en lecture » (demandes à relire plus tard)
 - [attente] Style tour 2 (arrêté 26.11 : priorité au jouable de ses choix) (sa parole 26.11 « Pas de sous catégories… plus pro mais moins claire ») : C1 C2 D1 D2, critique, page de choix neuve
