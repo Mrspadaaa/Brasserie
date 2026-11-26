@@ -1,0 +1,740 @@
+{
+ "mode": "apres",
+ "ecrans": {
+  "01-liste": {
+   "mots": 141,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "170×42 Noter dans un nouveau ca"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "carnetsVisibles": 13,
+   "utileY": null
+  },
+  "org-eco": {
+   "mots": 49,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-co2": {
+   "mots": 53,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ✓ »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-bt": {
+   "mots": 85,
+   "minFont": 12,
+   "petits": [
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-citra": {
+   "mots": 83,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-frigo": {
+   "mots": 54,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ✓ »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "65×30 Ranger · Brasserie › Fro",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-cave": {
+   "mots": 45,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "100×30 Ranger · Local › Rangeme",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "org-vap": {
+   "mots": 70,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "86×30 Ranger · Brasserie › Bra",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "notes-eco": {
+   "mots": 62,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé"
+   ],
+   "nCibles": 3,
+   "debord": false,
+   "utileY": null
+  },
+  "02-liste-bas": {
+   "mots": 127,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "170×42 Noter dans un nouveau ca"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "carnetsVisibles": 9,
+   "utileY": null
+  },
+  "03-liste-afaire": {
+   "mots": 171,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "170×42 Noter dans un nouveau ca"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "carnetsVisibles": 0,
+   "utileY": null
+  },
+  "04-liste-champ": {
+   "mots": 141,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "170×42 Noter dans un nouveau ca"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "carnetsVisibles": 13,
+   "utileY": null
+  },
+  "05-liste-suggestions": {
+   "mots": 141,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "170×42 Noter dans un nouveau ca"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "carnetsVisibles": 13,
+   "utileY": null
+  },
+  "10-eco-ligne-option": {
+   "mots": 57,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "11-eco-fait": {
+   "mots": 47,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "12-eco-champ": {
+   "mots": 47,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "13-eco-ajoute": {
+   "mots": 47,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "14-eco-aide": {
+   "mots": 62,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11.6667px « estimé »",
+    "11px « ? »",
+    "12px « 4 »"
+   ],
+   "cibles44": [
+    "57×30 Ranger · Local › Eau",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "20-bt-comparer": {
+   "mots": 108,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "21-bt-comparer-cote": {
+   "mots": 92,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "22-bt-cellule": {
+   "mots": 104,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "23-bt-ecarter": {
+   "mots": 90,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "24-bt-ajout-crit": {
+   "mots": 86,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11.6667px « à remplir »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "25-bt-proposer": {
+   "mots": 103,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11.6667px « à remplir »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "26-bt-crit-prix": {
+   "mots": 96,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11.6667px « à remplir »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "27-bt-prendre": {
+   "mots": 85,
+   "minFont": 12,
+   "petits": [
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "28-bt-commande": {
+   "mots": 81,
+   "minFont": 12,
+   "petits": [
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "30-six-org": {
+   "mots": 73,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "31-six-comparer": {
+   "mots": 115,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "32-six-cote": {
+   "mots": 110,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "33-six-cote-droite": {
+   "mots": 110,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "34-six-bas": {
+   "mots": 101,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": null
+  },
+  "40-citra-liens": {
+   "mots": 83,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 42
+  },
+  "41-citra-relire": {
+   "mots": 83,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 42
+  },
+  "42-citra-meta": {
+   "mots": 83,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 42
+  },
+  "43-citra-escalader": {
+   "mots": 85,
+   "minFont": 11,
+   "petits": [
+    "11px « ? »",
+    "11px « ? »"
+   ],
+   "cibles44": [
+    "141×30 Ranger · Brasserie › Mat",
+    "130×34 Mes notes",
+    "130×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "50-co2-tete": {
+   "mots": 53,
+   "minFont": 11,
+   "petits": [
+    "11px « ✓ »",
+    "11px « ? »",
+    "11px « ? »",
+    "11px « ✓ »",
+    "12px « 1 »"
+   ],
+   "cibles44": [
+    "133×30 Ranger · Brasserie › Con",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  },
+  "51-cave-date": {
+   "mots": 45,
+   "minFont": 13,
+   "petits": [],
+   "cibles44": [
+    "100×30 Ranger · Local › Rangeme",
+    "153×34 Mes notes",
+    "153×34 Organisé",
+    "166×42 Ajouter à tes notes"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 100
+  }
+ },
+ "gestes": {
+  "03-liste-afaire": "ok",
+  "04-liste-champ": "ok",
+  "05-liste-suggestions": "ok",
+  "10-eco-ligne-option": "ok",
+  "11-eco-fait": "ok",
+  "12-eco-champ": "ok",
+  "13-eco-ajoute": "ok",
+  "14-eco-aide": "ok",
+  "20-bt-comparer": "ok",
+  "21-bt-comparer-cote": "ok",
+  "22-bt-cellule": "ok",
+  "23-bt-ecarter": "ok",
+  "24-bt-ajout-crit": "ok",
+  "25-bt-proposer": "ok",
+  "26-bt-crit-prix": "ok",
+  "27-bt-prendre": "ok",
+  "28-bt-commande": "ok",
+  "31-six-comparer": "ok",
+  "32-six-cote": "ok",
+  "33-six-cote-droite": "ok",
+  "34-six-bas": "ok",
+  "40-citra-liens": "ok",
+  "41-citra-relire": "ok",
+  "42-citra-meta": "ok",
+  "43-citra-escalader": "ok",
+  "50-co2-tete": "ok",
+  "51-cave-date": "ok"
+ },
+ "six": {
+  "offres": 6,
+  "colonnes": 6,
+  "barres": 6
+ },
+ "escalade": {
+  "opts": [
+   null,
+   null,
+   "complex"
+  ],
+  "demandes": {
+   "uce7abb45": {
+    "url": "https://www.brewtools.com/spare-parts/7713573/fuse-glass-5x20mm-6-dot-3a-fast-blow",
+    "carnet": "ZZ TEST — inspection électrique, fusible",
+    "quand": "2026-11-26T09:44:32.334Z"
+   },
+   "ufd52fd65": {
+    "url": "https://kegland.com.au/products/brewzilla-2-inch-tri-clover-steam-condenser-set",
+    "carnet": "ZZ TEST — trop de vapeur au brassage",
+    "quand": "2026-11-26T09:44:32.592Z"
+   },
+   "ue1a163c7": {
+    "url": "https://www.brewtools.com/brewing-system-accessories/7714229/steam-condenser-2-part-2-avoid-steam-during-boiling",
+    "carnet": "ZZ TEST — trop de vapeur au brassage",
+    "quand": "2026-11-26T09:44:32.592Z"
+   },
+   "u288565ec": {
+    "url": "https://www.motlerhops.fr/collections/tous-nos-houblons/products/citra-us",
+    "carnet": "ZZ TEST — Houblons citra",
+    "quand": "2026-11-26T09:45:37.513Z",
+    "type": "relire"
+   }
+  }
+ },
+ "erreurs": []
+}

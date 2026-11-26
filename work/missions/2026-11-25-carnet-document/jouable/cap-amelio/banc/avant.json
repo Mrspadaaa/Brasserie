@@ -1,0 +1,157 @@
+{
+ "mode": "avant",
+ "ecrans": {
+  "01-liste": {
+   "mots": 135,
+   "minFont": 11,
+   "petits": [
+    "12px « 19 carnets · 19 exem »",
+    "12px « je cherche »",
+    "12px « décidés »",
+    "12px « notés »",
+    "12px « résolus »",
+    "11px « priorité haute »"
+   ],
+   "cibles44": [
+    "63×32 Arbre",
+    "91×32 À faire 18",
+    "370×32 🍺Brasserie10▾",
+    "370×22 ▾ Brassage 3",
+    "364×38 Chaudière en panne jour ",
+    "364×38 Trop de vapeur au brassa",
+    "364×38 Idée bière au sureau · N",
+    "370×22 ▾ Fermentation 2"
+   ],
+   "nCibles": 26,
+   "debord": false,
+   "carnetsVisibles": 12,
+   "utileY": null
+  },
+  "org-eco": {
+   "mots": 34,
+   "minFont": 12,
+   "petits": [
+    "12px « plus tard »",
+    "12px « ✦ conseillé »",
+    "12px « ✦ IA »",
+    "12px « prix inconnu »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan",
+    "59×40 Sa ligne dans Mes notes",
+    "28×28 Retirer la marque consei",
+    "36×36 Refuser la proposition d"
+   ],
+   "nCibles": 4,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-co2": {
+   "mots": 37,
+   "minFont": 12,
+   "petits": [
+    "12px « plus tard »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan",
+    "59×40 Sa ligne dans Mes notes"
+   ],
+   "nCibles": 2,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-bt": {
+   "mots": 34,
+   "minFont": 12,
+   "petits": [
+    "12px « total »",
+    "12px « CHF »",
+    "12px « /bt »",
+    "12px « ? »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-citra": {
+   "mots": 32,
+   "minFont": 10,
+   "petits": [
+    "11px « 🔗 en lecture »",
+    "10px « 🔗 »",
+    "12px « 5 kg »",
+    "12px « CHF »",
+    "12px « 🔗 »",
+    "12px « 20 kg »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan"
+   ],
+   "nCibles": 1,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-frigo": {
+   "mots": 36,
+   "minFont": 12,
+   "petits": [
+    "12px « plus tard »",
+    "12px « CHF »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan",
+    "59×40 Sa ligne dans Mes notes"
+   ],
+   "nCibles": 2,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-cave": {
+   "mots": 28,
+   "minFont": 12,
+   "petits": [
+    "12px « ⚠ dimanche »",
+    "12px « plus tard »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan",
+    "59×40 Sa ligne dans Mes notes"
+   ],
+   "nCibles": 2,
+   "debord": false,
+   "utileY": 90
+  },
+  "org-vap": {
+   "mots": 34,
+   "minFont": 11,
+   "petits": [
+    "12px « plus tard »",
+    "11px « 🔗 en lecture »",
+    "11px « 🔗 en lecture »",
+    "12px « ✦ conseillé »"
+   ],
+   "cibles44": [
+    "44×36 Détails, rangement, chan",
+    "59×40 Sa ligne dans Mes notes",
+    "28×28 Retirer la marque consei"
+   ],
+   "nCibles": 3,
+   "debord": false,
+   "utileY": 90
+  },
+  "notes-eco": {
+   "mots": 57,
+   "minFont": 14,
+   "petits": [],
+   "cibles44": [],
+   "nCibles": 0,
+   "debord": false,
+   "utileY": null
+  }
+ },
+ "gestes": {},
+ "erreurs": []
+}
