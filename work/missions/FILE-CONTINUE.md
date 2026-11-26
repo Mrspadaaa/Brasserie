@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause:
+pause: 2026-11-26T07:35:00Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -81,10 +81,10 @@ pause:
 - [x] Passe 4 : juges faits (juge-critique-1, juge-personas-action-1, juge-personas-produit-1) : non probant, mécanismes relevés ; itération 2 lancée (ITERATION-2.md, p4b)
 - [x] Jouable passe 4 : juges (7 · 7,4 · 7,3), correction 1 (8/8 B, B7 en partie), publié https://claude.ai/artifact/7osEWid1m3qPbSZG2wnRRR
 - [x] Journal IA réel relu (15 appels, 2 à 6 s, 0 citation fausse) ; consigne corrigée (règles 1c, 1d) dans les 3 jouables, republiés
-- [ ] Récapitulatif du matin : liens, notes des juges, ce qui reste
+- [x] Récapitulatif du matin : liens, notes des juges, ce qui reste — FAIT 26.11 ~08:05 (liens, page de choix, classement passe 4)
 - [x] Veilleur créé (tâche planifiée veilleur-nuit, toutes les 30 min, 21 h–7 h ; son « Oui »)
 - [ ] Session [Paliers](#local_ce55c549-73da-4c70-ae44-1587a81f12fe) (rc on) : relire son récap (déploiement = son accord)
 - [attente] Build : vite build rejoué après npm install (paquets du lock) ; tsc rouge PRÉEXISTANT hors voie depuis 875751dcb (seedData.ts GanttTask, atelierModel.ts never) — à corriger dans une voie à part, avec son accord (gel des correctifs)
 - [x] Liens (26.11, « Aucune comparaison ?? », « Pas fan de l'harcellement ») : 2 agents (v7+m4b, p4) branchent liens/ et demandes/ ; puis publier avec les règles db, écrire liens/ (Brau, Brewtools ×2 lus ; MotlerHops, Kegland en 429 : réessayer), vérifier — FAIT 26.11 : 3 jouables publiés (db journal/liens/demandes), liens Brau + Brewtools ×2 écrits ; MotlerHops et Kegland en 429, restent « 🔗 en lecture » (demandes à relire plus tard)
-- [ ] Son classement passe 4 (CLASSEMENT-4.md) : rangs 1 (v01 glisser, v04 Mes notes on écrit) et 2 à greffer dans le jouable suivant, avec le style qu’il choisira ; contrôle COMPARER-BEAUCOUP-D-OPTIONS
+- [attente] son choix de style (page 1VbLXXPhZimDE4d4PbYQpP) — Son classement passe 4 (CLASSEMENT-4.md) : rangs 1 (v01 glisser, v04 Mes notes on écrit) et 2 à greffer dans le jouable suivant, avec le style qu’il choisira ; contrôle COMPARER-BEAUCOUP-D-OPTIONS
 - [x] Mini maquettes style adulte (sa demande 26.11 7:25) : 6 genres (A1–A3, B1–B3) sur 4 écrans ; puis critique + personas ; puis page de choix (artefact neuf) ; le jouable attend son choix — FAIT 26.11 : 6 genres corrigés, critique + 3 personas, page de choix https://claude.ai/artifact/1VbLXXPhZimDE4d4PbYQpP ; [attente] son choix de style
