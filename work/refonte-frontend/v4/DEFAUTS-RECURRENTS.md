@@ -631,3 +631,12 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
   passe 3 v01) ; chaque écran répond en 3 s à sa question (liste : qu'est-ce qui est ouvert et où ; problème : trouvé / pas trouvé / quoi
   faire ; achat : qui gagne quoi ; échéance : quand et ce qu'il manque) ; adulte ne veut pas dire austère : symboles muets, tableaux de
   propriétés et filets seuls sont refusés s'ils rendent l'écran moins clair que la passe 4.
+
+## COMPARER-PAS-SON-CHOIX (26.11, mini p5)
+- Ses mots : « C'est très mauvais, c'est pas du tout ce qui a été regardé, choisi. » (Comparer chambre froide, tableau de 32 lignes inventé).
+- Son choix figé (maquettes.json › carnet › ecrans_choisis.figes.comparer, 17.11) : g01-8, v03-4, g05-8, h04-7, h06-7 (images
+  work/missions/2026-11-17-carnet-retouches/maquettes/page2/img/<id>.webp) : barres du critère classées (h04-7), « Côte à côte » avec
+  l'image de chaque article et le meilleur en vert par ligne, ligne « Compromis », « Écartés », table complète des caractéristiques avec
+  « + Ajouter une caractéristique » et « ✦ Proposer » (v03-4).
+- Contrôle : toute maquette Comparer se pose côte à côte avec h04-7 et v03-4 ; il en manque un de ces éléments → échec. Échoue sur
+  mini/cap/O-comparer-caracteristiques.png du 26.11.

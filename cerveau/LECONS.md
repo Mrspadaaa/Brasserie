@@ -21,9 +21,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 26.10 : u4 masqué. 02.11 : p3c-3 avec l'ancien formulaire : « Mais l'app ». 22.11 : interrupteur des sels retiré : « On peut plus désactiver les sels ??? ».
+- Erreur : 26.10 : u4 masqué. 02.11 : p3c-3 avec l'ancien formulaire : « Mais l'app ». 22.11 : interrupteur des sels retiré : « On peut plus désactiver les sels ??? ». 26.11 : Comparer refait sans ses écrans figés du 17.11 : « pas du tout ce qui a été regardé, choisi ».
 - Cause : « X de Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas, garde ce qu'elle a ; inventaire, captures côte à côte de chaque état et geste (D123). ([[maquettes-16-11]])
+- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; tout brief cite aussi les écrans figés du registre (maquettes.json › ecrans_choisis) de chaque écran touché, pas seulement le dernier classement ; un port retire ce qu'elle n'a pas, garde ce qu'elle a ; inventaire, captures côte à côte de chaque état et geste (D123). ([[maquettes-16-11]])
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
