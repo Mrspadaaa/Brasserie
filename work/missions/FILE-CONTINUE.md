@@ -9,9 +9,9 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 - `session: libre` : la prochaine session principale l'adopte ; `libre-apres <id>` après un hand_off_to_session.
 - Garde-fou : trois arrêts d'affilée sans changement de ce fichier laissent passer l'arrêt.
 
-actif: non
+actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause:
+pause: 2026-11-26T07:15:00Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -45,28 +45,28 @@ pause:
 - [x] (porté, D451) (D451 mode nuit : porter si le critique juge qu une base + greffes répond à tous les besoins, sinon écrire le manque ; après tour 65) Carnet compact passe 2 : page publiée https://claude.ai/artifact/Yb51q1gSCTXwZ6QrFZBgtj (6 versions, 11 écrans dont mémo, problème, récolte, idée ; part 77 à 82 %) ; attend son classement — VERDICT : base v01 p3 + greffes v01 p2, v05 p3, v03 p3 (D451/VERDICT.md) ; plan en cours work/missions/2026-11-24-port-d451
 - [x] (porté, D451) (D451, avec la passe 2, même critique) Carnet = suivi d un problème (passe 3) : page publiée https://claude.ai/artifact/LxdEwZq4AxtxL3LVFeSKEX (6 versions × 10 écrans, épreuve sur 4 cas tenus à part) ; attend son classement ; exemples ZZ TEST en création
 - [x] Prix des houblons (prix-houblon2 c303d2223 : quantité, CHF/kg, accord D450, Escalader sur manque, en-tête CHF) en ligne tour 63 (index-DBJpkM3g.js) + aiTask ; décision pilote : lecture A (markdown entier + Flash-Lite) principale, url_context (B : 2 prix faux sur 13) réservé aux pages bloquées
-- [ ] (D456, son classement passe 3 : aucun 1) Passe 4 du Carnet : skill maquettes, mode greffe de ses 2 (Liste v01, Saisie v03/v04, Écoulement v02/v03), chaque écran répond à tout le parcours ; workflow maquettes wf_ba6a67c6-e31 en cours (dossier work/missions/2026-11-25-carnet-passe4) ; page de choix à publier
-- [ ] URGENT Carnet sur SES carnets (plaintes 25.11 ; historique des tours 73→80 : voies reel-73..reel-80, c74..c79) : c80-fix en cours (mise en page mesurée, bande vide, chiffres espacés) ∥ c81-tests e951cdc91 (38/65) → c81-fix après c80-fix → tour 81 → reel-81 ; ZZ CO2 : option retenue fausse à corriger par geste ; cal-77 restes : CALP-6, CALP-13, ouvrir 251–510 ms, relâcher 196–277 ms
-- [ ] D455 : glisser-déposer dans la liste (priorité, et catégorie en déposant dans un autre sous-domaine), appui long au toucher, Annuler ; bibliothèque standard (@dnd-kit) ; tests puis correctif après c81 (mêmes fichiers)
-- [ ] (D454 : A, 25.11) Refaire les carnets ZZ au nouveau format (Reclasser en ligne, sinon gestes, sinon recréer) : voie exemples-a faite (16 ZZ au nouveau format, 11 défauts EXA dont 5 B)
+- [x] (D456, son classement passe 3 : aucun 1) Passe 4 du Carnet : skill maquettes, mode greffe de ses 2 (Liste v01, Saisie v03/v04, Écoulement v02/v03), chaque écran répond à tout le parcours ; workflow maquettes wf_ba6a67c6-e31 en cours (dossier work/missions/2026-11-25-carnet-passe4) ; page de choix à publier — fait : 6 versions (6,5), page https://claude.ai/artifact/6jdCTRVc4AKAaMFPZ7KncU
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : URGENT Carnet sur SES carnets (plaintes 25.11 ; historique des tours 73→80 : voies reel-73..reel-80, c74..c79) : c80-fix en cours (mise en page mesurée, bande vide, chiffres espacés) ∥ c81-tests e951cdc91 (38/65) → c81-fix après c80-fix → tour 81 → reel-81 ; ZZ CO2 : option retenue fausse à corriger par geste ; cal-77 restes : CALP-6, CALP-13, ouvrir 251–510 ms, relâcher 196–277 ms
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : D455 : glisser-déposer dans la liste (priorité, et catégorie en déposant dans un autre sous-domaine), appui long au toucher, Annuler ; bibliothèque standard (@dnd-kit) ; tests puis correctif après c81 (mêmes fichiers)
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : (D454 : A, 25.11) Refaire les carnets ZZ au nouveau format (Reclasser en ligne, sinon gestes, sinon recréer) : voie exemples-a faite (16 ZZ au nouveau format, 11 défauts EXA dont 5 B)
 - [attente] AVANT TOUT PUSH : l historique local contient des relevés de ses données (avant/apres/idb/tous*.json des voies critique-NN, reel-NN) : purger l historique (git filter-repo) avant de pousser, avec son accord
-- [ ] URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser) + R92 CHAMP-CARNET-REPLIE (mini champ, photo et micro toujours actifs) ; tests de R92 et des constats reel-73 dans une voie c74b-tests ; c74-tests 5a522f29a (18/20 rouges, LISTE KO 50 %, 6 lignes) ; c74-fix f9edbd78a, tour 74 en ligne index-Bc5cx_3w.js ; c74b-tests 541de81bd → c74b-fix 1d5cb0cfa (35/50 : R92 champ, R93 CHF/kg, …) → c74c-fix (15 restants + décisions) en cours
-- [ ] NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; note-tests 2826603b7 (30/40) ; note-fix après banc-modeles (même fichier carnetIA.ts) ; affichage et poids sur le rang : axe des mini maquettes — note-fix 46d262a26 (40/40) ; au tour 74 ; affichage « ta note » et poids sur le rang : mini maquettes à lui montrer
-- [ ] LIEN-PAS-PRODUIT (ses mots 24.11) : un lien d information (frais d envoi, conditions, guide) n est pas un article ; l IA le range comme information et le rattache au vendeur ou aux articles (frais d envoi → prix rendu) ; avec la synthèse NOTE-EXPLOITEE
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : URGENT (sa plainte 25.11) CARNET-LISTE-COMPACTE : liste trop peu compacte (≥ 70 %, ≥ 7 lignes à 390) et en-têtes repliables avec un filtre + R91 priorité par menu ⋯ (pas de glisser) + R92 CHAMP-CARNET-REPLIE (mini champ, photo et micro toujours actifs) ; tests de R92 et des constats reel-73 dans une voie c74b-tests ; c74-tests 5a522f29a (18/20 rouges, LISTE KO 50 %, 6 lignes) ; c74-fix f9edbd78a, tour 74 en ligne index-Bc5cx_3w.js ; c74b-tests 541de81bd → c74b-fix 1d5cb0cfa (35/50 : R92 champ, R93 CHF/kg, …) → c74c-fix (15 restants + décisions) en cours
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : NOTE-EXPLOITEE + LIEN-PAS-PRODUIT : synthèse faite (note/SYNTHESE.md, N1..N5) ; note-tests 2826603b7 (30/40) ; note-fix après banc-modeles (même fichier carnetIA.ts) ; affichage et poids sur le rang : axe des mini maquettes — note-fix 46d262a26 (40/40) ; au tour 74 ; affichage « ta note » et poids sur le rang : mini maquettes à lui montrer
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : LIEN-PAS-PRODUIT (ses mots 24.11) : un lien d information (frais d envoi, conditions, guide) n est pas un article ; l IA le range comme information et le rattache au vendeur ou aux articles (frais d envoi → prix rendu) ; avec la synthèse NOTE-EXPLOITEE
 - [x] Écriture à l ouverture d un carnet (LE-1) : cause reprendreLectures (lecture de lien gardée rejouée seule), corrigé 6f2d66fb9, en ligne tour 60 (index-DfTdaO8-.js) ; à vérifier en ligne par le prochain critique
-- [ ] (la tâche planifiée a tourné 23:00–23:49 sans rien produire : à relancer en session, Calendrier d abord, après le tour 73) Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : (la tâche planifiée a tourné 23:00–23:49 sans rien produire : à relancer en session, Calendrier d abord, après le tour 73) Dès 23 h (24.11, sa demande) : rounds de test d écran sur TOUTE la vraie app (tâche planifiée « nuit-tests-app », dossier work/missions/2026-11-24-nuit-tests/) ; ne pas déployer pendant un round
 - [x] virgule-transversale : contrôle corrigé (0f16a7166), VIRGULE OK, témoins OK
 - [x] Tour 50 : critique-50, 9 problèmes (1 B), corrigés 8/8, son carnet intact
 - [x] Test de son carnet chambre froide (critique-48) : 6 problèmes (0 B), carnet intact
 - [x] Lecture des liens D449 : code 40c6766a5, banc 21/24 (prix 54/56, caract 41/48, 0 invention), en ligne tour 47
-- [ ] Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
-- [ ] Carnet : lecture d'une photo par l'IA (L-24), une vraie pièce, coût réservé et journalisé
-- [ ] Calendrier : CALP-6, CALP-13, bandeau « Enregistrement sur le serveur… » qui reste, « −1 663 » sous ±, bouton de durée en retard
-- [ ] Calendrier : cal-73 fait (5 m, données identiques ; ouvrir 400–600 ms, images au bord 216–279 ms) → cal-74 83d0b18e1 (bord 2,6× plus rapide, images encore 126 ms ; K73-1, K73-2, CALP-6 faits) → cal-75 ebdb57c0f (images 128→109 ms, cible manquée : React re-rend tout l onglet) → cal-76 d61825680 (images au bord 112→8 ms à ×4, relâcher 353→158 ms à ×6) → tour 76 en ligne (morceau du Calendrier) → test en ligne du Calendrier à faire ; CALP-13 à la voie Stocks
-- [ ] Écrans en thème sombre et à 1280 : passe du critique sur Carnet, Calendrier, écritures
-- [ ] Méthode : test de propriété instable (graine fixée), mise à jour de l'app plus rapide au 1er chargement
-- [ ] Méthode : CI GitHub Actions (fichier prêt, commit local), tests des règles Firestore, web-vitals, Stryker
-- [ ] REPRISE-GENERALE du 22.11 : Eau (alerte à 660), Matériel (equipment/undefined), Stock et Autres stocks, Ma levure, Malts/sucres
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Carnet : CA13-1..11, FIX13-1, FIX13-2, BL-13, BL-14, revérifier en ligne et corriger
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Carnet : lecture d'une photo par l'IA (L-24), une vraie pièce, coût réservé et journalisé
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Calendrier : CALP-6, CALP-13, bandeau « Enregistrement sur le serveur… » qui reste, « −1 663 » sous ±, bouton de durée en retard
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Calendrier : cal-73 fait (5 m, données identiques ; ouvrir 400–600 ms, images au bord 216–279 ms) → cal-74 83d0b18e1 (bord 2,6× plus rapide, images encore 126 ms ; K73-1, K73-2, CALP-6 faits) → cal-75 ebdb57c0f (images 128→109 ms, cible manquée : React re-rend tout l onglet) → cal-76 d61825680 (images au bord 112→8 ms à ×4, relâcher 353→158 ms à ×6) → tour 76 en ligne (morceau du Calendrier) → test en ligne du Calendrier à faire ; CALP-13 à la voie Stocks
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Écrans en thème sombre et à 1280 : passe du critique sur Carnet, Calendrier, écritures
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Méthode : test de propriété instable (graine fixée), mise à jour de l'app plus rapide au 1er chargement
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : Méthode : CI GitHub Actions (fichier prêt, commit local), tests des règles Firestore, web-vitals, Stryker
+- [attente] suspendu le 25.11 (« arrêté le massacre », reprise seulement avec son accord) : REPRISE-GENERALE du 22.11 : Eau (alerte à 660), Matériel (equipment/undefined), Stock et Autres stocks, Ma levure, Malts/sucres
 
 ## En attente de lui
 - [x] Plafond IA Google relevé par lui (24.11)
@@ -74,3 +74,16 @@ pause:
 - [x] Tour 57 : critique-57, 2 problèmes (0 B), POI-1 et Q4-1 vérifiés
 
 - [x] PR ouverte : https://github.com/Mrspadaaa/Brasserie/pull/204 (branche claude/reprise-soir-24-11, sans captures de l app réelle) ; à remettre à jour après chaque lot
+
+## Nuit du 25.11 (sa demande : « Fait le avec les agents et persona … refait une itération et prends les meilleures ou les meilleures solutions de chaque vue … Et ensuite tu fais la même chose, maquettes jouable, tu entre les exemples, critique, puis corrections »)
+- [x] Jouable M4 b passe 2 republié v5 (f4812172c + frise retirée) ; reste ENTETE-PEU-UTILE (info utile à ~210 px) pour le jouable 2
+- [x] Variantes visuelles : 3 tours (v7 8 · 8,5 · 8,3, répond au besoin) ; port publié https://claude.ai/artifact/MkVwvZtuysD48vgaJiiejS
+- [x] Passe 4 : juges faits (juge-critique-1, juge-personas-action-1, juge-personas-produit-1) : non probant, mécanismes relevés ; itération 2 lancée (ITERATION-2.md, p4b)
+- [x] Jouable passe 4 : juges (7 · 7,4 · 7,3), correction 1 (8/8 B, B7 en partie), publié https://claude.ai/artifact/7osEWid1m3qPbSZG2wnRRR
+- [x] Journal IA réel relu (15 appels, 2 à 6 s, 0 citation fausse) ; consigne corrigée (règles 1c, 1d) dans les 3 jouables, republiés
+- [ ] Récapitulatif du matin : liens, notes des juges, ce qui reste
+- [x] Veilleur créé (tâche planifiée veilleur-nuit, toutes les 30 min, 21 h–7 h ; son « Oui »)
+- [ ] Session [Paliers](#local_ce55c549-73da-4c70-ae44-1587a81f12fe) (rc on) : relire son récap (déploiement = son accord)
+- [attente] Build : vite build rejoué après npm install (paquets du lock) ; tsc rouge PRÉEXISTANT hors voie depuis 875751dcb (seedData.ts GanttTask, atelierModel.ts never) — à corriger dans une voie à part, avec son accord (gel des correctifs)
+- [x] Liens (26.11, « Aucune comparaison ?? », « Pas fan de l'harcellement ») : 2 agents (v7+m4b, p4) branchent liens/ et demandes/ ; puis publier avec les règles db, écrire liens/ (Brau, Brewtools ×2 lus ; MotlerHops, Kegland en 429 : réessayer), vérifier — FAIT 26.11 : 3 jouables publiés (db journal/liens/demandes), liens Brau + Brewtools ×2 écrits ; MotlerHops et Kegland en 429, restent « 🔗 en lecture » (demandes à relire plus tard)
+- [ ] Mini maquettes style adulte (sa demande 26.11 7:25) : 6 genres (A1–A3, B1–B3) sur 4 écrans ; puis critique + personas ; puis page de choix (artefact neuf) ; le jouable attend son choix
