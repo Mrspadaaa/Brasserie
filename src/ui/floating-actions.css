@@ -74,7 +74,9 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
   padding-bottom: 4.5rem;
 }
 
-/* NUIT-5 (26.11) : un pied qui accueille le « + » (Ma bière › Récap) garde sa case à droite, 88 px comme la rangée Retour / Suivant. */
+/* NUIT-5 (26.11) : un pied qui accueille le « + » (Ma bière › Récap) garde sa case à droite, 88 px comme la rangée Retour / Suivant, et sa hauteur
+   (14 px au-dessus et au-dessous des boutons) pose le « + », centré sur la rangée, à 16 px du bas comme aux autres étapes (critique, n° 9). */
+footer[data-pied-avec-plus] { padding-top: 0.75rem; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem); }
 @media (max-width: 1023px) {
   :root body[data-has-fab-floating] [data-pied-avec-plus] > div { padding-right: 5.5rem; }
 }
