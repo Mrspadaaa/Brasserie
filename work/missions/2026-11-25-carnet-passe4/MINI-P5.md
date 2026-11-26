@@ -34,7 +34,7 @@ Sources : `v01.html … v06.html` (ce dossier), page passe 4 `page/index.html` (
 « Mais toujours bon visuel pour un visal learner. » (26.11) : moins enfantin ne veut pas dire moins visuel. Garder les représentations visuelles
 de sa version (couleur d’état, jauges, barres de prix, icônes au trait) ; un écran qui devient texte ou tableau sec est raté (PRO-MAIS-PAS-CLAIR).
 
-Tableaux : « Dans certaine cas comme les comparaisons, c’est ok mais globalement non » (26.11) — un tableau seulement pour Comparer.
+Tableaux : « Dans certaine cas comme les comparaisons, c’est ok mais globalement non » (26.11) — puis « En soit les tableaux sont un bon outil tout de même, mais il doit être adapté » : un tableau quand le cas compare ou aligne des valeurs (offres, critères, chiffres), adapté au cas (peu de colonnes, gagnant visible, unité), jamais un tableau de propriétés par défaut.
 
 ## Toutes ses remarques (à relire en entier, aucune n'est facultative)
 - `work/refonte-frontend/v4/SPEC-BRASSEUR.md`, lignes du 24.11 à la fin, pour la partie Carnet.

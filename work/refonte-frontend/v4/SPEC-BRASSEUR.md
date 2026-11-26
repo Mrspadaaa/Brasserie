@@ -2990,3 +2990,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 ~08:20 : « Prends mes choix et adapte les au maquettes jouable. Rend les plus pratique, plus précis et moins enfentin. Et reprends toutes mes remarques et ça devrait être bon, fait des mini maquettes de ça »
 - 26.11 ~08:25 (sur « plus pratique, plus précise et moins enfantine ») : « Mais toujours bon visuel pour un visal learner. »
 - 26.11 ~08:30 (sur « des tableaux secs et des symboles à apprendre ») : « Dans certaine cas comme les comparaisons, c'est ok mais globalement non »
+- 26.11 ~08:32 : « En soit les tableaux sont un bon outil tout de même, mais il doit être adapté »
