@@ -244,5 +244,5 @@
    l'empâtage et le rinçage se partagent la largeur. */
 @media (max-width: 379px) {
   .water-workshop .water-acid-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .water-workshop .water-acid-row .water-acid-product { grid-column: 1 / -1; justify-self: start; }
+  .water-workshop .water-acid-row > :first-child { grid-column: 1 / -1; }
 }
