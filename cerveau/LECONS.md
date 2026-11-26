@@ -7,7 +7,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 » partout. 01.11 : « sans clavier ». 21.11 : « l'app dans sa totalité ». 24.11 : E45-3 ; « trop focus sur ces exemples ».
+- Erreur : 12.10, « seul 3.8 » partout. 21.11 : « l'app dans sa totalité ». 24.11 : E45-3 ; « trop focus sur ces exemples ».
 - Cause : portée (tests seuls, un usage, toute l'app) non écrite avant d'agir.
 - Faire : écrire portée et écran visé en une ligne. Ambiguë : lecture étroite ; sa portée déjà dite prime. Mot mal tapé : terme du métier. Plainte visuelle : plus petit sens. Ses exemples illustrent une règle : le brief nomme la règle, pas ses exemples (15.11 : « C'est juste des exemples… !!! »). ([[maquettes-16-11]])
 - Rôles : pilote, conseil
@@ -21,9 +21,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 26.10 : u4 masqué. 02.11 : p3c-3 avec l'ancien formulaire : « Mais l'app ». 22.11 : interrupteur des sels retiré : « On peut plus désactiver les sels ??? ». 26.11 : Comparer refait sans ses écrans figés du 17.11 : « pas du tout ce qui a été regardé, choisi ».
+- Erreur : 26.10 : u4 masqué. 02.11 : p3c-3 avec l'ancien formulaire : « Mais l'app ». 22.11 : interrupteur des sels retiré : « On peut plus désactiver les sels ??? ». 26.11 : Comparer sans ses écrans figés.
 - Cause : « X de Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; tout brief cite aussi les écrans figés du registre (maquettes.json › ecrans_choisis) de chaque écran touché, pas seulement le dernier classement ; un port retire ce qu'elle n'a pas, garde ce qu'elle a ; inventaire, captures côte à côte de chaque état et geste (D123). ([[maquettes-16-11]])
+- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; le brief cite les écrans figés (ecrans_choisis) ; un port retire ce qu'elle n'a pas, garde ce qu'elle a ; inventaire, captures côte à côte de chaque état et geste (D123). ([[maquettes-16-11]])
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -62,7 +62,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, couches V3 à V5.5 inutilisables. 07.11 : « 2 115 verts », 27 fichiers non chargés. 20.11 : calendrier « une catastrophe ».
 - Cause : preuves déclarées, non des parcours réels.
-- Faire : un correctif se reproduit puis se prouve sur la vraie app (canal de prévisualisation, ZZ TEST), par le geste et l'entrée du constat ; une fixture ne le dit pas corrigé (23.11 : 7 KO sur 29). Fini = branché, typé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Défaut ouvert : corrigé sans attendre. ([[maquettes-16-11]])
+- Faire : un correctif se reproduit puis se prouve sur la vraie app (canal de prévisualisation, ZZ TEST), par le geste et l'entrée du constat ; une fixture ne le dit pas corrigé. Fini = branché, typé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Défaut ouvert : corrigé sans attendre. ([[maquettes-16-11]])
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
@@ -99,7 +99,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21 : 130 à 350 k jetons par auteur. 09.11 : 10 relances : « pas pour du va et vient inutile !!! ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, retour sans format.
-- Faire : banc : parallèle par lots de 8, coût réservé avant envoi (23.11). maxTurns par agent, Haiku au mécanique, Sonnet au code, Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Peu de chantiers à la fois, méthode fixe en cours de lot (16.11). Maquettes : [[maquettes-16-11]]. Correction chirurgicale : liste figée, chaque défaut prouvé seul ; vision complète une fois, avant d’aller en ligne ; défaut neuf au registre ; 3 tours au plus, puis en ligne si aucun bloquant ne touche données ou geste principal (18.11).
+- Faire : banc : parallèle par lots de 8, coût réservé avant envoi (23.11). maxTurns par agent, Haiku au mécanique, Sonnet au code, Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Avant le premier VOIE.md ou Agent : `voies` (et `conseil` si le lot fixe une direction). Brief complet d’emblée ; retouches groupées. Peu de chantiers à la fois, méthode fixe en cours de lot (16.11). Correction chirurgicale : liste figée, chaque défaut prouvé seul ; vision complète une fois, avant d’aller en ligne ; défaut neuf au registre ; 3 tours au plus, puis en ligne si aucun bloquant ne touche données ou geste principal (18.11).
 - Rôles : pilote
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns ; `.claude/hooks/garde-jetons.mjs` (3e relance, brief incomplet)
 
@@ -120,7 +120,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
 - Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Écran refait : `maquettes` (19.11). Port : d'abord l'écran de sa plainte. ([[maquettes-16-11]])
+- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Port : d'abord l'écran de sa plainte. ([[maquettes-16-11]])
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
