@@ -12,7 +12,7 @@
  * dans les Réglages — ces valeurs ne servent que de repli.
  */
 import type { AppConfig } from '../types';
-import { adresseDepuisTexte, type AdresseStructuree } from '../services/swissQrBill';
+import { adresseDepuisTexte, type AdresseStructuree } from '../services/adresseQr';
 
 const env = import.meta.env;
 
