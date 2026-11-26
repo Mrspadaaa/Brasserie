@@ -202,7 +202,8 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
       {/* La teinte de la colonne touchée passe sous la courbe : le trait reste noir comme dans la maquette. */}
       {sel && <rect x={n2(dispo.colonnes[sel.rang].x)} y={G.y0} width={n2(dispo.colonnes[sel.rang].w)} height={G.h} rx="10" fill="var(--pal-teinte)" stroke="var(--pal-ambre)" strokeWidth="2" strokeDasharray="5 4" opacity=".55" pointerEvents="none" />}
       {dispo.pxParMin && <g stroke="var(--pal-trait)" strokeWidth="1"><path d={Array.from({ length: Math.floor(G.w / (10 * dispo.pxParMin)) + 1 }, (_, k) => `M${n2(G.x0 + k * 10 * dispo.pxParMin!)} ${G.y0 + G.h}v${k % 2 === 0 ? 6 : 4}`).join('')} /></g>}
-      {grille.map(t => <text key={t} x="2" y={y(t) + 4}>{t}</text>)}
+      {/* NUIT-6 : le « + » de tête se pose au pied de l'axe ; la graduation du bas (« 50 ») lui laisse la place. */}
+      {grille.filter(t => colonnes.length === 0 || y(t) < G.y0 + G.h - 14).map(t => <text key={t} x="2" y={y(t) + 4}>{t}</text>)}
       <text className="pal-gc" x="368" y={n2(yDeTemp(BANDE_CORPS.max, echelle) + 6)} textAnchor="end">rond</text>
       <text className="pal-gc" x="368" y={n2(yDeTemp(BANDE_CORPS.min, echelle) - 2)} textAnchor="end">sec</text>
       {trace.plein && <path d={trace.plein} fill="none" stroke="var(--pal-t0)" strokeWidth="3" strokeLinejoin="round" />}
@@ -218,7 +219,13 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
       {vues.map((c, i) => (choisi === i && fini(c.tempC) ? null : <React.Fragment key={i}>{valeurTemp(c, dispo.colonnes[i].x, dispo.colonnes[i].w)}</React.Fragment>))}
       {/* Maquette : la colonne touchée n'a plus son « 60′ » (le bandeau le dit). Seule sur l'axe, elle le garde : sinon le premier palier posé n'a aucune durée sous lui. */}
       {vues.map((c, i) => (choisi === i && colonnes.length > 1 && fini(c.durationMin) ? null : <text key={`d${i}`} x={n2(dispo.colonnes[i].x + dispo.colonnes[i].w / 2)} y="272" textAnchor="middle">{fini(c.durationMin) ? `${nb(c.durationMin)}′` : '—′'}</text>))}
-      {dispo.montees.map(m => <text key={`m${m.rang}`} x={n2(m.x + m.w / 2)} y="272" textAnchor="middle">{fini(vues[m.rang].rampMin) ? `≈${Math.ceil(vues[m.rang].rampMin!)}′` : '?′'}</text>)}
+      {/* NUIT-6 : une montée étroite écrivait « ≈10′ » collé au « 10′ » de sa voisine ; elle se tait quand les deux textes se toucheraient (≈ 7 px par signe, 8 px d’air). */}
+      {dispo.montees.map(m => {
+        const texte = fini(vues[m.rang].rampMin) ? `≈${Math.ceil(vues[m.rang].rampMin!)}′` : '?′', mx = m.x + m.w / 2;
+        const voisines = [m.rang - 1, m.rang].filter(i => i >= 0 && i < vues.length && !(choisi === i && colonnes.length > 1 && fini(vues[i].durationMin)));
+        const serre = voisines.some(i => { const c = dispo.colonnes[i], t = fini(vues[i].durationMin) ? `${nb(vues[i].durationMin)}′` : '—′'; return Math.abs(c.x + c.w / 2 - mx) < (texte.length + t.length) * 3.6 + 8; });
+        return serre ? null : <text key={`m${m.rang}`} x={n2(mx)} y="272" textAnchor="middle">{texte}</text>;
+      })}
 
       {colonnes.length === 0 && <text className="pal-gv" x={G.x0 + G.w / 2} y={n2(yDeTemp((echelle.min + echelle.max) / 2, echelle) - 8)} textAnchor="middle">— °C</text>}
       {colonnes.length === 0 && <path d={`M${G.x0} ${n2(yDeTemp((echelle.min + echelle.max) / 2, echelle))}H${G.x0 + G.w}`} stroke="var(--pal-trait)" strokeWidth="2" strokeDasharray="3 4" />}

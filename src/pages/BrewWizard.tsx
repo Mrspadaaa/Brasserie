@@ -2506,6 +2506,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             <button
               type="button"
               onClick={() => submitRecipe(false)}
+              aria-label={saving ? undefined : 'Enregistrer la recette'}
               disabled={saving || draftReadOnly}
               className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
                          text-sm font-semibold transition-colors hover:brightness-105"
