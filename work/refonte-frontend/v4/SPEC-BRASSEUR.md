@@ -2995,3 +2995,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 ~08:36 : « Mais peut être une vue spécifique comme il y avait au début pour la comparaison »
 - 26.11 ~08:50 (page mini p5, « Chambre froide · toutes les caractéristiques ») : « C'est très mauvais, c'est pas du tout ce qui a été regardé, choisi. »
 - 26.11 ~09:10 : « Et les modifications des maquettes jouable ?? »
+- 26.11 ~09:12 : « Je pense que tu te perds dans mes demandes. Regarde les bien .. »
