@@ -9,11 +9,12 @@ const mode = process.argv[2] || 'cote';
 fs.mkdirSync(path.join(ICI, 'cote'), { recursive: true });
 const b = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9222', defaultViewport: null });
 const p = await b.newPage();
+const ecrire = async (f, buf) => { for (let k = 0; ; k++) { try { fs.writeFileSync(f, buf); return; } catch (e) { if (k >= 4) throw e; await new Promise(r => setTimeout(r, 400)); } } };
 async function planche(nom, imgs, labels) {
   await p.setViewport({ width: imgs.length * 400, height: 880, deviceScaleFactor: 1 });
   const html = '<body style="margin:0;background:#444;display:flex;gap:10px;font:13px sans-serif;color:#fff">' + imgs.map((x, i) => `<figure style="margin:0;width:390px"><div>${labels[i]}</div><img src="${pathToFileURL(x).href}" style="width:390px;height:844px;object-fit:cover;object-position:top"></figure>`).join('') + '</body>';
   const f = path.join(ICI, 'cote', '_tmp.html'); fs.writeFileSync(f, html); await p.goto(pathToFileURL(f).href); await new Promise(r => setTimeout(r, 400));
-  await p.screenshot({ path: path.join(ICI, 'cote', nom + '.png') });
+  await ecrire(path.join(ICI, 'cote', nom + '.png'), await p.screenshot());
 }
 if (mode === 'cote') for (const [m, j] of PAIRES) await planche(j + '__' + m, [src(m), path.join(ICI, j + '.png')], ['sa version : ' + m, 'jouable p5 : ' + j]);
 else { const L = process.argv.slice(3); await planche('_voir', L.map(j => fs.existsSync(path.join(ICI, j + '.png')) ? path.join(ICI, j + '.png') : src(j)), L); }

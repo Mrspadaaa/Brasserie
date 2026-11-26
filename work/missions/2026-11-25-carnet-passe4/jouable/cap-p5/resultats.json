@@ -13,7 +13,12 @@
   {
    "nom": "Noter vite : écrit dans le carnet visé (Trop de vapeur), puis note rangée",
    "ok": true,
-   "detail": "écrit dans « Trop de vapeur au brassage » · 3 changements proposés, acceptés"
+   "detail": "écrit dans « Trop de vapeur au brassage » · 2 changements proposés, acceptés"
+  },
+  {
+   "nom": "À faire, tous les carnets (v01) : cocher avec Annuler",
+   "ok": true,
+   "detail": "Dans les 7 jours 2 · aussi dans À venir | À décider 2 · montants notés | Attendu 1 · de quelqu’un | Plus tard 4 | Sans date 4 · « Fait : Acheter le Brewtools (B)Annuler »"
   },
   {
    "nom": "Organisé (v04) : tuiles, trouvé / pas trouvé, chemin, pour régler",
@@ -23,7 +28,7 @@
   {
    "nom": "Changé par l’IA (v05) : décocher une lecture, garder",
    "ok": true,
-   "detail": "9 cochés → « Garder 8 sur 9 », 1 lecture coupée"
+   "detail": "6 cochés → « Garder 7 sur 8 », 1 lecture coupée"
   },
   {
    "nom": "Mes notes (v04) : on écrit, l’IA lit (carte Arrêter), Organisé suit",
@@ -46,11 +51,6 @@
    "detail": "Résolu"
   },
   {
-   "nom": "À faire, tous les carnets (v01) : cocher avec Annuler",
-   "ok": true,
-   "detail": "Dans les 7 jours 2 · aussi dans À venir | À décider 2 · montants notés | Plus tard 4 | Sans date 3 · « Fait : Acheter le Brewtools (B)Annuler »"
-  },
-  {
    "nom": "Options (O-options-a) puis 6 offres et Comparer (figé 17.11)",
    "ok": true,
    "detail": "6 offres, Comparer ouvert"
@@ -68,7 +68,7 @@
   {
    "nom": "Escalader à l’IA : relecture avec modelTier complex, tampon « IA forte »",
    "ok": true,
-   "detail": "modelTier complex · tampon « ✦ IA forte 10:33 »"
+   "detail": "modelTier complex · tampon « ✦ IA forte 11:06 »"
   },
   {
    "nom": "Relecture « pourquoi » (v03) sur un résolu",
@@ -106,7 +106,7 @@
    "ad": " À décider 2",
    "af": "6"
   },
-  "organiseBas": -91,
+  "organiseBas": -111,
   "deborde": []
  }
 }

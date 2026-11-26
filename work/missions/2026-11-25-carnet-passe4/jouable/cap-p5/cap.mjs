@@ -15,6 +15,8 @@ for (const [b, r] of Object.entries(RES)) REP[T(b)].resume = r;
 REP[T('inspection')].etatPropose = 'note';
 /* les dates de tâche de ses fixtures (23.11, 30.11) ne sont pas dans ses lignes : le contrôle de la page les retirerait ; on garde celles de ses lignes */
 const E = T('écoulement'), base = REP[E];
+/* ses notes disent « l’entreprise X (exemple) pour un sanitaire » : l’IA simulée ne renomme pas l’entreprise */
+base.options.forEach(o => { if (/sanitaire X/i.test(o.qui || '')) o.qui = 'entreprise X'; });
 const lect = (mot, type) => ({ ligne: 'auto', mot, type });
 const ec1 = JSON.parse(JSON.stringify(base));
 ec1.options = [{ emoji: '', titre: 'Moi-même', qui: 'toi', cout: '9 CHF', source: 'notes', ligne: 'auto', citation: 'Joint 9 CHF', conseille: true }, { emoji: '', titre: 'Devis Entreprise X', qui: 'entreprise X', cout: '185 CHF', source: 'notes', ligne: 'auto', citation: '185 CHF', conseille: false }];
@@ -43,7 +45,7 @@ arts.forEach(a => { LIENS[idLien(a.url)] = { url: a.url, titre: a.nom, lu: '2026
 const crit = ['💰 Prix CHF TTC', '🧮 Prix au m³', '📦 Dispo'].concat(FAITS.map(k => k.replace(' (L x P x H)', '')));
 const vol = a => parseFloat(a.valeurs.Volume.valeur.replace(',', '.'));
 const REPCF = { pistes: [], options: [], tache: null, echeance: null, periode: null, chiffres: [], liste: [], retenir: [], manque: [], attention: [], relecture: null, lectures: [], emoji: '', categorie: { nom: 'Brasserie', sous: 'Froid' }, priorite: 'normale', resume: '2,6 ou 4,06 m³ ?', etatPropose: 'cherche', genre: 'achat',
-  comparaison: { criteres: crit, articles: arts.map((a, i) => ({ nom: a.valeurs.Volume.valeur, ligne: i + 1, citation: a.url.replace('https://www.', ''), valeurs: [{ texte: chf(a.prixCentimes) + ' CHF', source: 'lien' }, { texte: Math.round(a.prixCentimes / 100 / vol(a)) + ' CHF/m³', source: 'ia', detail: (a.prixCentimes / 100).toFixed(2) + ' / ' + a.valeurs.Volume.valeur.replace(' m³', '') }, { texte: a.dispo, source: 'lien' }].concat(FAITS.map(k => ({ texte: a.valeurs[k].valeur, source: 'lien' }))) })),
+  comparaison: { criteres: crit, articles: arts.map((a, i) => ({ nom: a.valeurs.Volume.valeur, ligne: i + 1, citation: a.url.replace('https://www.', ''), valeurs: [{ texte: chf(a.prixCentimes) + ' CHF', source: 'lien' }, { texte: Math.round(a.prixCentimes / 100 / vol(a)) + ' CHF/m³', source: 'ia', detail: chf(a.prixCentimes) + ' / ' + a.valeurs.Volume.valeur.replace(' m³', '') }, { texte: a.dispo, source: 'lien' }].concat(FAITS.map(k => ({ texte: a.valeurs[k].valeur, source: 'lien' }))) })),
     gagnant: [1, 0, null, 0].concat(FAITS.slice(1).map(() => null)), compromis: 'Le 2,6 m³ coûte 289,77 CHF de moins ; le 4,06 m³ donne 56 % de place en plus pour un prix au m³ plus bas.' } };
 REP['ZZ TEST — Chambre froide'] = REPCF; APRES['ZZ TEST — Chambre froide'] = [];
 
@@ -79,7 +81,8 @@ async function nouvelle(panne) {
   return page;
 }
 async function lu(page) { for (let i = 0; i < 200; i++) { const f = await page.evaluate(() => { const l = window.__p5.lecture(); return !l.lecture && !l.file.length; }); if (f) return; await attendre(100); } }
-const cap = (page, nom) => page.screenshot({ path: path.join(CAP, nom + '.png') });
+const ecrire = async (f, buf) => { for (let k = 0; ; k++) { try { fs.writeFileSync(f, buf); return; } catch (e) { if (k >= 4) throw e; await new Promise(r => setTimeout(r, 400)); } } };
+const cap = async (page, nom) => ecrire(path.join(CAP, nom + '.png'), await page.screenshot());
 async function clicTexte(page, sel, txt) {
   const ok = await page.evaluate((sel, txt) => { const e = [...document.querySelectorAll(sel)].find(x => x.offsetParent !== null && x.textContent.includes(txt)); if (e) { e.scrollIntoView({ block: 'center' }); e.click(); } return !!e; }, sel, txt);
   if (!ok) throw new Error('introuvable : ' + sel + ' « ' + txt + ' »'); await attendre(120);
@@ -122,6 +125,14 @@ await geste('Noter vite : écrit dans le carnet visé (Trop de vapeur), puis not
   const id = await idDe(page, 'trop de vapeur'), L = await page.evaluate(i => window.__p5.lignesDe(i).slice(-1)[0], id);
   return /Condenseur B/.test(L) && /vapeur/i.test(vise) ? 'écrit dans « ' + vise + ' » · ' + f + ' changements proposés, acceptés' : false;
 });
+await geste('À faire, tous les carnets (v01) : cocher avec Annuler', async () => {
+  await page.click('#tab-afaire'); await attendre(150); await cap(page, '17-afaire');
+  const gr = await page.$$eval('.p5-gr', r => r.map(x => x.textContent).join(' | '));
+  await page.evaluate(() => document.querySelector('.p5-af .rond').click()); await attendre(150); await cap(page, '17b-afaire-coche');
+  const t = await page.$eval('.m4b-toast', e => e.textContent); await page.click('.m4b-toast-a'); await attendre(100);
+  await page.click('#tab-afaire'); await attendre(100);
+  return /Fait/.test(t) ? gr + ' · « ' + t + ' »' : false;
+});
 const idE = await ouvrir(page, 'écoulement');
 await geste('Organisé (v04) : tuiles, trouvé / pas trouvé, chemin, pour régler', async () => {
   await cap(page, '07-organise'); sortie.mesures.organiseBas = await bas(page); sortie.mesures.deborde = await deborde(page);
@@ -130,7 +141,7 @@ await geste('Organisé (v04) : tuiles, trouvé / pas trouvé, chemin, pour régl
 await geste('Changé par l’IA (v05) : décocher une lecture, garder', async () => {
   await page.click('#p5-tampon'); await attendre(150); await cap(page, '08-change');
   const n = await page.$$eval('.m4b-feuille .p5-chl .p5-cb.on', r => r.length);
-  await page.evaluate(() => [...document.querySelectorAll('.m4b-feuille .p5-chl')].slice(-1)[0].querySelector('.p5-cb').click());
+  await page.evaluate(() => { const b = [...document.querySelectorAll('.m4b-feuille .p5-chl')].filter(r => r.querySelector('button.p5-cb')); (b.find(r => /Le problème/.test(r.textContent)) || b.slice(-1)[0]).querySelector('button.p5-cb').click(); });
   const t = await page.$eval('.m4b-feuille .p5-acts .plein', e => e.textContent); await page.click('.m4b-feuille .p5-acts .plein'); await attendre(150);
   const off = await page.evaluate(i => window.__p5.etat().carnets.find(c => c.id === i).org.lecturesOff.length, idE);
   return off === 1 ? n + ' cochés → « ' + t + ' », 1 lecture coupée' : false;
@@ -164,14 +175,6 @@ await geste('Résoudre sur preuve (v01) puis Résolu', async () => {
   return (await carnet(page, idE)).etat === 'resolu' ? 'Résolu' : false;
 });
 await fermer(page);
-await geste('À faire, tous les carnets (v01) : cocher avec Annuler', async () => {
-  await page.click('#tab-afaire'); await attendre(150); await cap(page, '17-afaire');
-  const gr = await page.$$eval('.p5-gr', r => r.map(x => x.textContent).join(' | '));
-  await page.evaluate(() => document.querySelector('.p5-af .rond').click()); await attendre(150); await cap(page, '17b-afaire-coche');
-  const t = await page.$eval('.m4b-toast', e => e.textContent); await page.click('.m4b-toast-a'); await attendre(100);
-  await page.click('#tab-afaire'); await attendre(100);
-  return /Fait/.test(t) ? gr + ' · « ' + t + ' »' : false;
-});
 const idB = await ouvrir(page, '600 bouteilles');
 await geste('Options (O-options-a) puis 6 offres et Comparer (figé 17.11)', async () => {
   await cap(page, '18-options-3');

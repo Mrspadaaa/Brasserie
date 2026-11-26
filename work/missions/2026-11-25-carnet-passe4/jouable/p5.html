@@ -1019,6 +1019,70 @@ body.p5-tape .p5-onglets{display:none}
 .p5-chl.r3{grid-template-columns:32px 1fr auto}
 .m4b-feuille{position:fixed;left:0;right:0;margin:0 auto;max-width:430px;z-index:30;max-height:94vh}.m4b-voile{position:fixed;inset:0;z-index:29}
 .p5-cac td{white-space:normal;min-width:84px}.p5-cac td.pareil{min-width:0}
+
+/* passe de correction 26.11 */
+.m4b-toast{bottom:60px;left:10px;right:10px;transform:none;max-width:none;min-height:50px;justify-content:space-between;border-radius:14px;z-index:30}
+.p5-r .l1{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.25}
+.p5-titre{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15;font-size:17px}
+.p5-r.p5-tenu .pill:not(:empty){bottom:8px;left:62px}
+.p5-r.p5-tenu:has(.pill:not(:empty)) .l2{visibility:hidden}
+.p5-vient{box-sizing:border-box}
+.p5-dep{font-style:normal;color:var(--p5-or);font-weight:700}
+.p5-deja{margin:0 12px 4px 34px;border-left:2px solid var(--p5-or);padding:2px 0 2px 10px;display:flex;flex-direction:column}
+.p5-deja div{display:flex;gap:8px;align-items:center;color:var(--p5-txt);font-size:15px;min-height:32px}.p5-deja .n{color:var(--p5-mut);width:14px}.p5-deja b{font-weight:600}
+.m4b-o{flex-direction:column;gap:2px}.p5-ol{font-size:11.5px;line-height:1;color:var(--p5-mut);font-weight:600}
+::highlight(lu-ok){text-decoration:underline;text-decoration-color:var(--p5-okt);text-decoration-thickness:2px;text-underline-offset:4px}
+::highlight(lu-pt){text-decoration:underline dashed;text-decoration-color:var(--p5-pt);text-decoration-thickness:2px;text-underline-offset:4px}
+::highlight(lu-dv){text-decoration:underline;text-decoration-color:var(--p5-lk);text-decoration-thickness:2px;text-underline-offset:4px}
+::highlight(p5ex){background-color:rgba(154,138,126,.22);color:var(--p5-mut)}
+.m4b-doc [data-h]::after{content:attr(data-h);display:inline-block;margin-left:8px;padding:0 6px;border-radius:6px;font-size:12.5px;line-height:18px;color:var(--p5-ia);background:var(--p5-iaf);vertical-align:1px}
+#v-carnet.p5-lv-on #doc{display:none}
+.p5-lv{display:flex;flex-direction:column;padding:4px 0 16px}
+.p5-lv .bk{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border-radius:12px;background:var(--p5-iaf);color:var(--p5-ia);font-weight:700;font-size:15px;margin-bottom:6px;text-align:left}.p5-lv .bk .p5-svg{width:18px;height:18px}
+.p5-lv .bk .tg{margin-left:auto}
+.p5-lv .sec{margin:12px 0 2px;color:var(--p5-mut);font-size:13px;font-weight:700;letter-spacing:.06em;border-bottom:1px solid var(--p5-fil);padding-bottom:4px}
+.p5-lv .li{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:start;padding:7px 8px;border-left:3px solid transparent;text-align:left;color:var(--p5-val);font-size:15.5px;line-height:1.35;width:100%}
+.p5-lv .li .i{color:var(--p5-mut);font-size:13px;padding-top:2px}
+.p5-lv .li.pb{border-color:#7A6A5E}.p5-lv .li.ps{border-color:var(--p5-okt)}.p5-lv .li.su{border-color:var(--p5-lk)}
+.p5-lv .li.on{background:#2E2721;border-radius:0 8px 8px 0}
+.p5-lv .tg{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-size:13px;font-weight:700;white-space:nowrap}
+.p5-lv .ok{color:var(--p5-okt)}.p5-lv .pt{color:var(--p5-pt)}.p5-lv .dv{color:var(--p5-lk)}.p5-lv .mu{color:var(--p5-mut)}.p5-lv .es{color:var(--p5-cht)}.p5-lv .ia{color:var(--p5-ia)}
+.p5-lv .dans{display:grid;grid-template-columns:92px 1fr auto;gap:8px;align-items:center;min-height:48px;padding:4px 4px;border-bottom:1px solid var(--p5-fil);font-size:15px;color:var(--p5-val)}
+.p5-lv .dans>b{font-size:13.5px}.p5-lv .dans small{color:var(--p5-okt);font-weight:700}
+.p5-lv .ecr{margin-top:12px}
+.p5-tu.etat-cherche .v{color:var(--p5-cht)}.p5-tu.etat-decide .v{color:var(--p5-or)}.p5-tu.etat-resolu .v{color:var(--p5-okt)}
+.p5-tu.inv .v{font-size:18px}.p5-tu.inv .so{font-size:13.5px}.p5-tu.inv.ok .v{color:var(--p5-okt)}
+.p5-tuiles.t1{grid-template-columns:1fr}
+.p5-vs{color:var(--p5-cht)!important;font-size:13.5px}
+.p5-pv{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:2px 0}.p5-pv q{color:var(--p5-val)}.p5-pv small{color:var(--p5-mut);font-size:13.5px;padding-left:13px;display:flex;gap:6px;align-items:center}
+.p5-pp{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--p5-txt);font-size:14.5px;border-top:1px solid var(--p5-fil);padding-top:8px}.p5-pp b{color:var(--p5-val)}
+.p5-colh{vertical-align:bottom;min-width:104px}.p5-colh button{display:flex;flex-direction:column;align-items:flex-end;gap:2px;width:100%}
+.p5-colh .im{position:relative;display:inline-block}.p5-colh .p5-img.col{width:46px;height:46px;border-radius:10px}.p5-colh .p5-img.col .p5-svg{width:26px;height:26px}
+.p5-colh .rg{position:absolute;left:-8px;top:-6px;min-width:20px;height:20px;border-radius:10px;background:var(--p5-film);color:var(--p5-val);font-style:normal;font-size:12px;font-weight:800;display:grid;place-items:center;padding:0 5px}.p5-colh .rg.g{background:var(--p5-ok);color:#12100E}
+.p5-cac tr:first-child th.p5-colh b{white-space:nowrap;font-size:13.5px;color:var(--p5-val)}.p5-cac tr:first-child th.p5-colh small{font-size:12px;white-space:nowrap}
+.p5-cac th small{display:block;color:var(--p5-mut);font-size:12px;font-weight:400}
+.p5-pareil{color:var(--p5-mut);font-size:14px;padding:6px 2px}
+.p5-incm{color:var(--p5-cht);font-size:13px}
+.p5-photo.petit .p5-img.grand{height:72px}.p5-photo.petit .p5-img.grand .p5-svg{width:34px;height:34px}
+.p5-ofr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border:1px solid var(--p5-fil);background:var(--p5-pan);border-radius:12px;padding:8px 12px;margin-bottom:8px}.p5-ofr span{display:flex;flex-direction:column;min-width:0}.p5-ofr span b{color:var(--p5-val)}.p5-ofr small{color:var(--p5-mut);font-size:13.5px}.p5-ofr>b{color:var(--p5-val)}
+.p5-ouvrir{color:var(--p5-lk);font-weight:700;min-height:44px;display:flex;align-items:center;text-decoration:none}
+.p5-surv{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;border:1px solid var(--p5-fil);border-radius:12px;padding:8px 12px;margin-bottom:10px}.p5-surv span{display:flex;flex-direction:column}.p5-surv b{color:var(--p5-val)}.p5-surv small{color:var(--p5-mut);font-size:13.5px}.p5-surv .p5-svg{color:var(--p5-okt)}
+.p5-chx{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}.p5-chx .p5-img.ch{width:64px;height:64px;border-radius:12px}.p5-chx .p5-img.ch .p5-svg{width:34px;height:34px}.p5-chx span{display:flex;flex-direction:column;gap:2px}.p5-chx .nom{font-size:18px;color:var(--p5-val)}.p5-chx small{color:var(--p5-txt);font-size:14.5px}.p5-chx .px{font-size:18px;color:var(--p5-okt)}
+.p5-ec2{display:grid;grid-template-columns:40px 1fr auto;gap:10px}
+.p5-img.mono{font-weight:800;font-size:17px;color:var(--p5-txt);background:var(--p5-sur);border:1px solid var(--p5-film)}
+.p5-av3{display:grid;grid-template-columns:50px 10px 40px 1fr auto;gap:8px;align-items:center;width:100%;padding:8px 0;border-top:1px solid var(--p5-fil);text-align:left}.p5-av3 .d{color:var(--p5-mut);font-size:14px}.p5-av3 .t{display:flex;flex-direction:column;min-width:0}.p5-av3 .t b{color:var(--p5-val)}.p5-av3 small{color:var(--p5-mut)}.p5-av3 .m{color:var(--p5-val);font-weight:700;white-space:nowrap}
+.sq{display:inline-block;width:10px;height:10px;border-radius:3px}.sq.achat{background:var(--p5-or)}.sq.tache{background:var(--p5-lk)}.sq.ech{background:var(--p5-bad)}
+.p5-leg{display:flex;gap:14px;color:var(--p5-mut);font-size:13.5px;padding:2px 0 6px}.p5-leg span{display:flex;align-items:center;gap:5px}
+.p5-chl .av s{text-decoration:none}.ap.date{background:#16263A;color:var(--p5-lk)}.ap.ok{background:#1E2A18;color:var(--p5-okt)}
+.p5-chl.lock .t b{color:var(--p5-txt)}.p5-chl.lock .p5-cb.lk{display:grid;place-items:center;color:var(--p5-mut)}
+.p5-pq .sv.si .p5-svg{color:var(--p5-pt)}
+
+.p5-chl.lock{grid-template-columns:32px 24px 1fr auto}
+.p5-ecarte .o-ex,.p5-ferme .o-ex,.p5-colh .o-ex,.p5-pv .o-ex,.p5-chx .o-ex{display:inline-block!important;width:auto!important;flex:none!important;margin-left:6px;vertical-align:1px}
+.p5-ferme small{display:block}
+.p5-cac th.p5-colh{min-width:116px}.p5-cac tr:first-child th.p5-colh small{white-space:normal;line-height:1.25}
+
+.p5-cat .pn{font-style:normal}#v-carnet[data-vue="notes"] .p5-cat .pn{display:none}
 </style>
 </head>
 <body>
@@ -1320,7 +1384,7 @@ function lire() {
   try { var t = localStorage.getItem(CLE); return t ? JSON.parse(t) : null; } catch (e) { return memoire; }
 }
 function sauver() {
-  var s = JSON.stringify(etat);
+  p5stamp(); var s = JSON.stringify(etat);
   try { localStorage.setItem(CLE, s); return true; }
   catch (e) {
     memoire = JSON.parse(s);
@@ -1439,7 +1503,7 @@ ajusterVue();
 /* ====================================================================== liste */
 /* Base : maquettes3/v01.html, écran Liste (son 2) — coup d'œil par état, arbre par catégorie (D452), état en points, ce qui attend ;
    enrichi : priorité (barre rouge = haute), glisser-déposer après appui long (D455), appui long sans glisser = feuille Ranger. */
-function titreCourt(c) { var t = titreDe(c).replace(/^ZZ TEST\s*—\s*/, ''); return t.charAt(0).toUpperCase() + t.slice(1); }
+function titreCourt(c) { var t = titreDe(c).replace(/^ZZ TEST\s*—\s*/, '').replace(/\b(citra|mosaic|galaxy|simcoe|cascade|amarillo|motueka)\b/g, function (m) { return m.charAt(0).toUpperCase() + m.slice(1); }); return t.charAt(0).toUpperCase() + t.slice(1); }
 function catDe(c) { if (c.cat) return c.cat; var r = c.org && c.org.rep; return r && r.categorie ? r.categorie : { nom: SANS, sous: null }; }
 function prioDe(c) { return c.prio || (c.org && c.org.rep.priorite) || 'normale'; }
 function catEmoji(n) { for (var i = 0; i < CATS.length; i++) if (CATS[i].nom === n) return CATS[i].emoji; return n === SANS ? '📥' : '📁'; }
@@ -1763,6 +1827,7 @@ $('t-notes').addEventListener('click', function () { basculer('notes'); });
 $('t-org').addEventListener('click', function () { if (vue === 'notes') { garderTexte(); autoRanger(courant()); } basculer('org'); });
 var defilOrg = 0;
 function basculer(v, sansFocus) {
+  fermerLV();
   if (v !== vue) tuerToast();
   var c = courant(); fermerFlottants();
   if (vue === 'org') defilOrg = $('defil').scrollTop;
@@ -1840,6 +1905,7 @@ function htmlPropre() {
   var d = doc.cloneNode(true);
   Array.prototype.forEach.call(d.querySelectorAll('.surl'), function (n) { n.classList.remove('surl'); if (!n.className) n.removeAttribute('class'); });
   Array.prototype.forEach.call(d.querySelectorAll('[style]'), function (n) { n.removeAttribute('style'); });
+  Array.prototype.forEach.call(d.querySelectorAll('[data-h]'), function (n) { n.removeAttribute('data-h'); });
   return d.innerHTML;
 }
 function texteLigne(el) {
@@ -1949,21 +2015,7 @@ function plage(el, mot) {
   }
   return a && z ? r : null;
 }
-function calcLectures() {
-  lus = []; var c = courant();
-  if (c && c.org && vue === 'notes') {
-    (c.org.rep.lectures || []).forEach(function (l, i) {
-      if (c.org.lecturesOff.indexOf(i) >= 0) return;
-      var el = trouverBloc(l.ligne, l.mot); var r = el && plage(el, l.mot);
-      if (r) lus.push({ range: r, l: l, i: i });
-    });
-  }
-  if (window.CSS && CSS.highlights && typeof Highlight === 'function') {
-    if (!lus.length) CSS.highlights.delete('lu');
-    else { var hl = new Highlight(); lus.forEach(function (x) { hl.add(x.range); }); CSS.highlights.set('lu', hl); }
-  }
-}
-
+/* calcLectures : voir la passe de correction 26.11 */
 /* ====================================================================== toucher dans le texte : case, lien, mot lu */
 function caretDe(x, y) {
   if (document.caretRangeFromPoint) return document.caretRangeFromPoint(x, y);
@@ -2002,19 +2054,7 @@ function fermerBulle() { if (bulle) { bulle.remove(); bulle = null; } }
 
 /* ====================================================================== un bloc d'Organisé → SA ligne, surlignée */
 var retourPill = null;
-function allerLigne(ligne, citation, etiquette) {
-  var c = courant(); if (!c) return;
-  var y = $('defil').scrollTop;
-  basculer('notes'); doc.blur();
-  var el = trouverBloc(ligne, citation);
-  if (!el) { toast('Cette ligne n’est plus dans ta note.'); return; }
-  el.classList.add('surl');
-  el.scrollIntoView({ block: 'center' });
-  retourPill = h('button', { type: 'button', class: 'm4b-retour', onclick: function () { enleverSurl(); basculer('org'); $('defil').scrollTop = y; } },
-    ico('b-ret'), 'Revenir à « ' + etiquette + ' »');
-  $('v-carnet').appendChild(retourPill);
-  geste('toucher un bloc', etiquette + ' → ligne ' + ligne);
-}
+/* allerLigne : voir la passe de correction 26.11 */
 function enleverSurl() {
   Array.prototype.forEach.call(doc.querySelectorAll('.surl'), function (n) { n.classList.remove('surl'); if (!n.className) n.removeAttribute('class'); });
   if (retourPill) { retourPill.remove(); retourPill = null; }
@@ -2046,12 +2086,13 @@ function rendreOutils() {
   }
   /* l'outil IA : lit la note et ouvre Organisé, d'un toucher */
   outils.appendChild(btnOutil('b-iapen', 'Ranger avec l’IA', function () { doc.blur(); titreEl.blur(); garderTexte(); autoRanger(courant()); basculer('org'); }, 'iao'));
-  if (dictee) outils.appendChild(btnVoix());
+  outils.appendChild(dictee ? btnVoix() : btnOutil('b-onde', 'Dicter', function () { toast('La dictée n’est pas branchée ici'); }));
   outils.appendChild(btnOutil('b-image', 'Photo', choisirPhoto));
   outils.appendChild(btnOutil('b-lien', 'Coller le lien', collerLien));
   outils.appendChild(btnOutil('b-case', 'Case à cocher', mettreCase));
 }
-function btnOutil(icone, nom, f, cls) { return h('button', { type: 'button', class: 'm4b-o' + (cls ? ' ' + cls : ''), 'aria-label': nom, title: nom, onclick: f }, ico(icone)); }
+var OUTIL_COURT = { 'Ranger avec l’IA': 'Ranger', 'Photo': 'Photo', 'Coller le lien': 'Lien', 'Case à cocher': 'Case', 'Dicter': 'Dicter', 'Arrêter la dictée': 'Arrêter' };
+function btnOutil(icone, nom, f, cls) { return h('button', { type: 'button', class: 'm4b-o' + (cls ? ' ' + cls : ''), 'aria-label': nom, title: nom, onclick: f }, ico(icone), h('small', { class: 'p5-ol' }, OUTIL_COURT[nom] || nom)); }
 
 /* --- coller le lien : le presse-papiers, au toucher ; refus = rien */
 function collerLien() {
@@ -2451,7 +2492,8 @@ function reporter(a, b) {
   var rt = (a.retenus || (a.retenu != null ? [a.retenu] : [])).map(function (i) { return a.rep.options[i] && a.rep.options[i].titre; });
   b.rep.options.forEach(function (op, i) { if (rt.indexOf(op.titre) >= 0) b.retenus.push(i); });
   if (a.garde.options === true && b.rep.options.length) b.garde.options = true;
-  if (a.rep.tache && b.rep.tache && a.rep.tache.titre === b.rep.tache.titre) { if (a.garde.tache === true) b.garde.tache = true; b.tacheFaite = !!a.tacheFaite; }
+  if (a.rep.tache && b.rep.tache && a.rep.tache.titre === b.rep.tache.titre) { if (a.garde.tache === true) b.garde.tache = true; b.tacheFaite = !!a.tacheFaite; b.tacheFaiteLe = a.tacheFaiteLe; }
+  if (a.retenuLe) b.retenuLe = a.retenuLe; if (a.p5pasPris) b.p5pasPris = a.p5pasPris;
   (b.rep.liste || []).forEach(function (x, i) { (a.rep.liste || []).forEach(function (y, j) { if (a.coches && a.coches[j] && y.texte === x.texte) b.coches[i] = true; }); });
 }
 
@@ -2858,7 +2900,7 @@ function actionTache(c, t) {
   zone.lastChild.addEventListener('click', function () { faireTache(c); });
 }
 function faireTache(c) {
-  var o = c.org, t = o.rep.tache, g = o.garde.tache; if (g === undefined) o.garde.tache = true; o.tacheFaite = true;
+  var o = c.org, t = o.rep.tache, g = o.garde.tache; if (g === undefined) o.garde.tache = true; o.tacheFaite = true; o.tacheFaiteLe = new Date().toISOString();
   sauver(); geste('cocher la tâche', t.titre); rendreOrg(); rendreListe();
   toast('Fait : ' + t.titre, 'Annuler', function () { o.tacheFaite = false; o.garde.tache = g; sauver(); if (courant() === c) rendreOrg(); rendreListe(); });
 }
@@ -2964,7 +3006,7 @@ function ajouterLigne(contenu) {
 function apresAjout(quoi) {
   var c = courant(); var loc = c && c.org ? lectureLocale(c) : { manques: {} }; autoRanger(c); rendreOrg(); rendreOutils(); rendrePoint();
   /* sa note a déjà rempli une case ou réglé la tâche : l'effet se voit sur place, pas de toast par-dessus */
-  if (!Object.keys(loc.manques).length && !loc.tache) toast('Ajouté à Mes notes · l’IA relit');
+  /* 26.11 : pas de toast par-dessus le contenu ; la carte « L’IA lit » et le compteur le disent */
 }
 function envoyerAjout() {
   var c = courant(), t = champ.value.trim(); if (!c || !t) return;
@@ -3231,6 +3273,7 @@ function periode(c, r) {
 /* ====================================================================== feuilles */
 var feuille = null;
 function ouvrirFeuille(contenu) {
+  tuerToast();
   fermerFeuille();
   var voile = h('div', { class: 'm4b-voile', onclick: fermerFeuille });
   var f = h('div', { class: 'm4b-feuille', role: 'dialog', 'aria-modal': 'true' }, h('div', { class: 'm4b-poig' }), contenu);
@@ -3361,6 +3404,7 @@ function maj1(t) { t = String(t || ''); return t.charAt(0).toUpperCase() + t.sli
 function exPuce() { return h('span', { class: 'o-ex' }, 'exemple'); }
 function fictif(c) { return !!(c.exemple && /^fictif\//.test(c.exemple)); }
 var EPREUVE = 'Cas d’épreuve';
+var P5_CATEX = {"assurance à renouveler":{"nom":"Administratif"},"co2 qui baisse vite dans un fût":{"nom":"Brasserie","sous":"Conditionnement"},"écoulement qui fuit":{"nom":"Local","sous":"Eau"},"fête de la bière en juin":{"nom":"Événements"},"frigo de garde en panne":{"nom":"Brasserie","sous":"Froid"},"inspection électrique, fusible":{"nom":"Local","sous":"Électricité"},"levure lente à démarrer":{"nom":"Brasserie","sous":"Fermentation"},"malt pilsner en rupture chez le fournisseur":{"nom":"Brasserie","sous":"Matières premières"},"odeur de soufre dans un lot":{"nom":"Brasserie","sous":"Fermentation"},"pompe qui chauffe":{"nom":"Brasserie","sous":"Brassage"},"ranger la cave":{"nom":"Local","sous":"Rangement"},"trop de vapeur au brassage":{"nom":"Brasserie","sous":"Brassage"},"embouteillage — station complète (2027)":{"nom":"Brasserie","sous":"Conditionnement"},"houblons citra":{"nom":"Brasserie","sous":"Matières premières"},"chaudière en panne jour de brassage":{"nom":"Brasserie","sous":"Brassage"},"idée bière au sureau":{"nom":"Brasserie","sous":"Brassage"},"600 bouteilles 33 cl":{"nom":"Brasserie","sous":"Conditionnement"},"bar du centre veut nos bières":{"nom":"Sans catégorie"},"levure récoltée à tester":{"nom":"Brasserie","sous":"Fermentation"}};
 
 /* catégories de DONNEES.md : Bureau › Assurance, Bureau › Événements (l'ancien « Administratif » et « Événements » y vont) */
 CATS = [
@@ -3370,7 +3414,7 @@ CATS = [
 ];
 function catDe(c) {
   if (fictif(c) && !c.cat) return { nom: EPREUVE, sous: null };
-  var k = c.cat || (c.org && c.org.rep && c.org.rep.categorie) || { nom: SANS, sous: null };
+  var k = c.cat || (c.org && c.org.rep && c.org.rep.categorie) || (c.exemple && P5_CATEX[titreDe(c).replace(/^ZZ TEST\s*—\s*/, '').toLowerCase()]) || { nom: SANS, sous: null };
   if (k.nom === 'Administratif') return { nom: 'Bureau', sous: k.sous || 'Assurance' };
   if (k.nom === 'Événements') return { nom: 'Bureau', sous: 'Événements' };
   return k;
@@ -3500,14 +3544,14 @@ function arbreP5(l) {
   l.appendChild(h('button', { type: 'button', class: 'p5-recharger', onclick: rechargerExemples }, 'Recharger les exemples'));
 }
 /* ---------------------------------------------------------------- glisser (S-ranger-glisse, v01) */
-function nettoyerCibles() { Array.prototype.forEach.call(document.querySelectorAll('.p5-cible'), function (n) { n.classList.remove('p5-cible'); }); }
+function nettoyerCibles() { Array.prototype.forEach.call(document.querySelectorAll('.p5-cible'), function (n) { n.classList.remove('p5-cible'); }); Array.prototype.forEach.call(document.querySelectorAll('.p5-dep,.p5-deja'), function (n) { n.remove(); }); }
 function placeP5(c, nom, s) { var seau = etat.carnets.filter(function (x) { var k = catDe(x); return x !== c && x.etat !== 'resolu' && k.nom === nom && (!s || k.sous === s); }).sort(function (a, b) { return p5rang(a) - p5rang(b); }); return seau; }
 function marquerCible(g) {
   nettoyerCibles(); g.cible = null;
   if (!g.p5vient) {
     var k0 = catDe(g.c), r0 = g.row.querySelector('.n').textContent;
     g.p5vient = h('div', { class: 'p5-vient' }, 'vient d’ici · ' + k0.nom + (k0.sous ? ' › ' + k0.sous : '') + (r0 ? ' · ' + r0 + 'e' : ''));
-    g.row.parentNode.insertBefore(g.p5vient, g.row); g.row.classList.add('p5-tenu'); var tm = $('p5-tm'); if (tm) tm.textContent = 'Glisse sur une sous-catégorie';
+    var hr = g.row.offsetHeight; g.p5vient.style.minHeight = hr + 'px'; g.row.parentNode.insertBefore(g.p5vient, g.row); g.row.style.marginTop = -(hr + 8) + 'px'; g.row.classList.add('p5-tenu'); var tm = $('p5-tm'); if (tm) tm.textContent = 'Glisse sur une sous-catégorie';
   }
   g.row.style.pointerEvents = 'none';
   var el = document.elementFromPoint(g.x, g.y), t = el && el.closest && el.closest('.p5-r,.p5-ss,.p5-cat-l');
@@ -3520,6 +3564,10 @@ function marquerCible(g) {
   if (nom === EPREUVE) return;
   var zone = t.classList.contains('p5-r') && t.parentNode.classList.contains('p5-sb') ? t.parentNode : t; zone.classList.add('p5-cible');
   var seau = placeP5(g.c, nom, s), apres = seau.length ? seau[seau.length - 1] : null, tousCat = placeP5(g.c, nom, null);
+  if (t.classList.contains('p5-ss') && !t.querySelector('.p5-dep')) {
+    t.appendChild(h('i', { class: 'p5-dep' }, ' · déposer ici'));
+    if (seau.length) t.parentNode.insertBefore(h('div', { class: 'p5-deja' }, seau.map(function (x) { return h('div', null, h('span', { class: 'n' }, String(tousCat.indexOf(x) + 1)), h('b', null, titreCourt(x)), h('small', { class: 'et ' + x.etat }, ' · ' + NOM_ETAT[x.etat])); })), t.nextSibling);
+  }
   var rang = apres ? tousCat.indexOf(apres) + 2 : 1;
   g.cible = { type: 's', cat: nom, sous: s || null, rang: rang, apres: apres };
   pill.textContent = '→ ' + nom + (s ? ' › ' + s : '') + ' · ' + rang + 'e';
@@ -3533,7 +3581,7 @@ function deposer(c, ci) {
   sauver(); geste('glisser', titreCourt(c) + ' → ' + ci.cat + (ci.sous ? ' › ' + ci.sous : '') + ' · ' + ci.rang + 'e'); rendreListe();
   toast('Rangé : ' + ci.cat + (ci.sous ? ' › ' + ci.sous : '') + ' · ' + ci.rang + 'e', 'Annuler', function () { photo.forEach(function (p) { p.x.cat = p.cat; p.x.p5rang = p.r; }); sauver(); rendreListe(); });
 }
-document.addEventListener('pointerup', function () { setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll('.p5-vient'), function (n) { n.remove(); }); Array.prototype.forEach.call(document.querySelectorAll('.p5-tenu'), function (n) { n.classList.remove('p5-tenu'); }); }, 0); });
+document.addEventListener('pointerup', function () { setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll('.p5-vient'), function (n) { n.remove(); }); Array.prototype.forEach.call(document.querySelectorAll('.p5-tenu'), function (n) { n.classList.remove('p5-tenu'); n.style.marginTop = ''; }); }, 0); });
 
 /* ---------------------------------------------------------------- À faire, tous les carnets (O-afaire, v01) */
 function rendreAFaireP5(l, items, dec) {
@@ -3545,7 +3593,9 @@ function rendreAFaireP5(l, items, dec) {
     l.appendChild(h('div', { class: 'p5-af' },
       h('button', { type: 'button', class: 'rond ' + cls, 'aria-label': 'Cocher ' + x.t, onclick: function () { cocherIci(x); } }),
       h('span', { class: 'icb' }, sv(icDe(x.c))),
-      h('button', { type: 'button', class: 't', onclick: function () { ouvrir(x.c.id); } }, h('b', null, maj1(x.t)), h('small', null, titreCourt(x.c) + (x.q && !x.d ? ' · « ' + x.q + ' »' : ''))),
+      (function () { var tc = titreCourt(x.c), un = x.t.trim().split(/\s+/).length < 2 && racines(tc).some(function (w) { return racines(x.t).indexOf(w) >= 0; }), main = un ? tc : maj1(x.t), sub = un ? (x.sorte === 'echeance' ? 'échéance · ' : 'tâche · ') + x.t.toLowerCase() : tc, kc = catDe(x.c);
+        if (j1Acc(main) === j1Acc(sub)) sub = kc.nom + (kc.sous ? ' › ' + kc.sous : '');
+        return h('button', { type: 'button', class: 't', onclick: function () { ouvrir(x.c.id); } }, h('b', null, main), h('small', null, sub + (x.q ? ' · « ' + x.q + ' »' : ''))); })(),
       h('span', { class: 'd' }, x.d ? h('b', null, (rel ? '✦ ' : '') + p5j(x.d)) : null, x.d ? h('small', { class: n < 0 ? 'retard' : '' }, n < 0 ? (-n) + ' j de retard' : texteJours(n)) : null)));
   };
   if (g.retard.length) { titre('En retard', 'retard', g.retard.length); g.retard.forEach(function (x) { ligne(x, 'retard'); }); }
@@ -3569,7 +3619,7 @@ function rendreAFaireP5(l, items, dec) {
     att.forEach(function (a) {
       var j = -joursDe(new Date(a.c.maj));
       l.appendChild(h('div', { class: 'p5-af' }, h('span', { class: 'rond att' }), h('span', { class: 'icb' }, sv('tel')),
-        h('button', { type: 'button', class: 't', onclick: function () { ouvrir(a.c.id); } }, h('b', null, maj1(a.o.attente.citation.replace(/\.$/, '')) + (quiDe(a.o) ? ' · ' + quiDe(a.o) : '')), h('small', null, titreCourt(a.c) + ' · l. ' + a.o.attente.ligne)),
+        h('button', { type: 'button', class: 't', onclick: function () { ouvrir(a.c.id); } }, h('b', null, /devis/i.test(a.o.attente.citation) && quiDe(a.o) ? 'Devis ' + maj1(quiDe(a.o)) : maj1(a.o.attente.citation.replace(/\.$/, '')) + (quiDe(a.o) ? ' · ' + quiDe(a.o) : '')), h('small', null, titreCourt(a.c) + ' · l. ' + (a.o.ligne || a.o.attente.ligne))),
         h('span', { class: 'd' }, a.o.estime ? h('b', { class: 'est' }, '≈ ' + a.o.cout) : h('b', null, a.o.cout), h('small', null, (a.o.estime ? 'estimé · ' : '') + j + ' j'))));
     });
   }
@@ -3602,7 +3652,7 @@ function apercuVise(r) {
   var c = p5vise, L = lignesDe(c).map(function (x, i) { return { t: x, i: i + 1 }; }).filter(function (x) { return x.t.trim(); }), d = L.slice(-2), lk = liensDe(c);
   var b = h('div', { class: 'p5-apercu' }, h('div', { class: 'hd' }, h('b', null, 'DERNIÈRES LIGNES · ' + p5j(c.maj).toUpperCase()), h('span', null, L.length + ' lignes')),
     d.map(function (x) { return h('div', { class: 'li' }, h('span', { class: 'i' }, String(x.i)), h('span', null, x.t.length > 60 ? x.t.slice(0, 58) + '…' : x.t)); }),
-    lk.length ? h('div', { class: 'lk' }, lk.slice(0, 3).map(function (x) { return h('span', null, sv('lien'), ' ' + hoteDe(x.url)); })) : null);
+    lk.length ? h('div', { class: 'lk' }, lk.slice(0, 3).map(function (x, j) { var hors = {}; lignesDe(c).forEach(function (l) { var m = l.match(/\b(\d)e\b[^.]*\bpas en stock/i); if (m) hors[+m[1] - 1] = 1; }); var op = c.org && c.org.rep.options.filter(function (o) { return o.ligne === x.ligne; })[0], nom = op ? op.titre : (x.lu && x.lu.titre) || maj1(hoteDe(x.url).split('.')[0]) + ' (' + String.fromCharCode(65 + j) + ')', sans = hors[j] || (x.lu && /pas|rupture|[ée]puis|indispon|out of/i.test(String(x.lu.dispo || ''))); return h('span', null, sv('lien'), ' ' + nom + (sans ? ' · pas en stock' : '')); })) : null);
   r.parentNode.insertBefore(b, r.nextSibling);
 }
 function feuilleViser() {
@@ -3624,41 +3674,7 @@ $('nouveau').addEventListener('click', function (e) {
   enFile(c); majNoter(); rendreListe();
   toast('Écrit dans ' + titreCourt(c) + ' · l’IA lit', 'Ouvrir', function () { ouvrir(c.id); });
 }, true);
-function rangeeP5() {
-  if (!p5att || feuille) return; var c = parId(p5att.id); if (!c || estEnLecture(c)) return;
-  if (c.org === p5att.orgAvant && !c.orgErreur) return;
-  var a = p5att; p5att = null;
-  if (!c.org || c.org === a.orgAvant) { toast('Ta note est dans ' + titreCourt(c) + ' · l’IA n’a pas pu lire'); return; }
-  var o = c.org, P = aGarder(c), L = o.rep.lectures.map(function (x, i) { return { x: x, i: i }; }).filter(function (x) { return x.x.ligne === a.ligne; });
-  var on = {}; var lignes = [];
-  if (c.etat !== a.etatAvant) lignes.push({ k: 'etat', t: 'État', s: 'l’IA, d’après ta note', av: NOM_ETAT[a.etatAvant], ap: NOM_ETAT[c.etat], cls: c.etat });
-  P.filter(function (p) { return p.cle !== 'etat'; }).forEach(function (p) { lignes.push({ k: 'p:' + p.cle, t: p.label.split(' : ')[0], s: p.label.split(' : ').slice(1).join(' : '), ap: 'proposé', cls: 'ia' }); });
-  L.forEach(function (x) { lignes.push({ k: 'l:' + x.i, t: maj1(x.x.mot), s: 'l. ' + x.x.ligne + ' · ' + (NOM_LECTURE[x.x.type] || x.x.type), ap: NOM_LECTURE[x.x.type] || x.x.type, cls: x.x.type }); });
-  lignes.forEach(function (x) { on[x.k] = true; });
-  var bOk = h('button', { type: 'button', class: 'p5-b plein' }), maj = function () { var n = lignes.filter(function (x) { return on[x.k]; }).length; bOk.textContent = 'Tout accepter (' + n + ')'; };
-  var cr = r0(c);
-  ouvrirFeuille([h('div', { class: 'p5-note' }, h('div', null, a.texte), h('small', null, 'ta note · ' + p5quand(a.quand))),
-    h('div', { class: 'p5-rg' }, h('span', { class: 'icb' }, sv(icDe(c))), h('span', null, h('b', null, titreCourt(c)), h('small', { class: 'ia' }, '✦ ' + (cr || 'rangée ici'))), h('button', { type: 'button', class: 'p5-b', onclick: function () { fermerFeuille(); changerDeCarnet(c, a); } }, 'Changer')),
-    lignes.length ? h('div', { class: 'p5-k ia' }, sv('ia'), ' ' + lignes.length + ' CHANGEMENT' + (lignes.length > 1 ? 'S PROPOSÉS' : ' PROPOSÉ')) : h('div', { class: 'p5-k' }, 'Rien d’autre à changer'),
-    lignes.map(function (x) {
-      var cb = h('button', { type: 'button', class: 'p5-cb on', role: 'checkbox', 'aria-checked': 'true', 'aria-label': x.t, onclick: function () { on[x.k] = !on[x.k]; cb.classList.toggle('on', on[x.k]); cb.setAttribute('aria-checked', String(on[x.k])); maj(); } }, sv('coche'));
-      return h('div', { class: 'p5-chl r3' }, cb, h('span', { class: 't' }, h('b', null, x.t), h('small', null, x.s)), h('span', { class: 'av' }, x.av ? h('s', null, x.av) : null, x.av ? ' → ' : null, h('i', { class: 'ap ' + x.cls }, x.ap)));
-    }),
-    h('div', { class: 'p5-acts' }, bOk, h('button', { type: 'button', class: 'p5-b', onclick: function () {
-      c.org = a.orgAvant; c.etat = a.etatAvant; sauver(); geste('juste la note', a.texte); fermerFeuille(); rendreListe(); toast('Gardé : juste la note');
-    } }, 'Juste la note')),
-    h('div', { class: 'p5-rass' }, 'Rien n’est changé sans ton OK.')]);
-  bOk.addEventListener('click', function () {
-    etat.courant = c.id;
-    lignes.forEach(function (x) {
-      if (x.k === 'etat') { if (!on[x.k]) { c.etat = a.etatAvant; o.garde.etat = false; } }
-      else if (x.k.slice(0, 2) === 'p:') { if (on[x.k]) garder(x.k.slice(2), true); else refuser(x.k.slice(2), true); }
-      else if (!on[x.k]) o.lecturesOff.push(+x.k.slice(2));
-    });
-    etat.courant = null; sauver(); geste('tout accepter', a.texte); fermerFeuille(); rendreListe(); toast('Rangé dans ' + titreCourt(c));
-  });
-  maj();
-}
+/* rangeeP5 : voir la passe de correction 26.11 */
 function r0(c) { var r = c.org && c.org.rep; return r ? (r.resume || '').toLowerCase() : ''; }
 function changerDeCarnet(c, a) {
   ouvrirFeuille([h('h2', null, 'Déplacer ta note'), reels().filter(function (x) { return x !== c && x.etat !== 'resolu'; }).map(function (x) {
@@ -3674,7 +3690,7 @@ function changerDeCarnet(c, a) {
 /* ---------------------------------------------------------------- le carnet : en-tête, bascule, tampon ✦ */
 function enteteP5() {
   var c = courant(); if (!c) return;
-  var k = catDe(c), ct = $('p5-cat'); ct.textContent = ''; ct.appendChild(sv(icDe(c))); ct.appendChild(h('span', null, k.nom === SANS ? 'À ranger' : k.nom + (k.sous ? ' › ' + k.sous : '')));
+  var k = catDe(c), ct = $('p5-cat'); ct.textContent = ''; ct.appendChild(sv(icDe(c))); ct.appendChild(h('span', null, k.nom === SANS ? 'À ranger' : titreCourt(c).length > 20 && k.sous ? k.sous : [k.sous ? h('i', { class: 'pn' }, k.nom + ' › ') : null, k.sous || k.nom])); ct.setAttribute('aria-label', k.nom === SANS ? 'À ranger' : k.nom + (k.sous ? ' › ' + k.sous : ''));
   var nl = lignesDe(c).filter(function (x) { return x.trim(); }).length, tn = $('t-notes'), to = $('t-org');
   tn.textContent = ''; tn.appendChild(sv('crayon')); tn.appendChild(document.createTextNode(' Mes notes ')); tn.appendChild(h('span', { class: 'n' }, String(nl)));
   to.textContent = ''; to.appendChild(sv('ia')); to.appendChild(document.createTextNode(' Organisé'));
@@ -3769,25 +3785,28 @@ function problemeP5(c, r) {
   if (dp) t.appendChild(tuile('pas ' + dp.type, dp.type === 'devis' || dp.type === 'contacte' ? 'tel' : dp.type === 'pas_trouve' ? 'q' : 'coche', 'dernier pas', maj1(dp.mot), h('span', null, (opAtt && quiDe(opAtt) ? maj1(quiDe(opAtt)) + ' · ' : ''), lgn(dp.ligne, dp.mot))));
   var est = ops.filter(function (x) { return nb(x.cout) != null; }), cout = R.length ? ops[R[0]] : est[0];
   var man = (r.manque || []).map(function (m) { return m.texte; });
-  if (cout) t.appendChild(tuile(cout.estime && !R.length ? 'est' : '', 'panier', 'coût' + (cout.estime && !R.length ? ' · estimé' : ''), (cout.estime && !R.length ? '≈ ' : '') + cout.cout.replace(/\s*\?$/, ''), h('span', null, R.length ? ops.filter(function (x, i) { return i !== R[0] && nb(x.cout) != null; }).map(function (x) { return (quiDe(x) ? 'devis ' : '') + x.cout.replace(/s*CHF/, ''); }).join(' · ') + ' · ' : '', lgn(cout.ligne, cout.citation), man.length && !R.length ? ' · ' + man.join(' · ') : '')));
+  if (cout) t.appendChild(tuile(cout.estime && !R.length ? 'est' : '', 'panier', 'coût' + (cout.estime && !R.length ? ' · estimé' : ''), (cout.estime && !R.length ? '≈ ' : '') + cout.cout.replace(/\s*\?$/, ''), h('span', null, R.length ? ops.filter(function (x, i) { return i !== R[0] && nb(x.cout) != null; }).map(function (x) { return (quiDe(x) ? 'devis ' : '') + x.cout.replace(/\s*CHF/, ''); }).join(' · ') + ' · ' : '', lgn(cout.ligne, cout.citation), exL(c, cout.ligne), man.length && !R.length ? ' · ' + man.join(' · ') : '')));
   else t.appendChild(tuile('inc', 'panier', 'coût', '?', man.join(' · ') || 'pas noté'));
   var tv = tacheVive(c), co = ops.filter(function (x) { return x.conseille; })[0], ptr = r.pistes.filter(function (p) { return p.statut === 'trouve'; })[0];
   var tt = tv || (o.garde.tache !== false ? r.tache : null); tv = tt;
   var pro = R.length ? (tt && !o.tacheFaite ? tt.titre : null) : co ? co.titre : tt && !o.tacheFaite ? tt.titre : null;
-  if (!pro) t.appendChild(tuile('', 'coche', 'état', NOM_ETAT[c.etat], o.tacheFaite && tt ? '✓ ' + tt.titre.toLowerCase() : null));
-  if (pro) t.appendChild(tuile('ia', 'ia', 'prochaine', pro, R.length || !co ? (tv && tv.quand ? (lireDate(tv.quand, c.maj) ? p5j(lireDate(tv.quand, c.maj).d) + ' · ' + texteJours(joursDe(lireDate(tv.quand, c.maj).d)) : tv.quand) : null) : h('span', null, '✦ ', ptr ? ptr.citation.split(/\s+/).slice(-2).join(' ') + ' · ' : '', ptr ? lgn(ptr.ligne, ptr.citation) : null), tv && !o.tacheFaite && (R.length || !co) ? function () { faireTache(c); } : null));
+  var resP = (r.resolu || r.etatPropose === 'resolu') && o.garde.resolu === undefined && c.etat !== 'resolu';
+  if (resP) { t.appendChild(tuile('ia', 'ia', 'prochaine', 'Fermer le carnet', 'la preuve est là', function () { var x = org.querySelector('.p5-resoudre'); if (x) x.scrollIntoView({ block: 'center' }); })); pro = null; }
+  else if (!pro) t.appendChild(tuile('', 'coche', 'état', NOM_ETAT[c.etat], o.tacheFaite && tt ? '✓ ' + tt.titre.toLowerCase() : null));
+  if (pro && !resP) t.appendChild(tuile('ia', 'ia', 'prochaine', pro, R.length || !co ? (tv && tv.quand ? (lireDate(tv.quand, c.maj) ? p5j(lireDate(tv.quand, c.maj).d) + ' · ' + texteJours(joursDe(lireDate(tv.quand, c.maj).d)) : tv.quand) : null) : h('span', null, '✦ ', ptr ? ptr.citation.split(/\s+/).slice(-2).join(' ') + ' · ' : '', ptr ? lgn(ptr.ligne, ptr.citation) : null), tv && !o.tacheFaite && (R.length || !co) ? function () { faireTache(c); } : null));
   org.appendChild(t);
+  resoudreP5(c, r);
   /* trouvé / pas trouvé */
   if (r.pistes.length) org.appendChild(h('div', { class: 'p5-tuiles' }, r.pistes.map(function (p) {
     var oui = p.statut === 'trouve';
-    return h('button', { type: 'button', class: 'p5-tu ' + (oui ? 'ok' : 'pt'), onclick: vers(p.ligne, p.citation, p.texte) }, h('span', { class: 'lab' }, sv(oui ? 'coche' : 'q'), oui ? 'Trouvé' : 'Pas trouvé'), h('b', { class: 'v s' }, p.texte), h('span', { class: 'so' }, (oui ? p5d(c.maj) + ' ' + hm(new Date(c.maj)) : 'à vérifier') + ' · l. ' + p.ligne + ' ›'));
+    return h('button', { type: 'button', class: 'p5-tu ' + (oui ? 'ok' : 'pt'), onclick: vers(p.ligne, p.citation, p.texte) }, h('span', { class: 'lab' }, sv(oui ? 'coche' : 'q'), oui ? 'Trouvé' : 'Pas trouvé'), h('b', { class: 'v s' }, p.texte), h('span', { class: 'so' }, (oui ? p5d(heureLigne(c, p.ligne)) + ' ' + hm(new Date(heureLigne(c, p.ligne))) : 'à vérifier') + ' · l. ' + p.ligne + ' ›'));
   })));
   /* le chemin : une couleur par piste */
   if (r.pistes.length || opAtt) {
     var racine = (lignes[0] || '').split(/[,;:]/).slice(-1)[0].trim() || lignes[0];
     org.appendChild(k('LE CHEMIN', 'une couleur par piste'));
     var ch = h('div', { class: 'p5-chemin' }, h('div', { class: 'rac' }, sv('goutte'), h('b', null, maj1(racine.length > 34 ? racine.slice(0, 33) + '…' : racine)), lgn(1, lignes[0] ? lignes[0].slice(0, 12) : '')));
-    r.pistes.forEach(function (p) { var oui = p.statut === 'trouve'; ch.appendChild(h('button', { type: 'button', class: 'br ' + (oui ? 'ok' : 'pt'), onclick: vers(p.ligne, p.citation, p.texte) }, h('b', null, p.texte), h('i', { class: 'tr' }), h('span', { class: 'pil' }, oui ? 'trouvé' : 'à vérifier'))); });
+    r.pistes.forEach(function (p) { var oui = p.statut === 'trouve'; ch.appendChild(h('button', { type: 'button', class: 'br ' + (oui ? 'ok' : 'pt'), onclick: vers(p.ligne, p.citation, p.texte) }, h('b', null, p.texte), h('i', { class: 'tr' }), h('span', { class: 'pil' }, oui ? '✓ trouvé' : '◌ à vérifier'))); });
     if (opAtt) ch.appendChild(h('button', { type: 'button', class: 'br at', onclick: vers(opAtt.attente.ligne, opAtt.attente.citation) }, h('b', null, maj1(quiDe(opAtt) || opAtt.titre)), h('i', { class: 'tr' }), h('span', { class: 'pil' }, opAtt.attente.citation.toLowerCase().replace(/\.$/, ''))));
     org.appendChild(ch);
   }
@@ -3799,27 +3818,28 @@ function problemeP5(c, r) {
       var qui = quiDe(op), moi = !qui && /^toi$/i.test(op.qui || 'toi'), n = nb(op.cout);
       org.appendChild(h('div', { class: 'p5-opt' + (R.indexOf(i) >= 0 ? ' ret' : '') },
         h('span', { class: 'icb ' + (moi ? 'cle' : 'tel') }, sv(moi ? 'cle' : 'tel')),
-        h('button', { type: 'button', class: 't', onclick: vers(op.ligne, op.citation, op.titre) }, h('b', null, maj1(qui || op.titre)), h('small', null, op.citation ? '« ' + op.citation + ' » · l. ' + op.ligne + ' ›' : moi ? 'si je fais moi-même' : '')),
+        h('button', { type: 'button', class: 't', onclick: vers(op.ligne, op.citation, op.titre) }, h('b', null, maj1(qui || op.titre)), h('small', null, op.citation ? '« ' + op.citation + ' » · l. ' + op.ligne + ' ›' : moi ? 'si je fais moi-même' : '', exL(c, op.ligne))),
         h('span', { class: 'c' }, n != null ? h('b', { class: op.estime ? 'est' : '' }, (op.estime ? '≈ ' : '') + op.cout.replace(/\s*\?$/, '')) : h('b', null, op.attente ? 'devis ?' : 'prix ?'),
           h('small', null, n != null && op.estime ? (op.attente ? 'devis attendu' : 'estimé') : op.attente ? 'attendu ' + (-joursDe(new Date(c.maj))) + ' j' : 'pas noté'))));
     });
   }
   tachesP5(c, r);
-  resoudreP5(c, r);
   if (r.conseil && !ops.length) org.appendChild(h('div', { class: 'p5-cons' }, sv('ia'), h('span', null, r.conseil)));
 }
 function deciderP5(c, r, ops) {
-  var o = c.org, R = retenus(o), v = ops.map(function (x) { return nb(x.cout); }), mx = Math.max.apply(null, v), mn = Math.min.apply(null, v);
+  var o = c.org, R = retenus(o), v = ops.map(function (x) { return nb(x.cout); }), mx = Math.max.apply(null, v), mn = Math.min.apply(null, v), est = null;
+  o.lignes.forEach(function (l, n) { if (/estimation|≈|environ/i.test(l) && /chf/i.test(l) && nb(l) != null) est = { v: nb(l), n: n + 1 }; });
   org.appendChild(k(ops.map(function (x) { return (quiDe(x) || x.titre).toUpperCase(); }).join(' OU ')));
   org.appendChild(h('div', { class: 'p5-duo' }, ops.map(function (op, i) {
     var ret = R.indexOf(i) >= 0, moi = !quiDe(op);
     return h('button', { type: 'button', class: 'p5-dc' + (ret ? ' ret' : ''), 'aria-pressed': String(ret), 'aria-label': 'Retenir ' + op.titre + ', ' + op.cout, onclick: function () { retenirAnnulable(i); } },
       h('span', { class: 'lab' }, sv(moi ? 'cle' : 'tel'), ' ' + maj1(quiDe(op) || op.titre), ret ? h('i', { class: 'tag' }, 'retenu') : null),
-      h('b', { class: 'v' }, op.cout.replace(/\s*\?$/, '')), h('span', { class: 'so' }, op.citation ? '« ' + op.citation + ' » · l. ' + op.ligne : ''),
+      h('b', { class: 'v' }, op.cout.replace(/\s*\?$/, '')), h('span', { class: 'so' }, op.citation ? '« ' + op.citation + ' » · l. ' + op.ligne : '', exL(c, op.ligne)),
+      !/^toi$/i.test(op.qui || 'toi') && est && v[i] !== est.v ? h('span', { class: 'so p5-vs' }, (v[i] > est.v ? '+' : '−') + milliers(Math.abs(v[i] - est.v)) + ' sur ton ≈ ' + est.v + ' · l. ' + est.n) : null,
       h('span', { class: 'bar' }, h('i', { style: 'width:' + Math.max(4, Math.round(v[i] / mx * 100)) + '%' })));
   })));
   if (mx > mn) org.appendChild(h('div', { class: 'p5-ecart' }, sv('coche'), ' ' + milliers(mx - mn) + ' CHF de moins · ' + (quiDe(ops[v.indexOf(mn)]) || ops[v.indexOf(mn)].titre).toLowerCase()));
-  if (R.length) { var op = ops[R[0]]; org.appendChild(h('div', { class: 'p5-retenu' }, h('b', null, sv('coche'), ' Retenu : ' + (quiDe(op) || op.titre).toLowerCase() + ', ' + op.cout), op.citation ? h('q', null, '« ' + op.citation + ' »') : null, h('small', null, 'Retenir touché ' + p5quand(o.retenuLe)))); }
+  if (R.length) { var op = ops[R[0]]; org.appendChild(h('div', { class: 'p5-retenu' }, h('b', null, sv('coche'), ' Retenu : ' + (quiDe(op) || op.titre).toLowerCase() + ', ' + op.cout), op.citation ? h('q', null, '« ' + op.citation + ' »') : null, h('small', null, 'Retenir touché ' + p5quand(o.retenuLe || (c.etatPar && c.etatPar.le) || c.maj)))); }
 }
 function tachesP5(c, r) {
   var o = c.org, t = r.tache;
@@ -3836,13 +3856,7 @@ function tachesP5(c, r) {
     org.appendChild(h('div', { class: 'p5-tache' + (m.fait ? ' fait' : '') }, h('button', { type: 'button', class: 'p5-cb' + (m.fait ? ' on ok' : ''), role: 'checkbox', 'aria-checked': String(!!m.fait), 'aria-label': m.texte, onclick: function () { m.fait = !m.fait; sauver(); rendreOrg(); rendreListe(); } }, sv('coche')), h('span', { class: 't' }, h('b', null, m.texte), h('small', null, m.ia ? '✦ aide de l’IA' : 'à toi'))));
   });
 }
-function resoudreP5(c, r) {
-  var o = c.org; if (!((r.resolu || r.etatPropose === 'resolu') && o.garde.resolu === undefined && c.etat !== 'resolu')) return;
-  var q = r.resolu || {};
-  org.appendChild(h('div', { class: 'p5-resoudre' }, h('b', null, sv('ia'), ' ' + (q.question || 'Résolu ?')),
-    q.citation ? h('q', null, '« ' + q.citation + ' »') : null, q.ligne ? h('small', null, 'l. ' + q.ligne) : null,
-    h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: function () { refuser('resolu'); } }, 'Pas encore'), h('button', { type: 'button', class: 'p5-b plein', onclick: function () { garder('resolu'); rendreListe(); } }, sv('coche'), ' Résolu'))));
-}
+/* resoudreP5 : voir la passe de correction 26.11 */
 /* Mémo, idée, planning (S-memo, v02) */
 function memoP5(c, r, g) {
   var o = c.org, lignes = o.lignes, NOMS = { memo: 'Mémo · rien à faire', idee: 'Idée', planning: 'Planning', echeance: 'Mémo · échéance' };
@@ -3859,80 +3873,20 @@ function memoP5(c, r, g) {
   if (autres.length) { org.appendChild(k('AUTRES MÉMOS')); autres.forEach(function (x) { org.appendChild(h('button', { type: 'button', class: 'p5-autre', onclick: function () { ouvrir(x.id); } }, h('span', { class: 'icb' }, sv(icDe(x))), h('span', null, h('b', null, titreCourt(x)), h('small', null, catDe(x).nom + (catDe(x).sous ? ' › ' + catDe(x).sous : '') + (x.org.rep.tache ? ' · ' + x.org.rep.tache.titre.toLowerCase() : ''))))); }); }
 }
 /* L'IA n'a pas pu lire (S-ia-echec, v01) : ses lignes gardées, ce que l'app lit seule */
-function echecP5(c) {
-  var e = c.orgErreur, lignes = lignesDe(c), nl = lignes.filter(function (x) { return x.trim(); }).length;
-  org.appendChild(h('div', { class: 'p5-err', role: 'alert' }, h('div', null, h('b', null, 'L’IA n’a pas pu lire'), h('small', null, e.message + ' · ' + p5quand(e.quand) + ' · tes ' + nl + ' lignes sont gardées')),
-    h('span', { class: 'p5-bts' }, h('button', { type: 'button', class: 'p5-b plein', onclick: function () { ranger(); } }, '↻ Réessayer'), h('button', { type: 'button', class: 'p5-b nu ia', onclick: function () { escalader(c); } }, sv('ia'), ' IA forte'))));
-  if (c.org) return;
-  var lus = []; lignes.forEach(function (l, i) { etiquettesLigne(l).forEach(function (x) { lus.push({ e: x, i: i + 1 }); }); });
-  var m = lus.filter(function (x) { return x.e.sorte === 'montant'; })[0], est = m && /estimation|≈|environ/i.test(lignes[m.i - 1]);
-  org.appendChild(h('div', { class: 'p5-tuiles t3' }, tuile('', null, '● état', NOM_ETAT[c.etat]), tuile('', 'horloge', 'ouvert', (-joursDe(new Date(c.cree))) + ' j', p5d(c.cree)),
-    m ? tuile(est ? 'est' : '', null, 'coût · l. ' + m.i, (est ? '≈ ' : '') + m.e.texte) : tuile('inc', null, 'coût', '?')));
-  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'LU PAR L’APP SEULE'), h('span', { class: 'p5-sans' }, 'sans l’IA')));
-  var NOMS = { pas_trouve: ['pas trouvé', 'q', 'pt'], contacte: ['prochaine', 'horloge', 'at'], montant: ['montant', 'panier', 'est'], trouve: ['trouvé', 'coche', 'ok'] };
-  lus.filter(function (x) { return x.e.sorte !== 'montant'; }).forEach(function (x) { var N = NOMS[x.e.sorte] || [x.e.sorte, 'coche', '']; org.appendChild(h('button', { type: 'button', class: 'p5-lu ' + N[2], onclick: vers(x.i, null, x.e.texte) }, h('b', null, sv(N[1]), ' ' + N[0]), h('span', null, (function (l) { var k = j1Acc(l).indexOf(j1Acc(x.e.texte)), d = l.slice(0, k > 0 ? k : l.length).replace(/^pistess*:s*/i, '').split(/[;,]/).slice(-1)[0].trim(); return maj1(d.length > 3 ? d.slice(0, 32) : x.e.texte); })(lignes[x.i - 1] || '')), h('i', { class: 'p5-l' }, 'l. ' + x.i))); });
-  org.appendChild(h('div', { class: 'p5-quand' }, sv('ia'), ' Options, cause et tâches : quand l’IA aura lu.'));
-  org.appendChild(k('TES LIGNES · ' + p5j(c.maj).toUpperCase() + ' · ' + hm(new Date(c.maj))));
-  org.appendChild(h('div', { class: 'p5-lignes' }, lignes.map(function (l, i) { return l.trim() ? h('div', null, h('span', { class: 'i' }, String(i + 1)), h('span', null, l)) : null; })));
-}
+/* echecP5 : voir la passe de correction 26.11 */
 /* Résolu (O-resolu, v01) et relecture « pourquoi » (O-relecture, v03, simple) */
-function resoluP5(c, r) {
-  var o = c.org, le = c.etatPar ? c.etatPar.le : c.maj, ret = retenus(o).map(function (i) { return r.options[i]; }).filter(Boolean), art = (o.artRet || []).map(function (i) { return r.comparaison && r.comparaison.articles[i]; }).filter(Boolean);
-  var grace = art[0] ? art[0].nom : ret[0] ? ret[0].titre : r.pistes.filter(function (p) { return p.statut === 'trouve'; }).map(function (p) { return p.texte; })[0];
-  org.appendChild(h('div', { class: 'p5-resolu' }, h('span', { class: 'rond' }, sv('coche')), h('div', null, h('b', null, 'Résolu · ' + p5j(le)), grace ? h('small', null, 'grâce à ' + grace) : null),
-    h('button', { type: 'button', class: 'p5-b', onclick: function () { poserEtat(c, ret.length || art.length ? 'decide' : 'cherche'); } }, sv('annule'), ' Rouvrir'),
-    h('div', { class: 'p5-tuiles t3' }, tuile('', null, 'depuis le ' + p5d(c.cree), Math.max(0, Math.round((new Date(le) - new Date(c.cree)) / 864e5)) + ' j'), tuile('', null, 'pistes', String(r.pistes.length)), tuile('', null, 'lignes', String(o.lignes.filter(function (x) { return x.trim(); }).length)))));
-  if (r.relecture) relectureP5(c, r);
-  var fermees = r.pistes.map(function (p) { return { t: p.texte, s: '« ' + p.citation + ' » · l. ' + p.ligne, tag: p.statut === 'trouve' ? 'la cause' : 'écarté', ok: p.statut === 'trouve', f: vers(p.ligne, p.citation, p.texte) }; });
-  if (fermees.length) { org.appendChild(k('PISTES FERMÉES', 'avec leur raison')); fermees.forEach(function (x) { org.appendChild(h('button', { type: 'button', class: 'p5-ferme' + (x.ok ? ' ok' : ''), onclick: x.f }, h('span', null, h('b', null, x.t), h('small', null, x.s)), h('i', { class: 'tag' }, x.tag))); }); }
-  var k2 = catDe(c), memes = reels().filter(function (x) { return x !== c && x.etat === 'resolu' && catDe(x).nom === k2.nom; });
-  if (memes.length) { org.appendChild(k('RÉSOLUS', k2.nom)); memes.forEach(function (x) { org.appendChild(h('button', { type: 'button', class: 'p5-autre res', onclick: function () { ouvrir(x.id); } }, sv('coche'), h('b', null, titreCourt(x)), h('small', null, catDe(x).sous || ''))); }); }
-}
-function relectureP5(c, r) {
-  var x = r.relecture;
-  org.appendChild(h('div', { class: 'p5-pq' }, h('b', { class: 'ti' }, sv('ia'), ' Pourquoi tu as fait ça'), h('button', { type: 'button', class: 'ch', onclick: vers(x.choix.ligne, x.choix.citation, x.choix.texte) }, x.choix.texte, h('small', null, ' l. ' + x.choix.ligne + ' ›')),
-    x.savais.length ? h('div', { class: 'p5-k' }, h('b', null, 'CE QUE TU SAVAIS ALORS')) : null,
-    x.savais.map(function (s) { return h('button', { type: 'button', class: 'sv', onclick: vers(s.ligne, s.citation, s.texte) }, sv('coche'), h('span', null, s.texte), h('small', null, 'l. ' + s.ligne)); }),
-    x.fait.length ? h('div', { class: 'p5-k' }, h('b', null, 'CE QUE TU AS FAIT')) : null,
-    x.fait.map(function (s) { return h('button', { type: 'button', class: 'sv', onclick: vers(s.ligne, s.citation, s.texte) }, sv('cle'), h('span', null, s.texte), h('small', null, 'l. ' + s.ligne)); }),
-    x.calcul ? h('div', { class: 'calc' }, h('b', null, x.calcul.valeur), h('small', null, ' calcul de l’app : ' + x.calcul.detail)) : null));
-  org.appendChild(h('button', { type: 'button', class: 'p5-b large', onclick: function () { basculer('notes'); } }, sv('crayon'), ' Voir dans Mes notes'));
-}
-
+/* resoluP5 : voir la passe de correction 26.11 */
+/* relectureP5 : voir la passe de correction 26.11 */
 /* ---------------------------------------------------------------- achat : Organisé d'un achat (O-options-a), articles (h03-5/h06-5), Comparer (figé 17.11), article (h01-6), choisi (v09-3/g05-11) */
 function prixDe(cp, a) { var k = principal(cp); var v = a.valeurs[k]; return v && nb(v.texte) != null ? nb(v.texte) : null; }
 function principal(cp) { var k = -1; cp.criteres.forEach(function (x, i) { if (k < 0 && /prix|chf/i.test(x)) k = i; }); if (k < 0) k = 0; var p = -1; cp.criteres.forEach(function (x, i) { if (/pour \d|total/i.test(x)) p = i; }); return p >= 0 ? p : k; }
 function nomCrit(t) { return String(t).replace(/^[^\wÀ-ÿ]+\s*/, ''); }
-function classement(cp, k) { var vals = cp.articles.map(function (a, i) { return { i: i, v: nb(a.valeurs[k] && a.valeurs[k].texte) }; }); var ok = vals.filter(function (x) { return x.v != null; }).sort(function (a, b) { return a.v - b.v; }); return ok.concat(vals.filter(function (x) { return x.v == null; })); }
-function achatP5(c, r) {
-  var o = c.org, cp = r.comparaison, kp = principal(cp), cl = classement(cp, kp), A = cp.articles;
-  o.artRet = o.artRet || []; o.artEcart = o.artEcart || [];
-  var t = r.tache, dq = t && t.quand && (lireDate(t.quand, c.maj) || jourDuMois(t.quand));
-  if (o.artRet.length) { choisiP5(c, r); return; }
-  org.appendChild(h('div', { class: 'p5-besoin' }, sv('cal'), dq ? h('b', null, (t.titre === 'Choisir' ? 'Besoin avant ' : t.titre + ' · ') + p5j(dq.d)) : h('b', null, t ? t.titre : 'Achat'), dq ? h('span', null, ' · ' + texteJours(joursDe(dq.d))) : null, t ? lgn(t.ligne, t.citation) : null,
-    h('button', { type: 'button', class: 'p5-n', onclick: function () { feuilleArticles(c); } }, A.length + ' offres')));
-  org.appendChild(h('div', { class: 'p5-crit' }, sv('cible'), h('span', null, 'critère'), h('b', null, nomCrit(cp.criteres[kp]).toLowerCase()), h('i', { class: 'ia' }, '✦ proposé')));
-  /* qui gagne quoi : une carte par critère qui a un gagnant */
-  var cartes = cp.criteres.map(function (cr, i) { var g = cp.gagnant[i]; return g == null ? null : { cr: cr, a: A[g], v: A[g].valeurs[i].texte, i: i }; }).filter(Boolean).slice(0, 3);
-  if (cartes.length) org.appendChild(h('div', { class: 'p5-gagne' }, cartes.map(function (x) { return h('button', { type: 'button', class: 'p5-gc', onclick: function () { p5vueC = { id: c.id, art: A.indexOf(x.a) }; rendreOrg(); } }, h('small', null, 'Gagne · ' + nomCrit(x.cr).toLowerCase()), h('b', null, x.a.nom), h('span', { class: 'ok' }, x.v)); }),
-    cartes.length < 3 ? h('div', { class: 'p5-gc vide' }, h('small', null, 'Délai'), h('span', null, 'pas noté')) : null));
-  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, A.length + ' OFFRES · ' + nomCrit(cp.criteres[kp]).toUpperCase()), h('span', null, 'quantité · CHF')));
-  var mx = Math.max.apply(null, cl.map(function (x) { return x.v || 0; }).concat([1]));
-  cl.forEach(function (x, rang) {
-    var a = A[x.i], ec = o.artEcart.indexOf(x.i) >= 0, gag = cp.gagnant[kp] === x.i, src = a.valeurs.some(function (v) { return v.source === 'lien'; });
-    var connus = a.valeurs.filter(function (v) { return v.texte !== '?'; }).length;
-    org.appendChild(h('button', { type: 'button', class: 'p5-off' + (ec ? ' ec' : ''), onclick: function () { p5vueC = { id: c.id, art: x.i }; rendreOrg(); } }, imageDe(c, a.ligne, 'pt'),
-      h('span', { class: 't' }, h('b', null, a.nom, exDe(c, a)), h('small', null, src ? sv('lien') : sv('crayon'), src ? ' lu' : ' ta note', a.valeurs[0] && a.valeurs[0].texte !== '?' ? ' · ' + a.valeurs[0].texte : '')),
-      h('span', { class: 'blocs', 'aria-label': connus + ' valeurs sur ' + a.valeurs.length }, a.valeurs.map(function (v) { return h('i', { class: v.texte === '?' ? '' : 'on' }); })),
-      h('span', { class: 'c' }, x.v != null ? h('b', { class: gag ? 'ok' : '' }, a.valeurs[kp].texte.replace(/\s*CHF/, '')) : h('b', null, '—'), h('small', null, ec ? 'écarté' : a.valeurs[kp].detail ? a.valeurs[kp].detail : x.v == null ? 'manque' : ''))));
-  });
-  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b ia', onclick: feuilleDemander }, sv('ia'), ' Demander les délais'), h('button', { type: 'button', class: 'p5-b plein', onclick: function () { p5vueC = { id: c.id }; geste('comparer', A.length + ' offres'); rendreOrg(); } }, 'Comparer les ' + A.length + ' ›')));
-  tachesP5(c, r);
-}
+/* classement : voir la passe de correction 26.11 */
+/* achatP5 : voir la passe de correction 26.11 */
 function feuilleArticles(c) {
   var r = c.org.rep, cp = r.comparaison, kp = principal(cp), cl = classement(cp, kp), o = c.org; o.p5veille = o.p5veille || {};
   ouvrirFeuille([h('div', { class: 'p5-fh' }, h('h2', null, 'Articles · ' + cp.articles.length), h('button', { type: 'button', class: 'p5-b nu', onclick: fermerFeuille }, '✕ Fermer')),
-    h('div', { class: 'sous' }, sv('cible'), ' classés par ', h('b', null, nomCrit(cp.criteres[kp]).toLowerCase()), ', du moins au plus'),
+    h('div', { class: 'sous' }, sv('cible'), ' classés par ', h('b', null, minus(nomCrit(cp.criteres[kp]))), ', du moins au plus'),
     cl.map(function (x, rg) {
       var a = cp.articles[x.i], on = !!o.p5veille[x.i], sw = h('button', { type: 'button', class: 'p5-sw' + (on ? ' on' : ''), role: 'switch', 'aria-checked': String(on), 'aria-label': 'Veiller ' + a.nom, onclick: function () { o.p5veille[x.i] = !o.p5veille[x.i]; sauver(); sw.classList.toggle('on'); sw.setAttribute('aria-checked', String(!!o.p5veille[x.i])); geste('veille', a.nom); } });
       return h('div', { class: 'p5-art' }, h('span', { class: 'rg' }, String(rg + 1)), imageDe(c, a.ligne, 'pt'), h('button', { type: 'button', class: 't', onclick: function () { fermerFeuille(); p5vueC = { id: c.id, art: x.i }; rendreOrg(); } }, h('b', null, a.nom), h('small', null, a.valeurs.map(function (v, i) { return v.texte === '?' ? null : nomCrit(cp.criteres[i]) + ' ' + v.texte; }).filter(Boolean).slice(0, 2).join(' · '))),
@@ -3944,118 +3898,15 @@ function enteteVue(c, titre, sous) {
   org.appendChild(h('button', { type: 'button', class: 'p5-retour', onclick: function () { var a = p5vueC; p5vueC = a && a.art != null && a.depuis === 'cmp' ? { id: c.id } : null; rendreOrg(); } }, sv('ret'), ' ' + titreCourt(c)));
   org.appendChild(h('h1', { class: 'p5-h1' }, titre)); if (sous) org.appendChild(h('div', { class: 'p5-h1s' }, sous));
 }
-function comparerP5(c) {
-  var r = c.org.rep, cp = r.comparaison, o = c.org, A = cp.articles, kp = o.p5crit != null ? o.p5crit : principal(cp), cl = classement(cp, kp);
-  var vis = cl.filter(function (x) { return o.artEcart.indexOf(x.i) < 0; }), ecs = cl.filter(function (x) { return o.artEcart.indexOf(x.i) >= 0; });
-  enteteVue(c, 'Comparer', A.length + ' offres · classé par ' + nomCrit(cp.criteres[kp]).toLowerCase());
-  /* classé par (h06-7) : on change de critère d'un toucher */
-  org.appendChild(h('div', { class: 'p5-classe' }, cp.criteres.map(function (cr, i) { return h('button', { type: 'button', class: i === kp ? 'on' : '', onclick: function () { o.p5crit = i; sauver(); geste('classer par', cr); rendreOrg(); } }, i === kp ? sv('cible') : null, nomCrit(cr)); })));
-  /* le classement en barres (h04-7) */
-  var mx = Math.max.apply(null, vis.map(function (x) { return x.v || 0; }).concat([1]));
-  org.appendChild(h('div', { class: 'p5-rk' }, h('div', { class: 'hd' }, h('b', null, nomCrit(cp.criteres[kp])), h('span', null, ' · moins = mieux'), h('i', { class: 'cr' }, 'critère')),
-    vis.map(function (x, n) { var a = A[x.i], v = a.valeurs[kp]; return h('button', { type: 'button', class: 'l' + (n === 0 && x.v != null ? ' g' : ''), onclick: function () { p5vueC = { id: c.id, art: x.i, depuis: 'cmp' }; rendreOrg(); } }, h('span', null, (n + 1) + ' ' + a.nom), h('b', null, v.texte), h('i', { class: 'b' + (v.source === 'ia' && /≈|estim/.test(v.texte) ? ' est' : '') + (x.v == null ? ' inc' : ''), style: 'width:' + (x.v != null ? Math.max(6, Math.round(x.v / mx * 100)) : 100) + '%' })); })));
-  /* côte à côte : les offres en colonnes, le meilleur en vert (g05-8, h04-7) */
-  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Côte à côte'), h('span', null, 'le meilleur en vert')));
-  var tab = h('table', { class: 'p5-cac' }), th = h('tr', null, h('th'));
-  vis.forEach(function (x, n) { th.appendChild(h('th', null, h('small', null, (n + 1) + (n ? 'e' : 're')), h('button', { type: 'button', onclick: function () { p5vueC = { id: c.id, art: x.i, depuis: 'cmp' }; rendreOrg(); } }, A[x.i].nom))); });
-  tab.appendChild(th);
-  cp.criteres.forEach(function (cr, i) {
-    var vals = vis.map(function (x) { return A[x.i].valeurs[i].texte; }), pareil = vals.every(function (v) { return v === vals[0]; }) && vals[0] !== '?';
-    var tr = h('tr', { class: i === kp ? 'crit' : '' }, h('th', null, nomCrit(cr)));
-    if (pareil && vis.length > 1) tr.appendChild(h('td', { colspan: String(vis.length), class: 'pareil' }, vals[0] + ' · pareil'));
-    else vis.forEach(function (x) { var v = A[x.i].valeurs[i]; tr.appendChild(h('td', { class: (cp.gagnant[i] === x.i ? 'g' : '') + (v.texte === '?' ? ' inc' : '') }, v.texte === '?' ? '—' : v.texte, v.detail ? h('small', null, v.detail) : null)); });
-    tab.appendChild(tr);
-  });
-  org.appendChild(h('div', { class: 'p5-cacw' }, tab));
-  if (cp.compromis) org.appendChild(h('div', { class: 'p5-comp' }, h('b', null, 'Compromis : '), cp.compromis));
-  (r.attention || []).forEach(function (a) { org.appendChild(h('div', { class: 'p5-faible' }, h('b', null, sv('q'), ' attention'), h('span', null, a.texte), lgn(a.ligne, a.citation, a.texte))); });
-  if (ecs.length) { org.appendChild(k('Écartés · ' + ecs.length)); ecs.forEach(function (x) { org.appendChild(h('div', { class: 'p5-ecarte' }, h('b', null, A[x.i].nom), h('button', { type: 'button', class: 'p5-b nu', onclick: function () { ecarterArt(c, x.i); } }, 'Reprendre'))); }); }
-}
-function articleP5(c) {
-  var r = c.org.rep, cp = r.comparaison, o = c.org, i = p5vueC.art, a = cp.articles[i], kp = principal(cp), cl = classement(cp, kp), rang = cl.map(function (x) { return x.i; }).indexOf(i);
-  enteteVue(c, a.nom, (rang + 1) + (rang ? 'e' : 're') + ' sur ' + cp.articles.length + ' · ' + nomCrit(cp.criteres[kp]).toLowerCase());
-  var L = liensDe(c).filter(function (l) { return l.ligne === a.ligne; })[0];
-  org.appendChild(h('div', { class: 'p5-photo' }, imageDe(c, a.ligne, 'grand')));
-  org.appendChild(h('div', { class: 'p5-src' }, L ? sv('lien') : sv('crayon'), L ? ' ' + hoteDe(L.url) + (lienEnLecture(c, L) ? ' · 🔗 en lecture' : ' · lu ' + jourLu(L.lu.lu)) : ' ta note', a.ligne ? lgn(a.ligne, a.citation, a.nom) : null, L ? actionsLien(c, L) : null));
-  var v = a.valeurs[kp], vals = cl.filter(function (x) { return x.v != null; });
-  org.appendChild(h('div', { class: 'p5-jauge' }, h('small', null, nomCrit(cp.criteres[kp])), h('b', null, v.texte), h('span', { class: 'pts' }, vals.map(function (x) { return h('i', { class: x.i === i ? 'ici' : '', style: 'left:' + (vals.length > 1 ? Math.round((x.v - vals[0].v) / ((vals[vals.length - 1].v - vals[0].v) || 1) * 92) : 0) + '%' }); })), h('small', null, rang === 0 && v.texte !== '?' ? 'le plus bas des ' + cp.articles.length : (rang + 1) + 'e sur ' + cp.articles.length)));
-  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Caractéristiques'), h('span', null, L && L.lu ? 'lues sur la page' : 'de tes notes')));
-  org.appendChild(h('div', { class: 'p5-carac' }, cp.criteres.map(function (cr, k2) { var x = a.valeurs[k2], rg = classement(cp, k2).map(function (y) { return y.i; }).indexOf(i); return h('div', { class: cp.gagnant[k2] === i ? 'g' : '' }, h('small', null, nomCrit(cr)), h('b', null, x.texte === '?' ? '—' : x.texte), x.texte !== '?' && nb(x.texte) != null ? h('i', null, ' ' + (rg + 1) + 'e') : null); })));
-  var ch = o.artRet.indexOf(i) >= 0, ec = o.artEcart.indexOf(i) >= 0;
-  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b plein vert', onclick: function () { if (!ch) { o.p5choisiLe = new Date().toISOString(); } choisirArt(c, i); p5vueC = null; rendreOrg(); rendreListe(); } }, sv('coche'), ch ? ' Choisi' : ' Choisir · ' + a.nom),
-    h('button', { type: 'button', class: 'p5-b', onclick: function () { ecarterArt(c, i); p5vueC = null; rendreOrg(); } }, ec ? 'Reprendre' : 'Écarter')));
-  org.appendChild(h('div', { class: 'p5-part' }, 'Part dans À venir : ' + a.nom + (v.texte !== '?' ? ', ' + v.texte : '') + ', avec le pourquoi.'));
-}
-function choisiP5(c, r) {
-  var o = c.org, cp = r.comparaison, kp = principal(cp), i = o.artRet[0], a = cp.articles[i], le = o.p5choisiLe || c.maj, cl = classement(cp, kp);
-  var gagne = cp.criteres.map(function (cr, k2) { return cp.gagnant[k2] === i ? nomCrit(cr).toLowerCase() + ' ' + a.valeurs[k2].texte : null; }).filter(Boolean);
-  org.appendChild(h('div', { class: 'p5-choisi' }, h('div', { class: 'hd' }, sv('coche'), h('b', null, 'Choisi le ' + p5d(le))),
-    h('b', { class: 'nom' }, a.nom), h('small', null, a.valeurs.map(function (v, k2) { return v.texte === '?' ? null : v.texte; }).filter(Boolean).slice(0, 3).join(' · ')),
-    h('div', { class: 'pq' }, h('b', null, 'Pourquoi : '), gagne.length ? 'le meilleur ' + gagne.join(' · ') + '.' : 'tes notes ne le disent pas.'),
-    h('div', { class: 'cc' }, h('small', null, 'Ce qui comptait'), h('b', null, nomCrit(cp.criteres[kp]).toLowerCase())),
-    o.p5avenir ? h('div', { class: 'p5-part' }, sv('cal'), ' Dans À venir depuis le ' + p5d(o.p5avenir), h('button', { type: 'button', class: 'p5-b nu', onclick: feuilleAVenir }, 'Voir ›')) :
-      h('button', { type: 'button', class: 'p5-b plein vert large', onclick: function () { o.p5avenir = new Date().toISOString(); sauver(); geste('envoyer dans À venir', a.nom); rendreOrg(); rendreListe(); toast('Dans À venir : ' + a.nom, 'Annuler', function () { delete o.p5avenir; sauver(); rendreOrg(); rendreListe(); }); } }, sv('cal'), ' Envoyer dans À venir')));
-  var autres = cl.filter(function (x) { return x.i !== i; });
-  if (autres.length) { org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Écartés ' + autres.length), h('span', null, 'et pourquoi'))); autres.forEach(function (x) { var b = cp.articles[x.i], d = x.v != null && prixDe(cp, a) != null ? x.v - prixDe(cp, a) : null; org.appendChild(h('div', { class: 'p5-ecarte' }, h('span', null, h('b', null, b.nom), h('small', null, d != null ? (d > 0 ? milliers(d) + ' de plus' : milliers(-d) + ' de moins') + ' · ' + nomCrit(cp.criteres[kp]).toLowerCase() : 'valeur manquante')), h('b', null, b.valeurs[kp].texte))); }); }
-  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: function () { choisirArt(c, i); rendreListe(); } }, 'Changer d’avis')));
-}
-function aVenir() {
-  var L = [];
-  etat.carnets.forEach(function (c) { var o = c.org; if (o && o.p5avenir) { var a = o.rep.comparaison.articles[o.artRet[0]]; if (a) L.push({ c: c, t: 'Commander ' + a.nom, s: a.valeurs[principal(o.rep.comparaison)].texte, d: null }); } });
-  aFaire().filter(function (x) { return !fictif(x.c) && x.d && joursDe(x.d) >= 0; }).forEach(function (x) { L.push({ c: x.c, t: maj1(x.t), s: titreCourt(x.c), d: x.d }); });
-  return L;
-}
-function feuilleAVenir() {
-  var L = aVenir(), sans = L.filter(function (x) { return !x.d; }), av = L.filter(function (x) { return x.d; });
-  ouvrirFeuille([h('div', { class: 'p5-fh' }, h('h2', null, 'À venir · ' + L.length), h('button', { type: 'button', class: 'p5-b nu', onclick: fermerFeuille }, '✕ Fermer')),
-    sans.length ? h('div', { class: 'p5-k' }, h('b', null, 'Sans date'), h('span', null, String(sans.length))) : null,
-    sans.map(function (x) { return h('div', { class: 'p5-av1' }, h('small', null, 'Achats et charges · ajouté du carnet ' + titreCourt(x.c)), h('b', null, x.t), h('span', null, x.s), h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b plein', 'data-leg': 'Fixer la date : dans le Calendrier' }, 'Fixer la date'), h('button', { type: 'button', class: 'p5-b', onclick: function () { fermerFeuille(); ouvrir(x.c.id); } }, 'Ouvrir le carnet'))); }),
-    av.length ? h('div', { class: 'p5-k' }, h('b', null, 'Cette semaine et après')) : null,
-    av.map(function (x) { return h('button', { type: 'button', class: 'p5-av2', onclick: function () { fermerFeuille(); ouvrir(x.c.id); } }, h('span', { class: 'd' }, p5j(x.d)), h('span', null, h('b', null, x.t), h('small', null, x.s)), sv('droite')); })]);
-}
-
+/* comparerP5 : voir la passe de correction 26.11 */
+/* articleP5 : voir la passe de correction 26.11 */
+/* choisiP5 : voir la passe de correction 26.11 */
+/* aVenir : voir la passe de correction 26.11 */
+/* feuilleAVenir : voir la passe de correction 26.11 */
 /* ---------------------------------------------------------------- Changé par l'IA (O-change, v05) */
-function feuilleChangements() {
-  var c = courant(), o = c && c.org; if (!o) return;
-  var P = propositions(c), L = o.rep.lectures, k2 = o.rep.categorie, on = {}, lignes = [];
-  if (k2) lignes.push({ cle: 'cat', ic: 'dossier', t: 'Rangé : ' + catDe({ org: o, cat: null, exemple: null }).nom + (catDe({ org: o, cat: null, exemple: null }).sous ? ' › ' + catDe({ org: o, cat: null, exemple: null }).sous : '') + ' · ' + (NOM_GENRE[o.rep.genre] || ''), s: 'genre et catégorie', l: 'l. 1 ›' });
-  P.forEach(function (p) { lignes.push({ cle: 'p:' + p.cle, ic: p.cle === 'etat' ? 'coche' : p.cle === 'tache' || p.cle === 'quand' ? 'cal' : 'ia', t: p.label, s: o.garde[p.cle] === true ? (p.cle === 'etat' && c.etatPar && c.etatPar.par !== 'toi' ? 'mis par l’IA' : 'gardé par toi') : o.garde[p.cle] === false ? 'décoché' : 'proposé' }); });
-  L.forEach(function (l, i) { lignes.push({ cle: 'l:' + i, ic: l.type === 'pas_trouve' ? 'q' : l.type === 'contacte' ? 'tel' : l.type === 'montant' ? 'panier' : l.type === 'date' ? 'cal' : 'coche', t: maj1(NOM_LECTURE[l.type] || l.type) + ' : ' + l.mot, s: '« ' + l.mot + ' »', l: 'l. ' + l.ligne + ' ›', ligne: l.ligne, mot: l.mot }); });
-  lignes.forEach(function (x) { on[x.cle] = x.cle === 'cat' ? !c.p5catOff : x.cle.slice(0, 2) === 'p:' ? o.garde[x.cle.slice(2)] !== false : o.lecturesOff.indexOf(+x.cle.slice(2)) < 0; });
-  var bG = h('button', { type: 'button', class: 'p5-b plein' }), maj = function () { var n = 0; lignes.forEach(function (x) { if (on[x.cle]) n++; }); bG.textContent = 'Garder ' + n + ' sur ' + lignes.length; };
-  var corps = [h('div', { class: 'p5-fh' }, h('h2', null, h('i', { class: 'ia' }, '✦ '), 'Changé par l’IA · ' + lignes.length), h('span', { class: 'q' }, p5d(o.quand) + ' ' + hm(new Date(o.quand)))),
-    h('div', { class: 'sous' }, 'Décoche ce que tu ne veux pas. ', sv('cadenas'), ' = lecture corrigée. Tes notes ne bougent pas.')];
-  lignes.forEach(function (x) {
-    var row = h('div', { class: 'p5-chl' + (on[x.cle] ? '' : ' off') });
-    var cb = h('button', { type: 'button', class: 'p5-cb' + (on[x.cle] ? ' on' : ''), role: 'checkbox', 'aria-checked': String(on[x.cle]), 'aria-label': x.t, onclick: function () { on[x.cle] = !on[x.cle]; cb.classList.toggle('on', on[x.cle]); row.classList.toggle('off', !on[x.cle]); cb.setAttribute('aria-checked', String(on[x.cle])); sm.textContent = on[x.cle] ? x.s : 'décoché'; maj(); } }, sv('coche'));
-    var sm = h('small', null, on[x.cle] ? x.s : 'décoché');
-    row.appendChild(cb); row.appendChild(h('span', { class: 'ic' }, sv(x.ic))); row.appendChild(h('span', { class: 't' }, h('b', null, x.t), sm));
-    if (x.l) row.appendChild(h('button', { type: 'button', class: 'p5-l', onclick: x.ligne ? function () { fermerFeuille(); allerLigne(x.ligne, x.mot, x.mot); } : null }, x.l));
-    corps.push(row);
-  });
-  if (o.fausses) corps.push(h('div', { class: 'p5-chl lock' }, h('span', { class: 'p5-cb lk' }, sv('cadenas')), h('span', { class: 'ic' }, sv('q')), h('span', { class: 't' }, h('b', null, o.fausses + (o.fausses > 1 ? ' citations retirées' : ' citation retirée')), h('small', null, 'pas dans tes notes : erreur corrigée'))));
-  corps.push(h('div', { class: 'p5-relire' }, h('span', null, 'Lu ' + (fortP5(c) ? 'par l’IA forte' : 'par l’IA') + ' · ' + p5quand(o.quand)), h('button', { type: 'button', class: 'p5-b nu', onclick: function () { fermerFeuille(); ranger(); } }, '↻ Relire'), h('button', { type: 'button', class: 'p5-b nu ia', onclick: function () { fermerFeuille(); escalader(c); } }, sv('ia'), ' Escalader à l’IA')));
-  corps.push(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: avantIA }, sv('annule'), ' Annuler le reste'), bG));
-  maj(); ouvrirFeuille(corps);
-  bG.addEventListener('click', function () {
-    P.forEach(function (p) { if (on['p:' + p.cle]) garder(p.cle, true); else refuser(p.cle, true); });
-    var off = []; L.forEach(function (l, i) { if (!on['l:' + i]) { off.push(i); var lab = 'lecture : ' + l.mot; if (c.refus.indexOf(lab) < 0) c.refus.push(lab); } });
-    o.lecturesOff = off; if (k2) { c.p5catOff = !on.cat; c.cat = on.cat ? null : { nom: SANS, sous: null }; }
-    sauver(); geste('garder les changements', String(lignes.filter(function (x) { return on[x.cle]; }).length)); fermerFeuille(); rendreOrg(); rendreListe();
-  });
-  function avantIA() {
-    if (o.etatAvant && (o.garde.etat === true || o.garde.resolu === true)) c.etat = o.etatAvant;
-    c.org = c.orgPrec || null; c.orgPrec = null; c.orgErreur = null;
-    sauver(); geste('avant l’IA', ''); fermerFeuille(); rendreOrg(); rendreListe();
-  }
-}
-
+/* feuilleChangements : voir la passe de correction 26.11 */
 /* ---------------------------------------------------------------- 26.11 ~09:40, points 12 et 13 : vraies images, Relire et Escalader à l'IA */
-function imageDe(c, ligne, cls) {
-  var L = liensDe(c).filter(function (l) { return l.ligne === ligne; })[0], u = L && L.lu && typeof L.lu.image === 'string' && /^https:\/\//.test(L.lu.image) ? L.lu.image : null;
-  if (u) return h('img', { class: 'p5-img ' + (cls || ''), src: u, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
-  return h('span', { class: 'p5-img ic ' + (cls || '') }, sv(icDe(c)));
-}
+/* imageDe : voir la passe de correction 26.11 */
 function relireLien(c, l) {
   c.p5relire = c.p5relire || {}; c.p5relire[l.id] = new Date().toISOString(); sauver();
   capDb.then(function (db) { if (!db) return; try { Promise.resolve(db.collection('demandes').doc(l.id).set({ url: l.url, carnet: titreDe(c), type: 'relire', quand: new Date().toISOString() })).catch(function () {}); } catch (e) {} });
@@ -4069,9 +3920,461 @@ function actionsLien(c, l) {
 function fortP5(c) { return !!(c.org && c.p5fortLe && new Date(c.org.quand) >= new Date(c.p5fortLe)); }
 
 /* « le 15 » : le prochain 15 du mois, compté depuis sa note */
-function jourDuMois(q) { var m = String(q).match(/le (d{1,2})/); if (!m) return null; var a = new Date(); var d = new Date(a.getFullYear(), a.getMonth(), +m[1], 12); if (joursDe(d) < 0) d = new Date(a.getFullYear(), a.getMonth() + 1, +m[1], 12); return { d: d }; }
+function jourDuMois(q) { var m = String(q).match(/\ble (\d{1,2})\b/); if (!m) return null; var a = new Date(); var d = new Date(a.getFullYear(), a.getMonth(), +m[1], 12); if (joursDe(d) < 0) d = new Date(a.getFullYear(), a.getMonth() + 1, +m[1], 12); return { d: d }; }
 /* une offre notée « (exemple) » dans ses lignes porte la puce exemple */
 function exDe(c, a) { var l = a.ligne && lignesDe(c)[a.ligne - 1]; return l && /(exemple)/i.test(l) ? exPuce() : null; }
+
+
+/* ====================================================================== passe de correction 26.11 (CRITIQUE-P5-JOUABLE, « À corriger » 1 à 12) */
+/* heures des lignes : une ligne garde l'heure où elle est arrivée ; les lignes d'avant gardent la date du carnet */
+function p5stamp() {
+  if (!etat || !etat.carnets) return; var now = new Date().toISOString();
+  etat.carnets.forEach(function (c) {
+    var L = lignesDe(c);
+    if (!c.p5h) { c.p5h = {}; c.p5maj0 = c.p5maj0 || c.maj; L.forEach(function (l) { var k = l.trim(); if (k) c.p5h[k] = c.p5maj0; }); return; }
+    L.forEach(function (l) { var k = l.trim(); if (k && !c.p5h[k]) c.p5h[k] = now; });
+  });
+}
+function heureLigne(c, n) { var l = (lignesDe(c)[n - 1] || '').trim(); return (c.p5h && c.p5h[l]) || c.p5maj0 || c.maj; }
+function exL(c, n) { var l = n && lignesDe(c)[n - 1]; return l && /\(exemple\)/i.test(l) ? exPuce() : null; }
+function sansEx(t) { return String(t || '').replace(/\s*\(exemple\)/gi, '').trim(); }
+function minus(t) { t = String(t || ''); return /^\p{Lu}\p{Ll}/u.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t; }
+function vt(t) { return String(t == null ? '' : t).replace(/(\d)\.(\d)/g, '$1,$2').replace(/(\d)\s*x\s*(\d)/g, '$1 × $2'); }
+function ord(n) { return n === 1 ? '1re' : n + 'e'; }
+function lienDeA(c, a) { return liensDe(c).filter(function (l) { return l.ligne === a.ligne; })[0] || null; }
+function imageDe(c, ligne, cls, nom) {
+  var L = liensDe(c).filter(function (l) { return l.ligne === ligne; })[0], u = L && L.lu && typeof L.lu.image === 'string' && /^https:\/\//.test(L.lu.image) ? L.lu.image : null;
+  if (u) return h('img', { class: 'p5-img ' + (cls || ''), src: u, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
+  if (nom) return h('span', { class: 'p5-img ic mono ' + (cls || ''), 'aria-hidden': 'true' }, String(nom).trim().charAt(0).toUpperCase());
+  return h('span', { class: 'p5-img ic ' + (cls || '') }, sv(icDe(c)));
+}
+
+/* ce que dit une ligne : l'objet, jamais le mot d'état (« joint du siphon usé », pas « trouvé usé ») */
+function objetDe(ligne, mot) {
+  var segs = sansEx(ligne).replace(/^pistes?\s*:\s*/i, '').split(/\s*;\s*/), m = j1Acc(mot);
+  var seg = segs.filter(function (s) { return j1Acc(s).indexOf(m) >= 0; })[0] || segs[0] || '';
+  return seg.replace(/,?\s*\bpas\s+(?:encore\s+)?trouv\S*/i, '').replace(/\s*\btrouv\S*/i, '').replace(/[.,;:\s]+$/, '').trim();
+}
+function labelLecture(c, l) {
+  var lg = c.org.lignes[l.ligne - 1] || '', ob = objetDe(lg, l.mot), m = j1Acc(l.mot), q = '« ' + l.mot + ' »';
+  if (l.type === 'pas_trouve') return { ic: 'q', t: 'Pas trouvé : ' + ob, s: q };
+  if (l.type === 'piste' && l.ligne === 1) return { ic: 'goutte', t: 'Le problème : ' + l.mot, s: q };
+  if (l.type === 'piste' && /trouv/.test(m) && !/pas trouv/.test(m)) return { ic: 'coche', t: 'Trouvé : ' + ob, s: q };
+  if (l.type === 'contacte') return { ic: 'tel', t: 'Contact : ' + maj1(l.mot.replace(/^contacter\s+/i, '').replace(/^(l[’']|le |la |les )/i, '')), s: q };
+  if (l.type === 'devis' && /attendu|demand/i.test(l.mot)) return { ic: 'panier', t: 'Devis attendu : pas un achat', s: 'lu ' + q + ' · rien n’est payé', lock: true };
+  if (l.type === 'devis' && /re[çc]u/i.test(l.mot)) return { ic: 'tel', t: 'Devis reçu', s: q };
+  if (l.type === 'montant' && /estim|≈|environ/i.test(lg)) return { ic: 'panier', t: l.mot + ' : une estimation, pas un prix', s: '« ' + ((lg.match(/estimation|environ|≈/i) || [''])[0]) + ' » · jamais compté payé', lock: true };
+  if (l.type === 'date') { var d = lireDate(l.mot, heureLigne(c, l.ligne)); return { ic: 'cal', t: 'Date : ' + l.mot + (d ? ' → ' + p5j(d.d) : ''), s: q }; }
+  return { ic: l.type === 'montant' ? 'panier' : l.type === 'devis' ? 'tel' : 'coche', t: maj1(NOM_LECTURE[l.type] || l.type) + ' : ' + l.mot, s: q };
+}
+/* sans l'IA : l'app lit trouvé, pas trouvé et la prochaine étape, avec l'objet de chaque piste */
+function luSeul(L) {
+  var out = [], contact = null;
+  L.forEach(function (l, i) {
+    var n = i + 1, net = sansEx(l);
+    net.replace(/^pistes?\s*:\s*/i, '').split(/\s*;\s*/).forEach(function (s) {
+      var a = j1Acc(s);
+      if (/\bpas\s+(encore\s+)?trouv/.test(a)) out.push({ sorte: 'pas_trouve', t: objetDe(s, s), i: n });
+      else if (/\btrouv/.test(a)) out.push({ sorte: 'trouve', t: objetDe(s, s), i: n });
+    });
+    var mc = net.match(/contacter\s+(?:l[’']|le |la )?(.+?)(?:\s+pour\b|[,.;]|$)/i); if (mc) contact = { t: mc[1].trim(), i: n };
+    if (/devis\s+attendu|attend(?:s|u)?\s+(?:le\s+)?devis/i.test(net)) out.push({ sorte: 'prochaine', t: 'Devis ' + (contact ? contact.t : ''), i: contact ? contact.i + '–' + n : String(n) });
+  });
+  return out;
+}
+
+/* ---------------------------------------------------------------- Mes notes : soulignés par état, heure et puce « exemple » des lignes neuves */
+function calcLectures() {
+  lus = []; var c = courant(), G = { lu: [], 'lu-ok': [], 'lu-pt': [], 'lu-dv': [], p5ex: [] };
+  if (c && vue === 'notes') {
+    if (c.org) (c.org.rep.lectures || []).forEach(function (l, i) {
+      if (c.org.lecturesOff.indexOf(i) >= 0) return;
+      var el = trouverBloc(l.ligne, l.mot), r = el && plage(el, l.mot);
+      if (!r) return; lus.push({ range: r, l: l, i: i });
+      var m = j1Acc(l.mot); G[l.type === 'pas_trouve' ? 'lu-pt' : l.type === 'devis' || l.type === 'contacte' ? 'lu-dv' : l.type === 'piste' && /trouv/.test(m) && !/pas trouv/.test(m) ? 'lu-ok' : 'lu'].push(r);
+    });
+    blocs().forEach(function (b) {
+      var r = plage(b, '(exemple)'); if (r) G.p5ex.push(r);
+      var t = texteLigne(b).trim(), d = t && c.p5h ? c.p5h[t] : null;
+      if (t && (!d || (d !== c.p5maj0 && memeJour(d, Date.now())))) b.setAttribute('data-h', 'auj. ' + hm(new Date(d || Date.now()))); else b.removeAttribute('data-h');
+    });
+  }
+  if (window.CSS && CSS.highlights && typeof Highlight === 'function') Object.keys(G).forEach(function (k) { if (!G[k].length) CSS.highlights.delete(k); else { var hl = new Highlight(); G[k].forEach(function (x) { hl.add(x); }); CSS.highlights.set(k, hl); } });
+}
+
+/* ---------------------------------------------------------------- sa ligne retrouvée (S-notes-ligne) : Le problème / Pistes / Suite, et la ligne dans Organisé */
+var p5lv = null;
+function fermerLV() { if (p5lv) { p5lv.remove(); p5lv = null; } var v = $('v-carnet'); if (v) v.classList.remove('p5-lv-on'); }
+function allerLigne(ligne, citation, etiquette) {
+  var c = courant(); if (!c) return;
+  var y = $('defil').scrollTop;
+  basculer('notes'); doc.blur();
+  var el = trouverBloc(ligne, citation);
+  if (!el) { toast('Cette ligne n’est plus dans ta note.'); return; }
+  geste('toucher un bloc', etiquette + ' → ligne ' + ligne);
+  if (!c.org) { el.classList.add('surl'); el.scrollIntoView({ block: 'center' }); return; }
+  vueLigne(c, ligne, etiquette, y);
+}
+function tagsLigne(c, n) {
+  var r = c.org.rep, T = [], lg = lignesDe(c)[n - 1] || '';
+  r.pistes.forEach(function (p) { if (p.ligne === n) T.push(p.statut === 'trouve' ? ['ok', '✓ trouvé'] : p.statut === 'pas_trouve' ? ['pt', '? pas trouvé'] : ['pt', '◌ à vérifier']); });
+  (r.lectures || []).forEach(function (l, i) {
+    if (l.ligne !== n || c.org.lecturesOff.indexOf(i) >= 0) return;
+    if (l.type === 'contacte') T.push(['dv', '☐ appeler']);
+    else if (l.type === 'devis') T.push(['dv', /re[çc]u/i.test(l.mot) ? '◷ devis reçu' : '◷ devis']);
+    else if (l.type === 'montant') T.push(/estim|≈|environ/i.test(lg) ? ['es', '≈ estimé'] : ['mu', 'montant']);
+    else if (l.type === 'date') T.push(['mu', 'date']);
+  });
+  if (n === 1 && !T.length) T.push(['mu', 'constat']);
+  var vu = {}; return T.filter(function (t) { if (vu[t[1]]) return false; vu[t[1]] = 1; return true; });
+}
+function vueLigne(c, n, etiq, y) {
+  fermerLV();
+  var r = c.org.rep, L = lignesDe(c), pl = {}, retour = function () { fermerLV(); basculer('org'); $('defil').scrollTop = y; };
+  r.pistes.forEach(function (p) { pl[p.ligne] = 1; });
+  var t0 = tagsLigne(c, n)[0], p = h('div', { class: 'p5-lv' });
+  p.appendChild(h('button', { type: 'button', class: 'bk', onclick: retour }, sv('ret'), h('span', null, 'Organisé · ' + maj1(etiq || 'ligne ' + n)), t0 ? h('span', { class: 'tg' }, h('span', { class: t0[0] }, t0[1])) : null));
+  var sec = null, d0 = heureLigne(c, 1);
+  L.forEach(function (l, i) {
+    if (!l.trim()) return; var m = i + 1, s = m === 1 ? 'pb' : pl[m] ? 'ps' : 'su';
+    if (s !== sec) { sec = s; p.appendChild(h('div', { class: 'sec' }, s === 'pb' ? 'LE PROBLÈME · ' + p5j(d0).toUpperCase() + ' · ' + hm(new Date(d0)) : s === 'ps' ? 'PISTES' : 'SUITE')); }
+    p.appendChild(h('button', { type: 'button', class: 'li ' + s + (m === n ? ' on' : ''), onclick: function () { ecrireLigne(m); } }, h('span', { class: 'i' }, String(m)), h('span', null, l), h('span', { class: 'tg' }, tagsLigne(c, m).map(function (t) { return h('span', { class: t[0] }, t[1]); }))));
+  });
+  p.appendChild(h('div', { class: 'sec' }, 'CETTE LIGNE DANS ORGANISÉ'));
+  r.pistes.filter(function (q) { return q.ligne === n; }).forEach(function (q) {
+    var oui = q.statut === 'trouve';
+    p.appendChild(h('div', { class: 'dans' }, h('b', { class: oui ? 'ok' : 'pt' }, oui ? '✓ trouvé' : '? pas trouvé'), h('span', null, oui ? maj1(objetDe(L[n - 1], q.citation)) || q.texte : q.texte), h('button', { type: 'button', class: 'p5-b nu', onclick: retour }, 'Organisé ›')));
+  });
+  r.options.forEach(function (op) {
+    var lie = op.ligne === n || (op.conseille && r.pistes.some(function (q) { return q.ligne === n && q.statut === 'trouve'; }));
+    if (!lie || quiDe(op)) return;
+    var titre = op.titre, deja = (c.miens || []).some(function (x) { return x.type === 'tache' && norm(x.texte) === norm(titre); });
+    p.appendChild(h('div', { class: 'dans' }, h('b', { class: 'ia' }, '✦ proposé'), h('span', null, titre), deja ? h('small', null, '✓ tâche') : h('button', { type: 'button', class: 'p5-b ia', onclick: function () {
+      c.miens = c.miens || []; c.miens.push({ type: 'tache', texte: titre, ia: true }); sauver(); geste('tâche depuis sa ligne', titre); toast('Tâche ajoutée : ' + titre); vueLigne(c, n, etiq, y); rendreListe();
+    } }, '+ Tâche')));
+  });
+  p.appendChild(h('div', { class: 'dans' }, h('b', { class: 'mu' }, '✦ rangé'), h('span', null, p5quand(c.org.quand) + ' · ', h('b', { class: 'et ' + c.etat }, NOM_ETAT[c.etat]))));
+  p.appendChild(h('button', { type: 'button', class: 'p5-b large ecr', onclick: function () { ecrireLigne(n); } }, sv('crayon'), ' Écrire dans Mes notes'));
+  doc.parentNode.insertBefore(p, doc); p5lv = p; $('v-carnet').classList.add('p5-lv-on');
+  var on = p.querySelector('.li.on'); if (on) on.scrollIntoView({ block: 'center' });
+}
+function ecrireLigne(m) {
+  fermerLV(); var el = trouverBloc(m, null); if (!el) return;
+  el.classList.add('surl'); el.scrollIntoView({ block: 'center' }); setTimeout(enleverSurl, 1600);
+  try { doc.focus(); var rg = document.createRange(); rg.selectNodeContents(el); rg.collapse(false); var s = getSelection(); s.removeAllRanges(); s.addRange(rg); } catch (e) {}
+}
+
+/* ---------------------------------------------------------------- note rangée (S-rangee) : avant → après, la date lue */
+function rangeeP5() {
+  if (!p5att || feuille) return; var c = parId(p5att.id); if (!c || estEnLecture(c)) return;
+  if (c.org === p5att.orgAvant && !c.orgErreur) return;
+  var a = p5att; p5att = null;
+  if (!c.org || c.org === a.orgAvant) { toast('Ta note est dans ' + titreCourt(c) + ' · l’IA n’a pas pu lire'); return; }
+  var o = c.org, P = aGarder(c), t = o.rep.tache, dq = t && t.quand ? lireDate(t.quand, a.quand) : null, R = retenus(o);
+  var L = o.rep.lectures.map(function (x, i) { return { x: x, i: i }; }).filter(function (x) { return x.x.ligne === a.ligne; });
+  var on = {}, lignes = [];
+  if (c.etat !== a.etatAvant) lignes.push({ k: 'etat', t: 'État', s: 'l’IA, d’après ta note', av: NOM_ETAT[a.etatAvant], ap: NOM_ETAT[c.etat], cls: c.etat });
+  /* « je le prends » : la tâche nomme une option du carnet, elle passe retenue */
+  var opi = t ? o.rep.options.map(function (x, i) { return { x: x, i: i }; }).filter(function (y) { return norm(t.titre).indexOf(norm(y.x.titre)) >= 0 && R.indexOf(y.i) < 0; })[0] : null;
+  if (opi) { var Lk = liensDe(c).filter(function (l) { return l.ligne === opi.x.ligne; })[0]; lignes.push({ k: 'r:' + opi.i, t: opi.x.titre, s: (Lk ? 'lu · ' : '') + 'option du carnet', av: 'option', ap: 'retenu', cls: 'decide', lien: !!Lk }); }
+  var aQuand = P.some(function (p) { return p.cle === 'quand'; });
+  P.filter(function (p) { return p.cle !== 'etat' && p.cle !== 'quand'; }).forEach(function (p) {
+    if (p.cle === 'tache' && t) { var ach = /^(achet|command|prendre)/.test(j1Acc(t.titre)); lignes.push({ k: 'p:tache', aussi: aQuand ? 'p:quand' : null, t: ach ? 'Achat dans À venir' : 'Tâche', s: t.titre + (dq ? ' · lu ' + p5d(dq.d) : t.quand ? ' · « ' + t.quand + ' »' : ''), ap: dq ? texteJours(joursDe(dq.d)) : 'proposé', cls: 'date' }); return; }
+    lignes.push({ k: 'p:' + p.cle, t: p.label.split(' : ')[0], s: p.label.split(' : ').slice(1).join(' : '), ap: 'proposé', cls: 'ia' });
+  });
+  L.forEach(function (x) {
+    if (x.x.type === 'date' && t && t.quand && norm(t.quand) === norm(x.x.mot)) return;
+    var st = /en stock|dispo/i.test(x.x.mot);
+    lignes.push({ k: 'l:' + x.i, t: st ? 'Veille de stock' : maj1(x.x.mot), s: 'l. ' + x.x.ligne + ' · « ' + x.x.mot + ' »', av: st ? 'à surveiller' : null, ap: st ? 'en stock' : (NOM_LECTURE[x.x.type] || x.x.type), cls: st ? 'ok' : x.x.type });
+  });
+  lignes.forEach(function (x) { on[x.k] = true; });
+  var bOk = h('button', { type: 'button', class: 'p5-b plein' }), maj = function () { var n = lignes.filter(function (x) { return on[x.k]; }).length; bOk.textContent = 'Tout accepter (' + n + ')'; };
+  ouvrirFeuille([h('div', { class: 'p5-note' }, h('div', null, a.texte), h('small', null, 'ta note · ' + p5quand(a.quand))),
+    h('div', { class: 'p5-rg' }, h('span', { class: 'icb' }, sv(icDe(c))), h('span', null, h('b', null, titreCourt(c)), h('small', { class: 'ia' }, '✦ ' + (opi ? opi.x.titre + ' · option du carnet' : r0(c) || 'rangée ici'))), h('button', { type: 'button', class: 'p5-b', onclick: function () { fermerFeuille(); changerDeCarnet(c, a); } }, 'Changer')),
+    lignes.length ? h('div', { class: 'p5-k ia' }, sv('ia'), ' ' + lignes.length + ' CHANGEMENT' + (lignes.length > 1 ? 'S PROPOSÉS' : ' PROPOSÉ')) : h('div', { class: 'p5-k' }, 'Rien d’autre à changer'),
+    lignes.map(function (x) {
+      var cb = h('button', { type: 'button', class: 'p5-cb on', role: 'checkbox', 'aria-checked': 'true', 'aria-label': x.t, onclick: function () { on[x.k] = !on[x.k]; cb.classList.toggle('on', on[x.k]); cb.setAttribute('aria-checked', String(on[x.k])); maj(); } }, sv('coche'));
+      return h('div', { class: 'p5-chl r3' }, cb, h('span', { class: 't' }, h('b', null, x.t), h('small', null, x.lien ? sv('lien') : null, x.s)), h('span', { class: 'av' }, x.av ? h('s', null, x.av) : null, x.av ? ' → ' : null, h('i', { class: 'ap ' + x.cls }, x.ap)));
+    }),
+    h('div', { class: 'p5-acts' }, bOk, h('button', { type: 'button', class: 'p5-b', onclick: function () {
+      c.org = a.orgAvant; c.etat = a.etatAvant; sauver(); geste('juste la note', a.texte); fermerFeuille(); rendreListe(); toast('Gardé : juste la note');
+    } }, 'Juste la note')),
+    h('div', { class: 'p5-rass' }, 'Rien n’est changé sans ton OK.')]);
+  bOk.addEventListener('click', function () {
+    etat.courant = c.id;
+    lignes.forEach(function (x) {
+      if (x.k === 'etat') { if (!on[x.k]) { c.etat = a.etatAvant; o.garde.etat = false; } }
+      else if (x.k.slice(0, 2) === 'r:') { if (on[x.k]) { var i = +x.k.slice(2); if (retenus(o).indexOf(i) < 0) retenus(o).push(i); o.retenuLe = new Date().toISOString(); if (o.garde.options === undefined) o.garde.options = true; if (RANG[c.etat] < RANG.decide) { o.etatAvant = c.etat; c.etat = 'decide'; c.etatPar = { par: 'toi', le: o.retenuLe }; } } }
+      else if (x.k.slice(0, 2) === 'p:') { [x.k, x.aussi].filter(Boolean).forEach(function (kk) { if (on[x.k]) garder(kk.slice(2), true); else refuser(kk.slice(2), true); }); }
+      else if (!on[x.k]) o.lecturesOff.push(+x.k.slice(2));
+    });
+    etat.courant = null; sauver(); geste('tout accepter', a.texte); fermerFeuille(); rendreListe(); toast('Rangé dans ' + titreCourt(c));
+  });
+  maj();
+}
+
+/* ---------------------------------------------------------------- Résoudre sur preuve (O-resoudre) : citations datées, interrupteur « pas pris » */
+function preuvesDe(c, r) {
+  var o = c.org, L = lignesDe(c), P = [];
+  L.forEach(function (l, i) { if (/plus de |pas revenu|n.est plus|n.a plus|disparu|r[ée]solu|r[ée]gl[ée]|\b(joint|pi[èe]ce|raccord) chang[ée]|[çc]a tient/i.test(l) && !/^pistes?\s*:/i.test(l)) P.push({ t: sansEx(l).replace(/\.$/, ''), n: i + 1, d: heureLigne(c, i + 1), ex: /\(exemple\)/i.test(l) }); });
+  var t = r.tache; if (t && o.tacheFaite) P.push({ t: t.titre, tache: true, d: o.tacheFaiteLe || c.maj });
+  return P.sort(function (a, b) { return new Date(b.d) - new Date(a.d); }).slice(0, 3);
+}
+function resoudreP5(c, r) {
+  var o = c.org; if (!((r.resolu || r.etatPropose === 'resolu') && o.garde.resolu === undefined && c.etat !== 'resolu')) return;
+  var q = r.resolu || {}, R = retenus(o), pr = preuvesDe(c, r);
+  if (!o.p5resVu) { o.p5resVu = true; requestAnimationFrame(function () { $('defil').scrollTop = 0; }); }
+  var autre = r.options.map(function (x, i) { return { x: x, i: i }; }).filter(function (y) { return R.length && R.indexOf(y.i) < 0 && nb(y.x.cout) != null; })[0];
+  if (o.p5pasPris === undefined) o.p5pasPris = autre ? [autre.i] : [];
+  var on = !!(autre && o.p5pasPris.indexOf(autre.i) >= 0);
+  var sw = autre ? h('button', { type: 'button', class: 'p5-sw' + (on ? ' on' : ''), role: 'switch', 'aria-checked': String(on), 'aria-label': 'Classer pas pris en fermant', onclick: function () { var k2 = o.p5pasPris.indexOf(autre.i); if (k2 >= 0) o.p5pasPris.splice(k2, 1); else o.p5pasPris.push(autre.i); sauver(); rendreOrg(); } }) : null;
+  org.appendChild(h('div', { class: 'p5-resoudre' }, h('b', null, sv('ia'), ' ' + (q.question || 'Résolu ?')),
+    pr.map(function (p) { return h('button', { type: 'button', class: 'p5-pv', onclick: p.n ? vers(p.n, null, p.t) : null }, h('q', null, '« ' + maj1(p.t) + (p.tache ? ' : cochée' : '') + ' »'), h('small', null, (p.tache ? 'tâche · ' : '') + p5quand(p.d) + (p.n ? ' · l. ' + p.n : '') + ' ', p.ex ? exPuce() : null)); }),
+    h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: function () { refuser('resolu'); } }, 'Pas encore'), h('button', { type: 'button', class: 'p5-b plein', onclick: function () { garder('resolu'); rendreListe(); } }, sv('coche'), ' Résolu')),
+    autre ? h('div', { class: 'p5-pp' }, h('span', null, 'En fermant : ' + (quiDe(autre.x) ? 'devis ' + maj1(quiDe(autre.x)) : autre.x.titre) + ' ' + autre.x.cout + ' classé ', h('b', null, 'pas pris')), sw) : null));
+}
+
+/* ---------------------------------------------------------------- Résolu (O-resolu) : durée, coût, preuve ; le remède, jamais la cause */
+function courtP(t) { t = maj1(sansEx(t).split(/\s+(?:après|depuis|pendant|avec)\s+|,\s*/i)[0]); return t.length > 24 ? t.slice(0, 23).replace(/\s+\S*$/, '') + '…' : t; }
+function resoluP5(c, r) {
+  var o = c.org, le = c.etatPar ? c.etatPar.le : c.maj, ret = retenus(o).map(function (i) { return r.options[i]; }).filter(Boolean), art = (o.artRet || []).map(function (i) { return r.comparaison && r.comparaison.articles[i]; }).filter(Boolean);
+  var tf = o.tacheFaite && r.tache ? r.tache : null, ch = r.relecture && r.relecture.choix;
+  var remede = art[0] ? art[0].nom : tf ? tf.titre : ret[0] ? (quiDe(ret[0]) || ret[0].titre) : ch ? ch.texte : null;
+  var cout = art[0] ? vt(art[0].valeurs[principal(r.comparaison)].texte) : ret[0] && nb(ret[0].cout) != null ? ret[0].cout : null;
+  var pp = (o.p5pasPris || []).map(function (i) { return r.options[i]; }).filter(Boolean);
+  var pr = preuvesDe(c, r).filter(function (p) { return !p.tache; })[0] || (r.relecture && r.relecture.fait[0] ? { t: r.relecture.fait[0].texte, n: r.relecture.fait[0].ligne } : null);
+  var jours = Math.max(0, Math.round((new Date(le) - new Date(c.cree)) / 864e5));
+  if (c.p5resoluVu !== le) { c.p5resoluVu = le; requestAnimationFrame(function () { $('defil').scrollTop = 0; }); }
+  var tu = function (v, lab, cls, f) { return h(f ? 'button' : 'div', { type: f ? 'button' : null, class: 'p5-tu inv ' + (cls || ''), onclick: f || null }, h('b', { class: 'v' }, v), h('span', { class: 'so' }, lab)); };
+  var T = [tu(jours ? jours + ' j' : 'le jour même', 'ouvert le ' + p5d(c.cree))];
+  if (cout) T.push(tu(cout, pp.length ? 'devis ' + pp.map(function (x) { return x.cout; }).join(', ') + ' pas pris' : 'le coût'));
+  else if (ch) T.push(tu(ch.texte, 'le remède · l. ' + ch.ligne, '', vers(ch.ligne, ch.citation, ch.texte)));
+  if (pr) T.push(tu(courtP(pr.t), 'la preuve' + (pr.n ? ' · l. ' + pr.n : ''), 'ok', pr.n ? vers(pr.n, null, pr.t) : null));
+  org.appendChild(h('div', { class: 'p5-resolu' }, h('span', { class: 'rond' }, sv('coche')), h('div', null, h('b', null, 'Résolu · ' + p5j(le)), remede ? h('small', null, 'remède : ' + minus(remede) + (cout ? ', ' + cout : '')) : null),
+    h('button', { type: 'button', class: 'p5-b', onclick: function () { poserEtat(c, ret.length || art.length ? 'decide' : 'cherche'); } }, sv('annule'), ' Rouvrir'),
+    h('div', { class: 'p5-tuiles t' + T.length }, T)));
+  if (r.relecture) relectureP5(c, r);
+  if (r.options.length && (ret.length || pp.length)) {
+    org.appendChild(k('OPTIONS FERMÉES', 'avec leur raison'));
+    r.options.forEach(function (op, i) {
+      var est = retenus(o).indexOf(i) >= 0, nom = quiDe(op) ? 'Devis ' + maj1(quiDe(op)) : op.titre;
+      org.appendChild(h('button', { type: 'button', class: 'p5-ferme' + (est ? ' ok' : ''), onclick: vers(op.ligne, op.citation, op.titre) }, h('span', null, h('b', null, nom + (nb(op.cout) != null ? ' · ' + op.cout : '')), h('small', null, op.citation ? '« ' + op.citation + ' » · l. ' + op.ligne + ' ' : '', exL(c, op.ligne))), h('i', { class: 'tag' }, est ? (tf ? 'fait' : 'retenu') : (o.p5pasPris || []).indexOf(i) >= 0 ? 'pas pris' : 'écarté')));
+    });
+  }
+  var fermees = r.pistes.map(function (p) { return { t: p.texte, s: '« ' + p.citation + ' » · l. ' + p.ligne, tag: p.statut === 'trouve' ? 'la cause' : 'écarté', ok: p.statut === 'trouve', f: vers(p.ligne, p.citation, p.texte) }; });
+  if (fermees.length) { org.appendChild(k('PISTES FERMÉES', 'avec leur raison')); fermees.forEach(function (x) { org.appendChild(h('button', { type: 'button', class: 'p5-ferme' + (x.ok ? ' ok' : ''), onclick: x.f }, h('span', null, h('b', null, x.t), h('small', null, x.s)), h('i', { class: 'tag' }, x.tag))); }); }
+  var k2 = catDe(c), memes = reels().filter(function (x) { return x !== c && x.etat === 'resolu' && catDe(x).nom === k2.nom; }), ail = !memes.length;
+  if (ail) memes = reels().filter(function (x) { return x !== c && x.etat === 'resolu'; }).slice(0, 3);
+  if (memes.length) { org.appendChild(k('RÉSOLUS', ail ? 'ailleurs' : k2.nom)); memes.forEach(function (x) { org.appendChild(h('button', { type: 'button', class: 'p5-autre res', onclick: function () { ouvrir(x.id); } }, sv('coche'), h('b', null, titreCourt(x)), h('small', null, (ail ? catDe(x).nom + ' › ' : '') + (catDe(x).sous || '')))); }); }
+}
+function relectureP5(c, r) {
+  var x = r.relecture, L = lignesDe(c), si = null;
+  L.forEach(function (l, i) { if (/prochaine fois|si [çc]a revient|[àa] l.avenir/i.test(l)) si = { t: sansEx(l).replace(/^la prochaine fois\s*:\s*/i, ''), n: i + 1 }; });
+  org.appendChild(h('div', { class: 'p5-pq' }, h('b', { class: 'ti' }, sv('ia'), ' Pourquoi tu as fait ça'), h('button', { type: 'button', class: 'ch', onclick: vers(x.choix.ligne, x.choix.citation, x.choix.texte) }, x.choix.texte, h('small', null, ' l. ' + x.choix.ligne + ' ›')),
+    x.savais.length ? h('div', { class: 'p5-k' }, h('b', null, 'CE QUE TU SAVAIS ALORS')) : null,
+    x.savais.map(function (s) { return h('button', { type: 'button', class: 'sv', onclick: vers(s.ligne, s.citation, s.texte) }, sv('coche'), h('span', null, maj1(s.citation || s.texte)), h('small', null, 'l. ' + s.ligne)); }),
+    x.fait.length ? h('div', { class: 'p5-k' }, h('b', null, 'CE QUE TU AS FAIT')) : null,
+    x.fait.map(function (s) { return h('button', { type: 'button', class: 'sv', onclick: vers(s.ligne, s.citation, s.texte) }, sv('cle'), h('span', null, maj1(s.citation || s.texte)), h('small', null, 'l. ' + s.ligne)); }),
+    x.calcul ? h('div', { class: 'calc' }, h('b', null, x.calcul.valeur), h('small', null, ' calcul de l’app : ' + x.calcul.detail)) : null,
+    si ? h('div', { class: 'p5-k' }, h('b', null, 'SI ÇA REVIENT')) : null,
+    si ? h('button', { type: 'button', class: 'sv si', onclick: vers(si.n, null, si.t) }, sv('cible'), h('span', null, maj1(si.t.replace(/\.$/, ''))), h('small', null, 'l. ' + si.n)) : null));
+  org.appendChild(h('button', { type: 'button', class: 'p5-b large', onclick: function () { basculer('notes'); } }, sv('crayon'), ' Voir dans Mes notes'));
+}
+
+/* ---------------------------------------------------------------- L'IA n'a pas pu lire (S-ia-echec) */
+function echecP5(c) {
+  var e = c.orgErreur, lignes = lignesDe(c), nl = lignes.filter(function (x) { return x.trim(); }).length;
+  org.appendChild(h('div', { class: 'p5-err', role: 'alert' }, h('div', null, h('b', null, 'L’IA n’a pas pu lire'), h('small', null, e.message + ' · ' + p5quand(e.quand) + ' · tes ' + nl + ' lignes sont gardées')),
+    h('span', { class: 'p5-bts' }, h('button', { type: 'button', class: 'p5-b plein', onclick: function () { ranger(); } }, '↻ Réessayer'), h('button', { type: 'button', class: 'p5-b nu ia', onclick: function () { escalader(c); } }, sv('ia'), ' IA forte'))));
+  if (c.org) return;
+  var mm = []; lignes.forEach(function (l, i) { etiquettesLigne(l).forEach(function (x) { if (x.sorte === 'montant') mm.push({ e: x, i: i + 1 }); }); });
+  var m = mm[0], est = m && /estimation|≈|environ/i.test(lignes[m.i - 1]);
+  org.appendChild(h('div', { class: 'p5-tuiles t3' }, tuile('etat-' + c.etat, null, '● état', NOM_ETAT[c.etat]), tuile('', 'horloge', 'ouvert', (-joursDe(new Date(c.cree))) + ' j', p5d(c.cree)),
+    m ? tuile(est ? 'est' : '', null, (est ? 'estimé' : 'coût') + ' · l. ' + m.i, (est ? '≈ ' : '') + m.e.texte, exL(c, m.i)) : tuile('inc', null, 'coût', '?')));
+  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'LU PAR L’APP SEULE'), h('span', { class: 'p5-sans' }, 'sans l’IA')));
+  var NOMS = { pas_trouve: ['pas trouvé', 'q', 'pt'], prochaine: ['prochaine', 'horloge', 'at'], trouve: ['trouvé', 'coche', 'ok'] };
+  luSeul(lignes).forEach(function (x) { var N = NOMS[x.sorte]; org.appendChild(h('button', { type: 'button', class: 'p5-lu ' + N[2], onclick: vers(parseInt(x.i, 10), null, x.t) }, h('b', null, sv(N[1]), ' ' + N[0]), h('span', null, maj1(x.t)), h('i', { class: 'p5-l' }, 'l. ' + x.i))); });
+  org.appendChild(h('div', { class: 'p5-quand' }, sv('ia'), ' Options, cause et tâches : quand l’IA aura lu.'));
+  org.appendChild(k('TES LIGNES · ' + p5j(c.maj).toUpperCase() + ' · ' + hm(new Date(c.maj))));
+  org.appendChild(h('div', { class: 'p5-lignes' }, lignes.map(function (l, i) { return l.trim() ? h('div', null, h('span', { class: 'i' }, String(i + 1)), h('span', null, l)) : null; })));
+}
+
+/* ---------------------------------------------------------------- achats : classement juste (un prix incomplet ne passe pas devant un prix complet) */
+function valCrit(t) { t = String(t == null ? '' : t); if (/compris|offert|gratuit|inclus/i.test(t)) return 0; return nb(t); }
+function manquants(cp, a) { return cp.criteres.map(function (cr, i) { return a.valeurs[i] && a.valeurs[i].texte === '?' ? minus(nomCrit(cr)) + ' ?' : null; }).filter(Boolean); }
+function classement(cp, k) {
+  var p = principal(cp), vals = cp.articles.map(function (a, i) { var v = a.valeurs[k], t = v ? v.texte : '?'; return { i: i, v: valCrit(t), inc: /≈|estim/i.test(t) || (k === p && a.valeurs.some(function (x) { return x.texte === '?'; })) }; });
+  var by = function (a, b) { return a.v - b.v; };
+  return vals.filter(function (x) { return x.v != null && !x.inc; }).sort(by).concat(vals.filter(function (x) { return x.v != null && x.inc; }).sort(by), vals.filter(function (x) { return x.v == null; }));
+}
+function uniteCommune(vals) { var U = null, ok = false; for (var i = 0; i < vals.length; i++) { var v = vals[i]; if (v === '?') continue; var m = String(v).match(/\s(mm|cm|m³|m²|m|°C|kg|g|W|kW|kWh|l|L|CHF\/m³|CHF|ppb|bt\/h)$/); if (!m || (U && U !== m[1])) return null; U = m[1]; ok = true; } return ok ? U : null; }
+function achatP5(c, r) {
+  var o = c.org, cp = r.comparaison, kp = principal(cp), cl = classement(cp, kp), A = cp.articles;
+  o.artRet = o.artRet || []; o.artEcart = o.artEcart || [];
+  var t = r.tache, dq = t && t.quand && (lireDate(t.quand, c.maj) || jourDuMois(t.quand));
+  if (o.artRet.length) { choisiP5(c, r); return; }
+  org.appendChild(h('div', { class: 'p5-besoin' }, sv('cal'), dq ? h('b', null, (t.titre === 'Choisir' ? 'Besoin avant ' : t.titre + ' · ') + p5j(dq.d)) : h('b', null, t ? t.titre : 'Achat'), dq ? h('span', null, ' · ' + texteJours(joursDe(dq.d))) : null, t ? lgn(t.ligne, t.citation) : null,
+    h('button', { type: 'button', class: 'p5-n', onclick: function () { feuilleArticles(c); } }, A.length + ' offres')));
+  org.appendChild(h('div', { class: 'p5-crit' }, sv('cible'), h('span', null, 'critère'), h('b', null, minus(nomCrit(cp.criteres[kp]))), h('i', { class: 'ia' }, '✦ proposé')));
+  var cartes = cp.criteres.map(function (cr, i) { var g = cp.gagnant[i]; return g == null ? null : { cr: cr, a: A[g], v: A[g].valeurs[i].texte, i: i }; }).filter(Boolean).slice(0, 3);
+  if (cartes.length) org.appendChild(h('div', { class: 'p5-gagne' }, cartes.map(function (x) { return h('button', { type: 'button', class: 'p5-gc', onclick: function () { p5vueC = { id: c.id, art: A.indexOf(x.a) }; rendreOrg(); } }, h('small', null, 'Gagne · ' + minus(nomCrit(x.cr))), h('b', null, x.a.nom), x.v === x.a.nom ? null : h('span', { class: 'ok' }, vt(x.v))); }),
+    cartes.length < 3 ? h('div', { class: 'p5-gc vide' }, h('small', null, 'Délai'), h('span', null, 'pas noté')) : null));
+  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, A.length + ' OFFRES · ' + nomCrit(cp.criteres[kp]).toUpperCase()), h('span', null, 'complets d’abord')));
+  cl.forEach(function (x, n) {
+    var a = A[x.i], ec = o.artEcart.indexOf(x.i) >= 0, gag = n === 0 && x.v != null && !x.inc, src = a.valeurs.some(function (v) { return v.source === 'lien'; });
+    var connus = a.valeurs.filter(function (v) { return v.texte !== '?'; }).length;
+    org.appendChild(h('button', { type: 'button', class: 'p5-off' + (ec ? ' ec' : ''), onclick: function () { p5vueC = { id: c.id, art: x.i }; rendreOrg(); } }, imageDe(c, a.ligne, 'pt', a.nom),
+      h('span', { class: 't' }, h('b', null, a.nom, exDe(c, a)), h('small', null, src ? sv('lien') : sv('crayon'), src ? ' lu' : ' ta note', a.valeurs[0] && a.valeurs[0].texte !== '?' ? ' · ' + vt(a.valeurs[0].texte) : '')),
+      h('span', { class: 'blocs', 'aria-label': connus + ' valeurs sur ' + a.valeurs.length }, connus < a.valeurs.length ? a.valeurs.map(function (v) { return h('i', { class: v.texte === '?' ? '' : 'on' }); }) : null),
+      h('span', { class: 'c' }, x.v != null ? h('b', { class: gag ? 'ok' : x.inc ? 'est' : '' }, vt(a.valeurs[kp].texte.replace(/\s*CHF/, ''))) : h('b', null, '—'), h('small', null, ec ? 'écarté' : x.v == null ? 'manque' : x.inc ? (manquants(cp, a).join(', ') || 'estimé') : a.valeurs[kp].detail ? vt(a.valeurs[kp].detail) : ''))));
+  });
+  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b ia', onclick: feuilleDemander }, sv('ia'), ' Demander les délais'), h('button', { type: 'button', class: 'p5-b plein', onclick: function () { p5vueC = { id: c.id }; geste('comparer', A.length + ' offres'); rendreOrg(); } }, 'Comparer les ' + A.length + ' ›')));
+  tachesP5(c, r);
+}
+/* Comparer (h04-7 figé 17.11) : image et rang en tête de colonne, domaine et « lu » dessous, unités sous le libellé */
+function comparerP5(c) {
+  var r = c.org.rep, cp = r.comparaison, o = c.org, A = cp.articles, kp = o.p5crit != null ? o.p5crit : principal(cp), cl = classement(cp, kp);
+  var vis = cl.filter(function (x) { return o.artEcart.indexOf(x.i) < 0; }), ecs = cl.filter(function (x) { return o.artEcart.indexOf(x.i) >= 0; });
+  var vers2 = function (x) { return function () { p5vueC = { id: c.id, art: x.i, depuis: 'cmp' }; rendreOrg(); }; };
+  enteteVue(c, 'Comparer', A.length + ' offres · classé par ' + minus(nomCrit(cp.criteres[kp])));
+  org.appendChild(h('div', { class: 'p5-classe' }, cp.criteres.map(function (cr, i) { return h('button', { type: 'button', class: i === kp ? 'on' : '', onclick: function () { o.p5crit = i; sauver(); geste('classer par', cr); rendreOrg(); } }, i === kp ? sv('cible') : null, nomCrit(cr)); })));
+  var mx = Math.max.apply(null, vis.map(function (x) { return x.v || 0; }).concat([1]));
+  org.appendChild(h('div', { class: 'p5-rk' }, h('div', { class: 'hd' }, h('b', null, nomCrit(cp.criteres[kp])), h('span', null, ' · moins = mieux · complets d’abord'), h('i', { class: 'cr' }, 'critère')),
+    vis.map(function (x, n) { var a = A[x.i], v = a.valeurs[kp], man = manquants(cp, a); return h('button', { type: 'button', class: 'l' + (n === 0 && x.v != null && !x.inc ? ' g' : ''), onclick: vers2(x) }, h('span', null, (n + 1) + ' ' + a.nom, x.inc && x.v != null ? h('small', { class: 'p5-incm' }, ' · ' + (man.length ? man.join(', ') : 'estimé')) : null), h('b', null, vt(v.texte)), h('i', { class: 'b' + (x.inc && x.v != null ? ' est' : '') + (x.v == null ? ' inc' : ''), style: 'width:' + (x.v != null ? Math.max(6, Math.round(x.v / mx * 100)) : 100) + '%' })); })));
+  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Côte à côte'), h('span', null, 'le meilleur en vert' + (vis.length > 3 ? ' · glisse → ' + (vis.length - 3) + ' de plus' : ''))));
+  var tab = h('table', { class: 'p5-cac' }), th = h('tr', null, h('th'));
+  vis.forEach(function (x, n) {
+    var a = A[x.i], Lk = lienDeA(c, a);
+    th.appendChild(h('th', { class: 'p5-colh' }, h('button', { type: 'button', onclick: vers2(x) }, h('span', { class: 'im' }, imageDe(c, a.ligne, 'col'), h('i', { class: 'rg' + (n === 0 && x.v != null && !x.inc ? ' g' : '') }, String(n + 1))), h('b', null, a.nom),
+      h('small', null, Lk ? hoteDe(Lk.url) + (Lk.lu ? ' · lu' : ' · en lecture') : 'ta note · l. ' + a.ligne, exDe(c, a) ? ' ' : null, exDe(c, a)))));
+  });
+  tab.appendChild(th);
+  var pareils = [];
+  cp.criteres.forEach(function (cr, i) {
+    var vals = vis.map(function (x) { return A[x.i].valeurs[i].texte; });
+    if (vis.length > 1 && vals[0] !== '?' && vals.every(function (v) { return v === vals[0]; })) { pareils.push(nomCrit(cr) + ' ' + vt(vals[0])); return; }
+    var u = uniteCommune(vals), dansNom = u && nomCrit(cr).indexOf(u) >= 0;
+    var tr = h('tr', { class: i === kp ? 'crit' : '' }, h('th', null, nomCrit(cr), u && !dansNom ? h('small', null, u) : null));
+    vis.forEach(function (x) { var v = A[x.i].valeurs[i], t = v.texte === '?' ? '—' : vt(u ? v.texte.slice(0, v.texte.length - u.length).trim() : v.texte); tr.appendChild(h('td', { class: (cp.gagnant[i] === x.i ? 'g' : '') + (v.texte === '?' ? ' inc' : '') }, t, v.detail ? h('small', null, vt(v.detail)) : null)); });
+    tab.appendChild(tr);
+  });
+  org.appendChild(h('div', { class: 'p5-cacw' }, tab));
+  if (pareils.length) org.appendChild(h('div', { class: 'p5-pareil' }, 'Pareil partout : ' + pareils.join(' · ')));
+  if (cp.compromis) org.appendChild(h('div', { class: 'p5-comp' }, h('b', null, 'Compromis : '), vt(cp.compromis)));
+  (r.attention || []).forEach(function (a) { org.appendChild(h('div', { class: 'p5-faible' }, h('b', null, sv('q'), ' attention'), h('span', null, a.texte), lgn(a.ligne, a.citation, a.texte))); });
+  if (ecs.length) { org.appendChild(k('Écartés · ' + ecs.length)); ecs.forEach(function (x) { org.appendChild(h('div', { class: 'p5-ecarte' }, h('b', null, A[x.i].nom), h('button', { type: 'button', class: 'p5-b nu', onclick: function () { ecarterArt(c, x.i); } }, 'Reprendre'))); }); }
+}
+/* Article (h01-6) : rang juste, où l'acheter avec « Ouvrir ↗ », surveiller prix et stock */
+function articleP5(c) {
+  var r = c.org.rep, cp = r.comparaison, o = c.org, i = p5vueC.art, a = cp.articles[i], kp = principal(cp), cl = classement(cp, kp), rang = cl.map(function (x) { return x.i; }).indexOf(i), me = cl[rang];
+  enteteVue(c, a.nom, ord(rang + 1) + ' sur ' + cp.articles.length + ' · ' + minus(nomCrit(cp.criteres[kp])) + (me && me.inc && me.v != null ? ' · prix incomplet' : ''));
+  var L = lienDeA(c, a), im = imageDe(c, a.ligne, 'grand');
+  org.appendChild(h('div', { class: 'p5-photo' + (im.tagName === 'IMG' ? '' : ' petit') }, im));
+  org.appendChild(h('div', { class: 'p5-src' }, L ? sv('lien') : sv('crayon'), L ? ' ' + hoteDe(L.url) + (lienEnLecture(c, L) ? ' · 🔗 en lecture' : ' · lu ' + jourLu(L.lu.lu)) : ' ta note', a.ligne ? lgn(a.ligne, a.citation, a.nom) : null, exDe(c, a), L ? actionsLien(c, L) : null));
+  var v = a.valeurs[kp], vals = cl.filter(function (x) { return x.v != null; });
+  var lo = Math.min.apply(null, vals.map(function (x) { return x.v; })), hi = Math.max.apply(null, vals.map(function (x) { return x.v; }));
+  org.appendChild(h('div', { class: 'p5-jauge' }, h('small', null, nomCrit(cp.criteres[kp])), h('b', null, vt(v.texte)), h('span', { class: 'pts' }, vals.map(function (x) { return h('i', { class: x.i === i ? 'ici' : '', style: 'left:' + (vals.length > 1 ? Math.round((x.v - lo) / ((hi - lo) || 1) * 92) : 0) + '%' }); })), h('small', null, rang === 0 && me && !me.inc ? 'le moins cher complet des ' + cp.articles.length : ord(rang + 1) + ' sur ' + cp.articles.length + (me && me.inc && me.v != null ? ' · ' + (manquants(cp, a).join(', ') || 'estimé') : ''))));
+  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Caractéristiques'), h('span', null, L && L.lu ? 'lues sur la page' : 'de tes notes')));
+  org.appendChild(h('div', { class: 'p5-carac' }, cp.criteres.map(function (cr, k2) { var x = a.valeurs[k2], rg = classement(cp, k2).map(function (y) { return y.i; }).indexOf(i); return h('div', { class: cp.gagnant[k2] === i ? 'g' : '' }, h('small', null, nomCrit(cr)), h('b', null, x.texte === '?' ? '—' : vt(x.texte)), x.texte !== '?' && valCrit(x.texte) != null && !cp.articles.every(function (b) { return b.valeurs[k2].texte === x.texte || b.valeurs[k2].texte === '?'; }) ? h('i', null, ' ' + ord(rg + 1)) : null); })));
+  org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Où l’acheter'), h('span', null, L ? '1 page lue' : 'de tes notes')));
+  var lg = lignesDe(c)[a.ligne - 1] || '';
+  org.appendChild(h('div', { class: 'p5-ofr' }, h('span', null, h('b', null, L ? hoteDe(L.url) : a.nom), h('small', null, L ? ((L.lu && L.lu.dispo ? L.lu.dispo + ' · ' : '') + 'lu ' + jourLu(L.lu && L.lu.lu)) : (function (t) { return '« ' + (t.length > 40 ? t.slice(0, 40).replace(/\s+\S*$/, '') + '…' : t) + ' »'; })(sansEx(lg)))), h('b', null, vt(v.texte)),
+    L ? h('a', { class: 'p5-ouvrir', href: L.url, target: '_blank', rel: 'noopener noreferrer' }, 'Ouvrir ↗') : lgn(a.ligne, a.citation, a.nom)));
+  o.p5veille = o.p5veille || {}; var won = !!o.p5veille[i];
+  var sw = h('button', { type: 'button', class: 'p5-sw' + (won ? ' on' : ''), role: 'switch', 'aria-checked': String(won), 'aria-label': 'Surveiller prix et stock', onclick: function () { o.p5veille[i] = !o.p5veille[i]; sauver(); geste('veille', a.nom); rendreOrg(); } });
+  org.appendChild(h('div', { class: 'p5-surv' }, sv('oeil'), h('span', null, h('b', null, 'Surveiller prix et stock'), h('small', null, L ? 'l’IA relit ' + hoteDe(L.url) : 'dès que tu notes un nouveau prix')), sw));
+  var ch = o.artRet.indexOf(i) >= 0, ec = o.artEcart.indexOf(i) >= 0;
+  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b plein vert', onclick: function () { if (!ch) { o.p5choisiLe = new Date().toISOString(); } choisirArt(c, i); p5vueC = null; rendreOrg(); rendreListe(); } }, sv('coche'), ch ? ' Choisi' : ' Choisir · ' + a.nom),
+    h('button', { type: 'button', class: 'p5-b', onclick: function () { ecarterArt(c, i); p5vueC = null; rendreOrg(); } }, ec ? 'Reprendre' : 'Écarter')));
+  org.appendChild(h('div', { class: 'p5-part' }, 'Part dans À venir : ' + a.nom + (v.texte !== '?' ? ', ' + vt(v.texte) : '') + ', avec le pourquoi.'));
+}
+/* Choisi (v09-3) : l'objet en image ou icône, un pourquoi lisible, une raison par écarté */
+function raisonEcart(cp, a, x, kp) {
+  var b = cp.articles[x.i], man = manquants(cp, b), crit = nomCrit(cp.criteres[kp]), pa = valCrit(a.valeurs[kp].texte);
+  if (x.v == null) return man.length >= cp.criteres.length ? 'aucun prix noté' : 'pas de prix ' + (/^pour\b/i.test(crit) ? minus(crit) : '(' + minus(crit) + ')');
+  if (x.inc) return 'prix incomplet : ' + (man.length ? man.join(', ') : 'estimé');
+  var d = Math.round((x.v - pa) * 100) / 100;
+  return d > 0 ? milliers(d) + ' CHF de plus ' + minus(crit) : d < 0 ? milliers(-d) + ' CHF de moins ' + minus(crit) : 'même prix';
+}
+function choisiP5(c, r) {
+  var o = c.org, cp = r.comparaison, kp = principal(cp), i = o.artRet[0], a = cp.articles[i], le = o.p5choisiLe || c.maj, cl = classement(cp, kp), v = a.valeurs[kp];
+  var me = cl.filter(function (x) { return x.i === i; })[0], rk = cl.indexOf(me);
+  var aussi = cp.criteres.map(function (cr, k2) { return k2 !== kp && cp.gagnant[k2] === i ? minus(nomCrit(cr)) + ' ' + vt(a.valeurs[k2].texte) : null; }).filter(Boolean);
+  var pq = (rk === 0 && !me.inc ? 'le moins cher au prix complet' : ord(rk + 1) + ' sur ' + cp.articles.length) + ' : ' + vt(v.texte) + ' ' + minus(nomCrit(cp.criteres[kp])) + (v.detail ? ' (' + vt(v.detail) + ')' : '') + '.' + (aussi.length ? ' Aussi le meilleur : ' + aussi.join(', ') + '.' : '');
+  var det = a.valeurs.map(function (x, k2) { return k2 === kp || x.texte === '?' ? null : minus(nomCrit(cp.criteres[k2])) + ' ' + vt(x.texte); }).filter(Boolean).join(' · ');
+  org.appendChild(h('div', { class: 'p5-choisi' }, h('div', { class: 'hd' }, sv('coche'), h('b', null, 'Choisi le ' + p5d(le))),
+    h('div', { class: 'p5-chx' }, imageDe(c, a.ligne, 'ch'), h('span', null, h('b', { class: 'nom' }, a.nom, exDe(c, a)), h('small', null, det), h('b', { class: 'px' }, vt(v.texte)))),
+    h('div', { class: 'pq' }, h('b', null, 'Pourquoi : '), pq),
+    h('div', { class: 'cc' }, h('small', null, 'Ce qui comptait'), h('b', null, minus(nomCrit(cp.criteres[kp])))),
+    o.p5avenir ? h('div', { class: 'p5-part' }, sv('cal'), ' Dans À venir depuis le ' + p5d(o.p5avenir), h('button', { type: 'button', class: 'p5-b nu', onclick: feuilleAVenir }, 'Voir ›')) :
+      h('button', { type: 'button', class: 'p5-b plein vert large', onclick: function () { o.p5avenir = new Date().toISOString(); sauver(); geste('envoyer dans À venir', a.nom); rendreOrg(); rendreListe(); toast('Dans À venir : ' + a.nom, 'Annuler', function () { delete o.p5avenir; sauver(); rendreOrg(); rendreListe(); }); } }, sv('cal'), ' Envoyer dans À venir')));
+  var autres = cl.filter(function (x) { return x.i !== i; });
+  if (autres.length) {
+    org.appendChild(h('div', { class: 'p5-k' }, h('b', null, 'Écartés ' + autres.length), h('span', null, 'et pourquoi')));
+    autres.forEach(function (x) { var b = cp.articles[x.i]; org.appendChild(h('div', { class: 'p5-ecarte p5-ec2' }, imageDe(c, b.ligne, 'pt', b.nom), h('span', null, h('b', null, b.nom, exDe(c, b)), h('small', null, raisonEcart(cp, a, x, kp))), h('b', null, b.valeurs[kp].texte === '?' ? '—' : vt(b.valeurs[kp].texte)))); });
+  }
+  org.appendChild(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: function () { choisirArt(c, i); rendreListe(); } }, 'Changer d’avis')));
+}
+/* À venir (h05-9) : carré de couleur par genre, montant, image ou icône */
+function aVenir() {
+  var L = [];
+  etat.carnets.forEach(function (c) { var o = c.org; if (o && o.p5avenir) { var cp = o.rep.comparaison, a = cp.articles[o.artRet[0]]; if (a) L.push({ c: c, t: 'Commander ' + a.nom, s: titreCourt(c), d: null, g: 'achat', m: vt(a.valeurs[principal(cp)].texte), a: a }); } });
+  aFaire().filter(function (x) { return !fictif(x.c) && x.d && joursDe(x.d) >= 0; }).forEach(function (x) {
+    var r = x.c.org && x.c.org.rep, ach = /^(achet|command)/.test(j1Acc(x.t)), m = null;
+    if (ach && r) { var R = retenus(x.c.org), op = R.length ? r.options[R[0]] : null; if (op && nb(op.cout) != null) m = (op.estime ? '≈ ' : '') + op.cout; }
+    L.push({ c: x.c, t: maj1(x.t), s: titreCourt(x.c), d: x.d, g: x.sorte === 'echeance' ? 'ech' : ach ? 'achat' : 'tache', m: m });
+  });
+  return L;
+}
+function feuilleAVenir() {
+  var L = aVenir(), sans = L.filter(function (x) { return !x.d; }), av = L.filter(function (x) { return x.d; }), G = { achat: 'achat', tache: 'tâche', ech: 'échéance' };
+  var ligne = function (x) { return h('button', { type: 'button', class: 'p5-av3', onclick: function () { fermerFeuille(); ouvrir(x.c.id); } }, h('span', { class: 'd' }, x.d ? p5j(x.d) : '—'), h('span', { class: 'sq ' + x.g, 'aria-label': G[x.g] }),
+    x.a ? imageDe(x.c, x.a.ligne, 'pt') : h('span', { class: 'p5-img ic pt' }, sv(icDe(x.c))), h('span', { class: 't' }, h('b', null, x.t), h('small', null, G[x.g] + ' · ' + x.s)), x.m ? h('b', { class: 'm' }, x.m) : h('span', { class: 'm' }, x.d ? texteJours(joursDe(x.d)) : '')); };
+  ouvrirFeuille([h('div', { class: 'p5-fh' }, h('h2', null, 'À venir · ' + L.length), h('button', { type: 'button', class: 'p5-b nu', onclick: fermerFeuille }, '✕ Fermer')),
+    h('div', { class: 'p5-leg' }, ['achat', 'tache', 'ech'].map(function (g) { return h('span', null, h('i', { class: 'sq ' + g }), ' ' + G[g]); })),
+    sans.length ? h('div', { class: 'p5-k' }, h('b', null, 'Sans date'), h('span', null, String(sans.length))) : null,
+    sans.map(function (x) { return h('div', { class: 'p5-av1' }, ligne(x), h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b plein', 'data-leg': 'Fixer la date : dans le Calendrier' }, 'Fixer la date'), h('button', { type: 'button', class: 'p5-b', onclick: function () { fermerFeuille(); ouvrir(x.c.id); } }, 'Ouvrir le carnet'))); }),
+    av.length ? h('div', { class: 'p5-k' }, h('b', null, 'Cette semaine et après')) : null,
+    av.map(ligne)]);
+}
+/* ---------------------------------------------------------------- Changé par l'IA (O-change) : l'objet lu, les lectures corrigées verrouillées */
+function feuilleChangements() {
+  var c = courant(), o = c && c.org; if (!o) return;
+  var P = propositions(c), r = o.rep, L = r.lectures, k2 = r.categorie, on = {}, lignes = [];
+  if (k2) { var kk = catDe({ org: o, cat: null, exemple: null }); lignes.push({ cle: 'cat', ic: 'dossier', t: 'Rangé : ' + kk.nom + (kk.sous ? ' › ' + kk.sous : '') + ' · ' + (NOM_GENRE[r.genre] || ''), s: 'genre et catégorie', l: 'l. 1 ›' }); }
+  P.forEach(function (p) { lignes.push({ cle: 'p:' + p.cle, ic: p.cle === 'etat' ? 'coche' : p.cle === 'tache' || p.cle === 'quand' ? 'cal' : 'ia', t: p.label, s: o.garde[p.cle] === true ? (p.cle === 'etat' && c.etatPar && c.etatPar.par !== 'toi' ? 'mis par l’IA' : 'gardé par toi') : o.garde[p.cle] === false ? 'décoché' : 'proposé' }); });
+  L.forEach(function (l, i) {
+    if (l.type === 'contacte' && r.tache && norm(r.tache.titre) === norm(l.mot)) return; /* la tâche le dit déjà */
+    var x = labelLecture(c, l);
+    lignes.push({ cle: 'l:' + i, ic: x.ic, t: x.t, s: x.s, lock: !!x.lock, l: 'l. ' + l.ligne + ' ›', ligne: l.ligne, mot: l.mot });
+  });
+  lignes.forEach(function (x) { on[x.cle] = x.lock ? true : x.cle === 'cat' ? !c.p5catOff : x.cle.slice(0, 2) === 'p:' ? o.garde[x.cle.slice(2)] !== false : o.lecturesOff.indexOf(+x.cle.slice(2)) < 0; });
+  var bG = h('button', { type: 'button', class: 'p5-b plein' }), maj = function () { var n = 0; lignes.forEach(function (x) { if (on[x.cle]) n++; }); bG.textContent = 'Garder ' + n + ' sur ' + lignes.length; };
+  var corps = [h('div', { class: 'p5-fh' }, h('h2', null, h('i', { class: 'ia' }, '✦ '), 'Changé par l’IA · ' + lignes.length), h('span', { class: 'q' }, p5d(o.quand) + ' ' + hm(new Date(o.quand)))),
+    h('div', { class: 'sous' }, 'Décoche ce que tu ne veux pas. ', sv('cadenas'), ' = lecture corrigée. Tes notes ne bougent pas.')];
+  lignes.forEach(function (x) {
+    var row = h('div', { class: 'p5-chl' + (x.lock ? ' lock' : on[x.cle] ? '' : ' off') }), sm = h('small', null, on[x.cle] ? x.s : 'décoché');
+    var cb = x.lock ? h('span', { class: 'p5-cb lk', title: 'lecture corrigée, gardée' }, sv('cadenas')) : h('button', { type: 'button', class: 'p5-cb' + (on[x.cle] ? ' on' : ''), role: 'checkbox', 'aria-checked': String(on[x.cle]), 'aria-label': x.t, onclick: function () { on[x.cle] = !on[x.cle]; cb.classList.toggle('on', on[x.cle]); row.classList.toggle('off', !on[x.cle]); cb.setAttribute('aria-checked', String(on[x.cle])); sm.textContent = on[x.cle] ? x.s : 'décoché'; maj(); } }, sv('coche'));
+    row.appendChild(cb); row.appendChild(h('span', { class: 'ic' }, sv(x.ic))); row.appendChild(h('span', { class: 't' }, h('b', null, x.t), sm));
+    if (x.l) row.appendChild(h('button', { type: 'button', class: 'p5-l', onclick: x.ligne ? function () { fermerFeuille(); allerLigne(x.ligne, x.mot, x.mot); } : null }, x.l));
+    corps.push(row);
+  });
+  if (o.fausses) corps.push(h('div', { class: 'p5-chl lock' }, h('span', { class: 'p5-cb lk' }, sv('cadenas')), h('span', { class: 'ic' }, sv('q')), h('span', { class: 't' }, h('b', null, o.fausses + (o.fausses > 1 ? ' citations retirées' : ' citation retirée')), h('small', null, 'pas dans tes notes : erreur corrigée'))));
+  corps.push(h('div', { class: 'p5-relire' }, h('span', null, 'Lu ' + (fortP5(c) ? 'par l’IA forte' : 'par l’IA') + ' · ' + p5quand(o.quand)), h('button', { type: 'button', class: 'p5-b nu', onclick: function () { fermerFeuille(); ranger(); } }, '↻ Relire'), h('button', { type: 'button', class: 'p5-b nu ia', onclick: function () { fermerFeuille(); escalader(c); } }, sv('ia'), ' Escalader à l’IA')));
+  corps.push(h('div', { class: 'p5-acts' }, h('button', { type: 'button', class: 'p5-b', onclick: avantIA }, sv('annule'), ' Annuler le reste'), bG));
+  maj(); ouvrirFeuille(corps);
+  bG.addEventListener('click', function () {
+    P.forEach(function (p) { if (on['p:' + p.cle]) garder(p.cle, true); else refuser(p.cle, true); });
+    var off = []; L.forEach(function (l, i) { if (on['l:' + i] === false) { off.push(i); var lab = 'lecture : ' + l.mot; if (c.refus.indexOf(lab) < 0) c.refus.push(lab); } });
+    o.lecturesOff = off; if (k2) { c.p5catOff = !on.cat; c.cat = on.cat ? null : { nom: SANS, sous: null }; }
+    sauver(); geste('garder les changements', String(lignes.filter(function (x) { return on[x.cle]; }).length)); fermerFeuille(); rendreOrg(); rendreListe();
+  });
+  function avantIA() {
+    if (o.etatAvant && (o.garde.etat === true || o.garde.resolu === true)) c.etat = o.etatAvant;
+    c.org = c.orgPrec || null; c.orgPrec = null; c.orgErreur = null;
+    sauver(); geste('avant l’IA', ''); fermerFeuille(); rendreOrg(); rendreListe();
+  }
+}
 
 /* ====================================================================== démarrage */
 if (etat.courant && courant()) { rendreListe(); ouvrir(etat.courant); } else { etat.courant = null; rendreListe(); }
