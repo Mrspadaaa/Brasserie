@@ -1,0 +1,3 @@
+[{"nom":"MB-Identite","url":"http://localhost:PORT/?dev-local&etape=levure","attente":6000,"clics":["Identit"]},
+ {"nom":"MB-Malts","clics":["Malts/sucres"]},{"nom":"MB-Houblons","clics":["Houblons"],"attente":2500},{"nom":"MB-Levure","clics":["Levure"]},
+ {"nom":"MB-Paliers","clics":["Paliers"]},{"nom":"MB-Eau","clics":["Eau"]},{"nom":"MB-Sels","clics":["2. Sels"]},{"nom":"MB-Recap","clics":["Récap"]}]
