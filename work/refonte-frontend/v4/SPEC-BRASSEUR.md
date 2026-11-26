@@ -2996,3 +2996,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 26.11 ~08:50 (page mini p5, « Chambre froide · toutes les caractéristiques ») : « C'est très mauvais, c'est pas du tout ce qui a été regardé, choisi. »
 - 26.11 ~09:10 : « Et les modifications des maquettes jouable ?? »
 - 26.11 ~09:12 : « Je pense que tu te perds dans mes demandes. Regarde les bien .. »
+- 26.11 ~09:15 : « jouables déjà publiés (v7 et passe 4) je veux que tu les améliore selon mon feedback et les infos que tu as, et que tu en recrée une nouvelle de 0 avec les anciens choix, le classement que j'ai fait. C'est plus clair ? Donne moi les améliorer et le nouvel maquettes que tu dois faire »
