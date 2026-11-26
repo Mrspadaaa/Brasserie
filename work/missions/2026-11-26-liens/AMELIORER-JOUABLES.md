@@ -59,3 +59,18 @@ On garde le moteur et les acquis :
 - Commit local de tes chemins. La publication est faite par le pilote.
 - Si ton contexte approche 350 k : écris `REPRISE-AMELIO.md` et rends « REPRISE : … ».
 - Rends une ligne : points n/9, gestes, commit.
+
+## Ajout 26.11 ~09:40 (ses mots, SPEC-BRASSEUR dernière ligne) — prime sur ce qui précède
+- Sa note actuelle : 7/10. But : moins enfantin, plus pratique. « tu es libre et ne te bride pas là dessus ».
+10. **Thème de l'application** : « elles sont pas dans le thème de l'application. Contrairement aux mini maquettes non jouables ». Reprendre
+    le thème des mini p5 (work/missions/2026-11-25-carnet-passe4/mini/COMMUN.md, S-*.html, O-*.html), qui suit l'app (DESIGN.md) : en-tête
+    L'Affinée, barre d'onglets du bas, couleurs, typographie, cartes.
+11. **Idées des maquettes classées** : piocher dans passe 4 v01–v06 (work/missions/2026-11-25-carnet-passe4/v0N.html, CLASSEMENT-4.md) et les
+    mini p5, et les retravailler.
+12. **Vraies images** : chaque article ou lien montre l'image de l'objet (« je mets un lien, ça montre l'objet », C3). Le champ `image`
+    (URL https) de liens/<id> est affiché s'il existe ; sinon une icône au trait de la catégorie, jamais un emoji. Le pilote remplira les images.
+13. **Actions manquantes** : « Relire » un lien (écrit demandes/<id> avec type "relire" ; la puce passe « 🔗 en lecture ») et « Escalader à
+    l'IA » (relance la lecture avec sample modelTier "complex", marquée « IA forte »), sur chaque lien et sur la lecture du carnet. Voir l'app :
+    src/ui/carnets/apercuCarnet.tsx, ArticlesCarnet.tsx, Bandeau.tsx.
+14. **Tout l'historique** : relire SPEC-BRASSEUR du 16.11 à la fin (Carnet) et DEFAUTS-RECURRENTS § CARNET-* et suivants. Chaque plainte
+    devient un critère de ton tableau RESULTAT-AMELIO.md.
