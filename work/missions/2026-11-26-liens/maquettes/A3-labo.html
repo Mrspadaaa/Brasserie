@@ -3,70 +3,71 @@
 <title>A3 — carnet de labo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap">
 <style>
-/* A3 « carnet de labo » : feuille réglée au pas de 28 px, marge à gauche (repères, cases), marge à droite (annotations ✦). */
+/* A3 « carnet de labo » : feuille réglée au pas de 24 px, sous le contenu seulement ; marge à gauche (heure, état, case), annotations ✦ à droite. */
 :root{--bg:#14110F;--s1:#1A1613;--l1:#2C2521;--l2:#3D342E;--t1:#F5F0EA;--t2:#D8CEC5;--t3:#A3958A;
---amb:#E3B55D;--red:#F29289;--grn:#A3C97A;--blu:#86B9E6;--ia:#BCA5E8;--L:28px}
+--amb:#E3B55D;--red:#F29289;--grn:#A3C97A;--blu:#86B9E6;--ia:#BCA5E8;--L:24px}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--t1);font:400 14px/28px "Source Sans 3","Segoe UI",system-ui,sans-serif}
-body{width:390px;min-height:844px;position:relative;overflow:hidden;
-background-image:repeating-linear-gradient(to bottom,transparent 0 27px,rgba(216,206,197,.075) 27px 28px);background-position:0 12px}
-body::before{content:"";position:absolute;top:0;bottom:0;left:44px;border-left:1px solid rgba(242,146,137,.3)}
-body::after{content:"";position:absolute;top:0;bottom:0;right:108px;border-left:1px dotted rgba(188,165,232,.28)}
+html,body{background:var(--bg);color:var(--t1);font:400 14px/24px "Source Sans 3","Segoe UI",system-ui,sans-serif}
+body{width:390px;min-height:844px;position:relative;overflow:hidden}
 .a3-m{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums;font-size:12px;line-height:1}
-.a3-tx,.a3-mg{max-height:none}
 .ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .c-amb{color:var(--amb)}.c-red{color:var(--red)}.c-grn{color:var(--grn)}.c-blu{color:var(--blu)}.c-t3{color:var(--t3)}.c-ia{color:var(--ia)}
-.a3-pg{position:relative;padding-top:12px;z-index:1}
-/* une ligne de cahier : marge | texte | annotation */
-.a3-ln{display:grid;grid-template-columns:44px 1fr 108px;min-height:var(--L);align-items:start}
-.a3-mg{text-align:center;font-size:12px;color:var(--t3);line-height:28px}
+/* la réglure s'arrête avec le contenu ; la marge rouge aussi */
+.a3-pg{position:relative;padding-top:12px;
+background-image:repeating-linear-gradient(to bottom,transparent 0 23px,rgba(216,206,197,.07) 23px 24px);background-position:0 12px}
+.a3-pg::before{content:"";position:absolute;top:0;bottom:0;left:60px;border-left:1px solid rgba(242,146,137,.28)}
+/* une ligne : marge | texte | annotation */
+.a3-ln{display:grid;grid-template-columns:60px 1fr 116px;min-height:var(--L);align-items:start;position:relative}
+.a3-mg{text-align:center;font-size:12px;color:var(--t3);line-height:24px;white-space:nowrap}
 .a3-tx{padding:0 8px 0 10px;min-width:0}
-.a3-an{position:relative;font-size:12px;line-height:14px;color:var(--ia)}
-.a3-an>span{position:absolute;left:8px;right:8px;top:1px;line-height:13px}
-.a3-mk{line-height:1}
-.a3-h{display:inline-block;height:28px;line-height:28px}
-.a3-h{font-size:20px;font-weight:700;line-height:28px}
-.a3-date{font-size:12px;color:var(--t3);text-align:right;padding-right:12px}
-.a3-sec .a3-tx{font-weight:600;font-style:italic;color:var(--t2);text-decoration:underline;text-decoration-color:var(--l2);text-underline-offset:5px}
+.a3-l2{display:flex;flex-wrap:wrap;justify-content:space-between;column-gap:10px}
+.a3-an{font-size:12px;line-height:24px;color:var(--ia);margin-left:auto;white-space:nowrap}
+.a3-sec{margin-top:24px}
+.a3-pg>.a3-sec:first-of-type{margin-top:0}
+.a3-h{font-size:20px;font-weight:700;line-height:24px;display:inline-block}
+.a3-sec .a3-tx{font-weight:600;color:var(--t2);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .a3-sec .a3-mg{font-weight:600}
+.a3-wide{grid-template-columns:60px 1fr}
+.a3-wide .a3-tx{padding-right:12px}
 /* index */
-.a3-row .a3-tx{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;height:28px}
+.a3-row .a3-tx{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;height:24px}
 .a3-row .a3-tx .ico{color:var(--t3)}
 .a3-nm{overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
-.a3-lead{flex:1;min-width:8px;border-bottom:1px dotted var(--l2);height:0;margin-top:8px}
-.a3-ref{font-size:12px;color:var(--t2);flex:none}
+.a3-gap{flex:1;min-width:8px}
+.a3-ref{font-size:12px;color:var(--t2);flex:none;font-variant-numeric:tabular-nums}
 .a3-row.dim .a3-nm,.a3-row.dim .a3-ref{color:var(--t3)}
-.a3-wide{grid-template-columns:44px 1fr}
-.a3-wide .a3-tx{padding-right:12px}
-.a3-mk{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:500}
-.a3-key{font-size:12px;color:var(--t3);display:flex;gap:10px}
+.a3-st{font-size:12px;font-weight:600;text-align:right;padding-right:8px}
+.a3-row.urg{background:rgba(242,146,137,.08)}
+.a3-row.urg .a3-tx{height:auto;white-space:normal;line-height:24px}
 /* fiche */
 .a3-sub{font-size:12px;color:var(--t3)}
 .a3-ok{color:var(--grn);font-weight:600}
 .a3-no{color:var(--t3);font-weight:600}
+.a3-mk{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:500}
 .a3-box{display:inline-block;width:14px;height:14px;border:1.5px solid var(--t2);border-radius:2px;vertical-align:-2px}
-.a3-bilan{margin:0 12px 0 54px;border:0;box-shadow:inset 2px 0 0 var(--grn),inset 0 0 0 1px var(--l2);padding:0 10px;background:rgba(20,17,15,.9);line-height:28px}
+.a3-bilan{margin:0 12px 0 70px;box-shadow:inset 2px 0 0 var(--ia),inset 0 0 0 1px var(--l2);padding:0 10px;background:var(--bg);line-height:24px}
 .a3-bilan b{font-weight:600}
-.a3-sug .a3-tx{background:rgba(188,165,232,.07);box-shadow:inset 2px 0 0 var(--ia);line-height:20px;padding-top:4px;padding-bottom:4px}
-.a3-sug .a3-an{padding-top:6px}
+.a3-sug .a3-tx{background:rgba(188,165,232,.07);box-shadow:inset 2px 0 0 var(--ia)}
 .a3-btn{display:inline-flex;align-items:center;height:24px;padding:0 8px;border:1px solid var(--ia);border-radius:3px;color:var(--ia);font:600 12px "Source Sans 3",sans-serif;background:none;margin-right:4px}
 .a3-btn.x{border-color:var(--l2);color:var(--t3);width:24px;justify-content:center;padding:0}
+.a3-due{display:flex;align-items:baseline;gap:8px}
+.a3-due .a3-big{font-family:"IBM Plex Mono",Consolas,monospace;font-size:20px;font-weight:500;color:var(--amb)}
 /* tableau réglé */
-.a3-tab{width:calc(100% - 54px - 12px);margin-left:54px;border-collapse:collapse;table-layout:fixed;background:rgba(20,17,15,.92)}
-.a3-tab th,.a3-tab td{height:28px;padding:0 6px;text-align:right;border-bottom:1px solid var(--l2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.a3-tab th{font-weight:700;font-size:14px;border-bottom:1.5px solid var(--t3)}
-.a3-tab th:first-child,.a3-tab td:first-child{text-align:left;padding-left:0;width:78px;font-size:12px;color:var(--t3);font-style:italic}
+.a3-tab{width:calc(100% - 70px - 12px);margin-left:70px;border-collapse:collapse;table-layout:fixed;background:var(--bg)}
+.a3-tab th,.a3-tab td{height:23px;padding:0 6px;text-align:right;border-bottom:1px solid var(--l2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3-tab th{font-weight:700;font-size:14px;border-bottom:1px solid var(--t3)}
+.a3-tab th:first-child,.a3-tab td:first-child{text-align:left;padding-left:0;width:78px;font-size:12px;color:var(--t3)}
 .a3-tab td.a3-m{font-size:14px}
-.a3-w{box-shadow:inset 2px 0 0 var(--grn),inset -2px 0 0 var(--grn)}
+.a3-tab tr.a3-pb td{height:47px;background:rgba(188,165,232,.07);border-top:1px solid rgba(188,165,232,.4);color:var(--t1)}
+.a3-tab tr.a3-pb td.a3-m{font-weight:600;line-height:20px}
+.a3-tab .a3-s{display:block;font:400 12px/14px "Source Sans 3",sans-serif;color:var(--t3)}
 .a3-calc{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums;font-size:12px;white-space:pre;color:var(--t2)}
-.a3-calc b{font-weight:500;color:var(--t1)}
-.a3-stamp{position:absolute;right:12px;top:8px;border:1.5px solid var(--amb);color:var(--amb);padding:4px 8px;line-height:16px;text-align:center;transform:rotate(-3deg);background:var(--bg);z-index:2}
-.a3-stamp .a3-m{display:block;font-size:14px;font-weight:500}
-.a3-stamp span{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 /* bas */
+.a3-notes{display:flex;gap:8px;font-size:12px;color:var(--t3)}
+.a3-notes .a3-open{margin-left:auto;color:var(--t2);font-weight:600}
 .a3-dock{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--l2);padding:8px 12px 12px;z-index:3}
 .a3-next{display:flex;align-items:center;gap:8px;height:36px;margin-bottom:8px}
-.a3-next .a3-tag{font-size:12px;color:var(--t3);font-style:italic;flex:none}
+.a3-next .a3-tag{font-size:12px;color:var(--t3);flex:none}
 .a3-next b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .a3-pri{height:32px;padding:0 12px;border-radius:3px;border:0;background:var(--t1);color:#14110F;font:700 14px "Source Sans 3",sans-serif}
 .a3-in{display:flex;align-items:center;gap:8px}
@@ -82,15 +83,14 @@ var q=new URLSearchParams(location.search),E=q.get('e')||'liste',IA=q.get('ia')=
 var P={probleme:'<path d="M8 2.2 14.3 13.3H1.7Z"/><path d="M8 6.6v3M8 11.4v.2"/>',achat:'<path d="M1.5 2.5h2l1.5 7.5h7.3l1.4-5.3H4.2"/><circle cx="6.3" cy="13" r=".9"/><circle cx="11.6" cy="13" r=".9"/>',echeance:'<rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/>',idee:'<path d="M6 12h4M6.5 14.2h3"/><path d="M8 1.8a4.2 4.2 0 0 0-2.5 7.6c.4.3.7.8.7 1.3V11h3.6v-.3c0-.5.3-1 .7-1.3A4.2 4.2 0 0 0 8 1.8Z"/>',tache:'<rect x="2.2" y="2.2" width="11.6" height="11.6" rx="2"/><path d="m5 8.2 2 2 4-4.3"/>',vente:'<path d="M2 6.5 3.2 2.5h9.6L14 6.5H2Z"/><path d="M3 6.5v7h10v-7M6.5 13.5v-4h3v4"/>',plus:'<path d="M8 3v10M3 8h10"/>',back:'<path d="M10 3 5 8l5 5"/>'};
 function ic(n,c){return '<svg class="ico'+(c?' '+c:'')+'" viewBox="0 0 16 16">'+P[n]+'</svg>'}
 function m(s){return '<span class="a3-m">'+s+'</span>'}
-function num(s){return s.replace(/\d+(?:[,.]\d+)?(?![\dA-Za-zéè])(?:\s?(?:°C|%|bar))?/g,function(x){return m(x)})}
-var MK={urgent:['!','c-red'],cherche:['?','c-amb'],decide:['→','c-blu'],note:['·','c-t3'],regle:['✓','c-grn']};
-function mk(s){return '<span class="a3-mk '+MK[s][1]+'">'+MK[s][0]+'</span>'}
-function ln(mg,tx,an,cls){return '<div class="a3-ln '+(cls||'')+'"><div class="a3-mg">'+(mg||'')+'</div><div class="a3-tx">'+(tx||'')+'</div><div class="a3-an">'+(an?'<span>✦ '+an+'</span>':'')+'</div></div>'}
+var ST={urgent:['urgent','c-red'],cherche:['cherche','c-amb'],decide:['décidé','c-blu'],note:['noté','c-t3'],regle:['réglé','c-grn']};
+function ln(mg,tx,an,cls){return '<div class="a3-ln a3-wide '+(cls||'')+'"><div class="a3-mg">'+(mg||'')+'</div><div class="a3-tx">'+(an?'<div class="a3-l2"><span>'+(tx||'')+'</span><span class="a3-an">✦ '+an+'</span></div>':(tx||''))+'</div></div>'}
 function wl(mg,tx,cls){return '<div class="a3-ln a3-wide '+(cls||'')+'"><div class="a3-mg">'+(mg||'')+'</div><div class="a3-tx">'+tx+'</div></div>'}
+function notes(refs,quand){return wl(m(refs),'<div class="a3-notes"><span>Tes notes · '+quand+'</span><span class="a3-open">Ouvrir ›</span></div>')}
 var T=[
 ['Brasserie',[
 ['Chaudière en panne jour de brassage','probleme','urgent','demain 7 h'],
-['600 bouteilles 33 cl','achat','cherche','avant le 15'],
+['600 bouteilles 33 cl','achat','cherche','avant 15.12'],
 ['Frigo de garde en panne','probleme','cherche','devis avant déc.'],
 ['Trop de vapeur au brassage','probleme','decide','condenseur'],
 ['Odeur de soufre dans un lot','probleme','decide','lot 14'],
@@ -103,78 +103,74 @@ var T=[
 ['Local',[
 ['Écoulement qui fuit','probleme','cherche','devis attendu'],
 ['Inspection électrique, fusible','tache','cherche','testeur'],
-['Ranger la cave','tache','note','sam. 6 déc.']]],
+['Ranger la cave','tache','note','6 déc.']]],
 ['Administratif',[['Assurance à renouveler','echeance','note','31 déc.']]],
 ['Ventes',[['Bar du Centre veut nos bières','vente','note','rappeler lundi'],['Fête de la bière en juin','idee','note','juin']]]];
 function dock(next){return '<div class="a3-dock">'+(next||'')+'<div class="a3-in"><input placeholder="Écrire une ligne, coller un lien…" aria-label="Noter"><button class="a3-cb ia'+(IA?' on':'')+'" aria-label="Suggestions de l’IA" data-booster="ia">✦</button><button class="a3-cb" aria-label="Ajouter">'+ic('plus')+'</button></div></div>'}
 function liste(){
  var h='<div class="a3-pg">'+wl('','<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="a3-h">Carnets — index</span><span class="a3-m c-t3">jeu. 26.11</span></div>');
- h+=wl('','<div class="a3-key"><span><span class="a3-mk c-red">!</span> urgent</span><span><span class="a3-mk c-amb">?</span> cherche</span><span><span class="a3-mk c-blu">→</span> décidé</span><span><span class="a3-mk c-t3">·</span> noté</span><span><span class="a3-mk c-grn">✓</span> réglé</span></div>');
+ h+=wl('','<span class="a3-sub">17 carnets · <span class="c-red">1 urgent</span> · <span class="c-amb">5 cherche</span> · <span class="c-blu">3 décidés</span> · <span class="c-grn">3 réglés</span></span>');
  T.forEach(function(g){h+=wl(m(String(g[1].length)),g[0],'a3-sec');
-  g[1].forEach(function(r){h+='<div class="a3-ln a3-wide a3-row'+(r[2]==='regle'?' dim':'')+'"><div class="a3-mg">'+mk(r[2])+'</div><div class="a3-tx">'+ic(r[1])+'<span class="a3-nm">'+r[0]+'</span><span class="a3-lead"></span><span class="a3-ref">'+num(r[3])+'</span></div></div>'})});
+  g[1].forEach(function(r){h+='<div class="a3-ln a3-wide a3-row'+(r[2]==='regle'?' dim':'')+(r[2]==='urgent'?' urg':'')+'"><div class="a3-mg a3-st '+ST[r[2]][1]+'">'+ST[r[2]][0]+'</div><div class="a3-tx">'+ic(r[1])+'<span class="a3-nm">'+r[0]+'</span><span class="a3-gap"></span><span class="a3-ref">'+r[3]+'</span></div></div>'})});
  return h+'</div>'+dock('')}
 function head(t,sub){return '<div class="a3-pg">'+wl('<span class="c-t3">'+ic('back')+'</span>','<span class="a3-h">'+t+'</span>')+wl('','<span class="a3-sub">'+sub+'</span>')}
 function probleme(){
- var h=head('Écoulement qui fuit','Local · ouvert le '+m('24.11')+' · <span class="c-amb" style="font-weight:600">en recherche</span>');
+ var h=head('Écoulement qui fuit','Local · ouvert avant-hier, '+m('21:18')+' · <span class="c-amb" style="font-weight:600">en recherche</span>');
  h+=ln('','Observation','','a3-sec');
- h+=ln(m('21:26'),'L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.','','');
+ h+=ln(m('21:26'),'L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.','');
+ h+=ln(m('21:26'),'Estimation <b>'+m('150')+' CHF</b>','');
  h+=ln('','Pistes','','a3-sec');
- h+=ln(mk('regle'),'Joint du siphon — <span class="a3-ok">usé, trouvé</span>','explique la flaque');
- h+=ln('<span class="a3-mk c-t3">✕</span>','Fuite sous la dalle — <span class="a3-no">pas trouvée</span>','écartée pour l’instant');
+ h+=ln('<span class="a3-mk c-grn">✓</span>','Joint du siphon — <span class="a3-ok">usé, trouvé</span>','explique la flaque');
+ h+=ln('<span class="a3-mk c-t3">?</span>','Fuite sous la dalle — <span class="a3-no">pas trouvée</span>','encore ouverte');
  h+=ln('','Suite','','a3-sec');
  h+=ln('<span class="a3-box"></span>','Contacter l’entreprise X, sanitaire','');
  h+=ln('<span class="a3-mk c-t3">…</span>','Devis attendu','');
  if(IA){
-  h+=ln('<span class="a3-box" style="border-color:var(--ia)"></span>','<span class="c-ia">✦</span> Faire confirmer par X que le joint est la seule cause, avant de valider le devis<br><button class="a3-btn">Garder</button><button class="a3-btn x" aria-label="Ignorer">×</button>','conseil tiré de tes pistes','a3-sug');
+  h+=ln('<span class="a3-box" style="border-color:var(--ia)"></span>','<span class="c-ia">✦</span> Faire confirmer par X que le joint est la seule cause, avant de valider le devis<div class="a3-l2"><span><button class="a3-btn">Garder</button><button class="a3-btn x" aria-label="Ignorer">×</button></span><span class="a3-an">✦ tiré de tes pistes</span></div>','','a3-sug');
   h+=ln('','Options','','a3-sec');
-  h+='<table class="a3-tab"><colgroup><col style="width:78px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th class="c-ia">✦ Toi</th></tr><tr><td>geste</td><td style="font-size:12px">réparer</td><td style="font-size:12px" class="c-ia">changer le joint</td></tr><tr><td>coût</td><td style="font-size:12px">devis attendu</td><td class="a3-m">—</td></tr></table>';
-  h+=ln('','<button class="a3-btn">Garder l’option</button><button class="a3-btn x" aria-label="Ignorer">×</button>','option proposée, coût inconnu','a3-sug');
+  h+='<table class="a3-tab"><colgroup><col style="width:78px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th class="c-ia">✦ Toi</th></tr><tr><td>geste</td><td style="font-size:12px">réparer</td><td style="font-size:12px" class="c-ia">changer le joint</td></tr><tr><td>coût</td><td style="font-size:12px">devis attendu</td><td class="a3-m c-ia">—</td></tr><tr><td></td><td></td><td><button class="a3-btn">Garder</button><button class="a3-btn x" aria-label="Ignorer">×</button></td></tr></table>';
  } else {
   h+=ln('','Bilan','','a3-sec');
-  h+='<div class="a3-bilan"><b>Cause probable :</b> joint du siphon usé. <span class="c-ia">✦</span> Reste : devis de X.</div>';
-  h+=ln('','Sources','','a3-sec');
-  [['n3','Pistes : joint du siphon trouvé usé'],['n4','fuite sous la dalle, pas trouvée.'],['n5','Contacter l’entreprise X (exemple) pour un sanitaire.'],['n6','Devis attendu.']].forEach(function(x){h+=ln(m(x[0]),'<span class="a3-sub">'+x[1]+'</span>','')});
+  h+='<div class="a3-bilan"><span class="c-ia">✦</span> <b>Cause probable :</b> joint du siphon usé. Reste : le devis de X.</div>';
+  h+=notes('n1–n7','avant-hier, 21:18 – 21:26');
  }
  return h+'</div>'+dock('<div class="a3-next"><span class="a3-tag">prochain</span><b>Contacter l’entreprise X</b><button class="a3-pri" data-booster="fait">Fait</button></div>')}
 function achat(){
- var h=head('600 bouteilles 33 cl','Brasserie · besoin '+m('600')+' bt · <span class="c-amb" style="font-weight:600">avant le '+m('15')+'</span>');
- h+=ln('','Relevé des offres','','a3-sec');
+ var h=head('600 bouteilles 33 cl','Brasserie · besoin '+m('600')+' bt · <span class="c-amb" style="font-weight:600">avant le '+m('15.12')+', dans '+m('19')+' j</span>');
+ h+=ln('','Relevé des offres · CHF','','a3-sec');
  h+='<table class="a3-tab"><colgroup><col style="width:78px"><col><col><col></colgroup>'+
- '<tr><th></th><th>Verallia</th><th class="a3-w" style="box-shadow:inset 2px 0 0 var(--grn),inset -2px 0 0 var(--grn),inset 0 2px 0 var(--grn)">Fourn. B</th><th>Occasion</th></tr>'+
- '<tr><td>prix / bt</td><td class="a3-m">0,42</td><td class="a3-m a3-w">0,55</td><td class="a3-m">0,20</td></tr>'+
- '<tr><td>lot</td><td class="a3-m">≥ 1200</td><td class="a3-m a3-w">× 600</td><td class="a3-m">≤ 400</td></tr>'+
- '<tr><td>livraison</td><td class="a3-m c-t3">—</td><td class="a3-m a3-w">80 CHF</td><td class="a3-m c-t3">—</td></tr>'+
- '<tr><td>état</td><td class="a3-m c-t3">—</td><td class="a3-m a3-w c-t3">—</td><td class="c-amb" style="font-size:12px">à laver</td></tr>'+
- '<tr><td>total ✦</td><td class="a3-m">504 CHF</td><td class="a3-m a3-w c-grn" style="box-shadow:inset 2px 0 0 var(--grn),inset -2px 0 0 var(--grn),inset 0 -2px 0 var(--grn)">410 CHF</td><td class="a3-m">80 CHF</td></tr></table>';
- h+=ln('','Calcul pour 600 bt','','a3-sec');
- h+=ln('<span class="a3-mk c-grn">B</span>','<span class="a3-calc"><b>0,55 × 600 + 80 = 410</b></span>','seule à couvrir 600 sans surplus');
- h+=ln('<span class="a3-mk c-t3">V</span>','<span class="a3-calc">0,42 × 1200      = 504</span>','palette : 600 en trop, livraison ?');
- h+=ln('<span class="a3-mk c-t3">O</span>','<span class="a3-calc">0,20 × 400       =  80</span>','manque 200 bt, à laver');
- h+=ln('','Sources','','a3-sec');
- h+=ln(m('n1'),'<span class="a3-sub">Verallia : 0.42/bt, palette de 1200 min</span>','');
- h+=ln(m('n2'),'<span class="a3-sub">Fournisseur B : 0.55/bt par 600, livraison 80 CHF</span>','');
- h+=ln(m('n3'),'<span class="a3-sub">Occasion sur annonce : 0.20/bt, à laver, 400 seulement</span>','');
- h+=ln(m('n4'),'<span class="a3-sub">Besoin avant le 15 du mois</span>','');
- return h+'</div>'+dock('<div class="a3-next"><span class="a3-tag">avant le 15</span><b>Retenir Fournisseur B</b><button class="a3-pri" data-booster="retenir">Retenir</button></div>')}
+ '<tr><th></th><th>Verallia</th><th>Fourn. B</th><th>Occasion</th></tr>'+
+ '<tr><td>prix / bt</td><td class="a3-m">0,42</td><td class="a3-m">0,55</td><td class="a3-m">0,20</td></tr>'+
+ '<tr><td>lot</td><td class="a3-m">≥ 1200</td><td class="a3-m">× 600</td><td class="a3-m">≤ 400</td></tr>'+
+ '<tr><td>livraison</td><td class="a3-m c-t3">—</td><td class="a3-m">80</td><td class="a3-m c-t3">—</td></tr>'+
+ '<tr><td>état</td><td class="a3-m c-t3">—</td><td class="a3-m c-t3">—</td><td class="c-amb" style="font-size:12px">à laver</td></tr>'+
+ '<tr><td>couvre 600 <span class="c-ia">✦</span></td><td style="font-size:12px">oui, +600</td><td style="font-size:12px">oui</td><td class="c-amb" style="font-size:12px">manque 200</td></tr>'+'<tr class="a3-pb"><td><span class="c-ia">✦</span> par bt livrée</td><td class="a3-m">0,42<span class="a3-s">+ livr. ?</span></td><td class="a3-m">0,68<span class="a3-s">livr. incluse</span></td><td class="a3-m">0,20<span class="a3-s">à laver</span></td></tr></table>';
+ h+=ln('','Calcul posé','','a3-sec');
+ h+=ln('<span class="a3-mk c-t3">V</span>','<span class="a3-calc">0,42 × 1200       = 504</span>','livraison ?');
+ h+=ln('<span class="a3-mk c-t3">B</span>','<span class="a3-calc">0,55 × 600 + 80   = 410</span>','livraison incluse');
+ h+=ln('','<span class="a3-calc">410 / 600         = 0,68</span>','par bt livrée');
+ h+=ln('<span class="a3-mk c-t3">O</span>','<span class="a3-calc">0,20 × 400        =  80</span>','à laver');
+ h+=notes('n1–n4','avant-hier');
+ return h+'</div>'+dock('<div class="a3-next"><span class="a3-tag">avant le 15.12</span><b><span class="c-ia">✦</span> Choisir une offre</b><button class="a3-pri" data-booster="choisir">Choisir</button></div>')}
 function echeance(){
- var h=head('Assurance à renouveler','Administratif · noté le '+m('24.11'));
- h=h.replace('<div class="a3-pg">','<div class="a3-pg"><div class="a3-stamp"><span>Échéance</span><span class="a3-m">31.12</span><span>J−'+'35</span></div>');
+ var h=head('Assurance à renouveler','Administratif · noté avant-hier, '+m('21:31'));
+ h+=wl('<span class="a3-mk c-amb">!</span>','<div class="a3-due"><span class="a3-big">31.12</span><span class="c-amb" style="font-weight:600">dans '+m('35')+' j</span><span class="a3-sub">· échéance</span></div>');
+ h+=wl('','<span class="a3-calc">26.11 ├─✦──────────────────┤ 31.12</span>');
+ h+=ln('<span class="a3-mk c-ia">✦</span>','Rappel : fin novembre <span class="a3-sub">· lun. '+m('30.11')+', dans '+m('4')+' j</span>','');
  h+=ln('','Pièces à réunir — '+m('0/3'),'','a3-sec');
  h+=ln('<span class="a3-box"></span>','Police actuelle','');
  h+=ln('<span class="a3-box"></span>','Inventaire du matériel','');
  h+=ln('<span class="a3-box"></span>','Chiffre d’affaires '+m('2026'),'');
  h+=ln('','Démarches — '+m('0/2'),'','a3-sec');
  h+=ln('<span class="a3-box"></span>','Demander une offre à un 2e assureur','');
- h+=ln('<span class="a3-box"></span>','Renouveler, avant le '+m('31.12'),'rappel posé : fin novembre');
+ h+=ln('<span class="a3-box"></span>','Renouveler, avant le '+m('31.12'),'');
  h+=ln('','Offres reçues — '+m('0/2'),'','a3-sec');
- h+='<table class="a3-tab"><colgroup><col style="width:78px"><col><col></colgroup><tr><th></th><th>Actuelle</th><th>2e assureur</th></tr><tr><td>offre</td><td class="a3-m c-t3">—</td><td class="a3-m c-t3">—</td></tr></table>';
- h+=ln('','Sources','','a3-sec');
- h+=ln(m('n1'),'<span class="a3-sub">Échéance le 31 déc.</span>','');
- h+=ln(m('n2'),'<span class="a3-sub">Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.</span>','');
- h+=ln(m('n3'),'<span class="a3-sub">Demander une offre à un 2e assureur.</span>','');
- h+=ln(m('n4'),'<span class="a3-sub">Renouveler l’assurance avant le 31 décembre</span>','');
+ h+=ln('<span class="a3-mk c-t3">…</span>','Assureur actuel — <span class="a3-no">pas encore</span>','');
+ h+=ln('<span class="a3-mk c-t3">…</span>','2e assureur — <span class="a3-no">à demander</span>','');
+ h+=notes('n1–n4','avant-hier 21:31, hier 13:58');
  return h+'</div>'+dock('<div class="a3-next"><span class="a3-tag">prochain</span><b>Demander l’offre au 2e assureur</b><button class="a3-pri" data-booster="fait">Fait</button></div>')}
 document.getElementById('a3').innerHTML=({liste:liste,probleme:probleme,achat:achat,echeance:echeance})[E]();
-var pg=document.querySelector('.a3-pg');[].forEach.call(pg.children,function(el){if(el.classList.contains('a3-stamp'))return;var h=el.getBoundingClientRect().height,r=Math.max(28,Math.ceil((h-3)/28)*28);if(Math.abs(r-h)>0.5)el.style.marginBottom=(r-h)+'px';});
+/* chaque bloc tombe sur la réglure : hauteur arrondie au pas de 24 px */
+var pg=document.querySelector('.a3-pg');[].forEach.call(pg.children,function(el){var h=el.getBoundingClientRect().height,r=Math.max(24,Math.ceil((h-3)/24)*24);if(Math.abs(r-h)>0.5)el.style.marginBottom=(r-h)+'px';});
 })();
 </script></body></html>

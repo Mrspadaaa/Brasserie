@@ -71,9 +71,24 @@ td{padding:0;height:28px;border-bottom:1px solid var(--l1);vertical-align:middle
 .a1-cmp th.a1-win{box-shadow:inset 2px 0 0 var(--grn),inset -2px 0 0 var(--grn),inset 0 2px 0 var(--grn)}
 .a1-tot td{border-top:2px solid var(--t2);height:32px;font-weight:600}
 .a1-tot td.a1-m{font-weight:500}
-.a1-wtag{display:block;font-family:"Source Sans 3",sans-serif;font-size:12px;color:var(--grn);font-weight:600;line-height:14px}
+.a1-wtag{display:block;font-family:"Source Sans 3",sans-serif;font-size:12px;color:var(--t3);font-weight:600;line-height:14px}
 .a1-read{display:flex;gap:8px;margin-top:8px;font-size:14px;line-height:20px;color:var(--t2)}
 .a1-read .ia{flex:none}
+/* ligne des notes, prix par bouteille, colonne ✦ */
+.a1-notes{display:flex;align-items:center;gap:8px;margin-top:12px;height:36px;border-top:1px solid var(--l1);border-bottom:1px solid var(--l1);font-size:12px;color:var(--t3)}
+.a1-open{margin-left:auto;color:var(--t2);font-weight:600}
+.a1-pb td{height:44px;background:rgba(188,165,232,.07);border-top:1px solid rgba(188,165,232,.4);border-bottom:1px solid rgba(188,165,232,.4)}
+.a1-pb td:first-child{color:var(--t1)}
+.a1-cmp tr.a1-pb td.a1-m{font-size:14px;font-weight:600}
+.a1-iac{background:rgba(188,165,232,.07)}
+.a1-iab{padding:4px 6px 4px 0!important}
+.a1-rp{font-size:12px;font-variant-numeric:tabular-nums;color:var(--t2)}
+.a1-tree td:first-child{white-space:normal}
+.a1-nm span{white-space:normal;line-height:18px;padding:5px 0}
+/* fiche : lignes de 36 px, au doigt */
+.a1-pg>table:not(.a1-tree) td{height:36px}
+.a1-cmp th.ia{color:var(--ia)}
+.a1-pb td:first-child{white-space:normal;line-height:16px}
 /* cases */
 .a1-cb{width:18px;height:18px;border:1.5px solid var(--t3);border-radius:3px;flex:none;display:inline-block;vertical-align:middle}
 .a1-chk td:first-child{width:28px}
@@ -102,7 +117,7 @@ var ST={urgent:'urgent',cherche:'cherche',decide:'décidé',note:'noté',regle:'
 var T=[
 ['Brasserie',[
 ['Chaudière en panne jour de brassage','probleme','urgent','demain 7 h',1],
-['600 bouteilles 33 cl','achat','cherche','avant le 15',1],
+['600 bouteilles 33 cl','achat','cherche','avant 15.12',1],
 ['Frigo de garde en panne','probleme','cherche','devis · déc.'],
 ['Trop de vapeur au brassage','probleme','decide','condenseur'],
 ['Odeur de soufre dans un lot','probleme','decide','lot 14',1],
@@ -115,7 +130,7 @@ var T=[
 ['Local',[
 ['Écoulement qui fuit','probleme','cherche','devis attendu'],
 ['Inspection électrique, fusible','tache','cherche','testeur'],
-['Ranger la cave','tache','note','sam. 6 déc.',1]]],
+['Ranger la cave','tache','note','6 déc.',1]]],
 ['Administratif',[['Assurance à renouveler','echeance','note','31 déc.',1]]],
 ['Ventes',[['Bar du Centre veut nos bières','vente','note','rappeler lun.'],['Fête de la bière en juin','idee','note','juin']]]];
 function dock(next){
@@ -125,61 +140,61 @@ function liste(){
  h+='<div class="a1-sum"><span class="st-urgent"><b>1</b> urgent</span><span class="st-cherche"><b>5</b> en recherche</span><span class="st-decide"><b>3</b> décidés</span><span class="st-regle"><b>3</b> réglés</span></div>';
  h+='<table class="a1-tree"><colgroup><col><col style="width:62px"><col style="width:88px"></colgroup><thead><tr><th>Carnet</th><th>État</th><th class="r">Repère</th></tr></thead><tbody>';
  T.forEach(function(g){h+='<tr class="a1-grp"><td colspan="3">'+g[0]+'<span class="a1-m">'+g[1].length+'</span></td></tr>';
-  g[1].forEach(function(r,i){h+='<tr class="'+(r[2]==='regle'?'a1-dim ':'')+(i===g[1].length-1?'a1-last':'')+'"><td><div class="a1-nm">'+ic(r[1])+'<span>'+r[0]+'</span></div></td><td class="st st-'+r[2]+'">'+ST[r[2]]+'</td><td class="r">'+'<span style="font-size:12px">'+num(r[3])+'</span>'+'</td></tr>'})});
+  g[1].forEach(function(r,i){h+='<tr class="'+(r[2]==='regle'?'a1-dim ':'')+(i===g[1].length-1?'a1-last':'')+'"><td><div class="a1-nm">'+ic(r[1])+'<span>'+r[0]+'</span></div></td><td class="st st-'+r[2]+'">'+ST[r[2]]+'</td><td class="r">'+'<span class="a1-rp">'+r[3]+'</span>'+'</td></tr>'})});
  return h+'</tbody></table></div>'+dock('')}
 function head(dom,genre,t){return '<div class="a1-pg"><div class="a1-crumb">'+ic('back')+dom+' / '+genre+'</div><div class="a1-title">'+t+'</div>'}
 function sec(n,t,c){return '<div class="a1-sec"><span class="a1-n">'+n+'</span><b>'+t+'</b>'+(c?'<span class="a1-m">'+c+'</span>':'')+'</div>'}
 function keep(){return '<span class="a1-keep"><button>Garder</button><button class="x" aria-label="Ignorer">×</button></span>'}
+function notes(refs,quand){return '<div class="a1-notes"><span class="a1-m">'+refs+'</span><span>Tes notes · '+quand+'</span><span class="a1-open">Ouvrir ›</span></div>'}
 function probleme(){
  var h=head('Local','Problème','Écoulement qui fuit');
  h+='<table class="a1-spec"><tr><td>État</td><td class="st st-cherche">en recherche</td><td class="a1-ref"></td></tr>'+
  '<tr><td>Lieu</td><td>Écoulement au sol de la salle</td><td class="a1-ref a1-m">n2</td></tr>'+
  '<tr><td>Symptôme</td><td>Fuit au joint, flaque après nettoyage</td><td class="a1-ref a1-m">n2</td></tr>'+
- '<tr><td>Cause</td><td>Joint du siphon usé <span class="tag st-regle">· trouvée</span></td><td class="a1-ref a1-m">n3</td></tr></table>';
- h+=sec('1','Pistes','1/2 trouvée')+'<table><colgroup><col><col style="width:110px"><col style="width:30px"></colgroup>'+
+ '<tr><td>Cause <span class="ia">✦</span></td><td>Joint du siphon usé <span class="tag st-cherche">· probable</span></td><td class="a1-ref a1-m">n3</td></tr>'+
+ '<tr><td>Estimation</td><td>'+m('150')+' CHF</td><td class="a1-ref a1-m">n7</td></tr></table>';
+ h+=sec('1','Pistes','1 trouvée · 1 ouverte')+'<table><colgroup><col><col style="width:110px"><col style="width:30px"></colgroup>'+
  '<tr><td>Joint du siphon</td><td class="tag st-regle">usé · trouvé</td><td class="a1-ref a1-m">n3</td></tr>'+
  '<tr><td>Fuite sous la dalle</td><td class="tag st-note">pas trouvée</td><td class="a1-ref a1-m">n4</td></tr></table>';
- h+=sec('2','Démarches',IA?'0/3':'0/2')+'<table><colgroup><col><col style="width:110px"><col style="width:30px"></colgroup>'+
+ h+=sec('2','Démarches','0/2'+(IA?' · ✦ 1':''))+'<table><colgroup><col><col style="width:110px"><col style="width:30px"></colgroup>'+
  '<tr><td>Entreprise X, sanitaire</td><td class="tag st-cherche">à contacter</td><td class="a1-ref a1-m">n5</td></tr>'+
  '<tr><td>Devis</td><td class="tag st-note">attendu</td><td class="a1-ref a1-m">n6</td></tr>'+
  (IA?'<tr class="a1-ia"><td colspan="3" style="padding:6px 6px 6px 8px;height:auto"><div class="a1-sug"><span><span class="ia">✦</span> Faire confirmer par X que le joint est la seule cause, avant de valider le devis</span>'+keep()+'</div></td></tr>':'')+'</table>';
- h+=sec('3','Options',IA?'1 + 1 ✦':'1')+(IA?'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th class="ia">✦ Toi</th></tr>':'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th></th></tr>')+'<tr><td>Geste</td><td style="font-size:12px">réparer</td><td style="font-size:12px" class="ia">'+(IA?'changer le joint':'')+'</td></tr><tr><td>Coût</td><td style="font-size:12px">devis attendu</td><td class="a1-m">'+(IA?'—':'')+'</td></tr></table>'+(IA?'<div class="a1-kr" style="box-shadow:inset 2px 0 0 var(--ia)"><span style="font-size:12px;color:var(--ia);margin-right:auto;padding-left:8px;align-self:center">✦ option : changer le joint toi-même</span>'+keep()+'</div>':'');
- if(false){h+=sec('3','Options','1 + 1 ✦')+'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th class="ia">✦ Toi</th></tr>'+
- '<tr><td>Geste</td><td style="font-size:12px">réparer</td><td style="font-size:12px" class="ia">changer le joint</td></tr>'+
- '<tr><td>Coût</td><td style="font-size:12px">devis attendu</td><td class="a1-m">—</td></tr>'+
- '<tr class="a1-ia"><td colspan="3" class="r" style="height:32px">'+keep()+'</td></tr></table>';}
- if(!IA){h+=sec('4','Sources','6 notes')+'<ul class="a1-foot">'+
- [['n2','L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.'],['n3','Pistes : joint du siphon trouvé usé'],['n4','fuite sous la dalle, pas trouvée.'],['n5','Contacter l’entreprise X (exemple) pour un sanitaire.'],['n6','Devis attendu.']].map(function(x){return '<li><span class="a1-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul>';}
+ if(IA){h+=sec('3','Options','1 · ✦ 1')+'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col></colgroup><tr><th></th><th>Entreprise X</th><th class="ia a1-iac">✦ Toi</th></tr>'+
+ '<tr><td>Geste</td><td style="font-size:12px">réparer</td><td style="font-size:12px" class="ia a1-iac">changer le joint</td></tr>'+
+ '<tr><td>Coût</td><td style="font-size:12px">devis</td><td class="a1-m ia a1-iac">—</td></tr>'+
+ '<tr><td></td><td></td><td class="a1-iac a1-iab">'+keep()+'</td></tr></table>';}
+ else h+=notes('n1–n7','avant-hier, 21:18 – 21:26');
  return h+'</div>'+dock('<div class="a1-next"><span class="a1-cap">Prochain</span><b>Contacter l’entreprise X</b><button class="a1-btn" data-booster="fait">Fait</button></div>')}
 function achat(){
  var h=head('Brasserie','Achat','600 bouteilles 33 cl');
  h+='<table class="a1-spec"><tr><td>Besoin</td><td>'+m('600')+' bouteilles 33 cl</td><td class="a1-ref"></td></tr>'+
- '<tr><td>Délai</td><td>avant le '+m('15')+'</td><td class="a1-ref a1-m">n4</td></tr>'+
- '<tr><td>État</td><td class="st st-cherche">3 offres à départager</td><td class="a1-ref"></td></tr></table>';
- h+=sec('1','Offres comparées','pour 600 bt')+'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col><col></colgroup>'+
- '<tr><th></th><th>Verallia</th><th class="a1-win">Fourn. B</th><th>Occasion</th></tr>'+
- '<tr><td>Prix / bt</td><td class="a1-m">0,42</td><td class="a1-m a1-win">0,55</td><td class="a1-m">0,20</td></tr>'+
- '<tr><td>Lot</td><td class="a1-m">≥ 1200</td><td class="a1-m a1-win">× 600</td><td class="a1-m">≤ 400</td></tr>'+
- '<tr><td>Livraison</td><td class="a1-m">—</td><td class="a1-m a1-win">80 CHF</td><td class="a1-m">—</td></tr>'+
- '<tr><td>État</td><td class="a1-m">—</td><td class="a1-m a1-win">—</td><td style="font-size:12px" class="st-cherche">à laver</td></tr>'+
- '<tr><td>Couvre 600 <span class="ia">✦</span></td><td style="font-size:12px" class="st-cherche">+'+m('600')+' en trop</td><td style="font-size:12px" class="st-regle a1-win">oui</td><td style="font-size:12px" class="st-urgent">manque '+m('200')+'</td></tr>'+
- '<tr class="a1-tot"><td>Total <span class="ia">✦</span></td><td class="a1-m">504 CHF<span class="a1-wtag" style="color:var(--t3)">+ livr. —</span></td><td class="a1-m a1-win">410 CHF<span class="a1-wtag">le plus bas</span></td><td class="a1-m">80 CHF<span class="a1-wtag" style="color:var(--t3)">400 bt</span></td></tr></table>';
- h+='<div class="a1-read"><span class="ia">✦</span><span>B est la seule offre qui couvre 600 bt sans surplus : 0,55 × 600 + 80 = 410 CHF. Verallia impose 1200 bt.</span></div>';
- h+=sec('2','Sources','4 notes')+'<ul class="a1-foot">'+[['n1','Verallia : 0.42/bt, palette de 1200 min'],['n2','Fournisseur B : 0.55/bt par 600, livraison 80 CHF'],['n3','Occasion sur annonce : 0.20/bt, à laver, 400 seulement'],['n4','Besoin avant le 15 du mois']].map(function(x){return '<li><span class="a1-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul>';
- return h+'</div>'+dock('<div class="a1-next"><span class="a1-cap">Avant le 15</span><b>Retenir Fournisseur B</b><button class="a1-btn" data-booster="retenir">Retenir</button></div>')}
+ '<tr><td>Délai</td><td>avant le '+m('15.12')+' <span class="tag st-cherche">· dans '+m('19')+' j</span></td><td class="a1-ref a1-m">n4</td></tr>'+
+ '<tr><td>État</td><td class="st st-cherche">3 offres, aucune choisie</td><td class="a1-ref"></td></tr></table>';
+ h+=sec('1','Offres comparées','CHF')+'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col><col></colgroup>'+
+ '<tr><th></th><th>Verallia</th><th>Fourn. B</th><th>Occasion</th></tr>'+
+ '<tr><td>Prix / bt</td><td class="a1-m">0,42</td><td class="a1-m">0,55</td><td class="a1-m">0,20</td></tr>'+
+ '<tr><td>Lot</td><td class="a1-m">≥ 1200</td><td class="a1-m">× 600</td><td class="a1-m">≤ 400</td></tr>'+
+ '<tr><td>Livraison</td><td class="a1-m">—</td><td class="a1-m">80</td><td class="a1-m">—</td></tr>'+
+ '<tr><td>État</td><td class="a1-m">—</td><td class="a1-m">—</td><td style="font-size:12px" class="st-cherche">à laver</td></tr>'+
+ '<tr><td>Couvre 600 <span class="ia">✦</span></td><td style="font-size:12px">oui, +'+m('600')+'</td><td style="font-size:12px">oui</td><td style="font-size:12px" class="st-cherche">manque '+m('200')+'</td></tr>'+
+ '<tr class="a1-tot"><td>Total <span class="ia">✦</span></td><td class="a1-m">504<span class="a1-wtag">'+m('1200')+' bt</span></td><td class="a1-m">410<span class="a1-wtag">'+m('600')+' bt</span></td><td class="a1-m">80<span class="a1-wtag">'+m('400')+' bt</span></td></tr>'+
+ '<tr class="a1-pb"><td><span class="ia">✦</span> Par bt livrée</td><td class="a1-m">0,42<span class="a1-wtag">+ livr. ?</span></td><td class="a1-m">0,68<span class="a1-wtag">livr. incluse</span></td><td class="a1-m">0,20<span class="a1-wtag">à laver</span></td></tr></table>';
+ h+='<div class="a1-read"><span class="ia">✦</span><span>À quantité égale, la bouteille livrée : B (0,55 × 600 + 80) / 600 = 0,68 ; Verallia 0,42, palette de 1200 ; occasion 0,20, 400 seulement.</span></div>';
+ h+=notes('n1–n4','avant-hier');
+ return h+'</div>'+dock('<div class="a1-next"><span class="a1-cap">Avant le 15.12</span><b><span class="ia">✦</span> Choisir une offre</b><button class="a1-btn a1-btn2" data-booster="choisir">Choisir</button></div>')}
 function echeance(){
  var h=head('Administratif','Échéance','Assurance à renouveler');
  h+='<table class="a1-spec"><tr><td>Échéance</td><td>'+m('31.12')+' <span class="tag st-cherche">· dans '+m('35')+' j</span></td><td class="a1-ref a1-m">n1</td></tr>'+
- '<tr><td>Rappel <span class="ia">✦</span></td><td>fin novembre</td><td class="a1-ref"></td></tr>'+
- '<tr><td>Avancement</td><td>'+m('0/5')+' points</td><td class="a1-ref"></td></tr></table>';
+ '<tr><td>Rappel <span class="ia">✦</span></td><td>fin novembre <span class="tag st-note">· lun. '+m('30.11')+', dans '+m('4')+' j</span></td><td class="a1-ref"></td></tr>'+
+ '<tr><td>Avancement</td><td>'+m('0/5')+' points</td><td class="a1-ref"></td></tr>'+
+ '<tr><td>Offres</td><td>'+m('0/2')+' reçues <span class="tag st-note">· actuelle, 2e assureur</span></td><td class="a1-ref a1-m">n3</td></tr></table>';
  h+=sec('1','Pièces à réunir','0/3')+'<table class="a1-chk"><colgroup><col style="width:28px"><col><col style="width:30px"></colgroup>'+
  ['Police actuelle','Inventaire du matériel','Chiffre d’affaires '+m('2026')].map(function(x){return '<tr><td><span class="a1-cb"></span></td><td>'+x+'</td><td class="a1-ref a1-m">n2</td></tr>'}).join('')+'</table>';
  h+=sec('2','Démarches','0/2')+'<table class="a1-chk"><colgroup><col style="width:28px"><col><col style="width:62px"><col style="width:30px"></colgroup>'+
  '<tr><td><span class="a1-cb"></span></td><td>Offre d’un 2e assureur</td><td class="r tag st-note">à demander</td><td class="a1-ref a1-m">n3</td></tr>'+
  '<tr><td><span class="a1-cb"></span></td><td>Renouveler l’assurance</td><td class="r a1-m">≤ 31.12</td><td class="a1-ref a1-m">n4</td></tr></table>';
- h+=sec('3','Offres','0/2 reçues')+'<table class="a1-cmp"><colgroup><col style="width:86px"><col><col></colgroup><tr><th></th><th>Actuelle</th><th>2e assureur</th></tr>'+
- '<tr><td>Offre</td><td class="a1-m">—</td><td class="a1-m">—</td></tr></table>';
- h+=sec('4','Sources','4 notes')+'<ul class="a1-foot">'+[['n1','Échéance le 31 déc.'],['n2','Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.'],['n3','Demander une offre à un 2e assureur.']].map(function(x){return '<li><span class="a1-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul>';
+ h+=notes('n1–n4','avant-hier 21:31, hier 13:58');
  return h+'</div>'+dock('<div class="a1-next"><span class="a1-cap">Prochain</span><b>Demander l’offre au 2e assureur</b><button class="a1-btn" data-booster="fait">Fait</button></div>')}
 document.getElementById('a1').innerHTML=({liste:liste,probleme:probleme,achat:achat,echeance:echeance})[E]();
 })();

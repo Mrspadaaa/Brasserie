@@ -92,6 +92,15 @@ body{width:390px;min-height:844px;position:relative;overflow:hidden}
 .a2-ruler .done{position:absolute;left:0;top:13px;height:3px;background:var(--t3);border-radius:2px}
 .a2-ruler .tk{position:absolute;top:16px;width:0;height:13px;border-left:1px solid var(--t3)}
 .a2-ruler .lb{position:absolute;top:30px;font-size:12px;color:var(--t3);transform:translateX(-50%);white-space:nowrap}
+.a2-band{display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--l1);font-size:12px;white-space:nowrap}
+.a2-band span{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+.a2-band b{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500}
+.a2-rp{font-variant-numeric:tabular-nums}
+.a2-cmp tr.a2-pb td{height:44px;background:rgba(188,165,232,.07);border-top:1px solid rgba(188,165,232,.4);color:var(--t1)}
+.a2-cmp tr.a2-pb td.a2-m{font-weight:600}
+.a2-calc{font-size:12px;line-height:16px;color:var(--t2);padding:6px 10px;border-top:1px solid var(--l1)}
+.c-ia2{color:#6E55A8;font-weight:700}
+.a2-cmp tr.a2-pb td:first-child{white-space:normal;line-height:16px}
 </style></head><body><div id="a2"></div>
 <script>
 (function(){
@@ -101,7 +110,7 @@ function ic(n,c){return '<svg class="ico'+(c?' '+c:'')+'" viewBox="0 0 16 16">'+
 /* glyphes d'état, au trait */
 var G={note:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5" stroke-dasharray="2.2 2"/></svg>',
 cherche:'<svg class="g c-amb" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 3.5a3.5 3.5 0 0 1 0 7Z" fill="currentColor" stroke="none"/></svg>',
-decide:'<svg class="g c-blu" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 3.5A3.5 3.5 0 1 1 3.5 7H7Z" fill="currentColor" stroke="none"/></svg>',
+decide:'<svg class="g c-blu" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M4 7h5.6M7.4 4.6 9.8 7l-2.4 2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 regle:'<svg class="g c-grn" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="currentColor"/><path d="m4.3 7.2 1.8 1.8 3.6-3.8" fill="none" stroke="#12100E" stroke-width="1.6"/></svg>',
 urgent:'<svg class="g c-red" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="3" fill="currentColor"/><path d="M7 4v3.6M7 9.6v.2" stroke="#12100E" stroke-width="1.8" stroke-linecap="round"/></svg>',
 nontrouve:'<svg class="g c-t3" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="m3.2 10.8 7.6-7.6"/></svg>',
@@ -113,7 +122,7 @@ function num(s){return s.replace(/\d+(?:[,.]\d+)?(?![\dA-Za-zéè])(?:\s?(?:°C|
 var T=[
 ['Brasserie',[
 ['Chaudière en panne jour de brassage','probleme','urgent','demain 7 h'],
-['600 bouteilles 33 cl','achat','cherche','avant le 15'],
+['600 bouteilles 33 cl','achat','cherche','avant 15.12'],
 ['Frigo de garde en panne','probleme','cherche','devis avant déc.'],
 ['Trop de vapeur au brassage','probleme','decide','condenseur'],
 ['Odeur de soufre dans un lot','probleme','decide','lot 14'],
@@ -126,7 +135,7 @@ var T=[
 ['Local',[
 ['Écoulement qui fuit','probleme','cherche','devis attendu'],
 ['Inspection électrique, fusible','tache','cherche','testeur'],
-['Ranger la cave','tache','note','sam. 6 déc.']]],
+['Ranger la cave','tache','note','6 déc.']]],
 ['Administratif',[['Assurance à renouveler','echeance','note','31 déc.']]],
 ['Ventes',[['Bar du Centre veut nos bières','vente','note','rappeler lundi'],['Fête de la bière en juin','idee','note','juin']]]];
 function dock(next,short){
@@ -135,60 +144,62 @@ function dock(next,short){
 function liste(){
  var h='<div class="a2-bar"><b>Carnets</b><span class="a2-m c-t3">17</span><span class="a2-sp"></span><button class="a2-ib" aria-label="Chercher">'+ic('search')+'</button><button class="a2-ib" aria-label="Filtrer">'+ic('filter')+'</button></div>';
  h+='<div class="a2-tabs"><span class="on">Organisé</span><span>Échéances</span><span>Récents</span></div>';
- h+='<div class="a2-chips" data-booster="filtre"><span class="a2-chip">'+G.urgent+m('1')+'</span><span class="a2-chip">'+G.cherche+m('5')+'</span><span class="a2-chip">'+G.decide+m('3')+'</span><span class="a2-chip">'+G.note+m('5')+'</span><span class="a2-chip">'+G.regle+m('3')+'</span></div>';
+ h+='<div class="a2-band" data-booster="filtre"><span class="c-red">'+G.urgent+'<b>1</b> urgent</span><span class="c-amb">'+G.cherche+'<b>5</b> cherche</span><span class="c-blu">'+G.decide+'<b>3</b> décidé</span><span class="c-t3">'+G.note+'<b>5</b> noté</span><span class="c-grn">'+G.regle+'<b>3</b> réglé</span></div>';
  T.forEach(function(g){h+='<div class="a2-gh">'+ic('down')+g[0]+'<span class="a2-m">'+g[1].length+'</span><span class="a2-sp"></span><span class="c-t3">'+ic('plus')+'</span></div>';
-  g[1].forEach(function(r,i){h+='<div class="a2-row'+(r[2]==='regle'?' dim':'')+(i===0&&g[0]==='Brasserie'?' sel':'')+'">'+G[r[2]]+'<span class="a2-t">'+r[0]+'</span><span class="a2-r">'+num(r[3])+ic(r[1])+'</span></div>'})});
- return h+dock('',['/tâche','/prix','/date','@carnet'])}
+  g[1].forEach(function(r,i){h+='<div class="a2-row'+(r[2]==='regle'?' dim':'')+(i===0&&g[0]==='Brasserie'?' sel':'')+'">'+G[r[2]]+'<span class="a2-t">'+r[0]+'</span><span class="a2-r"><span class="a2-rp">'+r[3]+'</span>'+ic(r[1])+'</span></div>'})});
+ return h+dock('')}
 function crumb(dom,t){return '<div class="a2-crumb">'+ic('back')+dom+' <span>›</span> <b>'+t+'</b><span style="flex:1"></span>'+ic('more')+'</div>'}
 function acts(){return '<span class="a2-acts"><button class="k">Garder</button><button aria-label="Ignorer">×</button></span>'}
+function feed(titre,quand,L){return '<div class="a2-box"><div class="a2-bh">Tes notes<span class="a2-m">'+L.length+'</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">'+quand+'</span></div><ul class="a2-feed">'+
+ L.map(function(x){return '<li><span class="a2-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul></div>'}
 function probleme(){
  var h=crumb('Local','Écoulement qui fuit')+'<div class="a2-pg"><div class="a2-h1">Écoulement qui fuit</div>';
  h+='<dl class="a2-props"><dt>Statut</dt><dd><span class="a2-pv ed">'+G.cherche+'En recherche</span></dd>'+
- '<dt>Cause</dt><dd><span class="a2-pv">'+G.regle+'Joint du siphon usé</span></dd>'+
- '<dt>Lieu</dt><dd><span class="a2-pv">'+ic('pin','c-t3')+'Salle, écoulement au sol</span></dd>'+
- '<dt>Symptôme</dt><dd><span class="a2-pv">Flaque après chaque nettoyage</span></dd></dl>';
- h+='<div class="a2-box"><div class="a2-bh">Pistes<span class="a2-m">1/2</span><span class="a2-sp"></span></div>'+
+ '<dt>Cause&nbsp;<span class="c-ia">✦</span></dt><dd><span class="a2-pv">'+G.ia+'Joint du siphon usé<span class="c-amb" style="font-size:12px;font-weight:600">· probable</span></span></dd>'+
+ '<dt>Estimation</dt><dd><span class="a2-pv">'+m('150')+' CHF</span></dd>'+
+ '<dt>Lieu</dt><dd><span class="a2-pv">'+ic('pin','c-t3')+'Salle, écoulement au sol</span></dd></dl>';
+ h+='<div class="a2-box"><div class="a2-bh">Pistes<span class="a2-m">1 trouvée · 1 ouverte</span><span class="a2-sp"></span></div>'+
  '<div class="a2-it">'+G.regle+'<span class="a2-t">Joint du siphon</span><span class="a2-r c-grn">usé · trouvé</span></div>'+
- '<div class="a2-it">'+G.nontrouve+'<span class="a2-t">Fuite sous la dalle</span><span class="a2-r">pas trouvée</span></div></div>';
- h+='<div class="a2-box"><div class="a2-bh">Démarches<span class="a2-m">0/2</span><span class="a2-sp"></span>'+(IA?'<span class="c-ia">✦ '+m('2')+'</span>':'')+'</div>'+
+ '<div class="a2-it">'+G.note+'<span class="a2-t">Fuite sous la dalle</span><span class="a2-r">pas trouvée</span></div></div>';
+ h+='<div class="a2-box"><div class="a2-bh">Démarches<span class="a2-m">0/2</span><span class="a2-sp"></span>'+(IA?'<span class="c-ia">✦ '+m('1')+'</span>':'')+'</div>'+
  '<div class="a2-it">'+G['case']+'<span class="a2-t">Contacter l’entreprise X, sanitaire</span></div>'+
  '<div class="a2-it">'+G.attente+'<span class="a2-t">Devis</span><span class="a2-r">attendu</span></div>'+
- (IA?'<div class="a2-it sug">'+G.ia+'<span class="a2-t">Faire confirmer par X que le joint est la seule cause, avant de valider le devis</span>'+acts()+'</div>'+
- '':'')+'</div>';
- h+='<div class="a2-box"><div class="a2-bh">Options<span class="a2-m">'+(IA?'1 + 1':'1')+'</span></div>'+'<div class="a2-it">'+G.attente+'<span class="a2-t">Entreprise X répare</span><span class="a2-r">devis attendu</span></div>'+(IA?'<div class="a2-it sug">'+G.ia+'<span class="a2-t">Changer le joint du siphon toi-même <span class="c-t3">· coût —</span></span>'+acts()+'</div>':'')+'</div>';
- if(!IA)h+='<div class="a2-box"><div class="a2-bh">Notes<span class="a2-m">6</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">24.11, 21:26</span></div><ul class="a2-feed">'+
- [['21:26','L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.'],['21:26','Pistes : joint du siphon trouvé usé · fuite sous la dalle, pas trouvée.'],['21:26','Contacter l’entreprise X (exemple) pour un sanitaire.'],['21:26','Devis attendu.']].map(function(x){return '<li><span class="a2-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul></div>';
+ (IA?'<div class="a2-it sug">'+G.ia+'<span class="a2-t">Faire confirmer par X que le joint est la seule cause, avant de valider le devis</span>'+acts()+'</div>':'')+'</div>';
+ if(IA)h+='<div class="a2-box"><div class="a2-bh">Options<span class="a2-m">1</span><span class="a2-sp"></span><span class="c-ia">✦ '+m('1')+'</span></div>'+'<div class="a2-it">'+G.attente+'<span class="a2-t">Entreprise X répare</span><span class="a2-r">devis attendu</span></div>'+
+ '<div class="a2-it sug">'+G.ia+'<span class="a2-t">Changer le joint du siphon toi-même <span class="c-t3">· coût —</span></span>'+acts()+'</div></div>';
+ else h+=feed('','avant-hier',[['21:26','L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.'],['21:26','Pistes : joint du siphon trouvé usé ; fuite sous la dalle, pas trouvée.'],['21:26','Contacter l’entreprise X (exemple) pour un sanitaire.'],['21:26','Devis attendu.'],['21:26','Estimation 150 CHF (exemple).']]);
  return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="fait">'+G['case'].replace('c-t3','')+'Contacter l’entreprise X</button><button class="a2-sec">Devis reçu</button></div>')}
 function achat(){
  var h=crumb('Brasserie','600 bouteilles 33 cl')+'<div class="a2-pg"><div class="a2-h1">600 bouteilles 33 cl</div>';
- h+='<dl class="a2-props"><dt>Statut</dt><dd><span class="a2-pv ed">'+G.cherche+'3 offres à départager</span></dd>'+
+ h+='<dl class="a2-props"><dt>Statut</dt><dd><span class="a2-pv ed">'+G.cherche+'3 offres, aucune choisie</span></dd>'+
  '<dt>Besoin</dt><dd><span class="a2-pv">'+ic('box','c-t3')+m('600')+' bt · 33 cl</span></dd>'+
- '<dt>Délai</dt><dd><span class="a2-pv c-amb">'+ic('clock')+'avant le '+m('15')+'</span></dd></dl>';
- h+='<div class="a2-box"><div class="a2-bh">Comparaison<span class="a2-m">3 offres · CHF</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">tri : total</span></div>'+
+ '<dt>Délai</dt><dd><span class="a2-pv c-amb">'+ic('clock')+'avant le '+m('15.12')+' · dans '+m('19')+' j</span></dd></dl>';
+ h+='<div class="a2-box"><div class="a2-bh">Comparaison<span class="a2-m">3 offres · CHF</span><span class="a2-sp"></span><span class="c-t3" style="font-weight:400">ordre de tes notes</span></div>'+
  '<table class="a2-cmp"><colgroup><col style="width:88px"><col><col><col></colgroup>'+
- '<tr><th></th><th class="a2-w">Fourn. B</th><th>Verallia</th><th>Occasion</th></tr>'+
- '<tr><td>Prix / bt</td><td class="a2-m a2-w">0,55</td><td class="a2-m">0,42</td><td class="a2-m">0,20</td></tr>'+
- '<tr><td>Lot</td><td class="a2-m a2-w">× 600</td><td class="a2-m">≥ 1200</td><td class="a2-m">≤ 400</td></tr>'+
- '<tr><td>Livraison</td><td class="a2-m a2-w">80</td><td class="a2-m c-t3">—</td><td class="a2-m c-t3">—</td></tr>'+
- '<tr><td>État</td><td class="a2-m a2-w c-t3">—</td><td class="a2-m c-t3">—</td><td class="c-amb" style="font-size:12px">à laver</td></tr>'+
- '<tr><td>Couvre 600 <span class="c-ia">✦</span></td><td class="a2-w c-grn" style="font-size:12px">oui</td><td class="c-amb" style="font-size:12px">+'+m('600')+' en trop</td><td class="c-red" style="font-size:12px">manque '+m('200')+'</td></tr>'+
- '<tr><td>Total <span class="c-ia">✦</span></td><td class="a2-m a2-w">410<span class="a2-sub c-grn">le plus bas</span></td><td class="a2-m">504<span class="a2-sub c-t3">+ livr. —</span></td><td class="a2-m">80<span class="a2-sub c-t3">pour 400 bt</span></td></tr></table></div>';
- h+='<div class="a2-box"><div class="a2-bh">Notes<span class="a2-m">4</span></div><ul class="a2-feed">'+
- [['n1','Verallia : 0.42/bt, palette de 1200 min'],['n2','Fournisseur B : 0.55/bt par 600, livraison 80 CHF'],['n3','Occasion sur annonce : 0.20/bt, à laver, 400 seulement'],['n4','Besoin avant le 15 du mois']].map(function(x){return '<li><span class="a2-m">'+x[0]+'</span><span>'+x[1]+'</span></li>'}).join('')+'</ul></div>';
- return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="retenir">Retenir Fournisseur B<span class="a2-m">410 CHF</span></button><button class="a2-sec">Plus tard</button></div>')}
+ '<tr><th></th><th>Verallia</th><th>Fourn. B</th><th>Occasion</th></tr>'+
+ '<tr><td>Prix / bt</td><td class="a2-m">0,42</td><td class="a2-m">0,55</td><td class="a2-m">0,20</td></tr>'+
+ '<tr><td>Lot</td><td class="a2-m">≥ 1200</td><td class="a2-m">× 600</td><td class="a2-m">≤ 400</td></tr>'+
+ '<tr><td>Livraison</td><td class="a2-m c-t3">—</td><td class="a2-m">80</td><td class="a2-m c-t3">—</td></tr>'+
+ '<tr><td>État</td><td class="a2-m c-t3">—</td><td class="a2-m c-t3">—</td><td class="c-amb" style="font-size:12px">à laver</td></tr>'+
+ '<tr><td>Couvre 600 <span class="c-ia">✦</span></td><td style="font-size:12px;color:var(--t2)">oui, +'+m('600')+'</td><td style="font-size:12px;color:var(--t2)">oui</td><td class="c-amb" style="font-size:12px">manque '+m('200')+'</td></tr>'+
+ '<tr><td>Total <span class="c-ia">✦</span></td><td class="a2-m">504<span class="a2-sub c-t3">'+m('1200')+' bt</span></td><td class="a2-m">410<span class="a2-sub c-t3">'+m('600')+' bt</span></td><td class="a2-m">80<span class="a2-sub c-t3">'+m('400')+' bt</span></td></tr>'+
+ '<tr class="a2-pb"><td><span class="c-ia">✦</span> Par bt livrée</td><td class="a2-m">0,42<span class="a2-sub c-t3">+ livr. ?</span></td><td class="a2-m">0,68<span class="a2-sub c-t3">livr. incluse</span></td><td class="a2-m">0,20<span class="a2-sub c-t3">à laver</span></td></tr></table>'+
+ '<div class="a2-calc"><span class="c-ia">✦</span> B : (0,55 × 600 + 80) / 600 = 0,68. Verallia : livraison inconnue, palette de 1200. Occasion : 400 seulement.</div></div>';
+ h+=feed('','avant-hier',[['n1','Verallia : 0.42/bt, palette de 1200 min'],['n2','Fournisseur B : 0.55/bt par 600, livraison 80 CHF'],['n3','Occasion sur annonce : 0.20/bt, à laver, 400 seulement'],['n4','Besoin avant le 15 du mois']]);
+ return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="choisir"><span class="c-ia2">✦</span>Choisir une offre<span class="a2-m">3</span></button><button class="a2-sec">Plus tard</button></div>')}
 function echeance(){
  var h=crumb('Administratif','Assurance à renouveler')+'<div class="a2-pg"><div class="a2-h1">Assurance à renouveler</div>';
  h+='<dl class="a2-props"><dt>Échéance</dt><dd><span class="a2-pv ed c-amb">'+ic('echeance')+m('31.12')+' · dans '+m('35')+' j</span></dd>'+
- '<dt>Rappel&nbsp;<span class="c-ia">✦</span></dt><dd><span class="a2-pv">'+ic('bell','c-t3')+'fin novembre</span></dd>'+
- '<dt>Statut</dt><dd><span class="a2-pv">'+G.note+'Noté · '+m('0/5')+'</span></dd></dl>';
+ '<dt>Rappel&nbsp;<span class="c-ia">✦</span></dt><dd><span class="a2-pv">'+ic('bell','c-t3')+'fin novembre<span class="c-t3" style="font-size:12px">· lun. '+m('30.11')+', dans '+m('4')+' j</span></span></dd>'+
+ '<dt>Statut</dt><dd><span class="a2-pv">'+G.note+'Noté · '+m('0/5')+' · offres '+m('0/2')+'</span></dd></dl>';
  h+='<div class="a2-ruler" data-booster="delai"><div class="ln"></div><div class="tk" style="left:0"></div><div class="tk" style="left:11%"></div><div class="tk" style="left:calc(100% - 1px);border-color:var(--amb);height:18px;top:14px"></div>'+
- '<span class="lb" style="left:0;transform:none">auj. '+m('26.11')+'</span><span class="lb c-ia" style="left:11%;top:-2px">✦ rappel</span><span class="lb c-amb" style="left:auto;right:0;transform:none">'+m('31.12')+'</span></div>';
+ '<span class="lb" style="left:0;transform:none">auj. '+m('26.11')+'</span><span class="lb c-ia" style="left:11%;top:-2px">✦ rappel '+m('30.11')+'</span><span class="lb c-amb" style="left:auto;right:0;transform:none">'+m('31.12')+'</span></div>';
  h+='<div class="a2-box"><div class="a2-bh">Pièces à réunir<span class="a2-m">0/3</span></div>'+
  ['Police actuelle','Inventaire du matériel','Chiffre d’affaires '+m('2026')].map(function(x){return '<div class="a2-it">'+G['case']+'<span class="a2-t">'+x+'</span></div>'}).join('')+'</div>';
  h+='<div class="a2-box"><div class="a2-bh">Démarches<span class="a2-m">0/2</span></div>'+
- '<div class="a2-it">'+G['case']+'<span class="a2-t">Demander une offre à un 2e assureur</span></div>'+
+ '<div class="a2-it">'+G['case']+'<span class="a2-t">Demander une offre à un 2e assureur</span><span class="a2-r">actuelle —, 2e —</span></div>'+
  '<div class="a2-it">'+G['case']+'<span class="a2-t">Renouveler l’assurance</span><span class="a2-r c-amb">≤ '+m('31.12')+'</span></div></div>';
- h+='<div class="a2-box"><div class="a2-bh">Offres<span class="a2-m">0/2</span></div><table class="a2-cmp"><colgroup><col style="width:88px"><col><col></colgroup><tr><th></th><th>Actuelle</th><th>2e assureur</th></tr><tr><td>Offre</td><td class="a2-m c-t3">—</td><td class="a2-m c-t3">—</td></tr></table></div>';
+ h+=feed('','avant-hier, hier',[['21:31','Échéance le 31 déc.'],['21:31','Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.'],['21:31','Demander une offre à un 2e assureur.'],['13:58','Renouveler l’assurance avant le 31 déc.']]);
  return h+'</div>'+dock('<div class="a2-next"><button class="a2-pri" data-booster="fait">'+G['case'].replace('c-t3','')+'Demander l’offre au 2e assureur</button></div>')}
 document.getElementById('a2').innerHTML=({liste:liste,probleme:probleme,achat:achat,echeance:echeance})[E]();
 })();
