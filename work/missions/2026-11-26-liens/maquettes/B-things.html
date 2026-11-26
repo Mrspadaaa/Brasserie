@@ -67,6 +67,23 @@ td .u{color:var(--t3)}
 .notes p{color:var(--t3);font-size:12px;line-height:1.45}
 .prox .row{min-height:30px}
 .prox .who{color:var(--t3);font-size:12px;margin-left:4px}
+/* passe 2 (26.11) */
+.ring.ch{border-color:var(--av);border-style:dashed}
+.ring.de{border-color:var(--t1);background:linear-gradient(90deg,var(--t1) 50%,transparent 50%)}
+.ring.ur{border-color:var(--ur);background:var(--ur)}
+.tree .grp{margin-top:2px;height:28px}
+.tree .row{min-height:26px}
+.tree .row .stw{font-size:12px;width:52px;text-align:right;flex:none;color:var(--t1)}
+.tree .row .stw.av{color:var(--av)}.tree .row .stw.ur{color:var(--ur)}.tree .row .stw.t3{color:var(--t3)}
+.tree .row .d{min-width:62px;text-align:right;flex:none;white-space:nowrap}
+.body>.row:has(.act),.body>.row:has(.cb){min-height:44px}
+.row .act{min-height:40px;display:flex;align-items:center;padding:0 14px;font-size:14px;border-radius:8px;color:var(--t1)}
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 2px 24px}
+.pick span{height:44px;border:1px solid var(--ln);border-radius:8px;display:grid;place-items:center;font-size:14px;color:var(--t1);background:var(--s1)}
+.t2{color:var(--t2)}
+#e2 .src .row{min-height:23px}
+.sug .tx{white-space:normal;padding:4px 0;line-height:1.25}
+.sug .act{padding:0 12px}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs>
@@ -83,6 +100,10 @@ td .u{color:var(--t3)}
 <symbol id="x" viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></symbol>
 <symbol id="flag" viewBox="0 0 16 16"><path d="M3.5 14.5V2.5h8.5l-1.8 3 1.8 3H3.5"/></symbol>
 <symbol id="clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.8V8l2.2 1.4"/></symbol>
+<symbol id="search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.3"/><path d="M10.2 10.2 14 14"/></symbol>
+<symbol id="bell" viewBox="0 0 16 16"><path d="M4 11.5V7.5a4 4 0 0 1 8 0v4l1.2 1.3H2.8z"/><path d="M6.6 14.3h2.8"/></symbol>
+<symbol id="shop" viewBox="0 0 16 16"><path d="M2.5 6.5h11l-1 7h-9z"/><path d="M5.5 6.5V5a2.5 2.5 0 0 1 5 0v1.5"/></symbol>
+<symbol id="flask" viewBox="0 0 16 16"><path d="M6 2h4M6.5 2v4.5L2.8 13a1 1 0 0 0 .9 1.5h8.6a1 1 0 0 0 .9-1.5L9.5 6.5V2"/><path d="M4.6 10h6.8"/></symbol>
 </defs></svg>
 
 <!-- ============ 1. LISTE EN ARBRE ============ -->
@@ -91,30 +112,32 @@ td .u{color:var(--t3)}
   <div class="body">
     <div class="hd" style="margin-top:0">Prochaines actions <span class="n">3</span></div>
     <div class="prox">
-      <div class="row"><span class="cb"></span><span class="tx">Appeler le technicien <span class="who">Chaudière</span></span><span class="d ur">demain 7h</span></div>
+      <div class="row"><span class="cb"></span><span class="tx"><span class="ia">✦</span> Appeler le technicien <span class="who">Chaudière</span></span><span class="d ur">demain 7h</span></div>
       <div class="row"><span class="cb"></span><span class="tx">Rappeler le gérant <span class="who">Bar du Centre</span></span><span class="d t3">lundi</span></div>
-      <div class="row"><span class="cb"></span><span class="tx">Sentir à nouveau <span class="who">Odeur de soufre</span></span><span class="d av">23 nov.</span></div>
+      <div class="row"><span class="cb"></span><span class="tx"><span class="ia">✦</span> Sentir à nouveau <span class="who">Odeur de soufre</span></span><span class="d t3"><span class="ia">✦</span> 23 nov. passée</span></div>
     </div>
     <div class="tree">
       <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#pb"/></svg>Problèmes<span class="n">7</span></div>
-      <div class="row"><span class="ring" style="border-color:var(--ur)"></span><span class="tx">Chaudière en panne jour de brassage</span><span class="d ur">urgent</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Écoulement qui fuit</span><span class="d t3">devis</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Frigo de garde en panne</span><span class="d t3">av. déc.</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">CO2 qui baisse vite dans un fût</span><span class="d t3">décide</span></div>
-      <div class="row"><span class="ring" style="border-color:var(--av)"></span><span class="tx">Odeur de soufre dans un lot</span><span class="d av">23 nov.</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Trop de vapeur au brassage</span><span class="d t3">décide</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Inspection électrique, fusible</span><span class="mono t3"></span></div>
+      <div class="row"><span class="ring ur"></span><span class="tx">Chaudière en panne jour de brassage</span><span class="stw ur">urgent</span><span class="d ur">demain 7h</span></div>
+      <div class="row"><span class="ring ch"></span><span class="tx">Écoulement qui fuit</span><span class="stw av">cherche</span><span class="d t3">devis att.</span></div>
+      <div class="row"><span class="ring ch"></span><span class="tx">Frigo de garde en panne</span><span class="stw av">cherche</span><span class="d t3">av. déc.</span></div>
+      <div class="row"><span class="ring de"></span><span class="tx">CO2 qui baisse vite dans un fût</span><span class="stw">décide</span><span class="d t3"><span class="ia">✦</span> ≈ 1 déc.</span></div>
+      <div class="row"><span class="ring de"></span><span class="tx">Odeur de soufre dans un lot</span><span class="stw">décide</span><span class="d t3"><span class="ia">✦</span> passée</span></div>
+      <div class="row"><span class="ring de"></span><span class="tx">Trop de vapeur au brassage</span><span class="stw">décide</span><span class="d t3">—</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Inspection électrique, fusible</span><span class="stw t3">note</span><span class="d t3">—</span></div>
       <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#cart"/></svg>Achats<span class="n">1</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">600 bouteilles 33 cl</span><span class="d t3">av. le 15</span></div>
-      <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#cal"/></svg>Échéances et listes<span class="n">4</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Assurance à renouveler</span><span class="d t3">31 déc.</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Ranger la cave</span><span class="d t3">sam. 6 déc.</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Bar du Centre veut nos bières</span><span class="d t3">lundi</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Levure récoltée à tester</span><span class="mono t3"></span></div>
+      <div class="row"><span class="ring de"></span><span class="tx">600 bouteilles 33 cl</span><span class="stw">3 offres</span><span class="d t3">av. le 15</span></div>
+      <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#cal"/></svg>Échéances et listes<span class="n">2</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Assurance à renouveler</span><span class="stw t3">0 / 3</span><span class="d t3">31 déc.</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Ranger la cave</span><span class="stw t3">note</span><span class="d t3">sam. 6 déc.</span></div>
+      <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#shop"/></svg>Ventes<span class="n">1</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Bar du Centre veut nos bières</span><span class="stw t3">note</span><span class="d t3">lundi</span></div>
+      <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#flask"/></svg>Essais<span class="n">1</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Levure récoltée à tester</span><span class="stw t3">note</span><span class="d t3">—</span></div>
       <div class="grp"><svg class="i"><use href="#down"/></svg><svg class="i"><use href="#idea"/></svg>Idées<span class="n">2</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Fête de la bière en juin</span><span class="d t3">av. mars</span></div>
-      <div class="row"><span class="ring"></span><span class="tx">Bière au sureau</span><span class="mono t3"></span></div>
-      <div class="grp"><svg class="i"><use href="#right"/></svg><svg class="i"><use href="#chkc"/></svg>Réglés<span style="font-weight:400;color:var(--t3);margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Levure lente · Malt pilsner · Pompe</span><span class="n">3</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Fête de la bière en juin</span><span class="stw t3">note</span><span class="d t3">av. mars</span></div>
+      <div class="row"><span class="ring"></span><span class="tx">Bière au sureau</span><span class="stw t3">note</span><span class="d t3">—</span></div>
+      <div class="grp"><svg class="i"><use href="#right"/></svg><svg class="i ok"><use href="#chkc"/></svg>Réglés<span style="font-weight:400;color:var(--t3);margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Levure lente · Malt pilsner · Pompe</span><span class="n">3</span></div>
     </div>
   </div>
   <div class="field"><div class="in">Nouvelle note…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
@@ -124,24 +147,26 @@ td .u{color:var(--t3)}
 <section class="scr" id="e2">
   <div class="top"><a><svg class="i"><use href="#back"/></svg>Carnets</a><div class="seg"><span class="on">Organisé</span><span>Mes notes 6</span></div></div>
   <div class="body">
-    <h1><span class="ring"></span>Écoulement qui fuit</h1>
+    <h1><span class="ring ch"></span>Écoulement qui fuit</h1>
     <div class="sub"><svg class="i" style="width:12px;height:12px"><use href="#pb"/></svg>Problème · local <span class="st">· on cherche</span></div>
     <p class="lede">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</p>
 
-    <div class="hd">Pistes <span class="n">1 trouvée · 1 écartée</span></div>
+    <div class="hd">Pistes <span class="n">1 trouvée · 1 pas trouvée</span></div>
     <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">Joint du siphon</span><span class="ok" style="font-size:12px">trouvé usé</span></div>
-    <div class="row done"><svg class="i t3"><use href="#x"/></svg><span class="tx">Fuite sous la dalle</span><span class="t3" style="font-size:12px">pas trouvée</span></div>
+    <div class="row"><svg class="i t3"><use href="#search"/></svg><span class="tx">Fuite sous la dalle</span><span class="t2" style="font-size:12px">pas trouvée</span></div>
 
     <div class="hd">Réparer <span class="n">1 option</span></div>
-    <div class="row"><svg class="i t3"><use href="#clock"/></svg><span class="tx">Sanitaire, entreprise X</span><span class="mono">150 CHF</span><span class="act">Devis</span></div>
-    <div class="row sug ia-only"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Changer le joint du siphon</span><span class="mono t3">—</span><span class="act">Garder</span><span class="x"><svg class="i"><use href="#x"/></svg></span></div>
+    <div class="row"><svg class="i t3"><use href="#clock"/></svg><span class="tx">Sanitaire, entreprise X</span><span class="mono">150 CHF</span><span class="t3" style="font-size:12px">estim.</span></div>
+    <div class="row sug ia-only"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Changer le joint du siphon</span><span class="t3" style="font-size:12px">coût ?</span><span class="act">Garder</span><span class="x"><svg class="i"><use href="#x"/></svg></span></div>
 
-    <div class="hd">À faire <span class="n">2</span></div>
+    <div class="hd">À faire <span class="n">0 / 2</span></div>
     <div class="row"><span class="cb"></span><span class="tx">Contacter l’entreprise X</span><span class="act">Fait</span></div>
-    <div class="row"><span class="cb"></span><span class="tx">Devis attendu</span><span class="av" style="font-size:12px">en attente</span></div>
+    <div class="row"><span class="cb"></span><span class="tx">Devis attendu</span><span class="av" style="font-size:12px">en attente</span><span class="act">Reçu</span></div>
     <div class="row sug ia-only"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Demander si le joint suffit, avant le devis</span><span class="act">Garder</span><span class="x"><svg class="i"><use href="#x"/></svg></span></div>
 
-    <div class="hd">Tes notes du 24.11 <span class="n">6 lignes · 6 rangées</span></div><div class="src"><div class="row"><span class="tm">20:26</span><span class="tx">L’écoulement au sol de la salle fuit au joint…</span><span class="to">→ Constat</span></div><div class="row"><span class="tm">20:26</span><span class="tx">Pistes : joint du siphon trouvé usé</span><span class="to">→ Pistes</span></div><div class="row"><span class="tm">20:26</span><span class="tx">fuite sous la dalle, pas trouvée.</span><span class="to">→ Pistes</span></div><div class="row"><span class="tm">20:26</span><span class="tx">Contacter l’entreprise X (exemple)…</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">20:26</span><span class="tx">Devis attendu.</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">20:26</span><span class="tx">Estimation 150 CHF (exemple).</span><span class="to">→ Réparer</span></div></div>
+    <div class="hd">Tes notes du 24.11 <span class="n">6 lignes · 6 rangées</span></div><div class="src"><div class="row"><span class="tm">21:26</span><span class="tx">L’écoulement au sol de la salle fuit au joint…</span><span class="to">→ Constat</span></div><div class="row"><span class="tm">21:26</span><span class="tx">Pistes : joint du siphon trouvé usé</span><span class="to">→ Pistes</span></div><div class="row"><span class="tm">21:26</span><span class="tx">fuite sous la dalle, pas trouvée.</span><span class="to">→ Pistes</span></div><div class="row"><span class="tm">21:26</span><span class="tx">Contacter l’entreprise X (exemple)…</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">21:26</span><span class="tx">Devis attendu.</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">21:26</span><span class="tx">Estimation 150 CHF (exemple).</span><span class="to">→ Réparer</span></div></div>
+
+    <div class="hd">Suivi <span class="n">2</span></div><div class="src"><div class="row"><span class="tm">25.11</span><span class="tx">Tu l’as passé en « on cherche », 13:22</span></div><div class="row"><span class="tm">24.11</span><span class="tx">Carnet ouvert, 21:18</span></div></div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
 </section>
@@ -150,27 +175,31 @@ td .u{color:var(--t3)}
 <section class="scr" id="e3">
   <div class="top"><a><svg class="i"><use href="#back"/></svg>Carnets</a><div class="seg"><span class="on">Organisé</span><span>Mes notes 4</span></div></div>
   <div class="body">
-    <h1><span class="ring"></span>600 bouteilles 33 cl</h1>
+    <h1><span class="ring de"></span>600 bouteilles 33 cl</h1>
     <div class="sub"><svg class="i" style="width:12px;height:12px"><use href="#cart"/></svg>Achat · 3 offres <span class="t3">· besoin avant le 15 du mois</span></div>
 
-    <div class="hd">Qui gagne quoi</div>
-    <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">Prix le plus bas</span><span>Occasion</span><span class="mono" style="width:64px;text-align:right">0.20/bt</span></div>
-    <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">600 pile</span><span>Fournisseur B</span><span class="mono" style="width:64px;text-align:right">par 600</span></div>
-    <div class="row"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Moins cher pour 600</span><span>Fournisseur B</span><span class="mono" style="width:64px;text-align:right">410 CHF</span></div>
+    <div class="hd">Qui gagne quoi <span class="n">une ligne chacune</span></div>
+    <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">Moins cher, 400 max</span><span>Occasion</span><span class="mono" style="width:64px;text-align:right">0.20/bt</span></div>
+    <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">Moins cher, 1200 min</span><span>Verallia</span><span class="mono" style="width:64px;text-align:right">0.42/bt</span></div>
+    <div class="row"><svg class="i ok"><use href="#chk"/></svg><span class="tx">600 pile, <span class="ia">✦</span> livré</span><span>Fournisseur B</span><span class="mono" style="width:64px;text-align:right">0.68/bt</span></div>
 
     <div class="hd">Comparaison</div>
     <table>
       <tr><th></th><th>Verallia</th><th>Fourn. B</th><th>Occasion</th></tr>
       <tr><td>Prix / bt</td><td class="mono">0.42</td><td class="mono">0.55</td><td class="mono win">0.20</td></tr>
       <tr><td>Quantité</td><td class="mono">≥ 1200</td><td class="mono win">par 600</td><td class="mono">400 max</td></tr>
-      <tr><td>Livraison</td><td class="mono">—</td><td class="mono">80 CHF</td><td class="mono">—</td></tr>
-      <tr><td>État</td><td>—</td><td>—</td><td class="av">à laver</td></tr>
-      <tr><td><span class="ia">✦</span> Total</td><td class="mono">504 <span class="u">1200 bt</span></td><td class="mono win">410</td><td class="mono t3">—</td></tr>
+      <tr><td>Livraison</td><td class="t3">pas notée</td><td class="mono">80 CHF</td><td class="t3">pas notée</td></tr>
+      <tr><td>État</td><td class="t3">—</td><td class="t3">—</td><td class="av">à laver</td></tr>
+      <tr><td><span class="ia">✦</span> Livrée / bt</td><td class="mono">0.42</td><td class="mono">0.68</td><td class="mono">0.20</td></tr>
+      <tr><td><span class="ia">✦</span> Total</td><td class="mono">504 <span class="u">/1200</span></td><td class="mono">410 <span class="u">/600</span></td><td class="mono">80 <span class="u">/400</span></td></tr>
     </table>
-    <p class="t3" style="font-size:12px;margin-top:6px"><span class="ia">✦</span> Total calculé depuis tes prix : Verallia 1200 × 0.42 ; B 600 × 0.55 + 80. Occasion : 400 seulement.</p>
+    <p class="t3" style="font-size:12px;margin-top:6px"><span class="ia">✦</span> Calculé de tes prix. B : (0.55 × 600 + 80) ÷ 600 = 0.68. Verallia et occasion&nbsp;: livraison pas notée.</p>
 
-    <div class="hd">À faire <span class="n">1</span></div>
-    <div class="row"><span class="cb"></span><span class="tx"><span class="ia">✦</span> Choisir une offre</span><span class="d t3">av. le 15</span><span class="act">Choisir</span></div><div class="hd">Tes notes <span class="n">4 lignes · 4 rangées</span></div><div class="src"><div class="row"><span class="tx">Verallia : 0.42/bt, palette de 1200 min</span><span class="to">→ Verallia</span></div><div class="row"><span class="tx">Fournisseur B : 0.55/bt par 600, livraison 80 CHF</span><span class="to">→ Fourn. B</span></div><div class="row"><span class="tx">Occasion sur annonce : 0.20/bt, à laver, 400 seulement</span><span class="to">→ Occasion</span></div><div class="row"><span class="tx">Besoin avant le 15 du mois</span><span class="to">→ À faire</span></div></div>
+    <div class="hd">À faire <span class="n">av. le 15</span></div>
+    <div class="row"><span class="cb"></span><span class="tx"><span class="ia">✦</span> Choisir une offre</span></div>
+    <div class="pick"><span>Verallia</span><span>Fourn. B</span><span>Occasion</span></div>
+
+    <div class="hd">Tes notes <span class="n">4 lignes · 4 rangées</span></div><div class="src"><div class="row"><span class="tx">Verallia : 0.42/bt, palette de 1200 min</span><span class="to">→ Verallia</span></div><div class="row"><span class="tx">Fournisseur B : 0.55/bt par 600, livraison 80 CHF</span><span class="to">→ Fourn. B</span></div><div class="row"><span class="tx">Occasion sur annonce : 0.20/bt, à laver, 400 seulement</span><span class="to">→ Occasion</span></div><div class="row"><span class="tx">Besoin avant le 15 du mois</span><span class="to">→ À faire</span></div></div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
 </section>
@@ -181,8 +210,11 @@ td .u{color:var(--t3)}
   <div class="body">
     <h1><span class="ring"></span>Assurance à renouveler</h1>
     <div class="sub"><svg class="i" style="width:12px;height:12px"><use href="#cal"/></svg>Échéance · administratif</div>
-    <div class="row" style="margin:12px 0 0;min-height:36px;border:1px solid var(--ln);border-radius:8px;padding:0 12px;background:var(--s1)">
-      <svg class="i"><use href="#flag"/></svg><span class="tx" style="font-weight:600">Échéance 31 déc.</span><span class="d t3">dans 35 jours</span>
+    <div class="row" style="margin:12px 0 0;min-height:44px;border:1px solid var(--ln);border-radius:8px;padding:0 12px;background:var(--s1)">
+      <svg class="i"><use href="#flag"/></svg><span class="tx" style="font-weight:600">Échéance 31 déc.</span><span class="d t2">dans 35 jours</span>
+    </div>
+    <div class="row sug" style="margin-top:6px;min-height:40px;padding:0 12px">
+      <svg class="i ia"><use href="#bell"/></svg><span class="tx">Rappel fin novembre <span class="ia" style="font-size:12px">✦ posé par l’IA</span></span><span class="d t2">dans 4 jours</span>
     </div>
 
     <div class="hd">Pièces à réunir <span class="n">0 / 3</span></div>
@@ -190,11 +222,13 @@ td .u{color:var(--t3)}
     <div class="row"><span class="cb"></span><span class="tx">Inventaire du matériel</span></div>
     <div class="row"><span class="cb"></span><span class="tx">Chiffre d’affaires 2026</span></div>
 
-    <div class="hd">À faire <span class="n">2</span></div>
+    <div class="hd">À faire <span class="n">0 / 2</span></div>
     <div class="row"><span class="cb"></span><span class="tx">Demander une offre à un 2e assureur</span><span class="act">Fait</span></div>
-    <div class="row"><span class="cb"></span><span class="tx">Renouveler l’assurance</span><span class="d t3">av. 31 déc.</span><span class="ia" style="font-size:12px">✦</span></div>
+    <div class="row"><span class="cb"></span><span class="tx">Renouveler l’assurance <span class="ia" style="font-size:12px">✦</span></span><span class="d t3">av. 31 déc.</span></div>
 
-    <div class="hd">Tes notes <span class="n">4 lignes · 4 rangées</span></div><div class="src"><div class="row"><span class="tm">20:31</span><span class="tx">Échéance le 31 déc.</span><span class="to">→ Échéance</span></div><div class="row"><span class="tm">20:31</span><span class="tx">Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.</span><span class="to">→ Pièces</span></div><div class="row"><span class="tm">20:31</span><span class="tx">Demander une offre à un 2e assureur.</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">25.11</span><span class="tx">Renouveler l’assurance avant le 31 déc.</span><span class="to">→ À faire ✦</span></div></div>
+    <div class="hd">Tes notes <span class="n">4 lignes · 4 rangées</span></div><div class="src"><div class="row"><span class="tm">21:31</span><span class="tx">Échéance le 31 déc.</span><span class="to">→ Échéance</span></div><div class="row"><span class="tm">21:31</span><span class="tx">Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.</span><span class="to">→ Pièces</span></div><div class="row"><span class="tm">21:31</span><span class="tx">Demander une offre à un 2e assureur.</span><span class="to">→ À faire</span></div><div class="row"><span class="tm">25.11</span><span class="tx">Renouveler l’assurance avant le 31 déc.</span><span class="to">→ À faire ✦</span></div></div>
+
+    <div class="hd">Suivi <span class="n">2</span></div><div class="src"><div class="row"><span class="tm">25.11</span><span class="tx"><span class="ia">✦</span> L’IA a rangé « Renouveler » en tâche, rappel fin novembre, 13:59</span></div><div class="row"><span class="tm">24.11</span><span class="tx">Carnet ouvert, 21:22</span></div></div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
 </section>

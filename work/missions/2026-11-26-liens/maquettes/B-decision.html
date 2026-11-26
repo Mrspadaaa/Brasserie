@@ -66,6 +66,15 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
 .field .in{flex:1;height:36px;border-radius:8px;background:var(--c);border:1px solid var(--ln);display:flex;align-items:center;padding:0 12px;color:var(--t3);font-size:16px}
 .btn{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;border:1px solid var(--ln);background:var(--c);color:var(--t1);font-size:16px}
 .btn.spark{color:var(--ia)}.btn.spark.on{background:var(--ia);color:var(--bg);border-color:var(--ia)}
+/* passe 2 (26.11) */
+.push{margin-top:auto}
+.body{padding-bottom:8px}
+.ln.tall{min-height:44px}
+.bt.tt{min-height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0 12px}
+.bt.xx{color:var(--t3);background:transparent;padding:0 8px}
+.rap{background:rgba(185,166,234,.08);border:1px solid rgba(185,166,234,.4);border-radius:8px;padding:0 10px;min-height:40px}
+.cmp td .s{font-size:12px}
+.cmp td.fig{font-size:20px}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs>
@@ -80,20 +89,22 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
 <symbol id="split" viewBox="0 0 16 16"><path d="M8 14V8M8 8 3.5 3.5M8 8l4.5-4.5M3.5 3.5v3M3.5 3.5h3M12.5 3.5v3M12.5 3.5h-3"/></symbol>
 <symbol id="chkc" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M5.3 8.2l1.9 1.9 3.6-4"/></symbol>
 <symbol id="search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></symbol>
+<symbol id="bell" viewBox="0 0 16 16"><path d="M4 11.5V7.5a4 4 0 0 1 8 0v4l1.2 1.3H2.8z"/><path d="M6.6 14.3h2.8"/></symbol>
+<symbol id="x" viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></symbol>
 </defs></svg>
 
 <!-- ============ 1. LISTE ============ -->
 <section class="scr" id="e1">
-  <div class="top"><span style="font-size:20px;font-weight:700">Carnets</span><span class="s">17 · 3 réglés</span></div>
+  <div class="top"><span style="font-size:20px;font-weight:700">Carnets</span><span class="s">17 · 3 réglés · <span class="ia">✦</span> rangés par ce qui attend</span></div>
   <div class="body" style="gap:4px">
     <div class="opts o2" style="margin-bottom:4px">
-      <div class="op" style="border-color:var(--ur)"><span class="tag ur">Urgent</span><span class="nm">Chaudière</span><span class="s">Appeler le technicien</span><span class="s ur">demain 7h</span></div>
+      <div class="op" style="border-color:var(--ur)"><span class="tag ur">Urgent</span><span class="nm">Chaudière</span><span class="s">Technicien ? n° sur l’autocollant</span><span class="s ur">brassage demain 7h</span></div>
       <div class="op"><span class="tag t2">À décider</span><span class="nm">600 bouteilles</span><span class="s m">0.20 · 0.42 · 0.55 /bt</span><span class="s">3 offres · av. le 15</span></div>
     </div>
     <div class="grp"><svg class="i"><use href="#split"/></svg>À décider<span class="n">4</span></div>
     <div class="tr"><span class="tx">600 bouteilles 33 cl</span><span class="nx">3 offres</span></div>
-    <div class="tr"><span class="tx">CO2 qui baisse vite dans un fût</span><span class="nx">revérifier · 1 sem.</span></div>
-    <div class="tr"><span class="tx">Odeur de soufre dans un lot</span><span class="nx av">sentir · 23 nov.</span></div>
+    <div class="tr"><span class="tx">CO2 qui baisse vite dans un fût</span><span class="nx">revérifier · <span class="ia">✦</span> ≈ 1 déc.</span></div>
+    <div class="tr"><span class="tx">Odeur de soufre dans un lot</span><span class="nx">sentir · <span class="ia">✦</span> 23 nov. passée</span></div>
     <div class="tr last"><span class="tx">Trop de vapeur au brassage</span><span class="nx">à surveiller</span></div>
     <div class="grp"><svg class="i"><use href="#search"/></svg>À trouver<span class="n">4</span></div>
     <div class="tr"><span class="tx ur">Chaudière en panne jour de brassage</span><span class="nx ur">urgent</span></div>
@@ -108,7 +119,7 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
     <div class="grp"><svg class="i"><use href="#idea"/></svg>Idées<span class="n">2</span></div>
     <div class="tr"><span class="tx">Fête de la bière en juin</span><span class="nx">stand · av. mars</span></div>
     <div class="tr last"><span class="tx">Bière au sureau</span><span class="nx">goûter la voisine</span></div>
-    <div class="grp"><svg class="i"><use href="#chkc"/></svg>Réglés<span class="n">3 <svg class="i" style="vertical-align:-3px"><use href="#right"/></svg></span></div>
+    <div class="grp"><svg class="i ok"><use href="#chkc"/></svg>Réglés<span class="n">3 <svg class="i" style="vertical-align:-3px"><use href="#right"/></svg></span></div>
   </div>
   <div class="field"><div class="in">Nouvelle note…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
 </section>
@@ -120,31 +131,33 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
     <div><h1>Écoulement qui fuit</h1><div class="s" style="margin-top:2px">Problème · local · <span class="av">on cherche</span></div></div>
     <p class="t2">L’écoulement au sol de la salle fuit au joint, flaque après chaque nettoyage.</p>
     <div class="card">
-      <div class="q"><b>D’où vient la fuite ?</b><span class="st ok">1 trouvée</span></div>
+      <div class="q"><b>D’où vient la fuite ?</b><span class="st t2">1 trouvée · 1 pas trouvée</span></div>
       <div class="opts o2">
         <div class="op win"><span class="tag ok">Trouvé</span><span class="nm">Joint du siphon</span><span class="s">usé</span></div>
-        <div class="op off"><span class="tag t3">Pas trouvé</span><span class="nm">Sous la dalle</span><span class="s">écartée</span></div>
+        <div class="op"><span class="tag t3">Cherché</span><span class="nm">Sous la dalle</span><span class="s">pas trouvée</span></div>
       </div>
     </div>
     <div class="card">
       <div class="q"><b>Comment réparer ?</b><span class="st av">devis attendu</span></div>
       <div class="opts o2">
         <div class="op"><span class="nm">Sanitaire, entreprise X</span><span class="fig">150 <span style="font-size:14px">CHF</span></span><span class="s">estimation (exemple)</span></div>
-        <div class="op ghost rest-only"><span class="s t3">Une seule option dans tes notes</span><span class="bt iab" style="margin-top:6px">✦ Autre option</span></div>
-        <div class="op sugg ia-only"><span class="tag ia">✦ Suggestion</span><span class="nm">Changer le joint</span><span class="fig t3">— <span style="font-size:14px">CHF</span></span><span class="bt iab" style="margin-top:2px">Garder</span></div>
+        <div class="op ghost rest-only"><span class="s t3">Une seule option dans tes notes</span><span class="bt iab tt" style="margin-top:6px">✦ Autre option</span></div>
+        <div class="op sugg ia-only"><span class="tag ia">✦ Suggestion</span><span class="nm">Changer le joint</span><span class="s t3">coût pas noté</span><span style="display:flex;gap:6px;margin-top:4px"><span class="bt iab tt" style="flex:1">Garder</span><span class="bt tt xx"><svg class="i"><use href="#x"/></svg></span></span></div>
       </div>
-    </div>
-    <div class="card">
-      <div class="q"><b>Prochaine action</b><span class="st t3">0 / 1</span></div>
-      <div class="ln"><span class="box"></span><span class="tx">Contacter l’entreprise X</span><span class="bt p">Fait</span></div>
-      <div class="ln ia-only sep" style="padding-top:2px"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Demander si le joint suffit, avant le devis</span><span class="bt iab">Garder</span></div>
     </div>
     <div class="notes">
       <div class="ln" style="font-weight:700;color:var(--t2)">Tes notes · 24.11<span class="to" style="margin-left:auto;font-weight:400">6 lignes</span></div>
-      <div class="ln"><span class="tx">Pistes : joint du siphon trouvé usé</span><span class="to">cause</span></div>
-      <div class="ln"><span class="tx">fuite sous la dalle, pas trouvée.</span><span class="to">cause</span></div>
+      <div class="ln"><span class="tx">L’écoulement au sol de la salle fuit au joint, flaque…</span><span class="to">constat</span></div>
+      <div class="ln"><span class="tx">Pistes : joint du siphon trouvé usé</span><span class="to">d’où</span></div>
+      <div class="ln"><span class="tx">fuite sous la dalle, pas trouvée.</span><span class="to">d’où</span></div>
       <div class="ln"><span class="tx">Contacter l’entreprise X (exemple) pour un sanitaire.</span><span class="to">action</span></div>
-      <div class="ln"><span class="tx">Devis attendu. · Estimation 150 CHF (exemple).</span><span class="to">réparer</span></div>
+      <div class="ln"><span class="tx">Devis attendu.</span><span class="to">réparer</span></div>
+      <div class="ln"><span class="tx">Estimation 150 CHF (exemple).</span><span class="to">réparer</span></div>
+    </div>
+    <div class="card push">
+      <div class="q"><b>Prochaine action</b><span class="st t3">0 / 1</span></div>
+      <div class="ln tall"><span class="box"></span><span class="tx">Contacter l’entreprise X</span><span class="bt p tt">Fait</span></div>
+      <div class="ln tall ia-only sep"><span class="ia" style="width:16px;text-align:center">✦</span><span class="tx">Demander si le joint suffit, avant le devis</span><span class="bt iab tt">Garder</span><span class="bt tt xx"><svg class="i"><use href="#x"/></svg></span></div>
     </div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
@@ -160,30 +173,33 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
       <table class="cmp">
         <tr><th></th>
           <th><div class="op"><span class="nm">Verallia</span><span class="s">palette</span></div></th>
-          <th><div class="op win"><span class="nm">Fourn. B</span><span class="s ok">gagne 2</span></div></th>
+          <th><div class="op"><span class="nm">Fourn. B</span><span class="s">par 600</span></div></th>
           <th><div class="op"><span class="nm">Occasion</span><span class="s">annonce</span></div></th></tr>
         <tr><td>Prix / bt</td><td class="m">0.42</td><td class="m">0.55</td><td class="m win">0.20</td></tr>
         <tr><td>Quantité</td><td class="m">≥ 1200</td><td class="m win">600</td><td class="m">400 max</td></tr>
-        <tr><td>Livraison</td><td class="m">—</td><td class="m">80 CHF</td><td class="m">—</td></tr>
-        <tr><td>État</td><td>—</td><td>—</td><td class="av">à laver</td></tr>
-        <tr><td><span class="ia">✦</span> Total</td><td class="fig" style="font-size:20px">504</td><td class="fig win" style="font-size:20px">410</td><td class="fig t3" style="font-size:20px">—</td></tr>
-        <tr><td style="border:0"></td><td class="s" style="border:0">pour 1200</td><td class="s" style="border:0">pour 600</td><td class="s" style="border:0">400 max</td></tr>
+        <tr><td>Livraison</td><td class="t3" style="font-size:12px">pas notée</td><td class="m">80 CHF</td><td class="t3" style="font-size:12px">pas notée</td></tr>
+        <tr><td>État</td><td class="t3">—</td><td class="t3">—</td><td class="av">à laver</td></tr>
+        <tr><td><span class="ia">✦</span> Livrée / bt</td><td class="fig">0.42</td><td class="fig">0.68</td><td class="fig">0.20</td></tr>
+        <tr><td><span class="ia">✦</span> Total</td><td class="m">504<span class="s t3"> /1200</span></td><td class="m">410<span class="s t3"> /600</span></td><td class="m">80<span class="s t3"> /400</span></td></tr>
       </table>
-      <div class="opts o3" style="margin-top:8px;margin-left:56px">
-        <span class="bt">Choisir</span><span class="bt p">Choisir</span><span class="bt">Choisir</span>
-      </div>
+      <div class="s t3" style="margin-top:6px"><span class="ia">✦</span> B : (0.55 × 600 + 80) ÷ 600 = 0.68. Livraison Verallia et occasion pas notée.</div>
     </div>
     <div class="card">
       <div class="q"><b>Qui gagne quoi</b><span class="st ia">✦ calculé de tes prix</span></div>
-      <div class="ln"><span class="tx t2">Prix le plus bas</span><span>Occasion</span><span class="m" style="width:76px;text-align:right">0.20/bt</span></div>
-      <div class="ln sep"><span class="tx t2">600 pile</span><span>Fournisseur B</span><span class="m" style="width:76px;text-align:right">par 600</span></div>
-      <div class="ln sep"><span class="tx t2">Total le plus bas</span><span>Fournisseur B</span><span class="m" style="width:76px;text-align:right">410 CHF</span></div>
+      <div class="ln"><span class="tx t2">Moins cher, 400 max</span><span>Occasion</span><span class="m" style="width:64px;text-align:right">0.20/bt</span></div>
+      <div class="ln sep"><span class="tx t2">Moins cher, 1200 min</span><span>Verallia</span><span class="m" style="width:64px;text-align:right">0.42/bt</span></div>
+      <div class="ln sep"><span class="tx t2">600 pile, livré</span><span>Fournisseur B</span><span class="m" style="width:64px;text-align:right">0.68/bt</span></div>
     </div>
     <div class="notes">
       <div class="ln" style="font-weight:700;color:var(--t2)">Tes notes<span class="to" style="margin-left:auto;font-weight:400">4 lignes</span></div>
       <div class="ln"><span class="tx">Verallia : 0.42/bt, palette de 1200 min</span></div>
       <div class="ln"><span class="tx">Fournisseur B : 0.55/bt par 600, livraison 80 CHF</span></div>
       <div class="ln"><span class="tx">Occasion sur annonce : 0.20/bt, à laver, 400 seulement</span></div>
+      <div class="ln"><span class="tx">Besoin avant le 15 du mois</span></div>
+    </div>
+    <div class="card push">
+      <div class="q"><b>Choisir une offre <span class="ia" style="font-weight:400">✦</span></b><span class="st av">av. le 15</span></div>
+      <div class="opts o3"><span class="bt tt">Verallia</span><span class="bt tt">Fourn. B</span><span class="bt tt">Occasion</span></div>
     </div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
@@ -197,31 +213,30 @@ h1{font-size:20px;font-weight:700;line-height:1.15}
       <div><h1>Assurance à renouveler</h1><div class="s" style="margin-top:2px">Échéance · administratif</div></div>
       <div style="text-align:right;flex:none"><div class="fig" style="font-family:'Source Sans 3';font-weight:700">31 déc.</div><div class="s">dans 35 jours</div></div>
     </div>
+    <div class="ln rap"><svg class="i ia"><use href="#bell"/></svg><span class="tx">Rappel fin novembre <span class="s ia">✦ posé par l’IA</span></span><span class="s">dans 4 jours</span></div>
     <div class="card">
       <div class="q"><b>Renouveler chez qui ? <span class="ia" style="font-weight:400">✦</span></b><span class="st t3">1 offre à demander</span></div>
       <div class="opts o2">
-        <div class="op"><span class="nm">Assureur actuel</span><span class="fig t3">— <span style="font-size:14px">CHF</span></span><span class="s">police actuelle</span></div>
-        <div class="op"><span class="nm">2e assureur</span><span class="fig t3">— <span style="font-size:14px">CHF</span></span><span class="s">offre à demander</span><span class="bt p" style="margin-top:4px">Demander</span></div>
+        <div class="op"><span class="nm">Assureur actuel</span><span class="s">police actuelle</span><span class="s t3">prix pas noté</span></div>
+        <div class="op"><span class="nm">2e assureur</span><span class="s">offre à demander</span><span class="bt tt" style="margin-top:4px">Demander</span></div>
       </div>
     </div>
     <div class="card">
       <div class="q"><b>Pièces à réunir</b><span class="st t3">0 / 3</span></div>
-      <div class="opts o3">
-        <div class="op"><span class="box"></span><span class="nm" style="white-space:normal">Police actuelle</span></div>
-        <div class="op"><span class="box"></span><span class="nm" style="white-space:normal">Inventaire du matériel</span></div>
-        <div class="op"><span class="box"></span><span class="nm" style="white-space:normal">Chiffre d’affaires 2026</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="q"><b>À faire</b><span class="st t3">0 / 1</span></div>
-      <div class="ln"><span class="box"></span><span class="tx">Renouveler l’assurance <span class="ia">✦</span></span><span class="s">av. 31 déc.</span></div>
+      <div class="ln tall"><span class="box"></span><span class="tx">Police actuelle</span></div>
+      <div class="ln tall sep"><span class="box"></span><span class="tx">Inventaire du matériel</span></div>
+      <div class="ln tall sep"><span class="box"></span><span class="tx">Chiffre d’affaires 2026</span></div>
     </div>
     <div class="notes">
       <div class="ln" style="font-weight:700;color:var(--t2)">Tes notes<span class="to" style="margin-left:auto;font-weight:400">4 lignes</span></div>
       <div class="ln"><span class="tx">Échéance le 31 déc.</span><span class="to">date</span></div>
       <div class="ln"><span class="tx">Pièces : police actuelle, inventaire du matériel, chiffre d’affaires 2026.</span><span class="to">pièces</span></div>
-      <div class="ln"><span class="tx">Demander une offre à un 2e assureur.</span><span class="to">offre</span></div>
+      <div class="ln"><span class="tx">Demander une offre à un 2e assureur.</span><span class="to">chez qui</span></div>
       <div class="ln"><span class="tx">Renouveler l’assurance avant le 31 déc.</span><span class="to">à faire</span></div>
+    </div>
+    <div class="card push">
+      <div class="q"><b>À faire</b><span class="st t3">0 / 1</span></div>
+      <div class="ln tall"><span class="box"></span><span class="tx">Renouveler l’assurance <span class="ia">✦</span></span><span class="s">av. 31 déc.</span></div>
     </div>
   </div>
   <div class="field"><div class="in">Ajouter à ce carnet…</div><div class="btn"><svg class="i"><use href="#plus"/></svg></div><div class="btn spark">✦</div></div>
