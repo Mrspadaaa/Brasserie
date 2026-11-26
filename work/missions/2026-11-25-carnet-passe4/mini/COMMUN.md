@@ -42,5 +42,10 @@ La couleur sert l'état, jamais la décoration.
 - Barre d'onglets 56 px : Bord, Finances, Calendrier, Brassins, Stocks (actif), Clients.
 
 ## Dates et heures
-Aujourd'hui = je 26.11.2026, heure suisse. « dans 5 j · lu 1.12 », « il y a 2 j · 24.11 21:26 ». Une suite fictive se dit à côté de
-l'écran (colonne source), jamais par un bandeau dans l'écran.
+Aujourd'hui = je 26.11.2026, heure suisse. « dans 5 j · ma 1.12 », « il y a 2 j · 24.11 21:26 ». Jours calculés, jamais écrits à la main (ma 24.11, ma 1.12, di 6.12).
+
+## Données et « exemple » (passe 5)
+- Une seule vérité : `mini/DONNEES.md` (écrit par S) : catégories « catégorie › sous-catégorie », lignes, compteurs, états.
+- Toute donnée hors de ses notes et fixtures est marquée DANS l’écran par la puce `.o-ex` « exemple » (13 px, contour tireté `#574A42`, texte `#9A8A7E`) ; une offre d’exemple ne gagne jamais une ligne ni une case « qui gagne quoi ».
+- Estimé : « ≈ » + `#8FBEDB`, case au contour tireté bleu (son « Estimation 150 CHF (exemple) », l. 6, partout où le coût se montre).
+

@@ -1,39 +1,40 @@
-OK — 9 écrans O (16 captures), Organisé en 2 variantes, Comparer 3 et 6 offres, caractéristiques
+OK — passe de correction O : 27 points traités (25 complets, 2 en partie), 20 captures
 
 ## Fichiers (lettre O)
-Chaque page montre l'écran (390 × 844, sombre) puis, à droite, la capture de SA version et ce qui a changé.
-| Écran | Page | Captures | Sa version |
-|---|---|---|---|
-| Organisé, écoulement (reprise) | `O-organise.html` | `cap/O-organise.png`, `cap/O-organise-ia.png` (✦ ouvert) | v04-11 |
-| Organisé, variante b « arbre des causes » | `O-organise-b.html` | `cap/O-organise-b.png`, `cap/O-organise-b-ia.png` | v04-11 |
-| Changé par l'IA | `O-change.html` | `cap/O-change.png` | v05-11 |
-| Options a (cartes, v02) | `O-options-a.html` | `cap/O-options-a-3.png`, `cap/O-options-a-6.png` | v02-15 |
-| Comparer b (tableau adapté, v06) | `O-options-b.html` | `cap/O-options-b-3.png`, `cap/O-options-b-6.png` | v06-19 |
-| Comparer toutes les caractéristiques (chambre froide) | `O-comparer-caracteristiques.html` | `cap/O-comparer-caracteristiques.png`, `…-bas.png` | vue Comparer de l'app (critique-55 A-comparer-0) |
-| Décider, devis reçu | `O-decider.html` | `cap/O-decider.png` | v01-11 |
-| À faire, tous les carnets | `O-afaire.html` | `cap/O-afaire.png` | v01-13 |
-| Résoudre sur preuve | `O-resoudre.html` | `cap/O-resoudre.png` | v01-14 |
-| Résolu grâce à l'achat | `O-resolu.html` | `cap/O-resolu.png` | v01-15 |
-| Relecture des mois plus tard | `O-relecture.html` | `cap/O-relecture.png` | v03-16 |
-Aussi : `mini/COMMUN.md` (jetons partagés avec S : couleurs d'état, tailles, icônes, barre du pouce, dates).
-Générateur hors dépôt (scratchpad de la session) ; les pages sont autonomes (HTML + CSS, police Source Sans 3).
+Pages `mini/O-*.html` (11), captures `mini/cap/O-*.png` (20), `mini/COMMUN.md` (règle « exemple » et estimé ajoutées).
+Données alignées sur `mini/DONNEES.md` (S) : Local › Eau, 6 lignes (l. 1 constat … l. 6 estimation), ✦ 25.11, Carnets 15,
+À décider 2, À faire 5, résolus Pompe, Levure et Malt (me 25.11), Kegland = A et Brewtools = B.
 
-## Critères (sorties)
-- Captures : 16 prises sur Chrome 9222 (puppeteer-core, onglet propre, `page.close()` puis `browser.disconnect()`), 390 × 844, DSF 2, toutes ouvertes.
-- Contrôle de page maison (débordement, texte coupé, texte < 13 px) : tous « OK », sauf Comparer caractéristiques « déborde 462 px » (voulu : vue qui défile, capture `-bas` du reste) et Comparer b-6 « déborde 10 px » (bloc sous le pli).
-- COMPARER-BEAUCOUP-D-OPTIONS : 6 offres tenues sans colonnes écrasées ni défilement horizontal (a-6 : cartes de 2 lignes ; b-6 : tableau 4 colonnes fixes).
-- FRISE-GENERIQUE : aucune frise Noté › Résolu (retirée de v04, v05, v01) ; achat = « besoin avant ma 15.12 · dans 19 j » ; b : 4 pas datés de CE carnet.
-- PAS-DE-HARCELEMENT : le pouce ne porte que champ, ✦ et + ; « Relancer l'entreprise X ? », « Toujours le bon choix ? » et la 2e question de Résoudre retirés (interrupteur déjà posé).
-- ENTETE-PEU-UTILE : première info utile à ~105 px (cases) ; heure de rangement en icône « ✦ 25.11 ↺ ».
-- TROP-ENFANTIN : noms réels 2–5 mots, aucun emoji (icônes au trait 14–20 px), « toi-même » → « Moi-même », vignettes illustrées → cases nom + icône + date.
-- Toujours visuel : couleur d'état, lignes de métro, jauges de quantité (6 cases = 600 bt), barres de coût, ▲ gagnant ; tableau seulement dans Comparer.
-- Données : écoulement = ses 5 notes du relevé c79 (24.11 21:18/21:26) ; aucune valeur hors notes (les 150 CHF de v04/v05 retirés → « prix ? »). Suites fictives et 3 offres d'épreuve dites dans la colonne source, jamais dans l'écran.
-- `controle-panel.mjs` (fait pour une série v0) : PANEL ECHEC — remplissage médian 0,48 (thème sombre, bas d'écran laissé libre sur 4 écrans) et diversité 0,92 (voulu ici : même app, même carnet, 3 et 6 offres du même écran). Non bloquant pour ce contrat ; noté.
-- `controle-choix.mjs` : non joué (registre `ecrans.json` hors de ce brief, qui fixe sa recette par CLASSEMENT-4.md).
+| Écran | Captures | Points |
+|---|---|---|
+| Organisé, reprise v04 | `cap/O-organise.png`, `cap/O-organise-ia.png` | 1, 5, 6, 7, 8, 11, 27 |
+| Organisé b, arbre des causes | `cap/O-organise-b.png`, `-ia`, `-1piste` (Frigo de garde), `-3pistes` (CO2) | 2, 8, 9, 10 |
+| Changé par l’IA | `cap/O-change.png` | 3 (ligne cadenas 150 CHF, « Changé · 7 »), 5 |
+| Options a (Organisé d’un achat) | `cap/O-options-a-3.png`, `cap/O-options-a-6.png` | 12, 13, 14, 15, 16 |
+| Comparer b (tableau) | `cap/O-options-b-3.png`, `-b-6.png`, `-b-6-bas.png` | 15, 16, 17 |
+| Comparer caractéristiques | `cap/O-comparer-caracteristiques.png`, `-milieu.png`, `-bas.png` | 18, 19, 20, 21 |
+| Décider | `cap/O-decider.png` | 4 (+35 sur ≈ 150), 5, 22 |
+| À faire | `cap/O-afaire.png` | 4, 5, 23 |
+| Résoudre | `cap/O-resoudre.png` | 5, 22 |
+| Résolu | `cap/O-resolu.png` | 24, 25, 26 |
+| Relecture | `cap/O-relecture.png` | 24, 26 |
+
+## Sorties décisives
+- Priorité 1 : « ≈ 150 CHF · estimé · l. 6 » dans Organisé, Organisé b (cases), Changé (ligne cadenas), Décider (« +35 sur ton ≈ 150 »), À faire (devis attendu).
+- Priorité 2 : puce « exemple » dans l’écran pour la suite imaginée (Décider, Résoudre, Résolu, Relecture) et les 3 offres d’épreuve ; offres d’épreuve rechiffrées pour ne rien gagner : Fournisseur B (ses notes) gagne à 3 et à 6 offres.
+- Priorité 3 : Comparer = SES 2 articles de la vue d’origine (2,6 m³ à 2 697,74 CHF TTC, 4,06 m³ à 2 987,51 CHF TTC), 32 lignes (21 d’origine + c52 et c54), « + 4 lignes sans valeur » pour les noms vus seulement sur un réfrigérateur ; fluide et quantité séparés ; unité dans le libellé.
+- Priorité 4 : jours contrôlés par calcul sur les 11 pages (`new Date(Date.UTC…)`) : 46 jours écrits, 0 faux ; aucun « je 24.11 », « lu 1.12 », « sa 6.12 ».
+- Contrôle de page maison (Chrome 9222, 390 × 844, DPR 2, onglet propre, `page.close()` puis `browser.disconnect()`) : 20 captures, 0 texte < 13 px, 0 coupé, 0 débordement ; bas vide ≤ 105 px partout (avant : 174 px sur b-3).
+- Les 20 captures ouvertes et relues.
+
+## En partie
+- Point 9 : arbre essayé à 1 et à 3 pistes ; aucun carnet de ses notes n’a 4 pistes (la ligne par piste s’allonge).
+- Point 23 : compteurs et onglets alignés sur S ; avatars de l’en-tête de S non repris.
+- Point 20 : prix repris de la vue d’origine (capture tour 55) ; pas relu sur son carnet réel (aucun accès aux données réelles).
 
 ## Prédiction
-« Organisé, enfin je vois trouvé / pas trouvé / quoi faire d'un coup d'œil ; Comparer tient à 6 » — risque : l'arbre b plus parlant que la reprise, et les bas d'écran un peu vides.
+« Là j’ai mes 150 balles, mon trouvé / pas trouvé, et la chambre froide avec tout côte à côte » ; risque : Comparer caractéristiques long (32 lignes, 3 écrans de défilement).
 
-DÉCISION À PRENDRE : Organisé, reprise v04 (lignes de métro) ou variante b (arbre des causes) — à lui montrer côte à côte ; et Comparer en cartes (a) ou en tableau (b).
-CONNAISSANCE : le relevé c79 range « Devis attendu. » en genre « a-acheter » (erreur de lecture réelle, montrée cadenassée dans Changé par l'IA).
+DÉCISION À PRENDRE : Organisé, reprise v04 ou arbre b (les deux à données égales, b essayé à 1 et 3 pistes) ; Options a = Organisé d’un achat et b = Comparer, deux niveaux (avis du critique), plus des rivaux.
+CONNAISSANCE : c52 « carnet » (densité 40, porte 1 900 mm, RAL 9010) contredit la vue d’origine de sa chambre 2,6 m³ (42, 1 845, RAL 9002) ; la maquette suit la vue d’origine.
 LEÇON PROPOSÉE : aucune
