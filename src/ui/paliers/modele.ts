@@ -2,7 +2,7 @@
 // Une seule source : les paliers de l'assistant (`mashSteps`) et, pour le mash-out qu'aucun palier n'écrit, `details.mash` (même lecture que
 // `recipeThermalPlan`, le plan que le récapitulatif et la fiche utilisent). Aucun calcul de moteur ici : IBU, OG et eau ne changent pas.
 import type { MashProfile, TempStep } from '../../types';
-import { nomPalierAjoute, SACCHARIFICATION_TEMP_C, SACCHARIFICATION_MIN_MIN } from '../../domain/fermentables/empatage';
+import { SACCHARIFICATION_TEMP_C, SACCHARIFICATION_MIN_MIN } from '../../domain/fermentables/empatage';
 import { BrewingMath } from '../../services/brewingMath';
 
 /** Le mash-out qu'aucun palier n'écrit vit dans `details.mash` (`mashoutTempC`, `mashoutDurationMin`, `mashoutEnabled`). */
@@ -24,6 +24,8 @@ export interface Colonne {
 }
 
 const MASHOUT = /mash.?out/i;
+/** Le mash-out que rien n'écrit : 76 °C, le défaut de `build()` et de `recipeThermalPlan`. */
+const MASHOUT_DEFAUT_C = 76;
 const fini = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 
 /** Les colonnes, depuis les lignes du plan thermique de l'app (`recipeThermalPlan(recipe).rows`) : mêmes valeurs que le récapitulatif. */
@@ -41,7 +43,10 @@ export const rangMashout = (colonnes: readonly Colonne[]) => colonnes.reduce((r,
  *  (le défaut 76 °C ne se réécrit pas en silence). */
 export function reglerColonne(etat: EtatEmpatage, colonne: Colonne, valeurs: { tempC?: number; durationMin?: number }): EtatEmpatage {
   if (colonne.reel >= 0) {
-    return { ...etat, steps: etat.steps.map((s, i) => (i === colonne.reel ? { ...s, ...(valeurs.tempC !== undefined ? { tempC: valeurs.tempC } : {}), ...(valeurs.durationMin !== undefined ? { durationMin: valeurs.durationMin } : {}) } : s)) };
+    // Un nom posé par l'app suit la température (« Palier 2 » glissé à 52 °C devient « Repos protéique ») ; un mash-out écrit comme palier garde le sien.
+    // Toujours, même « Saccharification » glissée à 72 °C (critique 26.11 : un nom gardé à 72 et un « + » de tête qui pose une seconde « Saccharification » à 67).
+    const renomme = (s: TempStep) => fini(valeurs.tempC) && nomAuto(s.name) && !MASHOUT.test(s.name ?? '') ? { name: nomSelonTemp(valeurs.tempC) } : {};
+    return { ...etat, steps: etat.steps.map((s, i) => (i === colonne.reel ? { ...s, ...(valeurs.tempC !== undefined ? { tempC: valeurs.tempC, ...renomme(s) } : {}), ...(valeurs.durationMin !== undefined ? { durationMin: valeurs.durationMin } : {}) } : s)) };
   }
   const mash = { ...(etat.mash ?? {}) };
   if (fini(valeurs.tempC)) mash.mashoutTempC = valeurs.tempC;
@@ -60,7 +65,7 @@ export function basculerMashout(etat: EtatEmpatage, colonnes: readonly Colonne[]
   if (actif) {
     mash.mashoutEnabled = true;
     // Le 76 °C et les 10 min sont les défauts que `build()` et le plan thermique posent déjà quand rien n'est écrit.
-    if (!fini(mash.mashoutTempC)) mash.mashoutTempC = 76;
+    if (!fini(mash.mashoutTempC)) mash.mashoutTempC = MASHOUT_DEFAUT_C;
     return { ...etat, mash };
   }
   const reel = colonnes.find(c => c.mashout && c.reel >= 0);
@@ -75,10 +80,57 @@ export function basculerMashout(etat: EtatEmpatage, colonnes: readonly Colonne[]
   return { steps, mash };
 }
 
-/** Un palier ajouté (les valeurs d'aujourd'hui : 67 °C, 30 min) AVANT la colonne `rang` ; jamais après le mash-out de fin de courbe. Rend aussi le rang de la nouvelle colonne. */
+/**
+ * Les repos de l'empâtage, leur température et leur durée types (Palmer, How to Brew, ch. 14 « Mash rests » ; Kunze, Technology Brewing and Malting,
+ * ch. 3) : β-glucanes vers 45 °C, protéines vers 52 °C, β-amylase vers 63 °C, saccharification vers 67 °C, α-amylase vers 72 °C. `max` borne le nom
+ * qu'on donne à une température (au-delà de 74 °C : « Palier chaud », jamais « Mash-out », que l'interrupteur porte).
+ */
+export const REPOS = [
+  { t: 45, d: 15, nom: 'Repos β-glucanes', max: 48 },
+  { t: 52, d: 15, nom: 'Repos protéique', max: 58 },
+  { t: 63, d: 30, nom: 'β-amylase', max: 65.5 },
+  { t: 67, d: 45, nom: 'Saccharification', max: 70 },
+  { t: 72, d: 20, nom: 'α-amylase', max: 74 },
+] as const;
+const NOM_CHAUD = 'Palier chaud';
+const NOMS_AUTO = new Set<string>([...REPOS.map(r => r.nom), NOM_CHAUD]);
+
+/** Le nom du repos qu'une température fait (un palier à 52 °C est un repos protéique). */
+export const nomSelonTemp = (t: number): string => REPOS.find(r => t < r.max)?.nom ?? NOM_CHAUD;
+/** Un nom posé par l'app (« Palier 2 », un nom de repos) suit sa température ; un nom écrit par le brasseur ne change jamais. */
+export const nomAuto = (nom: string | undefined): boolean => !nom?.trim() || NOMS_AUTO.has(nom.trim()) || /^palier \d+$/i.test(nom.trim());
+
+/**
+ * PALIERS-EDITION-MAL (25.11) : les valeurs d'un palier posé entre deux températures (`avant`, `apres`, inconnues aux bouts). Le repos type qui tombe
+ * entre les deux, le plus proche du milieu ; sans repos type entre eux, le milieu au degré s'il fait un vrai pas (6 °C au moins) ; sinon, la température d'avant (le brasseur la glisse).
+ * En tête : le repos type juste en dessous du premier palier ; en fin : celui juste au-dessus du dernier. Jamais un doublon plat de 67 °C posé partout.
+ */
+export function valeursAjout(avant?: number, apres?: number): { name: string; tempC: number; durationMin: number } {
+  let t: number;
+  if (fini(avant) && fini(apres)) {
+    if (apres - avant > 1) {
+      const milieu = (avant + apres) / 2;
+      const r = REPOS.filter(x => x.t > avant && x.t < apres).sort((a, b) => Math.abs(a.t - milieu) - Math.abs(b.t - milieu))[0];
+      // Sans repos type entre eux : le milieu s'il fait un vrai pas (6 °C au moins) ; sinon la température d'avant (critique 26.11 : 72, 74, 75, 76 « ça existe pas »).
+      t = r ? r.t : apres - avant >= 6 ? Math.round(milieu) : avant;
+    } else t = avant;
+  } else if (fini(apres)) t = [...REPOS].reverse().find(x => x.t < apres - 1)?.t ?? Math.max(35, apres - 5);
+  else if (fini(avant)) t = REPOS.find(x => x.t > avant + 1)?.t ?? Math.min(78, avant + 3);
+  else t = 67;
+  return { name: nomSelonTemp(t), tempC: t, durationMin: REPOS.find(x => x.t === t)?.d ?? 15 };
+}
+
+/** Un palier ajouté AVANT la colonne `rang` (jamais après le mash-out de fin de courbe), aux valeurs de ses voisins (`valeursAjout`). Rend aussi le rang
+ *  de la nouvelle colonne. Le voisin d'après, en fin de courbe, est le mash-out de `details.mash` quand il est en place. Courbe vide : 67 °C, 60 min. */
 export function insererAvant(etat: EtatEmpatage, rang: number): { etat: EtatEmpatage; rang: number } {
   const position = Math.max(0, Math.min(rang, etat.steps.length));
-  const nouveau: TempStep = { name: nomPalierAjoute(etat.steps), tempC: 67, durationMin: 30 };
+  const avant = etat.steps[position - 1]?.tempC;
+  let apres = etat.steps[position]?.tempC;
+  // Le mash-out que rien n'écrit vaut 76 °C (le défaut de `build()` et du plan thermique, celui que la courbe dessine) : sans lui, le « + » de fin
+  // ne voyait aucun voisin après 72 °C et posait 75 °C juste avant le mash-out.
+  if (position === etat.steps.length && etat.mash?.mashoutEnabled !== false) apres = fini(etat.mash?.mashoutTempC) ? etat.mash!.mashoutTempC : MASHOUT_DEFAUT_C;
+  const v = etat.steps.length === 0 ? { name: 'Saccharification', tempC: 67, durationMin: 60 } : valeursAjout(fini(avant) ? avant : undefined, fini(apres) ? apres : undefined);
+  const nouveau: TempStep = { name: v.name, tempC: v.tempC, durationMin: v.durationMin };
   const steps = [...etat.steps.slice(0, position), nouveau, ...etat.steps.slice(position)];
   return { etat: { ...etat, steps }, rang: position };
 }
@@ -184,8 +236,9 @@ export function echelleTemp(temps: ReadonlyArray<number | undefined>): { min: nu
 export const yDeTemp = (t: number, e: { min: number; max: number }) => G.y0 + (e.max - t) / (e.max - e.min) * G.h;
 export const tempDeY = (y: number, e: { min: number; max: number }) => e.max - (y - G.y0) / G.h * (e.max - e.min);
 const arrondir = (v: number, pas: number) => Math.round(v / pas) * pas;
-/** Température tirée d'une ordonnée : pas de 0,5 °C, bornée à l'échelle. */
-export const tempDepuisY = (y: number, e: { min: number; max: number }) => Math.min(e.max, Math.max(e.min, arrondir(tempDeY(y, e), 0.5)));
+/** Température tirée d'une ordonnée : pas de 1 °C (un palier se règle au degré ; le demi-degré, au clavier), bornée à l'échelle. Au demi-degré, le doigt
+ *  posait « 73,5 » à chaque glissé et le bandeau passait sur deux lignes (PALIERS-EDITION-MAL). */
+export const tempDepuisY = (y: number, e: { min: number; max: number }) => Math.min(e.max, Math.max(e.min, arrondir(tempDeY(y, e), 1)));
 
 /** Durée telle que la fin de la colonne tombe sous `x` (la poignée suit le doigt), par bissection sur la disposition réelle : pas de 5 min, de 5 à 240 min. */
 export function dureeDepuisX(colonnes: readonly Colonne[], rang: number, x: number): number {
@@ -217,14 +270,14 @@ export function traceCourbe(colonnes: readonly Colonne[], d: Disposition, e: { m
 
 /** Durée totale : maintiens + montées ; `montees` faux quand une montée reste à mesurer (le total est alors un plancher, dit sans « ≈ »). */
 /**
- * k1 point 17 : abscisse (centre) de la poignée ↔ de durée. Elle marque la fin de la colonne choisie, là où commence la montée ; l'étiquette de cette
- * montée (« ≈18′ », ≈ 28 px, centrée sur la montée) passait sous elle. Quand une montée suit, la poignée se retire à gauche (dans sa colonne, dont l'étiquette
- * de durée est déjà masquée) jusqu'à laisser l'étiquette libre, 2 px d'air ; elle ne sort pas de la colonne par la gauche.
+ * PALIERS-EDITION-MAL (25.11 ; avant : k1 point 17) : la poignée ↔ de durée (40 × 24) se pose SUR le bord droit de la colonne choisie, dans la courbe,
+ * au-dessus de l'axe : c'est ce bord qu'elle déplace. Sur l'axe, elle tombait au milieu des étiquettes « ≈21′ » et des « + » et se retirait loin du bord
+ * pour leur faire place. Le bas du rect laisse 14 px d'air au « + » des frontières (cercle de rayon 12 centré sur l'axe).
  */
-export function xPoigneeDuree(fin: number, xColonne: number, montee?: { x: number; w: number }): number {
-  if (!montee) return fin;
-  const gaucheEtiquette = montee.x + montee.w / 2 - 14 - 2;
-  return Math.max(xColonne + 20, Math.min(fin, gaucheEtiquette - 20));
+export const POIGNEE_DUREE = { w: 40, h: 24 } as const;
+export function poigneeDuree(xColonne: number, wColonne: number): { cx: number; y: number } {
+  // 14 px d'air au-dessus du « + » de la frontière suivante (critique 26.11 : dans une colonne de 10′, les deux cibles se touchaient sous le pouce).
+  return { cx: Math.min(G.x0 + G.w, Math.max(G.x0 + POIGNEE_DUREE.w / 2, xColonne + wColonne)), y: G.y0 + G.h - 12 - 14 - POIGNEE_DUREE.h };
 }
 
 export function dureeTotale(colonnes: readonly Colonne[]): { minutes?: number; montees: boolean } {

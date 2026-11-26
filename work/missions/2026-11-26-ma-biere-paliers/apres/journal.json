@@ -1,0 +1,399 @@
+[
+ {
+  "k": "p0-repos",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "60′",
+    "10′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "programmes",
+  "v": [
+   "Infusion simple",
+   "Sec et atténué",
+   "Corps rond",
+   "Paliers lager",
+   "Froment",
+   "Impériale"
+  ]
+ },
+ {
+  "k": "p1-programme-0",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "60′",
+    "10′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p2-touche",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈21′"
+   ],
+   "focus": "rect «Palier 1 · Saccharification, 67 °C, 60 min»"
+  }
+ },
+ {
+  "k": "p3-temp-glisse",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 80 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈10′"
+   ],
+   "focus": "rect «Palier 1 · α-amylase, 72 °C, 60 min»"
+  }
+ },
+ {
+  "k": "p4-duree-glisse",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 90 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈10′"
+   ],
+   "focus": "rect «Palier 1 · α-amylase, 72 °C, 70 min»"
+  }
+ },
+ {
+  "k": "p5-ajout-fin",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 110 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "10′",
+    "≈0′",
+    "≈10′"
+   ],
+   "focus": "g «Ajouter un palier»"
+  }
+ },
+ {
+  "k": "p6-ajout-frontiere",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 130 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min",
+    "Palier 3 · α-amylase, 72 °C, 20 min",
+    "Palier 4 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "10′",
+    "≈0′",
+    "≈0′",
+    "≈10′"
+   ],
+   "focus": "g «Ajouter un palier entre α-amylase et α-amylase»"
+  }
+ },
+ {
+  "k": "p7-champ-temp",
+  "v": {
+   "focus": "TEXTAREA[inputmode=decimal] «Température du palier 2 — α-amylase, en degrés»"
+  }
+ },
+ {
+  "k": "p7b-temp-tapee",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≥ 148 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · β-amylase, 64 °C, 20 min",
+    "Palier 3 · α-amylase, 72 °C, 20 min",
+    "Palier 4 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "10′",
+    "?′",
+    "≈19′",
+    "≈10′"
+   ]
+  }
+ },
+ {
+  "k": "p8-retire",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 110 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "10′",
+    "≈0′",
+    "≈10′"
+   ]
+  }
+ },
+ {
+  "k": "p9-mashout-off",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 90 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "≈0′"
+   ]
+  }
+ },
+ {
+  "k": "p10-mashout-on",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 110 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "10′",
+    "≈0′",
+    "≈10′"
+   ]
+  }
+ },
+ {
+  "k": "p11-mashout-touche",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 110 min",
+   "cols": [
+    "Palier 1 · α-amylase, 72 °C, 70 min",
+    "Palier 2 · α-amylase, 72 °C, 20 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "70′",
+    "20′",
+    "≈0′",
+    "≈10′"
+   ]
+  }
+ },
+ {
+  "k": "p12-programme-1",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "60′",
+    "10′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "fab-malts",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ },
+ {
+  "k": "malt-puce",
+  "v": {
+   "puce": "Malts/sucres",
+   "focus": "BUTTON «Malts/sucres»"
+  }
+ },
+ {
+  "k": "fab-houblons",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ },
+ {
+  "k": "fab-levure",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "H3:Conduite · température × jours",
+    "BUTTON:Conduite · température × jours"
+   ]
+  }
+ },
+ {
+  "k": "fab-eau",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "P:Ébullition de 60 min : 2,9 L é"
+   ]
+  }
+ },
+ {
+  "k": "fab-identite",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "BUTTON:MatérielSystème 30L · à adopte",
+    "SPAN:Système 30L · à adopter"
+   ]
+  }
+ },
+ {
+  "k": "fab-recap",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 737,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Si une patente de commerce au ",
+    "P:Étalonnage des balances et man",
+    "LABEL:Clôture Comptable & Déclaratio",
+    "SPAN:Clôture Comptable & Déclaratio",
+    "SPAN:Eau42,5 LSO₄14175–300",
+    "SPAN:42,5 L",
+    "SPAN:SO₄14175–300",
+    "SPAN:Sulfate 14 ppm, sous la plage ",
+    "SPAN:175–300",
+    "SPAN:Cl⁻ : 40–80 ppmSO₄²⁻ : 175–300"
+   ]
+  }
+ },
+ {
+  "k": "fab-paliers",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ }
+]

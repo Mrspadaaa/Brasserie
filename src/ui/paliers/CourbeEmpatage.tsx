@@ -7,7 +7,7 @@ import type { MashProgram } from '../../domain/brewPrograms';
 import { NumberInput } from '../NumberInput';
 import { declarerAjoutPalier } from './ajoutPalier';
 import {
-  BANDE_CORPS, G, basculerMashout, disposer, dureeDepuisX, dureeTotale, xPoigneeDuree, echelleTemp, insererAvant, rangFinDeCourbe, rangMashout, renommerColonne,
+  BANDE_CORPS, G, POIGNEE_DUREE, basculerMashout, disposer, dureeDepuisX, dureeTotale, poigneeDuree, echelleTemp, insererAvant, rangFinDeCourbe, rangMashout, renommerColonne,
   reglerColonne, tempDepuisY, traceCourbe, yDeTemp, type Colonne, type EtatEmpatage,
 } from './modele';
 
@@ -62,6 +62,18 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
     document.addEventListener('pointerdown', dehors);
     return () => document.removeEventListener('pointerdown', dehors);
   }, [choisi, invalide]);
+  // PALIERS-EDITION-MAL (25.11) : le SVG laisse défiler la page à la verticale (`pan-y`) et `touch-action` ne vaut pas sur un `<g>` : un glissé vertical
+  // de la poignée ↕ faisait défiler la page et le navigateur annulait le geste (pointercancel). Un toucher qui commence sur une poignée ne défile pas.
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const bloquer = (e: TouchEvent) => { if ((e.target as Element | null)?.closest?.('.pal-poignee')) e.preventDefault(); };
+    svg.addEventListener('touchstart', bloquer, { passive: false });
+    return () => svg.removeEventListener('touchstart', bloquer);
+  }, []);
+  // « Sur mesure » se retrouve après un essai de programme : ses derniers paliers à lui, gardés le temps de l'écran.
+  const surMesure = useRef<EtatEmpatage | null>(null);
+  useEffect(() => { if (programmeActif === null && etat.steps.length) surMesure.current = etat; });
   useEffect(() => {
     if (!menu) return;
     const dehors = (e: PointerEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenu(false); };
@@ -159,8 +171,13 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
         onClick={() => setMenu(m => !m)}>
         {programmes.find(p => p.id === programmeActif)?.name ?? 'Sur mesure'}<ChevronDown size={16} aria-hidden="true" />
       </button>
-      <span className="pal-tot" data-booster="duree-totale">{total.minutes === undefined ? '— min' : <>{total.montees ? '≈ ' : ''}<b>{total.minutes}</b> min</>}</span>
+      {/* Une montée à mesurer (refroidissement, cadence inconnue) n'est pas comptée : le total est un plancher, dit « ≥ ». */}
+      <span className="pal-tot" data-booster="duree-totale" title={total.minutes !== undefined && !total.montees ? 'Une montée reste à mesurer : au moins ce temps' : undefined}>
+        {total.minutes === undefined ? '— min' : <>{total.montees ? '≈ ' : '≥ '}<b>{total.minutes}</b> min</>}</span>
       {menu && <div className="pal-menu" role="listbox" aria-label="Programme d’empâtage">
+        {(programmeActif === null || surMesure.current) && <button type="button" role="option" aria-selected={programmeActif === null} className="pal-opt" data-option="sur-mesure"
+          onClick={() => { setMenu(false); setChoisi(null); if (programmeActif !== null && surMesure.current) ecrire(surMesure.current); }}>
+          <b>Sur mesure</b><span>{programmeActif === null ? 'tes paliers' : `reprendre tes ${surMesure.current!.steps.length} paliers`}</span></button>}
         {programmes.map(p => <button key={p.id} type="button" role="option" aria-selected={p.id === programmeActif} className="pal-opt"
           onClick={() => { setAvisMasque(true); onProgramme(p); setMenu(false); setChoisi(null); }}>
           <b>{p.name}</b><span>{p.purpose}</span></button>)}
@@ -212,16 +229,20 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
         onClick={() => ajouter(m.rang)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(m.rang); } }}>
         <circle cx={n2(m.x + m.w / 2)} cy={G.y0 + G.h} r="12" /><path d={`M${n2(m.x + m.w / 2)} ${G.y0 + G.h - 6}v12M${n2(m.x + m.w / 2 - 6)} ${G.y0 + G.h}h12`} />
       </g>)}
+      {/* PALIERS-EDITION-MAL : la tête de courbe est une frontière aussi (un repos protéique se pose AVANT la saccharification). */}
+      {colonnes.length > 0 && <g className="pal-plus" data-hit="" role="button" tabIndex={0} data-frontiere="0" aria-label={`Ajouter un palier avant ${colonnes[0].nom}`}
+        onClick={() => ajouter(0)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(0); } }}>
+        <circle cx={G.x0} cy={G.y0 + G.h} r="12" /><path d={`M${G.x0} ${G.y0 + G.h - 6}v12M${G.x0 - 6} ${G.y0 + G.h}h12`} />
+      </g>}
       <g className="pal-plus" data-hit="" role="button" tabIndex={0} data-booster="ajout-frontiere" data-frontiere="fin" aria-label="Ajouter un palier"
         onClick={() => ajouter(finCourbe)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(finCourbe); } }}>
         <circle cx="352" cy={G.y0 + G.h} r="12" /><path d={`M352 ${G.y0 + G.h - 6}v12M346 ${G.y0 + G.h}h12`} />
       </g>
 
       {sel && (() => {
-        // La poignée ↔ marque la fin de la colonne ; à la fin de la courbe, elle se retire de 16 px pour ne pas toucher le « + » (centre 352, rayon 12).
-        const v = vues[sel.rang], { x, w } = dispo.colonnes[sel.rang], cx = x + w / 2, finBrute = Math.min(x + w, 314);
-        // k1 point 17 : la poignée ne couvre pas l'étiquette « ≈18′ » de la montée qui suit.
-        const fin = xPoigneeDuree(finBrute, x, dispo.montees.find(m => m.rang === sel.rang + 1));
+        // La poignée ↔ est posée sur le bord droit de la colonne, dans la courbe (PALIERS-EDITION-MAL) : loin des étiquettes de l'axe et des « + ».
+        const v = vues[sel.rang], { x, w } = dispo.colonnes[sel.rang], cx = x + w / 2;
+        const { cx: fin, y: yD } = poigneeDuree(x, w), yM = yD + POIGNEE_DUREE.h / 2;
         return <>
           {fini(v.tempC) && <>
             <path d={`M${G.x0} ${y(v.tempC)}H${n2(cx)}`} stroke="var(--pal-ambre)" strokeWidth="1.5" strokeDasharray="4 3" />
@@ -236,9 +257,9 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
             <g data-hit="" className="pal-poignee" data-booster="poignee-duree" role="slider" tabIndex={0} aria-orientation="horizontal"
               aria-label={`Durée du palier ${sel.rang + 1} — ${sel.nom}`} aria-valuemin={0} aria-valuemax={240} aria-valuenow={v.durationMin} aria-valuetext={`${nb(v.durationMin)} min`}
               onPointerDown={demarrer(sel.rang, 'duree')} onPointerMove={deplacer} onPointerUp={finir(false)} onPointerCancel={finir(true)} onKeyDown={clavier(sel, 'duree')}>
-              <rect x={n2(fin - 20)} y="260" width="40" height="24" rx="12" fill="var(--pal-ambre)" stroke="var(--pal-blanc)" strokeWidth="2" />
-              <path d={`M${n2(fin - 12)} 272h24M${n2(fin - 7)} 267l-5 5 5 5M${n2(fin + 7)} 267l5 5-5 5`} fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {apercu?.champ === 'duree' && <text className="pal-gv pal-bulle" x={n2(fin)} y="254" textAnchor="middle">{nb(v.durationMin)}′</text>}
+              <rect x={n2(fin - POIGNEE_DUREE.w / 2)} y={yD} width={POIGNEE_DUREE.w} height={POIGNEE_DUREE.h} rx="12" fill="var(--pal-ambre)" stroke="var(--pal-blanc)" strokeWidth="2" />
+              <path d={`M${n2(fin - 12)} ${yM}h24M${n2(fin - 7)} ${yM - 5}l-5 5 5 5M${n2(fin + 7)} ${yM - 5}l5 5-5 5`} fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {apercu?.champ === 'duree' && <text className="pal-gv pal-bulle" x={n2(fin)} y={yD - 6} textAnchor="middle">{nb(v.durationMin)}′</text>}
             </g>}
         </>;
       })()}

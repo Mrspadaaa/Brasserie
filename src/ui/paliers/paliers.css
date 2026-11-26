@@ -38,8 +38,13 @@
 .pal-g .pal-gv { font-size: 13px; font-weight: 600; fill: var(--pal-t0); }
 .pal-g .pal-gc { font-family: 'Source Sans 3', system-ui, sans-serif; font-weight: 600; fill: var(--pal-attt); }
 .pal-g .pal-bulle { paint-order: stroke; stroke: var(--pal-panel); stroke-width: 4px; }
+/* Les températures des paliers se lisent par-dessus le pointillé de repère du palier touché (critique 26.11 : « 72 » lu sur la ligne de 75). */
+.pal-g .pal-gv:not(.pal-bulle) { paint-order: stroke; stroke: var(--pal-blanc); stroke-width: 4px; stroke-linejoin: round; }
 .pal-pal { fill: var(--pal-blanc); stroke: var(--pal-bord); cursor: pointer; }
-.pal-pal:focus-visible, .pal-plus:focus-visible, .pal-poignee:focus-visible { outline: 2px solid rgb(var(--attention)); outline-offset: 2px; }
+.pal-pal:focus-visible { outline: 2px solid rgb(var(--attention)); outline-offset: 2px; }
+/* Sur un « + » rond ou une poignée, le contour d'un <g> dessine un carré (critique 26.11) : le focus colore le trait de la forme, au clavier seulement. */
+.pal-plus:focus, .pal-poignee:focus { outline: none; }
+.pal-plus:focus-visible circle, .pal-poignee:focus-visible rect { stroke: rgb(var(--attention)); stroke-width: 3; }
 .pal-pal.pal-actif { stroke: none; }
 .pal-plus { cursor: pointer; }
 .pal-plus circle { fill: var(--pal-blanc); stroke: var(--pal-bordm); }

@@ -1,20 +1,19 @@
-// k1 (critique 19.11), point 17 : la poignée ↔ de durée couvrait l'étiquette de la montée (« ≈18′ ») qui suit le palier choisi.
+// La poignée ↔ de durée : k1 point 17 (19.11, elle couvrait l'étiquette « ≈18′ » de la montée) puis PALIERS-EDITION-MAL (25.11, posée sur l'axe,
+// loin du bord qu'elle déplace). Elle est maintenant sur le bord droit de la colonne, au-dessus de l'axe et des « + ».
 import { describe, expect, it } from 'vitest';
-import { xPoigneeDuree } from '../../src/ui/paliers/modele';
+import { G, POIGNEE_DUREE, poigneeDuree } from '../../src/ui/paliers/modele';
 
-describe('k1 point 17 : xPoigneeDuree', () => {
-  const LARGEUR_POIGNEE = 40, DEMI_ETIQUETTE = 14; // le rect de la poignée fait 40 px ; « ≈18′ » ≈ 28 px, centré dans la montée
-  it('sans montée après le palier (fin de courbe) : la poignée reste au bout de la colonne', () => {
-    expect(xPoigneeDuree(300, 120)).toBe(300);
+describe('poigneeDuree', () => {
+  it('se pose sur le bord droit de la colonne', () => {
+    expect(poigneeDuree(120, 80).cx).toBe(200);
   });
-  it('avec une montée après : le bord droit de la poignée reste à gauche de l’étiquette de la montée', () => {
-    const montee = { x: 300, w: 40 };
-    const cx = xPoigneeDuree(300, 120, montee);
-    const gaucheEtiquette = montee.x + montee.w / 2 - DEMI_ETIQUETTE;
-    expect(cx + LARGEUR_POIGNEE / 2).toBeLessThanOrEqual(gaucheEtiquette);
+  it('reste au-dessus de l’axe et des « + » des frontières (cercle de rayon 12 centré sur l’axe)', () => {
+    const { y } = poigneeDuree(120, 80);
+    expect(y + POIGNEE_DUREE.h).toBeLessThanOrEqual(G.y0 + G.h - 12 - 12);
+    expect(y).toBeGreaterThan(G.y0);
   });
-  it('la poignée ne sort pas de sa colonne par la gauche', () => {
-    const cx = xPoigneeDuree(150, 140, { x: 150, w: 10 });
-    expect(cx).toBeGreaterThanOrEqual(140 + LARGEUR_POIGNEE / 2);
+  it('ne sort pas de la courbe à gauche ni à droite', () => {
+    expect(poigneeDuree(G.x0, 0).cx).toBeGreaterThanOrEqual(G.x0 + POIGNEE_DUREE.w / 2);
+    expect(poigneeDuree(G.x0 + 280, 60).cx).toBeLessThanOrEqual(G.x0 + G.w);
   });
 });

@@ -4,6 +4,7 @@
 // Le besoin vient du moteur (`besoinDeLaLevure` : taux × volume × °P) ; rien n'est inventé : sans sachet connu, la piste reste en pointillé.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Box, Minus, Plus } from 'lucide-react';
+import { clavierPermis } from '../clavierPermis';
 import { grammesAuChoix, type BesoinLevure, type DoseFabricant } from './dose';
 
 const dec = (n: number, d = 0) => n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -91,7 +92,8 @@ export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcri
   const [champ, setChamp] = useState<string>();
   const champRef = useRef<HTMLInputElement>(null);
   const ouvert = libreGeste && champ !== undefined;
-  useEffect(() => { if (ouvert) champRef.current?.focus(); }, [ouvert]);
+  // PUCE-OUVRE-CLAVIER (25.11) : un − / + touché du doigt ouvre le champ prérempli sans ouvrir le clavier ; le chiffre se tape d'un toucher volontaire.
+  useEffect(() => { if (ouvert && clavierPermis()) champRef.current?.focus(); }, [ouvert]);
   const lu = (t: string) => { const v = Number.parseFloat(t.replace(',', '.').trim()); return Number.isFinite(v) && v > 0 ? v : undefined; };
   const pasLibre = (sens: 1 | -1) => {
     if (champ === undefined) { setChamp(qty !== undefined ? souple(qty) : ''); return; }

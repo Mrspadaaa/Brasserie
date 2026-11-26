@@ -644,3 +644,18 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 ## JOUABLE-HORS-THEME (26.11, jouables v7 et passe 4)
 - Ses mots : « Le problème de ces 2 maquettes c'est quelle sont pas dans le thème de l'application aussi. Contrairement au mini maquettes non jouable. » ; « il manque les vrai images. Et certaines actions type relecture, escaler à l'ia ».
 - Contrôle : un jouable reprend le thème de l'app (en-tête L'Affinée, onglets du bas, jetons de mini/COMMUN.md) ; un article ou lien montre son image réelle quand on l'a (icône au trait sinon) ; chaque lien a Relire et Escalader. Échoue sur m4b-v7.html et p4.html du 26.11 matin.
+
+## PALIERS-EDITION-MAL (25.11 nuit, Ma bière › Paliers 5/7)
+- Ses mots : « L'édition de palier de fait extrêmement mal, en parallèle regarder ça » (plaintes/2026-11-25-paliers-sur-mesure.jpg, -paliers-infusion.jpg).
+- Défauts reproduits le 26.11 à 390 tactile (`work/missions/2026-11-26-ma-biere-paliers/avant/`) : (1) la poignée ↕ ne suit pas le doigt : un glissé vertical fait défiler la page (le SVG est `pan-y`, `touch-action` ne vaut pas sur un `<g>`) ; (2) « + » : le palier ajouté vaut toujours 67 °C 30 min, doublon plat du voisin (montée ≈0′), nommé « Palier 2 », « Palier 3 » posé avant « Palier 2 » ; (3) aucun « + » avant le premier palier (repos protéique impossible à poser en tête) ; (4) un palier plus froid que le précédent rend une montée « ?′ » et le total s'écrit comme exact (« 173 min ») ; (5) choisir un programme efface ses paliers sur mesure, sans retour ; (6) la poignée ↔ posée sur l'axe, loin du bord de la colonne, au milieu des étiquettes « ≈21′ » et du « + ».
+- Contrôle : `node work/missions/2026-11-26-ma-biere-paliers/controle-ma-biere.mjs` (C1 à C6) : glissé ↕ au toucher qui change la température ; poignées sans chevauchement ; palier ajouté en fin ≠ température du voisin et nommé par son repos ; « + » en tête qui pose un palier plus froid ; total à montée inconnue écrit « ≥ » ; « Sur mesure » rend ses paliers après un programme. Échoue sur 136946d5b (C1, C3 à C6 KO).
+- Garder son choix : maquette r2 du 14.11 (« Ça j'aime beaucoup ») : courbe à poignées ↕ ↔, « + » aux frontières, bandeau du palier touché, mash-out à interrupteur.
+
+## PUCE-OUVRE-CLAVIER (25.11 nuit, Ma bière › Malts/sucres)
+- Ses mots : « SI je choisis ici le mal, ça m'ouvre le clavier » (plaintes/2026-11-25-malt-avant.jpg, -malt-clavier.jpg).
+- Défaut : toucher une puce de sac (« Pilsner Malz ») ajoute le malt ET met le curseur dans sa masse : le clavier numérique couvre la moitié de l'écran.
+- Contrôle : `controle-ma-biere.mjs` C8 : un sac « ZZ TEST — » du stock (cache de la page seule) en puce ; un toucher, sans champ actif, ajoute la ligne et aucun champ n'a le focus ; au clavier (Entrée dans le champ) ou à la souris, le focus va toujours à la masse (D230, `src/ui/clavierPermis.ts`). Échoue sur 136946d5b (« Quantité en kg » focalisée). Même règle posée sur le − / + de la dose de levure (CarteDose) ; Houblons : le champ ne prend le curseur que sur le geste « ajouter un houblon » (voulu).
+
+## BOUTON-FLOTTANT-COUVRE (25.11 nuit, Ma bière › Eau ; même titre que la session pilote)
+- Ses mots : « ??? » sur une capture où le « + » flottant cache « 2. Sels 3,5 g », « Doser » et « Repartir d'une recette vierge » (plaintes/2026-11-25-eau-bouton-plus.jpg).
+- Contrôle : `controle-ma-biere.mjs` C7 : sur chaque étape de Ma bière à 390 × 844, défilée jusqu'au bout, le « + » ne recouvre rien (6 px d'air) ; sur Eau › Sels il est à la même place que sur les autres étapes (au pied, pas docké dans la rangée « 1. Eau | 2. Sels »). Échoue sur 136946d5b (Sels : onglets et « Proposer les doses » ; Levure en fin de page).

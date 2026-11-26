@@ -1,0 +1,156 @@
+[
+ {
+  "k": "malt-puce",
+  "v": "absente"
+ },
+ {
+  "k": "houblons-boutons",
+  "v": [
+   "Tous",
+   "Voir",
+   "Gérer",
+   "Bord",
+   "Finances",
+   "Calendrier",
+   "Brassins",
+   "Stocks",
+   "Clients",
+   "Abandonner",
+   "Identité",
+   "Houblons",
+   "Levure",
+   "Paliers",
+   "Eau"
+  ]
+ },
+ {
+  "k": "houblon-puce",
+  "v": "absente"
+ },
+ {
+  "k": "levure-clavier-a-l-ouverture",
+  "v": null
+ },
+ {
+  "k": "fab-eau",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": [
+    "P:Ébullition de 60 min : 2,9 L"
+   ]
+  }
+ },
+ {
+  "k": "fab-sels",
+  "v": {
+   "fab": [
+    336,
+    74,
+    40,
+    40
+   ],
+   "sous": []
+  }
+ },
+ {
+  "k": "fab-sels-defile",
+  "v": {
+   "fab": [
+    336,
+    66,
+    40,
+    40
+   ],
+   "sous": []
+  }
+ },
+ {
+  "k": "fab-Identit",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": [
+    "BUTTON:MatérielSystème 30L · à adop",
+    "SPAN:Système 30L · à adopter"
+   ]
+  }
+ },
+ {
+  "k": "fab-Malts/sucres",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": []
+  }
+ },
+ {
+  "k": "fab-Houblons",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": []
+  }
+ },
+ {
+  "k": "fab-Levure",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": [
+    "BUTTON:Conduite · température × jou"
+   ]
+  }
+ },
+ {
+  "k": "fab-Paliers",
+  "v": {
+   "fab": [
+    314,
+    788,
+    64,
+    40
+   ],
+   "sous": []
+  }
+ },
+ {
+  "k": "fab-Récap",
+  "v": {
+   "fab": [
+    314,
+    737,
+    64,
+    40
+   ],
+   "sous": [
+    "SPAN:Eau42,5 LSO₄14175–300",
+    "SPAN:42,5 L",
+    "SPAN:SO₄14175–300",
+    "SPAN:Sulfate 14 ppm, sous la plag",
+    "SPAN:175–300",
+    "SPAN:Cl⁻ : 40–80 ppmSO₄²⁻ : 175–3"
+   ]
+  }
+ }
+]

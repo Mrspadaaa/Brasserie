@@ -1,0 +1,399 @@
+[
+ {
+  "k": "p0-repos",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "60′",
+    "10′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "programmes",
+  "v": [
+   "Infusion simple",
+   "Sec et atténué",
+   "Corps rond",
+   "Paliers lager",
+   "Froment",
+   "Impériale"
+  ]
+ },
+ {
+  "k": "p1-programme-0",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "60′",
+    "10′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p2-touche",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈21′"
+   ],
+   "focus": "rect «Palier 1 · Saccharification, 67 °C, 60 min»"
+  }
+ },
+ {
+  "k": "p3-temp-glisse",
+  "v": {
+   "prog": "Infusion simple",
+   "tot": "≈ 91 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 60 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈21′"
+   ],
+   "focus": "rect «Palier 1 · Saccharification, 67 °C, 60 min»"
+  }
+ },
+ {
+  "k": "p4-duree-glisse",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 106 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "10′",
+    "≈21′"
+   ],
+   "focus": "rect «Palier 1 · Saccharification, 67 °C, 75 min»"
+  }
+ },
+ {
+  "k": "p5-ajout-fin",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 136 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 2, 67 °C, 30 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "10′",
+    "≈0′",
+    "≈21′"
+   ],
+   "focus": "g «Ajouter un palier»"
+  }
+ },
+ {
+  "k": "p6-ajout-frontiere",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 166 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 3, 67 °C, 30 min",
+    "Palier 3 · Palier 2, 67 °C, 30 min",
+    "Palier 4 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "10′",
+    "≈0′",
+    "≈0′",
+    "≈21′"
+   ],
+   "focus": "g «Ajouter un palier entre Saccharification et Palier 3»"
+  }
+ },
+ {
+  "k": "p7-champ-temp",
+  "v": {
+   "focus": "TEXTAREA[inputmode=decimal] «Température du palier 2 — Palier 3, en degrés»"
+  }
+ },
+ {
+  "k": "p7b-temp-tapee",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "173 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 3, 64 °C, 30 min",
+    "Palier 3 · Palier 2, 67 °C, 30 min",
+    "Palier 4 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "10′",
+    "?′",
+    "≈7′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p8-retire",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 136 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 2, 67 °C, 30 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "10′",
+    "≈0′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p9-mashout-off",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 105 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 2, 67 °C, 30 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "≈0′"
+   ]
+  }
+ },
+ {
+  "k": "p10-mashout-on",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 136 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 2, 67 °C, 30 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "10′",
+    "≈0′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p11-mashout-touche",
+  "v": {
+   "prog": "Sur mesure",
+   "tot": "≈ 136 min",
+   "cols": [
+    "Palier 1 · Saccharification, 67 °C, 75 min",
+    "Palier 2 · Palier 2, 67 °C, 30 min",
+    "Palier 3 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "30′",
+    "≈0′",
+    "≈21′"
+   ]
+  }
+ },
+ {
+  "k": "p12-programme-1",
+  "v": {
+   "prog": "Sec et atténué",
+   "tot": "≈ 115 min",
+   "cols": [
+    "Palier 1 · Saccharification, 63 °C, 75 min",
+    "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"
+   ],
+   "etiquettes": [
+    "75′",
+    "10′",
+    "≈30′"
+   ]
+  }
+ },
+ {
+  "k": "fab-malts",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ },
+ {
+  "k": "malt-puce",
+  "v": {
+   "puce": "Malts/sucres",
+   "focus": "BUTTON «Malts/sucres»"
+  }
+ },
+ {
+  "k": "fab-houblons",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ },
+ {
+  "k": "fab-levure",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "H3:Conduite · température × jours",
+    "BUTTON:Conduite · température × jours"
+   ]
+  }
+ },
+ {
+  "k": "fab-eau",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "P:Ébullition de 60 min : 2,9 L é"
+   ]
+  }
+ },
+ {
+  "k": "fab-identite",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients",
+    "BUTTON:MatérielSystème 30L · à adopte",
+    "SPAN:Système 30L · à adopter"
+   ]
+  }
+ },
+ {
+  "k": "fab-recap",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 737,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Si une patente de commerce au ",
+    "P:Étalonnage des balances et man",
+    "LABEL:Clôture Comptable & Déclaratio",
+    "SPAN:Clôture Comptable & Déclaratio",
+    "SPAN:Eau42,5 LSO₄14175–300",
+    "SPAN:42,5 L",
+    "SPAN:SO₄14175–300",
+    "SPAN:Sulfate 14 ppm, sous la plage ",
+    "SPAN:175–300",
+    "SPAN:Cl⁻ : 40–80 ppmSO₄²⁻ : 175–300"
+   ]
+  }
+ },
+ {
+  "k": "fab-paliers",
+  "v": {
+   "fab": {
+    "x": 314,
+    "y": 788,
+    "w": 64,
+    "h": 40,
+    "label": "Actions rapides"
+   },
+   "sous": [
+    "P:Bilan et compte d’exploitation",
+    "BUTTON:Stocks",
+    "SPAN:Stocks",
+    "BUTTON:Clients",
+    "SPAN:Clients"
+   ]
+  }
+ }
+]

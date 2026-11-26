@@ -311,7 +311,7 @@ export function recipeAdvice(recipe: Pick<Recipe, 'mash' | 'fermentation'>): Con
     const avant = steps[i - 1];
     if (avant && finite(avant.tempC) && s.tempC < avant.tempC - 0.5)
       out.push({ field: `wz-mash-temp-${i}`, step: 'paliers',
-        message: `Palier ${i + 1} à ${fr(s.tempC, 1)} °C après ${fr(avant.tempC, 1)} °C : une maische ne refroidit pas d’un palier à l’autre (sauf à ajouter de l’eau froide). Range les paliers du plus froid au plus chaud.` });
+        message: `Palier ${i + 1} à ${fr(s.tempC, Number.isInteger(s.tempC) ? 0 : 1)} °C après ${fr(avant.tempC, Number.isInteger(avant.tempC) ? 0 : 1)} °C : une maische ne refroidit pas d’un palier à l’autre (sauf à ajouter de l’eau froide). Range les paliers du plus froid au plus chaud.` });
     if (/mash.?out/i.test(s.name ?? '') && s.tempC < 70)
       out.push({ field: `wz-mash-temp-${i}`, step: 'paliers',
         message: `« ${s.name} » à ${fr(s.tempC, 1)} °C : un mash-out arrête les enzymes, vers 76–78 °C. À cette température, c’est un palier ordinaire.` });

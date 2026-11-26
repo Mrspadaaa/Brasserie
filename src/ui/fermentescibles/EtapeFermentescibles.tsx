@@ -10,6 +10,7 @@ import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
 import { Reperes } from './Reperes';
+import { clavierPermis } from '../clavierPermis';
 import {
   estEpice, FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, messageMoment, messageTeinte, MOMENT_SUIVANT, momentParDefaut, momentsPermis, pmax, teinte, type Candidat,
 } from './modele';
@@ -84,7 +85,8 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   // L'ajout mène à la masse de la ligne, sur la ligne (le focus est donné quand la ligne est montée).
   useLayoutEffect(() => {
     const i = aFocaliser.current;
-    if (i !== null && n > i) { aFocaliser.current = null; focus(`[data-kl="${i}"]`); }
+    // PUCE-OUVRE-CLAVIER (25.11) : au doigt, sans clavier déjà ouvert, la ligne ajoutée se montre sans prendre le curseur.
+    if (i !== null && n > i) { aFocaliser.current = null; if (clavierPermis()) focus(`[data-kl="${i}"]`); else document.querySelector(`[data-kl="${i}"]`)?.scrollIntoView?.({ block: 'nearest' }); }
   }, [n, fermentables]);
 
   const patch = useCallback((i: number, p: Partial<Fermentable>) =>
@@ -232,7 +234,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     if (c.ligne >= 0) {
       setSel(c.ligne);
       if (kg != null) setKg(c.ligne, kg);
-      if (kg == null) { retour.current = c.ligne; focus(`[data-kl="${c.ligne}"]`); } else versAjout();
+      if (kg == null) { retour.current = c.ligne; if (clavierPermis()) focus(`[data-kl="${c.ligne}"]`); } else versAjout();
       return;
     }
     ajouterLigne(c.nom, c.article, kg, c.famille);

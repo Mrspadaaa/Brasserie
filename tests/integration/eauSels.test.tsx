@@ -74,7 +74,8 @@ describe('EAU-3 : le « + » docké à côté de « 1. Eau | 2. Sels » reste da
 
   it('la rangée laisse au moins 6 px entre le segment et le bouton, avec ou sans pastille d’activité', () => {
     const css = readFileSync(resolve(__dirname, '../../src/ui/water/workshop.css'), 'utf8');
-    const pad = (attr: string) => Number(css.match(new RegExp(`body\\[${attr}\\] \\[data-water-step="sels"\\] \\.water-mobile-nav \\{\\s*padding-right: (\\d+)px`))?.[1]);
+    // BOUTON-FLOTTANT-COUVRE (25.11) : la réserve ne vaut que pour le bouton docké (`data-has-water-sels` : page sans pied, l'atelier de l'eau).
+    const pad = (attr: string) => Number(css.match(new RegExp(`body\\[${attr}\\]\\[data-has-water-sels\\] \\[data-water-step="sels"\\] \\.water-mobile-nav \\{\\s*padding-right: (\\d+)px`))?.[1]);
     // Rangée de 8 px à W − 8 : segment fini à W − 8 − padding. Bouton de 40 px à 14 px du bord (58 px avec la pastille).
     expect(pad('data-has-fab') - (14 + 40 - 8)).toBeGreaterThanOrEqual(6);
     expect(pad('data-has-activity-pill') - (58 + 40 - 8)).toBeGreaterThanOrEqual(6);

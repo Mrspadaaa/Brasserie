@@ -13,20 +13,22 @@ import './page-shell.css';
  * brewer-chat, brewer-navigation, yeast-choice) lisent `body[data-has-…]`. Le sens est le même qu'avant : « existe-t-il un
  * tel élément dans la page ? ». L'attribut suit l'élément avec une micro-tâche de retard, avant la peinture.
  */
-const BODY_FLAGS: ReadonlyArray<readonly [string, string]> = [
+const BODY_FLAGS: ReadonlyArray<readonly [string, string, ((e: Element) => boolean)?]> = [
   ['data-has-modal', '[role="dialog"][aria-modal="true"]'],
   ['data-has-drawer-open', "[data-vaul-drawer][data-state='open']"],
   ['data-has-fiche-page', '[data-fiche-page]'],
   ['data-has-fab', '.floating-actions'],
   ['data-has-fab-floating', '.floating-actions[data-floating-actions-docked="false"]'],
-  ['data-has-water-sels', '[data-water-step="sels"]'],
+  // BOUTON-FLOTTANT-COUVRE (25.11) : l'atelier de l'eau docke le « + » dans sa rangée d'onglets ; une page à pied (Ma bière › Eau : Retour, Suivant) le garde au pied,
+  // à la même place qu'aux autres étapes : docké en haut, il se collait à « 2. Sels », « Doser » et « Repartir d'une recette vierge ».
+  ['data-has-water-sels', '[data-water-step="sels"]', (e) => !e.closest('[data-page-shell]')?.querySelector('[data-page-end-actions], [data-page-footer]')],
   ['data-has-activity-pill', '.brewer-activity-pill'],
 ];
 function syncBodyFlags() {
   const body = document.body;
   if (!body) return;
-  for (const [name, selector] of BODY_FLAGS) {
-    const present = body.querySelector(selector) !== null;
+  for (const [name, selector, garde] of BODY_FLAGS) {
+    const present = garde ? [...body.querySelectorAll(selector)].some(garde) : body.querySelector(selector) !== null;
     if (present !== body.hasAttribute(name)) {
       if (present) body.setAttribute(name, ''); else body.removeAttribute(name);
     }
@@ -39,7 +41,7 @@ function watchBodyFlags() {
   bodyFlagsObserver = new MutationObserver(syncBodyFlags);
   bodyFlagsObserver.observe(document.body, {
     childList: true, subtree: true, attributes: true,
-    attributeFilter: ['data-state', 'aria-modal', 'role', 'data-floating-actions-docked', 'data-water-step']
+    attributeFilter: ['data-state', 'aria-modal', 'role', 'data-floating-actions-docked', 'data-water-step', 'data-page-footer']
   });
 }
 watchBodyFlags();
