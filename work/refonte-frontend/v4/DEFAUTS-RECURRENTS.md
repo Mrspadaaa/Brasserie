@@ -600,3 +600,22 @@ problème(s)`. Sur les fils de fer du lot 1 (p10, p04) : `LOT ECHEC 8 problème(
 - Ses mots : « ??? » sur une capture où le « + » flottant cache « 2. Sels 3,5 g », « Doser » et « Repartir d'une recette vierge ».
 - Contrôle : sur chaque étape de Ma bière à 390 × 844, au repos et défilée, le bouton flottant ne recouvre aucun élément actionnable ni texte
   (intersection des rectangles = 0) ; échoue sur l'étape Eau actuelle.
+
+## PAS-DE-HARCELEMENT (26.11, jouable passe 4)
+- Ses mots : « Pas fan de l'harcellement » (la barre du pouce qui lui demande « prix suisse réel ? Noter »).
+- Contrôle : aucune question de l'app ou de l'IA collée au pouce ni répétée ; une donnée manquante est un « ? » discret à sa place, qu'il touche
+  s'il veut ; la zone du pouce ne porte qu'une vraie action ou rien.
+
+## LIENS-NON-LUS (26.11, jouables)
+- Ses mots : « Aucune comparaison ?? » (citra : deux liens produits, aucune donnée comparée).
+- Contrôle : un lien produit de ses notes est lu (prix, quantité, dispo, faits) et ses valeurs entrent dans la comparaison, marquées 🔗 ;
+  un lien pas encore lu le dit (« 🔗 en lecture »), jamais un « ? » muet.
+
+## TROP-ENFANTIN (26.11, jouable passe 4)
+- Ses mots : « Un petit peu trop enfantin et simpliste. Je comprends même plus ce que c'est » (options réduites à un emoji et « toi »).
+- Contrôle : chaque option, offre, piste et tâche garde son nom réel en 2 à 5 mots (« Fournisseur B », « Renouveler chez l'actuel ») ; un emoji
+  accompagne, ne remplace jamais ; « toi » n'est jamais un nom d'option ; une même comparaison n'est pas montrée deux fois.
+  Correctif de règle : la limite de 30 mots d'ORGANISE-TROP-TEXTUEL ne compte ni les noms ni les chiffres ; elle vise les phrases.
+- 26.11 7:23, deuxième refus : « Mais toujours trop simpliste et enfentin ». Deux refus du même élément : changer de genre de solution (L13).
+  Contrôle ajouté : pas d'emoji de plus de 20 px, pas de bulles rondes géantes, pas de hachures décoratives, pas de pastilles « comparé » ;
+  le visuel passe par la typographie (taille, graisse), l'alignement en colonnes, de petites icônes monochromes et la couleur réservée à l'état.

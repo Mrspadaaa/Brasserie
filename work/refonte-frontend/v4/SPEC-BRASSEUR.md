@@ -2969,3 +2969,13 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - 25.11 nuit (Ma bière › Paliers, 2 captures plaintes/2026-11-25-paliers-sur-mesure.jpg et 2026-11-25-paliers-infusion.jpg : « Sur mesure » 121 min avec un palier ajouté en pointillé « ? ' » et le bloc Saccharification 68 °C 60 min, puis « Infusion simple » ≈ 91 min) : « L'édition de palier de fait extrêmement mal, en parallèle regarder ça »
 - 25.11 nuit (Ma bière › Malts/sucres, captures plaintes/2026-11-25-malt-avant.jpg et 2026-11-25-malt-clavier.jpg : toucher la puce « Pilsner Malz » l'ajoute et ouvre le clavier numérique) : « SI je choisis ici le mal, ça m'ouvre le clavier »
 - 25.11 nuit (Ma bière › Eau 6/7, capture plaintes/2026-11-25-eau-bouton-plus.jpg : le bouton flottant « + » entouré, posé sur l'onglet « 2. Sels 3,5 g », le bouton « Doser » et « Repartir d'une recette vierge ») : « ??? »
+- 26.11 7:09 (jouable v7, « ZZ TEST — Houblons citra » : héros « Vérifier dispo suisse », Motler Hops « Difficile » / Shop suisse « conseillé », pistes « Site français ? » « Site suisse ? », capture plaintes/2026-11-26-v7-citra-sans-comparaison.jpg) : « Aucune comparaison ?? »
+- 26.11 7:11 (jouable passe 4, « Houblons citra », la barre du pouce « 💰 prix suisse réel ? Noter » entourée, capture plaintes/2026-11-26-p4-harcelement.jpg) : « Pas fan de l'harcellement »
+- 26.11 7:14–7:16 (jouable passe 4, 3 captures : « 600 bouteilles » avec options « 📦 toi / 🏭 toi / ♻️ toi », « Assurance à renouveler » avec options « 🔄 toi / 🔍 toi », « prix actuel ? Noter ») : « Un petit peu trop enfantin et simpliste. Je comprends même plus ce que c'est »
+- 26.11 7:18 (2 captures : liste du jouable v7 en arbre — tuiles 4/3/5/3, Brasserie › Conditionnement › CO2…, lignes de 2 étages — et liste du jouable passe 4 — une ligne par carnet, catégorie avec sous-domaines en ligne, compteurs en bas) : « Je préfère la vue en arbre mais pas assez compact... »
+- 26.11 7:18 (liste du jouable passe 4, le champ « Noter, coller un lien… » entouré) : « Je préfère aussi un champs text, une action en moins »
+- 26.11 7:22 (jouable passe 4, « Trop de vapeur », à côté du « + » des pistes entouré) : « Avoir une autre action pour de la suggestion de l'ia »
+- 26.11 7:23 (jouable passe 4, juste après la capture « Trop de vapeur ») : « Mais toujours trop simpliste et enfentin »
+- 26.11 7:25 : « Montre moi les mini maquettes et autres avant que soit jouable »
+- 26.11 7:25 : « Montre moi les mini maquettes et autres avant que soit jouable »
+- 26.11 7:27 : « Je veux aussi voir les conceptions de mini maquettes qui ont abouti à ces choix de maquette jouable »
