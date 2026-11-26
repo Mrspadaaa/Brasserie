@@ -11,7 +11,7 @@ tant que `actif: oui` et une ligne ouverte, la fin de tour est refusée et la t�
 
 actif: oui
 session: f97e7359-a046-4072-af48-f44ecac2f73e
-pause: 2026-11-26T09:00:00Z
+pause: 2026-11-26T09:40:00Z
 
 ## File (dans l'ordre ; détails : work/missions/2026-11-23-ETAT-DES-TACHES.md)
 - [x] Mécanisme continuer : hook branché, témoins (bloque, laisse passer), commit
@@ -88,5 +88,6 @@ pause: 2026-11-26T09:00:00Z
 - [x] Liens (26.11, « Aucune comparaison ?? », « Pas fan de l'harcellement ») : 2 agents (v7+m4b, p4) branchent liens/ et demandes/ ; puis publier avec les règles db, écrire liens/ (Brau, Brewtools ×2 lus ; MotlerHops, Kegland en 429 : réessayer), vérifier — FAIT 26.11 : 3 jouables publiés (db journal/liens/demandes), liens Brau + Brewtools ×2 écrits ; MotlerHops et Kegland en 429, restent « 🔗 en lecture » (demandes à relire plus tard)
 - [attente] Style tour 2 (arrêté 26.11 : priorité au jouable de ses choix) (sa parole 26.11 « Pas de sous catégories… plus pro mais moins claire ») : C1 C2 D1 D2, critique, page de choix neuve
 - [ ] Comparer refait depuis ses écrans figés (h04-7, v03-4…), puis republier 6ds7soVDsMyA9xgo4CZAvm
+- [ ] Jouable p5 (lancé 26.11 09:10, JOUABLE-P5.md § Mise à jour) : vérifier, critique en test d’écran, corrections, artefact neuf
 - [attente] son regard sur https://claude.ai/artifact/6ds7soVDsMyA9xgo4CZAvm (mini faites, critiquées, corrigées 26.11) avant le jouable — Mini maquettes p5 (MINI-P5.md, ses choix adaptés : S liste+saisie, O organisé+décision) → critique → corrections → page neuve ; PUIS jouable p5 (JOUABLE-P5.md) sur ces maquettes : concepteur, puis critique en test d’écran, corrections, artefact neuf — Son classement passe 4 (CLASSEMENT-4.md) : rangs 1 (v01 glisser, v04 Mes notes on écrit) et 2 à greffer dans le jouable suivant, avec le style qu’il choisira ; contrôle COMPARER-BEAUCOUP-D-OPTIONS
 - [x] Mini maquettes style adulte (sa demande 26.11 7:25) : 6 genres (A1–A3, B1–B3) sur 4 écrans ; puis critique + personas ; puis page de choix (artefact neuf) ; le jouable attend son choix — FAIT 26.11 : 6 genres corrigés, critique + 3 personas, page de choix https://claude.ai/artifact/1VbLXXPhZimDE4d4PbYQpP ; [attente] son choix de style
