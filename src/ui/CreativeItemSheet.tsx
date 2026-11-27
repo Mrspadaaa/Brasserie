@@ -148,11 +148,14 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
 
           {/* Une note du Carnet n’a ni coût ni prix (critique C2, n° 4) : ils reviennent dès qu’elle change de type. */}
           {String(draft.type) !== 'note' && <div className="grid grid-cols-2 gap-3">
+            {/* NUIT-H1 (27.11) : « -12 » CHF était accepté ; un coût et un prix ne sont jamais négatifs (borne 0), et le libellé est relié à son champ. */}
             <Field label="Coût estimé (CHF)" htmlFor="cr-cost">
               <NumberInput
                 value={draft.estimatedCost}
                 onValue={(v) =>
                   setDraft({ ...draft, estimatedCost: v })}
+                id="cr-cost"
+                min={0}
                 emptyValue={undefined}
                 pad
                 className={`${inputClass} font-mono`}
@@ -163,6 +166,8 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
                 value={draft.targetPrice}
                 onValue={(v) =>
                   setDraft({ ...draft, targetPrice: v })}
+                id="cr-price"
+                min={0}
                 emptyValue={undefined}
                 pad
                 className={`${inputClass} font-mono`}
