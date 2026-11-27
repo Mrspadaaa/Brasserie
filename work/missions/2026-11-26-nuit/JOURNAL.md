@@ -35,3 +35,5 @@ Base : en ligne = tag `en-ligne/2026-11-23-tour80` (1b1c507b5, bundle index-BJS-
 - 03:46 rejoué en ligne (lot 4) : preuve-lot4-live.mjs OK 1/1 (période « 0110 »), scan 31 écrans CHEVAUCHEMENT OK à 390, 360, cave ; Ma bière 6/6, lot 2 2/2 ; captures regardées.
 - 03:59 couverture H (passe 3) : encaissement, facture, feuille idée, Noter les litres, loupe (4 écrans sur 7) ; NUIT-H1 corrigé (coût d’idée négatif, test rouge avant), NUIT-H2 écrit.
 - 04:13 couverture G (passe 3) : brassins, volumes, feuille brassin, recettes, atelier (3 faits, 2 partiels) ; doute pH tranché → NUIT-G4 corrigé (pouce au maximum rattrapé au doigt, banc 9 → 7,34), NUIT-G2 corrigé (DO doublée, test rouge avant), NUIT-G3 écrit.
+- 08:11 EN LIGNE lot 5 : index-WnXbx1Jf.js (60ff0dfb3, tag en-ligne/2026-11-27-nuit-lot5) : NUIT-G4, G2, H1 ; tests complets 0 rouge neuf, AVANT-DEPLOIEMENT OK (581f0180a).
+- 08:16 rejoué en ligne (lot 5) : scan CHEVAUCHEMENT OK à 390, 360, cave ; Ma bière 6/6, lot 2 2/2, lot 4 1/1 ; captures regardées.

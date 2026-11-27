@@ -7,6 +7,7 @@
 - Lot 2 (01:19) : `index-CI1mVmm1.js`, 892d7cf2d, tag local `en-ligne/2026-11-27-nuit-lot2`.
 - Lot 3 (02:31) : `index-Csuct3L9.js`, e78b42354, tag `en-ligne/2026-11-27-nuit-lot3`.
 - Lot 4 (03:25) : `index-ChwEtZMm.js`, de371f9a4, tag `en-ligne/2026-11-27-nuit-lot4` (NUIT-F3 compté vidé, NUIT-D1 jours sans point).
+- Lot 5 (08:11) : `index-WnXbx1Jf.js`, 60ff0dfb3, tag `en-ligne/2026-11-27-nuit-lot5` (NUIT-G4 pouce de mesure, NUIT-G2 DO non doublée, NUIT-H1 coût d’idée borné).
 - Branche de mise en ligne `claude/nuit-en-ligne-2611` = tag en-ligne/2026-11-23-tour80 + src/tests de la nuit, SANS le chantier Carnet suspendu (analyseLocale.ts, tests/fixtures/c80, c81Regles). Worktree : `<scratchpad>/deploy-nuit` (node_modules en jonction vers port-carnet, .env de openai-clean-start/Brasserie, seedData de port-carnet).
 - Prouvé en ligne : `outils/scan.mjs` (31 écrans) CHEVAUCHEMENT OK à 390, 360, cave ; `outils/preuve-ma-biere-live.mjs` 6/6 (paliers, + Eau, Récap) ; `outils/preuve-lot2-live.mjs` 2/2 (Échap, Sels 360).
 
