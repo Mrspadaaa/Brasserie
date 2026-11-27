@@ -234,9 +234,9 @@
 
 
 
-/* NUIT-4 (26.11) : à moins de 380 px (téléphone de 360), la carte d'un sel coupait son nom (« G… », « Ca… », « Bi… ») : l'icône ⓘ s'efface, le nom reste
-   un bouton qui ouvre la fiche du sel. De 380 px et plus, rien ne change. */
-@media (max-width: 379px) {
+/* NUIT-4 (26.11) : au téléphone (≤ 429 px), la carte d’un sel coupait son nom (« G… », « Ca… » à 360 ; « Bica… » à 390, critique du lot 2) : l’icône ⓘ s’efface, le nom reste
+   un bouton qui ouvre la fiche du sel (« Minéraux du sel », vérifié au toucher). */
+@media (max-width: 429px) {
   .water-salt-name > svg { display: none; }
 }
 
