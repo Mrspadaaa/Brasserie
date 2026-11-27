@@ -3,6 +3,7 @@ import { cibleMesure, densiteAvantEbullition, ecartHorsCible, isMash, sg, volume
 import { actualAmount, boilMinutes, brewIngredients, isBoilStep } from './brewCompanion';
 import { classerReleves, estEtapeCoupure, heureCoupure, heureFr, IDS_RELEVES, type IdReleve } from './brewMeasures';
 import { nombreFr } from './nombreAffiche';
+import { eauEmpatageVisee } from './brewDayCalculs';
 import { PH_APRES_MIN } from './appelMesure';
 
 /**
@@ -231,8 +232,12 @@ export function relevesDuJour(
     }
 
     if (!present) continue;
+    // NUIT-B1 (27.11, banc de couverture) : l'eau d'empâtage n'avait pas de cible : un relevé de 90 °C passait « dans la cible » (bord vert) quand la
+    // carte de l'étape vise ≈ 73 °C. Sa cible est la même visée (eauEmpatageVisee), à ± 2 °C ; sans visée calculable, toujours aucune.
+    const visee = def.id === 'eau-temp' && recipe ? eauEmpatageVisee(recipe, state) : null;
     const bande: CibleMesure | null =
-      def.id === 'ph'
+      visee ? { min: visee.eauC - 2, max: visee.eauC + 2 }
+      : def.id === 'ph'
         ? cibleMesure('ph', stepRef)
         : def.id === 'avant-volume' || def.id === 'avant-densite'
           ? cibleMesure(def.kind, pseudo('preboil'), recipe)
@@ -338,6 +343,8 @@ export function tuilesDuJour(releves: ReleveDuJour[], recipe?: RecipeSnapshot): 
     sortie.push(
       fusion('eau', 'Eau d’empâtage', [eau], {
         kind: 'temperature',
+        // NUIT-B2 : l'unité, comme la tuile Empâtage (« 67 °C · pH 5,35 ») ; le relevé seul s'écrivait « 90 ».
+        valeur: eau.lu ? `${eau.valeur} °C` : eau.valeur,
         complement: litres && litres > 0 ? `${nombreFr(litres, 1)} L` : undefined,
         cible: undefined
       })

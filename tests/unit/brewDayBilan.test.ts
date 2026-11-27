@@ -326,3 +326,20 @@ describe('heures tenues (Z01)', () => {
     expect(heuresTenues(E1(), recette)).toEqual([]);
   });
 });
+
+// NUIT-B1, NUIT-B2 (27.11, banc de couverture) : l'eau d'empâtage se juge contre sa visée (± 2 °C) et porte son unité.
+describe('eau d’empâtage : cible et unité', () => {
+  it('90 °C quand la visée est ≈ 73 °C : écart, pas « dans la cible » ; la valeur dit °C', async () => {
+    const { eauEmpatageVisee } = await import('../../src/domain/brewDayCalculs');
+    const base = E1();
+    const etat = { ...base, mashContext: { waterL: 60, gristKg: 20 }, steps: base.steps.map((s) => (/^mash/.test(s.id) && s.tempC == null ? { ...s, tempC: 67 } : s)) } as typeof base;
+    const visee = eauEmpatageVisee(recette, etat);
+    expect(visee).not.toBeNull();
+    if (!visee) return;
+    const releves = relevesDuJour({ ...etat, readings: [...(etat.readings ?? []), { id: 'zz-eau', kind: 'temperature', value: visee.eauC + 17, at: h(13, 0), stepId: 'eau' } as never] }, recette, h(13, 5));
+    const eau = releves.find((r) => r.id === 'eau-temp');
+    expect(eau?.etat).toBe('ecart');
+    const tuile = tuilesDuJour(releves, recette).find((t) => t.id === 'eau');
+    expect(tuile?.valeur).toMatch(/ °C$/);
+  });
+});

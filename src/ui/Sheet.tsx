@@ -1,3 +1,4 @@
+import { echapQuitteLeChamp } from './echapChamp';
 import { ModalOpenerContext, transferModalReturnFocus } from './ModalShell';
 import React from 'react';
 import { Drawer } from 'vaul';
@@ -121,6 +122,7 @@ export const Sheet: React.FC<SheetProps> = ({
           // Consume Escape before removing this dialog. The recipe underneath
           // must not receive the same key after the drawer has unmounted.
           event.preventDefault();
+          if (echapQuitteLeChamp(document.activeElement)) return;
           if (dismissible) onClose();
         }}
         style={{

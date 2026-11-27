@@ -1,3 +1,4 @@
+import { echapQuitteLeChamp } from './echapChamp';
 import React, { useEffect, useRef } from 'react';
 import { useCoarsePointer, useKeyboardInset, useDensity } from './useViewport';
 
@@ -105,7 +106,8 @@ export const ModalShell: React.FC<ModalShellProps> = ({
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || topDialog() !== panel) return;
       if (e.key === 'Escape' && dismissibleRef.current) {
-        e.preventDefault(); closeRef.current();
+        e.preventDefault();
+        if (!echapQuitteLeChamp(e.target)) closeRef.current();
       }
       if (e.key !== 'Tab') return;
       const targets = focusableElements(panel);
