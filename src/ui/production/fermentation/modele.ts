@@ -183,6 +183,9 @@ export function modeleFiche(batch: Batch, now: number, ctx?: ContexteStock): Mod
   for (const r of releves(batch)) {
     const e = ecartJours(pitch, r.swiss);
     const cuve = cuveDansNotes(r.notes);
+    // NUIT-G2 (27.11) : le relevé du jour 0 égal à la DO est la DO elle-même ; un second point posait « 1,062 » sur « DO 1,062 ». Son °C est gardé.
+    const doMeme = e === 0 && og !== null && points[0]?.og && Math.abs(r.sg - og) < 0.0005;
+    if (doMeme) { Object.assign(points[0], typeof r.tempC === 'number' && Number.isFinite(r.tempC) ? { tempC: r.tempC } : {}, cuve !== null ? { cuveC: cuve } : {}); continue; }
     if (e !== null && e >= 0) points.push({ jour: e, sg: r.sg, ...(typeof r.tempC === 'number' && Number.isFinite(r.tempC) ? { tempC: r.tempC } : {}), ...(cuve !== null ? { cuveC: cuve } : {}) });
   }
   points.sort((a, b) => a.jour - b.jour);

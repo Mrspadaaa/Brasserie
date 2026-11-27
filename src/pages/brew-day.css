@@ -3413,6 +3413,9 @@ body[data-brew-fab-off] .floating-actions { display: none !important; }
 .brew-page.bz .bz-range { position: absolute; left: -11px; top: 0; width: calc(100% + 22px); height: 44px; margin: 0; padding: 0; opacity: 0; cursor: pointer; touch-action: none; }
 .brew-page.bz .bz-range::-webkit-slider-thumb { width: 22px; height: 44px; }
 .brew-page.bz .bz-range::-moz-range-thumb { width: 22px; height: 44px; }
+/* NUIT-G4 (27.11) : la piste native déborde de 11 px de chaque côté ; dans la feuille Mesurer, le cadre défilant la rognait et un pouce au maximum
+   (pH 8,92) ne se rattrapait plus au doigt. Le curseur lui réserve ces 11 px : la zone de toucher tient dans son cadre, échelle et pouce restent alignés. */
+.brew-page.bz .bz-curseur { padding-inline: 11px; }
 .brew-page.bz .bz-ecart[data-k='vide'] { margin-top: 6px; color: var(--bz-t2); }
 .brew-page.bz .bz-ecart[data-k='vide'] b { color: var(--bz-t0); }
 .brew-page.bz .bz-pourquoi { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 8px; padding: 0; border: 0; background: none; color: var(--bz-t1); font-size: 14px; }

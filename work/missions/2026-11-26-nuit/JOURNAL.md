@@ -34,3 +34,4 @@ Base : en ligne = tag `en-ligne/2026-11-23-tour80` (1b1c507b5, bundle index-BJS-
 - 03:25 **EN LIGNE lot 4** : `index-ChwEtZMm.js`, de371f9a4, tag local `en-ligne/2026-11-27-nuit-lot4` ; critique Opus 8 problèmes, 0 bloquant ; AVANT-DEPLOIEMENT OK (2e62fd2b6) ; tests complets : 0 fichier rouge neuf face au tour 80.
 - 03:46 rejoué en ligne (lot 4) : preuve-lot4-live.mjs OK 1/1 (période « 0110 »), scan 31 écrans CHEVAUCHEMENT OK à 390, 360, cave ; Ma bière 6/6, lot 2 2/2 ; captures regardées.
 - 03:59 couverture H (passe 3) : encaissement, facture, feuille idée, Noter les litres, loupe (4 écrans sur 7) ; NUIT-H1 corrigé (coût d’idée négatif, test rouge avant), NUIT-H2 écrit.
+- 04:13 couverture G (passe 3) : brassins, volumes, feuille brassin, recettes, atelier (3 faits, 2 partiels) ; doute pH tranché → NUIT-G4 corrigé (pouce au maximum rattrapé au doigt, banc 9 → 7,34), NUIT-G2 corrigé (DO doublée, test rouge avant), NUIT-G3 écrit.
