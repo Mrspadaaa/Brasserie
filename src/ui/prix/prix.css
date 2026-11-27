@@ -153,3 +153,6 @@
 .prx-ans-q:focus-visible, button.prx-br:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 button.prx-br { font: inherit; color: inherit; text-align: inherit; border: 0; width: 100%; cursor: pointer; }
 #prx-manque { scroll-margin-top: 64px; }
+
+/* NUIT-A2 (27.11, couverture A) : la rangée « Proposer · Fixer le prix », au bas de l'écran, garde la case du + flottant (76 px) : le + couvrait ses 56 derniers px. */
+@media (max-width: 1023px) { :root body[data-has-fab-floating] .prx-act { padding-right: 4.75rem; } }

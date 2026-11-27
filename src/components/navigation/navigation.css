@@ -40,6 +40,14 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
 :root [data-floating-actions-gap='nav'] {
   padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 0.75rem);
 }
+/* NUIT-A3 (27.11 ; sa parole du 21.11, VUE-FOND : « descendre un tout petit peu au cas où le bouton + gênerait mais pas autant ») : le + revient au
+   repos 0,7 s après le défilement et couvrait, au bout de Finances (Opérations, Prévisions, Synthèse, Annuel), la dernière rangée. Au téléphone, quand
+   le + flotte, la fin de l'onglet laisse sa hauteur (56 + 12 px) : la dernière rangée défile au-dessus de lui. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] [data-floating-actions-gap='nav'] {
+    padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 0.75rem + var(--plus-cote, 56px) + 0.75rem);
+  }
+}
 
 /* Le voile sous la pile : il couvre le contenu, jamais la barre ni le + (le + reste atteignable pour fermer). */
 .plus-voile {

@@ -195,3 +195,8 @@ button.ann-pa { cursor:pointer; font-family:inherit; min-height:24px; border:1.5
 @media (max-width: 1023px) {
   :root body[data-has-fab-floating] .ann-wrap :is(.ann-pile, .ann-cl, .ann-row, .ann-next, .finance-assistant) { padding-right:4.75rem; }
 }
+
+/* NUIT-A1 (27.11, couverture A) : colonne « Dépensé + usure » : le libellé d'un segment repoussait son montant hors du segment (« 4 000,00 » lu « 4 0 »).
+   Le libellé se coupe en « … » (le nom entier reste dans l'aria-label), le montant reste entier. */
+.ann-s > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ann-s > b.ann-m { flex: none; }
