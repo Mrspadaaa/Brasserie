@@ -1,6 +1,6 @@
 # Reprise — nuit du 26 au 27.11 (bug finder / fixer, perf)
 
-État au 27.11 à 01:55 (heure suisse). Registre : JOURNAL.md (heures), BUGS.md (NUIT-0 à NUIT-10), PERF.md.
+État au 27.11 à 01:36 (heure suisse). Registre : JOURNAL.md (heures), BUGS.md (NUIT-0 à NUIT-10), PERF.md.
 
 ## En ligne
 - Lot 1 (00:10) : `index-Bc72xyPN.js`, 406a10de3, tag local `en-ligne/2026-11-27-nuit-lot1`.

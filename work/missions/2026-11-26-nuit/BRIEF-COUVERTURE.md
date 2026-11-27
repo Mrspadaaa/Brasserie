@@ -1,6 +1,6 @@
 # Brief commun — couverture de tous les écrans (nuit du 26 au 27.11)
 
-Parole du brasseur (27.11, 01:58, par la session pilote) : « l'eau et palier sont des exemples, il faut regarder toute le reste de l'app dans cette même attention ».
+Parole du brasseur (27.11, reçue vers 01:35, par la session pilote) : « l'eau et palier sont des exemples, il faut regarder toute le reste de l'app dans cette même attention ».
 Règle : chaque écran de ta tranche passe au même examen fin, joué comme le brasseur au téléphone (390 × 844 tactile) : chaque champ, chaque édition au
 doigt, chaque bouton flottant ou collant, chaque valeur affichée (unité, cohérence avec les autres chiffres), chaque geste et son effet.
 
@@ -34,7 +34,7 @@ doigt, chaque bouton flottant ou collant, chaque valeur affichée (unité, cohé
 - Inventaire : work/refonte-frontend/inventaire-ecrans.json (85 écrans, champs id, nom, acces, fichiers).
 - Plafond : 45 tours. Dernière ligne de ta réponse : « Tranche <x> : N écrans couverts sur M, K constats prouvés : <les 3 plus graves en 20 mots> ».
 
-## Passe 2 (03:35) : les gestes qui écrivent
+## Passe 2 (02:53) : les gestes qui écrivent
 La passe 1 a laissé « partiel » tout geste qui écrit (enregistrer, valider, clôturer, créer, supprimer). La passe 2 les joue AU BANC LOCAL SEULEMENT,
 sur fixtures « ZZ TEST — … » posées en mémoire, avec `ouvrir({ bloquerExterne: true })` : aucune requête ne sort, rien n'atteint ses données.
 Pour chaque geste : avant / après (valeur, total, liste, message), cohérence des unités et des sommes, focus et clavier, flottants. Rapports de la
