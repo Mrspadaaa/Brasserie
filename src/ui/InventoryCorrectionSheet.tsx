@@ -61,7 +61,9 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
   // AM-54 : un stock compté supérieur au théorique n'est ni une casse, ni une perte, ni un don.
   const admis = motifsAdmis(delta);
   const motif: InventoryReason = admis.includes(reason) ? reason : 'comptage';
-  const bloque = !touched || delta === 0 || !verifierCorrection(item, counted, motif).ok;
+  // NUIT-F3 (27.11) : un champ vidé n’est pas un compte (il valait 0 : « Écart -25 kg » enregistrable, tout le stock effacé en un geste).
+  const vide = !Number.isFinite(counted);
+  const bloque = !touched || vide || delta === 0 || !verifierCorrection(item, counted, motif).ok;
   const submit = () => {
     if (bloque) return;
     onConfirm(counted, motif, note.trim() || undefined);
@@ -83,7 +85,7 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
             onClick={submit}
             disabled={bloque}
           >
-            {delta === 0 ? 'Aucun écart' : 'Enregistrer l’écart'}
+            {vide ? 'Saisir le compté' : delta === 0 ? 'Aucun écart' : 'Enregistrer l’écart'}
           </Button>
         </div>
       }
@@ -104,6 +106,7 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
         <QuantityStepper
           label={`Stock réellement compté (${item.unit})`}
           value={counted}
+          emptyValue={Number.NaN}
           initialValue={item.currentStock}
           onChange={(v) => {
             setCounted(v);
@@ -112,7 +115,9 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
           unit={item.unit}
           category={item.category}
           projection={
-            delta === 0 ? (
+            vide ? (
+              <span className="text-cave-400">Saisir le stock compté.</span>
+            ) : delta === 0 ? (
               <span className="text-cave-400">Aucun écart.</span>
             ) : (
               <>

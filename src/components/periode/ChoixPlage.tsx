@@ -63,6 +63,8 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
   const invalide = (du !== '' && !jourDu) || (au !== '' && !jourAu) || inverse;
   /* Un jour se pose dès que son mois a deux chiffres (« 12.10 ») ; « 12.1 » attend de quitter le champ. */
   const complet = (t: string) => /^\s*\d{1,2}[./\-\s]\d{2}([./\-\s]\d{4})?\s*$/.test(t);
+  /* NUIT-D1 (27.11) : le clavier numérique de l’iPhone n’a pas de point ; quatre chiffres (« 0110 ») se lisent jj.mm et le point se pose tout seul. */
+  const avecPoint = (t: string) => { const m = /^\s*(\d{2})(\d{2})\s*$/.exec(t); return m ? `${m[1]}.${m[2]}` : t; };
   const appliquer = (a: string, b: string, force = false) => {
     if (!force && !(complet(a) && complet(b))) return;
     const x = jourSaisi(a, anneeDu), y = jourSaisi(b, anneeAu);
@@ -81,10 +83,10 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
       <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}${croise ? ' pr-croise' : ''}`}>
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Du … au</span>
         <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.du) : 'jj.mm'} value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}
-          onChange={e => { setDu(e.target.value); appliquer(e.target.value, au); }} />
+          onChange={e => { const v = avecPoint(e.target.value); setDu(v); appliquer(v, au); }} />
         <ArrowRight size={16} aria-hidden="true" />
         <input aria-label="Au (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.au) : 'jj.mm'} value={au} aria-invalid={invalide && !jourAu && au !== '' ? true : undefined} {...evSaisie}
-          onChange={e => { setAu(e.target.value); appliquer(du, e.target.value); }} />
+          onChange={e => { const v = avecPoint(e.target.value); setAu(v); appliquer(du, v); }} />
       </div>
       {inverse && <p className="pr-err" role="alert">La fin vient avant le début.</p>}
     </div>
