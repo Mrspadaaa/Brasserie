@@ -53,3 +53,9 @@ Bruit : une seule série par version (un agent travaillait dans un autre onglet 
 - Calendrier : 1,6 s CPU ×4 de style et mise en page à l'ouverture (`getBoundingClientRect` 101 ms : mesures en boucle dans la frise ?). À profiler avec la trace Performance (Layout/Recalculate Style) avant toute retouche.
 - Données levures au démarrage (≈ 720 Ko) : voir plus haut.
 - Mesure Levure du registre (T4-6, cal-77 : retour sur Levure 251–510 ms) : l'éditeur ne s'ouvre en ligne que sur une recette ; non remesuré cette nuit (aucune recette ZZ TEST enregistrée, et en créer une écrit dans ses données).
+
+## Calendrier après le lot 2 (trace Performance, CPU ×4, 27.11 vers 1 h 40)
+
+Trace `outils/trace.mjs` (Clients → Calendrier) : JS 684 ms (FunctionCall) + minuteries 273 ms ; style 136 ms et mise en page 105 ms seulement, dont
+≈ 70 ms forcées par CalendrierTab et 38 ms par `murMiseEnPage.ts`. Les « 1,3 s » de `perf.mjs` comptent l'attente d'un DOM calme (animations de la frise) :
+le coût CPU réel du passage est ≈ 0,2 s sur un téléphone moyen. Rien de sûr à corriger de plus cette nuit.

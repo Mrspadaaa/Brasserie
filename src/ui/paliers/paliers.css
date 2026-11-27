@@ -48,6 +48,8 @@
 .pal-pal.pal-actif { stroke: none; }
 .pal-plus { cursor: pointer; }
 .pal-plus circle { fill: var(--pal-blanc); stroke: var(--pal-bordm); }
+/* NUIT-10 (26.11, banc des gestes) : le « + » dessiné fait 24 px ; sa zone de toucher, invisible, 32 px (r 16), sans déborder sur ses voisins. */
+.pal-plus circle.pal-plus-zone { fill: transparent; stroke: none; }
 .pal-plus path { stroke: var(--pal-t0); stroke-width: 2; fill: none; }
 .pal-poignee { cursor: grab; touch-action: none; }
 .pal-poignee:active { cursor: grabbing; }

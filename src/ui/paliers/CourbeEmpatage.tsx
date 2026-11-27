@@ -234,16 +234,16 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
       {dispo.montees.filter(m => !colonnes[m.rang].mashout).map(m => <g key={`p${m.rang}`} className="pal-plus" data-hit="" role="button" tabIndex={0} data-frontiere={m.rang}
         aria-label={`Ajouter un palier entre ${colonnes[m.rang - 1].nom} et ${colonnes[m.rang].nom}`}
         onClick={() => ajouter(m.rang)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(m.rang); } }}>
-        <circle cx={n2(m.x + m.w / 2)} cy={G.y0 + G.h} r="12" /><path d={`M${n2(m.x + m.w / 2)} ${G.y0 + G.h - 6}v12M${n2(m.x + m.w / 2 - 6)} ${G.y0 + G.h}h12`} />
+        <circle cx={n2(m.x + m.w / 2)} cy={G.y0 + G.h} r="16" className="pal-plus-zone" /><circle cx={n2(m.x + m.w / 2)} cy={G.y0 + G.h} r="12" /><path d={`M${n2(m.x + m.w / 2)} ${G.y0 + G.h - 6}v12M${n2(m.x + m.w / 2 - 6)} ${G.y0 + G.h}h12`} />
       </g>)}
       {/* PALIERS-EDITION-MAL : la tête de courbe est une frontière aussi (un repos protéique se pose AVANT la saccharification). */}
       {colonnes.length > 0 && <g className="pal-plus" data-hit="" role="button" tabIndex={0} data-frontiere="0" aria-label={`Ajouter un palier avant ${colonnes[0].nom}`}
         onClick={() => ajouter(0)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(0); } }}>
-        <circle cx={G.x0} cy={G.y0 + G.h} r="12" /><path d={`M${G.x0} ${G.y0 + G.h - 6}v12M${G.x0 - 6} ${G.y0 + G.h}h12`} />
+        <circle cx={G.x0} cy={G.y0 + G.h} r="16" className="pal-plus-zone" /><circle cx={G.x0} cy={G.y0 + G.h} r="12" /><path d={`M${G.x0} ${G.y0 + G.h - 6}v12M${G.x0 - 6} ${G.y0 + G.h}h12`} />
       </g>}
       <g className="pal-plus" data-hit="" role="button" tabIndex={0} data-booster="ajout-frontiere" data-frontiere="fin" aria-label="Ajouter un palier"
         onClick={() => ajouter(finCourbe)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ajouter(finCourbe); } }}>
-        <circle cx="352" cy={G.y0 + G.h} r="12" /><path d={`M352 ${G.y0 + G.h - 6}v12M346 ${G.y0 + G.h}h12`} />
+        <circle cx="352" cy={G.y0 + G.h} r="16" className="pal-plus-zone" /><circle cx="352" cy={G.y0 + G.h} r="12" /><path d={`M352 ${G.y0 + G.h - 6}v12M346 ${G.y0 + G.h}h12`} />
       </g>
 
       {sel && (() => {
