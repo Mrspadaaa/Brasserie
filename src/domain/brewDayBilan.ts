@@ -344,7 +344,7 @@ export function tuilesDuJour(releves: ReleveDuJour[], recipe?: RecipeSnapshot): 
       fusion('eau', 'Eau d’empâtage', [eau], {
         kind: 'temperature',
         // NUIT-B2 : l'unité, comme la tuile Empâtage (« 67 °C · pH 5,35 ») ; le relevé seul s'écrivait « 90 ».
-        valeur: eau.lu ? `${eau.valeur} °C` : eau.valeur,
+        valeur: eau.lu ? `${eau.valeur} °C` : eau.valeur, // virgule-ok : eau.valeur est déjà le texte à virgule (valeurFr)
         complement: litres && litres > 0 ? `${nombreFr(litres, 1)} L` : undefined,
         cible: undefined
       })
