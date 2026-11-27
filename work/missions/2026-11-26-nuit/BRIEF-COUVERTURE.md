@@ -33,3 +33,9 @@ doigt, chaque bouton flottant ou collant, chaque valeur affichée (unité, cohé
   3) doutes et non joué.
 - Inventaire : work/refonte-frontend/inventaire-ecrans.json (85 écrans, champs id, nom, acces, fichiers).
 - Plafond : 45 tours. Dernière ligne de ta réponse : « Tranche <x> : N écrans couverts sur M, K constats prouvés : <les 3 plus graves en 20 mots> ».
+
+## Passe 2 (03:35) : les gestes qui écrivent
+La passe 1 a laissé « partiel » tout geste qui écrit (enregistrer, valider, clôturer, créer, supprimer). La passe 2 les joue AU BANC LOCAL SEULEMENT,
+sur fixtures « ZZ TEST — … » posées en mémoire, avec `ouvrir({ bloquerExterne: true })` : aucune requête ne sort, rien n'atteint ses données.
+Pour chaque geste : avant / après (valeur, total, liste, message), cohérence des unités et des sommes, focus et clavier, flottants. Rapports de la
+passe 1 à relire d'abord (ce qui est fait ne se refait pas) : work/missions/2026-11-26-nuit/couverture/{A,B,C,fiches}.md.
