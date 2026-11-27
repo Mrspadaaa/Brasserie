@@ -265,6 +265,8 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
               aria-label={`Durée du palier ${sel.rang + 1} — ${sel.nom}`} aria-valuemin={0} aria-valuemax={240} aria-valuenow={v.durationMin} aria-valuetext={`${nb(v.durationMin)} min`}
               onPointerDown={demarrer(sel.rang, 'duree')} onPointerMove={deplacer} onPointerUp={finir(false)} onPointerCancel={finir(true)} onKeyDown={clavier(sel, 'duree')}>
               <rect x={n2(fin - POIGNEE_DUREE.w / 2)} y={yD} width={POIGNEE_DUREE.w} height={POIGNEE_DUREE.h} rx="12" fill="var(--pal-ambre)" stroke="var(--pal-blanc)" strokeWidth="2" />
+              {/* NUIT-6 (critique) : la poignée ↔ dessinée fait 24 de haut ; sa zone de toucher, invisible, 36 (8 au-dessus, 4 au-dessous : loin des « + » de l’axe). */}
+              <rect className="pal-poignee-zone" x={n2(fin - POIGNEE_DUREE.w / 2 - 4)} y={yD - 8} width={POIGNEE_DUREE.w + 8} height={POIGNEE_DUREE.h + 12} fill="transparent" />
               <path d={`M${n2(fin - 12)} ${yM}h24M${n2(fin - 7)} ${yM - 5}l-5 5 5 5M${n2(fin + 7)} ${yM - 5}l5 5-5 5`} fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               {apercu?.champ === 'duree' && <text className="pal-gv pal-bulle" x={n2(fin)} y={yD - 6} textAnchor="middle">{nb(v.durationMin)}′</text>}
             </g>}
